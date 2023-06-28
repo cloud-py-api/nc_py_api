@@ -13,7 +13,7 @@ class PreferencesAPI:
         self._session = session
 
     @property
-    def avalaible(self) -> bool:
+    def available(self) -> bool:
         return not check_capabilities("provisioning_api", self._session.capabilities)
 
     def set(self, app_name: str, key: str, value: str) -> None:

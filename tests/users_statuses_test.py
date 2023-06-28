@@ -7,8 +7,8 @@ from gfixture import NC_TO_TEST, NC_VERSION
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_avalaible(nc):
-    assert nc.users_statuses.avalaible
+def test_available(nc):
+    assert nc.users_statuses.available
 
 
 def compare_user_statuses(p1, p2):
@@ -36,8 +36,8 @@ def test_get_status(nc, message):
     assert not r1["messageIsPredefined"]
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
+@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_predefined(nc):
     r = nc.users_statuses.get_predefined()
     assert isinstance(r, list)
@@ -89,9 +89,9 @@ def test_set_status_type(nc, value):
     assert r["statusIsUserDefined"]
 
 
+@pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
-@pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
 def test_set_predefined(nc, clear_at):
     predefined_statuses = nc.users_statuses.get_predefined()
     for i in predefined_statuses:
