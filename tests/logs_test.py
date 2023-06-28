@@ -4,9 +4,7 @@ from copy import deepcopy
 
 from nc_py_api import LogLvl, NextcloudException
 
-from gfixture import NC_TO_TEST
-NC_APP = NC_TO_TEST[1] if len(NC_TO_TEST) > 1 else None
-
+from gfixture import NC_APP
 
 if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
     pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)

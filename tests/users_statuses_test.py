@@ -1,7 +1,5 @@
 import pytest
 
-from typing import Union
-
 from time import time
 
 
@@ -39,7 +37,7 @@ def test_get_status(nc, message):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-@pytest.mark.skipif(NC_VERSION["major"] < 27, reason="NC27 required.")
+@pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
 def test_get_predefined(nc):
     r = nc.users_statuses.get_predefined()
     assert isinstance(r, list)
@@ -48,7 +46,7 @@ def test_get_predefined(nc):
         assert isinstance(i["id"], str)
         assert isinstance(i["message"], str)
         assert isinstance(i["icon"], str)
-        assert isinstance(i, Union[dict, None])
+        assert isinstance(i["clearAt"], dict) or i["clearAt"] is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -93,7 +91,7 @@ def test_set_status_type(nc, value):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
-@pytest.mark.skipif(NC_VERSION["major"] < 27, reason="NC27 required.")
+@pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
 def test_set_predefined(nc, clear_at):
     predefined_statuses = nc.users_statuses.get_predefined()
     for i in predefined_statuses:

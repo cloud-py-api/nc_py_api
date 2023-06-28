@@ -13,13 +13,18 @@ if not environ.get("CI", False):  # For local tests
     environ["app_version"] = "1.0.0"
     environ["app_secret"] = secret
 
-nc = Nextcloud()
-nc_app = NextcloudApp(user="admin")
-if "app_ecosystem_v2" not in nc_app.capabilities:
-    nc_app = None
+NC = Nextcloud()
+if environ.get("SKIP_NC_WO_AE", False):
+    NC = None
 
-NC_TO_TEST = [nc]
-if nc_app:
-    NC_TO_TEST.append(nc_app)
+NC_APP = NextcloudApp(user="admin")
+if "app_ecosystem_v2" not in NC_APP.capabilities:
+    NC_APP = None
 
-NC_VERSION = nc.srv_version
+NC_TO_TEST = []
+if NC:
+    NC_TO_TEST.append(NC)
+if NC_APP:
+    NC_TO_TEST.append(NC_APP)
+
+NC_VERSION = NC_TO_TEST[0].srv_version if NC_TO_TEST else {}
