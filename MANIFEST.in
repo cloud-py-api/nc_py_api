@@ -3,9 +3,11 @@ include README.md
 include CHANGELOG.md
 include pyproject.toml
 
-exclude *.yaml *.yml
+exclude *.yaml *.yml Makefile
 
 recursive-exclude * *.yaml *.yml
 
 prune docker
 prune tests
+prune docs
+prune examples
