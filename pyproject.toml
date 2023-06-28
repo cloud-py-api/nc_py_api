@@ -1,0 +1,64 @@
+[build-system]
+requires = [
+  "setuptools>=60",
+  "wheel",
+]
+
+[tool.black]
+line-length = 120
+target-versions = ["py39"]
+preview = true
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+log_cli = true
+addopts = "--color=yes"
+
+[tool.coverage.run]
+cover_pylib = true
+include = ["*/nc_py_api/*"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "DeprecationWarning",
+    "DEPRECATED"
+]
+
+[tool.mypy]
+ignore_missing_imports = false
+warn_no_return = true
+strict_optional = true
+check_untyped_defs = true
+
+[tool.pylint]
+master.py-version = "3.9"
+master.extension-pkg-allow-list = ["pydantic"]
+design.max-attributes = 8
+design.max-locals = 16
+design.max-branches = 16
+design.max-returns = 8
+design.max-args = 6
+basic.good-names = [
+    "a", "b", "c", "d", "e", "f", "i", "j", "k", "r", "v",
+    "ex", "_", "fp", "im", "nc",
+]
+reports.output-format = "colorized"
+similarities.ignore-imports = "yes"
+messages_control.disable = [
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "line-too-long",
+    "too-few-public-methods",
+]

@@ -1,0 +1,18 @@
+codecov:
+  notify:
+    after_n_builds: 2
+
+comment:
+  require_changes: true
+  layout: "diff, files"
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 2%
+    patch: off
+
+fixes:
+  - "nc_py_api/::"

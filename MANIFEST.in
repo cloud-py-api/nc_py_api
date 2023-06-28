@@ -1,0 +1,11 @@
+include nc_py_api/*
+include README.md
+include CHANGELOG.md
+include pyproject.toml
+
+exclude *.yaml *.yml
+
+recursive-exclude * *.yaml *.yml
+
+prune docker
+prune tests

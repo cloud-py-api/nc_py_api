@@ -1,0 +1,63 @@
+ci:
+  skip: [pylint]
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-toml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: mixed-line-ending
+
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        files: nc_py_api/
+
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black
+        files: nc_py_api/
+
+-   repo: https://github.com/tox-dev/pyproject-fmt
+    rev: 0.12.1
+    hooks:
+    -   id: pyproject-fmt
+
+-   repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+        types: [file, python]
+        files: nc_py_api/
+
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.4.1
+    hooks:
+     -  id: mypy
+        files: nc_py_api/
+        additional_dependencies: [pytest]
+
+#-   repo: https://github.com/mgedmin/check-manifest
+#    rev: "0.49"
+#    hooks:
+#    -   id: check-manifest
+#        args: [--no-build-isolation]
+
+-   repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: pylint "setup.py" "nc_py_api/"
+        language: system
+        types: [ python ]
+        pass_filenames: false
+        args:
+            [
+                "-rn", # Only display messages
+                "-sn", # Don't display the score
+            ]

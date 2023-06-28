@@ -1,0 +1,11 @@
+requests
+httpx
+xmltodict
+pydantic
+xxhash
+uvicorn
+pygifsicle
+imageio
+opencv-python
+numpy
+fastapi
