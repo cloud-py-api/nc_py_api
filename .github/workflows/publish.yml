@@ -1,0 +1,83 @@
+name: Publish
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_wheels:
+    if: "contains(github.event.head_commit.message, '[publish]')"
+    name: Build Wheels
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Preparations
+        run: python3 -m pip install check-manifest twine build wheel
+
+      - name: Build
+        run: |
+          python3 -m check_manifest
+          python3 -m build
+
+      - name: Check
+        run: twine check dist/*
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels_nc_py_api
+          path: dist/*.*
+          if-no-files-found: error
+
+  publish_pypi:
+    needs: [build_wheels]
+    if: "contains(github.event.head_commit.message, '[publish]')"
+    name: Upload to PyPi
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get tag
+        run: |
+          RELEASE_VERSION=$(sed -n "s/^__version__.*\"\(.*\)\"$/\\1/p" ./nc_py_api/_version.py)
+          echo RELEASE_TAG="v$RELEASE_VERSION" >> $GITHUB_ENV
+          CHANGELOG=$(grep -oPz "(?s)##\s\[$RELEASE_VERSION.+?(?=##\s\[|$)" ./CHANGELOG.md | tr -d '\0' | sed /^$/d | sed '1d')
+          CHANGELOG=$(echo "$CHANGELOG" | sed '$!N;s/^###.*\n#/#/;P;D' | sed '$!N;s/^###.*\n#/#/;P;D' | sed '${/^###/d;}')
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Download sdist and wheels
+        uses: actions/download-artifact@v3
+        with:
+          name: wheels_nc_py_api
+          path: wheelhouse_nc_py_api
+
+      - name: Install twine
+        run: |
+          python3 -m pip install twine
+          python3 -m pip install urllib3==1.26.15
+
+      - name: Publish NcPyApi
+        run: |
+          python3 -m twine upload --skip-existing wheelhouse_nc_py_api/*.whl
+          python3 -m twine upload --skip-existing wheelhouse_nc_py_api/*tar.gz
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Create release draft
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          name: ${{ env.RELEASE_TAG }}
+          tag: ${{ env.RELEASE_TAG }}
+          commit: ${{ github.ref }}
+          draft: false
+          body: ${{ env.CHANGELOG }}
+          token: ${{ secrets.PAT_PH }}

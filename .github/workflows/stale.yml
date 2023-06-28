@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: actions/stale@v8
         with:
-          days-before-stale: 28
-          days-before-close: 14
+          days-before-stale: 14
+          days-before-close: 9
           days-before-pr-close: -1 # Never close PR's automatically
           any-of-labels: 'question, invalid'
           stale-issue-message: 'This issue did not receive an update in the last 4 weeks.
