@@ -135,7 +135,7 @@ jobs:
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
-          -e --force-scopes
+          -e --force-scopes --system-app
           kill -9 $(cat /tmp/_install.pid)
 
       - name: Generate coverage report
@@ -264,7 +264,7 @@ jobs:
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
-          -e --force-scopes
+          -e --force-scopes --system-app
           kill -9 $(cat /tmp/_install.pid)
 
       - name: Generate coverage report
@@ -389,7 +389,7 @@ jobs:
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
-          -e --force-scopes
+          -e --force-scopes --system-app
           kill -9 $(cat /tmp/_install.pid)
 
       - name: Generate coverage report
