@@ -80,4 +80,4 @@ jobs:
           commit: ${{ github.ref }}
           draft: false
           body: ${{ env.CHANGELOG }}
-          token: ${{ secrets.PAT_PH }}
+          token: ${{ secrets.PAT_NC_PY_API }}
