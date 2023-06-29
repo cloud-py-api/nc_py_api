@@ -21,7 +21,7 @@ filterwarnings = [
     "ignore::DeprecationWarning",
 ]
 log_cli = true
-addopts = "--color=yes"
+addopts = "-rs --color=yes"
 
 [tool.coverage.run]
 cover_pylib = true

@@ -140,7 +140,7 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest -rs && coverage xml && coverage html
+        run: coverage run -m pytest && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -269,7 +269,7 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest -rs && coverage xml && coverage html
+        run: coverage run -m pytest && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -394,7 +394,7 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest -rs && coverage xml && coverage html
+        run: coverage run -m pytest && coverage xml && coverage html
         env:
           SKIP_NC_WO_AE: 1
 
