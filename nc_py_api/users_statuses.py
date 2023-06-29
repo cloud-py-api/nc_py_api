@@ -64,15 +64,15 @@ class UsersStatusesAPI:
             raise e from None
 
     def get_predefined(self) -> list[PredefinedStatus]:
-        require_capabilities("user_status", self._session.capabilities)
         if self._session.nc_version["major"] < 27:
             return []
+        require_capabilities("user_status", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/predefined_statuses")
 
     def set_predefined(self, message_id: str, clear_at: int = 0) -> None:
-        require_capabilities("user_status", self._session.capabilities)
         if self._session.nc_version["major"] < 27:
             return
+        require_capabilities("user_status", self._session.capabilities)
         params: dict[str, Union[int, str]] = {"messageId": message_id}
         if clear_at:
             params["clearAt"] = clear_at

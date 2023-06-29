@@ -3,7 +3,7 @@ import pytest
 from time import time
 
 
-from gfixture import NC_TO_TEST, NC_VERSION
+from gfixture import NC_TO_TEST
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -36,17 +36,19 @@ def test_get_status(nc, message):
     assert not r1["messageIsPredefined"]
 
 
-@pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_predefined(nc):
     r = nc.users_statuses.get_predefined()
-    assert isinstance(r, list)
-    assert r
-    for i in r:
-        assert isinstance(i["id"], str)
-        assert isinstance(i["message"], str)
-        assert isinstance(i["icon"], str)
-        assert isinstance(i["clearAt"], dict) or i["clearAt"] is None
+    if nc.srv_version["major"] < 27:
+        assert r == []
+    else:
+        assert isinstance(r, list)
+        assert r
+        for i in r:
+            assert isinstance(i["id"], str)
+            assert isinstance(i["message"], str)
+            assert isinstance(i["icon"], str)
+            assert isinstance(i["clearAt"], dict) or i["clearAt"] is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -89,15 +91,17 @@ def test_set_status_type(nc, value):
     assert r["statusIsUserDefined"]
 
 
-@pytest.mark.skipif(NC_VERSION.get("major", 0) < 27, reason="NC27 required.")
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
 def test_set_predefined(nc, clear_at):
-    predefined_statuses = nc.users_statuses.get_predefined()
-    for i in predefined_statuses:
-        nc.users_statuses.set_predefined(i["id"], clear_at)
-        r = nc.users_statuses.get_current()
-        assert r["message"] == i["message"]
-        assert r["messageId"] == i["id"]
-        assert r["messageIsPredefined"]
-        assert r["clearAt"] == clear_at
+    if nc.srv_version["major"] < 27:
+        nc.users_statuses.set_predefined("meeting")
+    else:
+        predefined_statuses = nc.users_statuses.get_predefined()
+        for i in predefined_statuses:
+            nc.users_statuses.set_predefined(i["id"], clear_at)
+            r = nc.users_statuses.get_current()
+            assert r["message"] == i["message"]
+            assert r["messageId"] == i["id"]
+            assert r["messageIsPredefined"]
+            assert r["clearAt"] == clear_at
