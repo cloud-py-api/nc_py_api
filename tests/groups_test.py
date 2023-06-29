@@ -7,7 +7,7 @@ from gfixture import NC_TO_TEST
 TEST_GROUP_NAME = "test_coverage_group"
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_create_delete_group(nc):
     try:
@@ -22,7 +22,7 @@ def test_create_delete_group(nc):
         nc.users_groups.delete(TEST_GROUP_NAME)
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_list_group(nc):
     try:
@@ -46,7 +46,7 @@ def test_list_group(nc):
     nc.users_groups.delete(TEST_GROUP_NAME + "2")
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_group_members_promote_demote(nc):
     try:

@@ -21,7 +21,7 @@ def test_get_user_404(nc):
         nc.users.get("non existing user")
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_create_user(nc):
     try:
@@ -33,7 +33,7 @@ def test_create_user(nc):
         nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_delete_user(nc):
     try:
@@ -45,7 +45,7 @@ def test_delete_user(nc):
         nc.users.delete(TEST_USER_NAME)
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_list_users(nc):
     try:
@@ -62,7 +62,7 @@ def test_list_users(nc):
     nc.users.delete(TEST_USER_NAME)
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_enable_disable_user(nc):
     try:
