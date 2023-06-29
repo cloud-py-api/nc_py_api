@@ -4,9 +4,7 @@ from copy import deepcopy
 
 from nc_py_api import LogLvl, NextcloudException
 
-from gfixture import NC_TO_TEST
-NC_APP = NC_TO_TEST[1] if len(NC_TO_TEST) > 1 else None
-
+from gfixture import NC_APP
 
 if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
     pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)
@@ -45,7 +43,7 @@ def test_loglvl_equal():
 
 @pytest.mark.skipif(AE_CAPABILITIES.get("loglevel", LogLvl.FATAL) == LogLvl.DEBUG, reason="Log lvl to low")
 def test_loglvl_less():
-    with mock.patch("gfixture.nc_app._session._ocs") as _ocs:
+    with mock.patch("gfixture.NC_APP._session._ocs") as _ocs:
         NC_APP.log(int(AE_CAPABILITIES["loglevel"]) - 1, "will not be sent")
         _ocs.assert_not_called()
         NC_APP.log(AE_CAPABILITIES["loglevel"], "will be sent")
@@ -58,7 +56,7 @@ def test_log_without_app_ecosystem_v2():
     log_lvl = srv_capabilities["app_ecosystem_v2"].pop("loglevel")
     srv_capabilities.pop("app_ecosystem_v2")
     patched_capabilities = {"capabilities": srv_capabilities, "version": srv_version}
-    with mock.patch.dict("gfixture.nc_app._session._capabilities", patched_capabilities, clear=True):
-        with mock.patch("gfixture.nc_app._session._ocs") as _ocs:
+    with mock.patch.dict("gfixture.NC_APP._session._capabilities", patched_capabilities, clear=True):
+        with mock.patch("gfixture.NC_APP._session._ocs") as _ocs:
             NC_APP.log(log_lvl, "will not be sent")
             _ocs.assert_not_called()

@@ -1,5 +1,7 @@
 import pytest
 
+from nc_py_api import Nextcloud
+
 from gfixture import NC_TO_TEST
 
 APP_NAME = "files_trashbin"
@@ -19,6 +21,7 @@ def test_list_apps(nc):
     assert APP_NAME in apps
 
 
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_enable_disable_app(nc):
     assert nc.apps.is_installed(APP_NAME)
