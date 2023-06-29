@@ -15,8 +15,7 @@ def test_cfg_ex_set_empty_key(class_to_test):
         class_to_test.set("", "some value")
 
 
-# @pytest.mark.parametrize("value", ("0", "1", "12 3", ""))
-@pytest.mark.parametrize("value", ("0", "1", "12 3"))
+@pytest.mark.parametrize("value", ("0", "1", "12 3", ""))
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex_api, NC_APP.preferences_ex_api))
 def test_cfg_ex_set_delete(value, class_to_test):
     class_to_test.delete("test_key")
