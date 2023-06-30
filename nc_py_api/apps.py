@@ -28,8 +28,6 @@ class AppAPI:
         if enabled is not None:
             params = {"filter": "enabled" if enabled else "disabled"}
         result = self._session.ocs(method="GET", path=ENDPOINT, params=params)
-        if not isinstance(result, dict):
-            raise ValueError("invalid type of data returned")
         return list(result["apps"].values()) if isinstance(result["apps"], dict) else result["apps"]
 
     def is_installed(self, app_name: str) -> bool:
