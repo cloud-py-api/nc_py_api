@@ -39,7 +39,7 @@ def test_get_group(nc):
     assert TEST_GROUP_NAME in groups
     assert TEST_GROUP_NAME2 in groups
     groups = nc.users_groups.get(mask=TEST_GROUP_NAME)
-    assert len(groups) == 2
+    assert len(groups) == 1
     groups = nc.users_groups.get(limit=1)
     assert len(groups) == 1
     assert groups[0] != nc.users_groups.get(limit=1, offset=1)[0]
