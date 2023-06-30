@@ -20,7 +20,7 @@ class NextcloudException(Exception):
         return f"[{self.status_code}]{reason}{info}"
 
 
-def check_error(code: int, info: str):
+def check_error(code: int, info: str = ""):
     if 996 <= code <= 999:
         if code == 996:
             phrase = "Server error"
