@@ -9,17 +9,19 @@ TEST_GROUP_NAME = "test_coverage_group"
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_create_delete_group(nc):
+@pytest.mark.parametrize("params", ((TEST_GROUP_NAME, ), (TEST_GROUP_NAME, "display name")))
+def test_create_delete_group(nc, params):
+    test_group_name = params[0]
     try:
-        nc.users_groups.delete(TEST_GROUP_NAME)
+        nc.users_groups.delete(test_group_name)
     except NextcloudException:
         pass
-    nc.users_groups.create(TEST_GROUP_NAME)
+    nc.users_groups.create(*params)
     with pytest.raises(NextcloudException):
-        nc.users_groups.create(TEST_GROUP_NAME)
-    nc.users_groups.delete(TEST_GROUP_NAME)
+        nc.users_groups.create(*params)
+    nc.users_groups.delete(test_group_name)
     with pytest.raises(NextcloudException):
-        nc.users_groups.delete(TEST_GROUP_NAME)
+        nc.users_groups.delete(test_group_name)
 
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
@@ -44,6 +46,20 @@ def test_list_group(nc):
     assert groups[0] != nc.users_groups.list(limit=1, offset=1)[0]
     nc.users_groups.delete(TEST_GROUP_NAME)
     nc.users_groups.delete(TEST_GROUP_NAME + "2")
+
+
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_group_edit(nc):
+    try:
+        nc.users_groups.create(TEST_GROUP_NAME)
+    except NextcloudException:
+        pass
+    nc.users_groups.edit(TEST_GROUP_NAME, display_name="earth people")
+    nc.users_groups.delete(TEST_GROUP_NAME)
+    with pytest.raises(NextcloudException) as exc_info:
+        nc.users_groups.edit(TEST_GROUP_NAME, display_name="earth people")
+    assert exc_info.value.status_code == 996
 
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
