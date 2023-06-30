@@ -20,7 +20,17 @@ class NextcloudException(Exception):
         return f"[{self.status_code}]{reason}{info}"
 
 
-def check_error(code: int, info: str):
+def check_error(code: int, info: str = ""):
+    if 996 <= code <= 999:
+        if code == 996:
+            phrase = "Server error"
+        elif code == 997:
+            phrase = "Unauthorised"
+        elif code == 998:
+            phrase = "Not found"
+        else:
+            phrase = "Unknown error"
+        raise NextcloudException(code, reason=phrase, info=info)
     if not codes.is_error(code):
         return
     raise NextcloudException(code, reason=codes(code).phrase, info=info)
