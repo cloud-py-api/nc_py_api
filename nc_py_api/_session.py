@@ -119,7 +119,7 @@ class NcSessionBasic(ABC):
         elif json is not None:
             headers.update({"Content-Type": "application/json"})
             data_bytes = dumps(json).encode("utf-8")
-        return self._ocs(method, f"{path}?{urlencode(params, True)}", headers, data=data_bytes, **kwargs)
+        return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data=data_bytes, **kwargs)
 
     def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
         self.init_adapter()

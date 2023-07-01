@@ -2,8 +2,7 @@ import pytest
 
 from time import time
 
-
-from gfixture import NC_TO_TEST
+from gfixture import NC_TO_TEST, NC_VERSION
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -34,6 +33,11 @@ def test_get_status(nc, message):
     assert r1["message"] == message
     assert r1["messageId"] is None
     assert not r1["messageIsPredefined"]
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_get_status_non_existent_user(nc):
+    assert nc.users_statuses.get("no such user") is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -105,3 +109,27 @@ def test_set_predefined(nc, clear_at):
             assert r["messageId"] == i["id"]
             assert r["messageIsPredefined"]
             assert r["clearAt"] == clear_at
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+@pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
+def test_get_back_status_from_from_empty_user(nc):
+    orig_user = nc._session.user
+    nc._session.user = ""
+    try:
+        with pytest.raises(ValueError):
+            nc.users_statuses.get_backup_status("")
+    finally:
+        nc._session.user = orig_user
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+@pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
+def test_get_back_status_from_from_non_exist_user(nc):
+    assert nc.users_statuses.get_backup_status("mёm_m-m.l") is None
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+@pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
+def test_restore_from_non_existing_back_status(nc):
+    assert nc.users_statuses.restore_backup_status("no such backup status") is None
