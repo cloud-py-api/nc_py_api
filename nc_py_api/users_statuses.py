@@ -90,18 +90,12 @@ class UsersStatusesAPI:
             params["statusIcon"] = status_icon
         self._session.ocs(method="PUT", path=f"{ENDPOINT}/user_status/message/custom", params=params)
 
-    def get_backup_status(self, user_id: str):  # -> Optional[UserStatus]: to-do: test it, currently it is untested
+    def get_backup_status(self, user_id: str = "") -> Optional[UserStatus]:
         require_capabilities("user_status", self._session.capabilities)
-        if not user_id:
-            user_id = self._session.user
+        user_id = user_id if user_id else self._session.user
         if not user_id:
             raise ValueError("user_id can not be empty.")
-        try:
-            return self._session.ocs(method="GET", path=f"{ENDPOINT}/user_status/_{user_id}")
-        except NextcloudException as e:
-            if e.status_code == 404:
-                return None
-            raise e from None
+        return self.get(f"_{user_id}")
 
     def restore_backup_status(self, message_id: str) -> Optional[CurrentUserStatus]:
         require_capabilities("user_status", self._session.capabilities)
