@@ -7,7 +7,7 @@ from gfixture import NC_TO_TEST, NC_VERSION
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_available(nc):
-    assert nc.users_statuses.available
+    assert nc.users_status.available
 
 
 def compare_user_statuses(p1, p2):
@@ -21,9 +21,9 @@ def compare_user_statuses(p1, p2):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("message", ("1 2 3", None, ""))
 def test_get_status(nc, message):
-    nc.users_statuses.set(message)
-    r1 = nc.users_statuses.get_current()
-    r2 = nc.users_statuses.get(nc.user)
+    nc.users_status.set(message)
+    r1 = nc.users_status.get_current()
+    r2 = nc.users_status.get(nc.user)
     compare_user_statuses(r1, r2)
     assert r1["userId"] == "admin"
     assert r1["icon"] is None
@@ -37,12 +37,12 @@ def test_get_status(nc, message):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_status_non_existent_user(nc):
-    assert nc.users_statuses.get("no such user") is None
+    assert nc.users_status.get("no such user") is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_predefined(nc):
-    r = nc.users_statuses.get_predefined()
+    r = nc.users_status.get_predefined()
     if nc.srv_version["major"] < 27:
         assert r == []
     else:
@@ -57,10 +57,10 @@ def test_get_predefined(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_list(nc):
-    r_all = nc.users_statuses.get_list()
+    r_all = nc.users_status.get_list()
     assert r_all
     assert isinstance(r_all, list)
-    r_current = nc.users_statuses.get_current()
+    r_current = nc.users_status.get_current()
     for i in r_all:
         if i["userId"] == nc.user:
             compare_user_statuses(i, r_current)
@@ -69,18 +69,18 @@ def test_get_list(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_set_status(nc):
     time_clear = int(time()) + 60
-    nc.users_statuses.set("cool status", time_clear)
-    r = nc.users_statuses.get_current()
+    nc.users_status.set("cool status", time_clear)
+    r = nc.users_status.get_current()
     assert r["message"] == "cool status"
     assert r["clearAt"] == time_clear
     assert r["icon"] is None
-    nc.users_statuses.set("Sick!", status_icon='🤒')
-    r = nc.users_statuses.get_current()
+    nc.users_status.set("Sick!", status_icon='🤒')
+    r = nc.users_status.get_current()
     assert r["message"] == "Sick!"
     assert r["clearAt"] is None
     assert r["icon"] == '🤒'
-    nc.users_statuses.set(None)
-    r = nc.users_statuses.get_current()
+    nc.users_status.set(None)
+    r = nc.users_status.get_current()
     assert r["message"] is None
     assert r["clearAt"] is None
     assert r["icon"] is None
@@ -89,8 +89,8 @@ def test_set_status(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("value", ("online", "away", "dnd", "invisible", "offline"))
 def test_set_status_type(nc, value):
-    nc.users_statuses.set_status_type(value)
-    r = nc.users_statuses.get_current()
+    nc.users_status.set_status_type(value)
+    r = nc.users_status.get_current()
     assert r["status"] == value
     assert r["statusIsUserDefined"]
 
@@ -99,12 +99,12 @@ def test_set_status_type(nc, value):
 @pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
 def test_set_predefined(nc, clear_at):
     if nc.srv_version["major"] < 27:
-        nc.users_statuses.set_predefined("meeting")
+        nc.users_status.set_predefined("meeting")
     else:
-        predefined_statuses = nc.users_statuses.get_predefined()
+        predefined_statuses = nc.users_status.get_predefined()
         for i in predefined_statuses:
-            nc.users_statuses.set_predefined(i["id"], clear_at)
-            r = nc.users_statuses.get_current()
+            nc.users_status.set_predefined(i["id"], clear_at)
+            r = nc.users_status.get_current()
             assert r["message"] == i["message"]
             assert r["messageId"] == i["id"]
             assert r["messageIsPredefined"]
@@ -118,7 +118,7 @@ def test_get_back_status_from_from_empty_user(nc):
     nc._session.user = ""
     try:
         with pytest.raises(ValueError):
-            nc.users_statuses.get_backup_status("")
+            nc.users_status.get_backup_status("")
     finally:
         nc._session.user = orig_user
 
@@ -126,10 +126,10 @@ def test_get_back_status_from_from_empty_user(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
 def test_get_back_status_from_from_non_exist_user(nc):
-    assert nc.users_statuses.get_backup_status("mёm_m-m.l") is None
+    assert nc.users_status.get_backup_status("mёm_m-m.l") is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
 def test_restore_from_non_existing_back_status(nc):
-    assert nc.users_statuses.restore_backup_status("no such backup status") is None
+    assert nc.users_status.restore_backup_status("no such backup status") is None

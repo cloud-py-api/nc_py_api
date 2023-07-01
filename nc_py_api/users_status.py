@@ -32,7 +32,7 @@ class CurrentUserStatus(UserStatus):
     statusIsUserDefined: bool
 
 
-class UsersStatusesAPI:
+class UserStatusAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 

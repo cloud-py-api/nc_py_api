@@ -11,7 +11,7 @@ ENDPOINT_BASE = "/ocs/v1.php/cloud"
 ENDPOINT = f"{ENDPOINT_BASE}/users"
 
 
-class UserAPI:
+class UsersAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
