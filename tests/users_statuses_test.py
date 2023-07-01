@@ -2,7 +2,7 @@ import pytest
 
 from time import time
 
-from gfixture import NC_TO_TEST
+from gfixture import NC_TO_TEST, NC_VERSION
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -112,5 +112,6 @@ def test_set_predefined(nc, clear_at):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
+@pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
 def test_restore_from_non_existing_backup_status(nc):
     assert nc.users_statuses.restore_backup_status("no such backup status") is None
