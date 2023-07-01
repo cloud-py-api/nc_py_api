@@ -20,6 +20,7 @@ Project cloud-py-api was **abandoned** and divided into two parts:
  * ~~Operations with Trash bin and File versions~~
  * Operations with Users and User Groups
  * User status manipulation
+ * Weather status
  * ~~Nextcloud notifications support~~
  * ~~Shares operations support~~
  * ~~Talk support~~

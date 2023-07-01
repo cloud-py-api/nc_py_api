@@ -19,7 +19,7 @@ class GroupDetails(TypedDict):
     can_remove: bool
 
 
-class UsersGroupsAPI:
+class UserGroupsAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
