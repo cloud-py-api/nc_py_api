@@ -2,7 +2,6 @@ import pytest
 
 from time import time
 
-
 from gfixture import NC_TO_TEST
 
 
@@ -34,6 +33,11 @@ def test_get_status(nc, message):
     assert r1["message"] == message
     assert r1["messageId"] is None
     assert not r1["messageIsPredefined"]
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_get_status_non_existent_user(nc):
+    assert nc.users_statuses.get("no such user") is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -105,3 +109,8 @@ def test_set_predefined(nc, clear_at):
             assert r["messageId"] == i["id"]
             assert r["messageIsPredefined"]
             assert r["clearAt"] == clear_at
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_restore_from_non_existing_backup_status(nc):
+    assert nc.users_statuses.restore_backup_status("no such backup status") is None

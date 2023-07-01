@@ -45,14 +45,9 @@ class UsersStatusesAPI:
         data = kwargs_to_dict(["limit", "offset"], limit=limit, offset=offset)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/statuses", params=data)
 
-    def get_current(self) -> Optional[CurrentUserStatus]:
+    def get_current(self) -> CurrentUserStatus:
         require_capabilities("user_status", self._session.capabilities)
-        try:
-            return self._session.ocs(method="GET", path=f"{ENDPOINT}/user_status")
-        except NextcloudException as e:
-            if e.status_code == 404:
-                return None
-            raise e from None
+        return self._session.ocs(method="GET", path=f"{ENDPOINT}/user_status")
 
     def get(self, user_id: str) -> Optional[UserStatus]:
         require_capabilities("user_status", self._session.capabilities)
@@ -108,7 +103,8 @@ class UsersStatusesAPI:
                 return None
             raise e from None
 
-    def restore_backup_status(self, message_id: str) -> None:  # to-do: test it, currently it is untested
-        require_capabilities("user_status>", self._session.capabilities)
+    def restore_backup_status(self, message_id: str) -> Optional[CurrentUserStatus]:
+        require_capabilities("user_status", self._session.capabilities)
         require_capabilities("restore", self._session.capabilities["user_status"])
-        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/user_status/revert/{message_id}")
+        result = self._session.ocs(method="DELETE", path=f"{ENDPOINT}/user_status/revert/{message_id}")
+        return result if result else None
