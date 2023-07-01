@@ -23,7 +23,9 @@ class UsersGroupsAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def get(self, mask: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None) -> list[str]:
+    def get_list(
+        self, mask: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None
+    ) -> list[str]:
         data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=ENDPOINT, params=data)
         return response_data["groups"] if response_data else []

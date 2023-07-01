@@ -9,14 +9,14 @@ APP_NAME = "files_trashbin"
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_apps_types(nc):
-    assert isinstance(nc.apps.list(), list)
-    assert isinstance(nc.apps.list(enabled=True), list)
-    assert isinstance(nc.apps.list(enabled=False), list)
+    assert isinstance(nc.apps.get_list(), list)
+    assert isinstance(nc.apps.get_list(enabled=True), list)
+    assert isinstance(nc.apps.get_list(enabled=False), list)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_apps(nc):
-    apps = nc.apps.list()
+    apps = nc.apps.get_list()
     assert apps
     assert APP_NAME in apps
 
@@ -33,3 +33,17 @@ def test_enable_disable_app(nc):
     nc.apps.enable(APP_NAME)
     assert nc.apps.is_enabled(APP_NAME)
     assert nc.apps.is_installed(APP_NAME)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_invalid_param(nc):
+    with pytest.raises(ValueError):
+        nc.apps.is_enabled("")
+    with pytest.raises(ValueError):
+        nc.apps.is_installed("")
+    with pytest.raises(ValueError):
+        nc.apps.is_disabled("")
+    with pytest.raises(ValueError):
+        nc.apps.enable("")
+    with pytest.raises(ValueError):
+        nc.apps.disable("")

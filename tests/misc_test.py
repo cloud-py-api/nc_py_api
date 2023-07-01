@@ -10,3 +10,12 @@ def test_check_error(code):
             check_error(code)
     else:
         check_error(code)
+
+
+def test_nc_exception_to_str():
+    reason = "this is a reason"
+    info = "some info"
+    try:
+        raise NextcloudException(status_code=666, reason=reason, info=info)
+    except NextcloudException as e:
+        assert str(e) == f"[666] {reason} <{info}>"

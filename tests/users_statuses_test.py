@@ -52,8 +52,8 @@ def test_get_predefined(nc):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_get_all(nc):
-    r_all = nc.users_statuses.get_all()
+def test_get_list(nc):
+    r_all = nc.users_statuses.get_list()
     assert r_all
     assert isinstance(r_all, list)
     r_current = nc.users_statuses.get_current()
