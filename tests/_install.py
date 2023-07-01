@@ -16,7 +16,8 @@ def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
 def initialization():
     set_enabled_handler(APP, enabled_handler)
     set_scopes(APP, {
-        "required": [ApiScope.SYSTEM, ApiScope.DAV, ApiScope.USER_INFO, ApiScope.USER_STATUS, ApiScope.NOTIFICATIONS],
+        "required": [ApiScope.SYSTEM, ApiScope.DAV, ApiScope.USER_INFO, ApiScope.USER_STATUS,
+                     ApiScope.NOTIFICATIONS, ApiScope.WEATHER_STATUS],
         "optional": []
     })
 
