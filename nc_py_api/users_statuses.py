@@ -40,7 +40,7 @@ class UsersStatusesAPI:
     def available(self) -> bool:
         return not check_capabilities("user_status", self._session.capabilities)
 
-    def get_all(self, limit: Optional[int] = None, offset: Optional[int] = None) -> list[UserStatus]:
+    def get_list(self, limit: Optional[int] = None, offset: Optional[int] = None) -> list[UserStatus]:
         require_capabilities("user_status", self._session.capabilities)
         data = kwargs_to_dict(["limit", "offset"], limit=limit, offset=offset)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/statuses", params=data)

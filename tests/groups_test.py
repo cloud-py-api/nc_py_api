@@ -27,22 +27,22 @@ def test_create_delete_group(nc, params):
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_get_group(nc):
+def test_group_get_list(nc):
     for i in (TEST_GROUP_NAME, TEST_GROUP_NAME2):
         try:
             nc.users_groups.create(i)
         except NextcloudException:
             pass
-    groups = nc.users_groups.get()
+    groups = nc.users_groups.get_list()
     assert isinstance(groups, list)
     assert len(groups) >= 2
     assert TEST_GROUP_NAME in groups
     assert TEST_GROUP_NAME2 in groups
-    groups = nc.users_groups.get(mask=TEST_GROUP_NAME)
+    groups = nc.users_groups.get_list(mask=TEST_GROUP_NAME)
     assert len(groups) == 1
-    groups = nc.users_groups.get(limit=1)
+    groups = nc.users_groups.get_list(limit=1)
     assert len(groups) == 1
-    assert groups[0] != nc.users_groups.get(limit=1, offset=1)[0]
+    assert groups[0] != nc.users_groups.get_list(limit=1, offset=1)[0]
     nc.users_groups.delete(TEST_GROUP_NAME)
     nc.users_groups.delete(TEST_GROUP_NAME2)
 
@@ -50,14 +50,14 @@ def test_get_group(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_get_non_existing_group(nc):
-    groups = nc.users_groups.get(mask="Such group should not be present")
+    groups = nc.users_groups.get_list(mask="Such group should not be present")
     assert isinstance(groups, list)
     assert not groups
 
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_get_group_details(nc):
+def test_group_get_details(nc):
     try:
         nc.users_groups.delete(TEST_GROUP_NAME)
     except NextcloudException:

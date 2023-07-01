@@ -23,7 +23,7 @@ class AppAPI:
             raise ValueError("`app_name` parameter can not be empty")
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_name}")
 
-    def list(self, enabled: Optional[bool] = None) -> list[str]:
+    def get_list(self, enabled: Optional[bool] = None) -> list[str]:
         params = None
         if enabled is not None:
             params = {"filter": "enabled" if enabled else "disabled"}
@@ -33,14 +33,14 @@ class AppAPI:
     def is_installed(self, app_name: str) -> bool:
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
-        return app_name in self.list()
+        return app_name in self.get_list()
 
     def is_enabled(self, app_name: str) -> bool:
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
-        return app_name in self.list(enabled=True)
+        return app_name in self.get_list(enabled=True)
 
     def is_disabled(self, app_name: str) -> bool:
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
-        return app_name in self.list(enabled=False)
+        return app_name in self.get_list(enabled=False)
