@@ -266,7 +266,7 @@ jobs:
           echo $! > /tmp/_install.pid
           cd ..
           sleep 5s
-          php occ app_ecosystem_v2:daemon: regidocker-install Docker unix-socket 0 0 \
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
           --net=host --host="127.0.0.1" --expose-to-host=true
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --daemon-config-id 0 \
