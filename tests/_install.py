@@ -24,4 +24,4 @@ def initialization():
 
 if __name__ == "__main__":
     urllib3.disable_warnings()
-    uvicorn.run("_install:APP", host="0.0.0.0", port=9002, log_level='trace', reload=False)
+    uvicorn.run("_install:APP", host="0.0.0.0", port=9002, log_level='trace')

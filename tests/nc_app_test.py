@@ -1,8 +1,8 @@
 import pytest
 
-from gfixture import NC_APP
+from gfixture import NC_APP, NC
 
-from nc_py_api import NextcloudException, ApiScope
+from nc_py_api import ApiScope
 
 
 if NC_APP is None:
@@ -22,10 +22,8 @@ def test_scope_allowed():
     assert not NC_APP.scope_allowed(999999999)
 
 
+@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
 def test_scope_allow_app_ecosystem_disabled():
-    from gfixture import NC
-    if NC is None:
-        pytest.skip("Usual Nextcloud mode required for test")
     NC.apps.disable("app_ecosystem_v2")
     try:
         assert NC_APP.scope_allowed(ApiScope.DAV)
@@ -47,3 +45,8 @@ def test_change_user():
     finally:
         NC_APP.user = orig_user
     assert orig_capabilities == NC_APP.capabilities
+
+
+@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
+def test_register_new_app():
+    pass
