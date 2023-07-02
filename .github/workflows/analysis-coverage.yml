@@ -136,7 +136,9 @@ jobs:
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
           -e --force-scopes --system-app
-          kill -9 $(cat /tmp/_install.pid)
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+          mv .coverage.ci_install nc_py_api/
 
       - name: Generate coverage report
         working-directory: nc_py_api
