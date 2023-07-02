@@ -129,7 +129,7 @@ jobs:
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
-          coverage run --data-file=.coverage_ci_install nc_py_api/tests/_install.py &
+          coverage run --data-file=.coverage.ci_install nc_py_api/tests/_install.py &
           echo $! > /tmp/_install.pid
           sleep 5s
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
