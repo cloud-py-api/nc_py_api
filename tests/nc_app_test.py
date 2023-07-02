@@ -22,15 +22,27 @@ def test_scope_allowed():
     assert not NC_APP.scope_allowed(999999999)
 
 
+def test_scope_allow_app_ecosystem_disabled():
+    from gfixture import NC
+    if NC is None:
+        pytest.skip("Usual Nextcloud mode required for test")
+    NC.apps.disable("app_ecosystem_v2")
+    try:
+        assert NC_APP.scope_allowed(ApiScope.DAV)
+        NC_APP.update_server_info()
+        assert not NC_APP.scope_allowed(ApiScope.DAV)
+    finally:
+        NC.apps.enable("app_ecosystem_v2")
+        NC_APP.update_server_info()
+
+
 def test_change_user():
     orig_user = NC_APP.user
     try:
         orig_capabilities = NC_APP.capabilities
-        assert NC_APP.users_status.get_current()
+        assert NC_APP.users_status.available
         NC_APP.user = ""
-        with pytest.raises(NextcloudException) as exc_info:
-            NC_APP.users_status.get_current()
-        assert exc_info.value.status_code == 404
+        assert not NC_APP.users_status.available
         assert orig_capabilities != NC_APP.capabilities
     finally:
         NC_APP.user = orig_user

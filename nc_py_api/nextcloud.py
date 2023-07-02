@@ -51,6 +51,9 @@ class NextcloudBasic(ABC):
     def check_capabilities(self, capabilities: Union[str, list[str]]) -> list[str]:
         return check_capabilities(capabilities, self.capabilities)
 
+    def update_server_info(self) -> None:
+        self._session.update_server_info()
+
     @property
     def theme(self) -> Optional[ThemingInfo]:
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
