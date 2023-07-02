@@ -144,7 +144,7 @@ jobs:
         working-directory: nc_py_api
         run: |
           coverage run -m pytest
-          coverage combine || True
+          coverage combine || true
           coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -278,7 +278,7 @@ jobs:
         working-directory: nc_py_api
         run: |
           coverage run -m pytest
-          coverage combine || True
+          coverage combine || true
           coverage xml && coverage html
 
       - name: HTML coverage to artifacts
