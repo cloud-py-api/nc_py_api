@@ -129,8 +129,10 @@ jobs:
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
-          coverage run --data-file=.coverage.ci_install nc_py_api/tests/_install.py &
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
+          cd ..
           sleep 5s
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
@@ -138,7 +140,6 @@ jobs:
           -e --force-scopes --system-app
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
-          mv .coverage.ci_install nc_py_api/
 
       - name: Generate coverage report
         working-directory: nc_py_api
@@ -263,8 +264,10 @@ jobs:
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
-          coverage run --data-file=.coverage.ci_install nc_py_api/tests/_install.py &
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
+          cd ..
           sleep 5s
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
@@ -272,7 +275,6 @@ jobs:
           -e --force-scopes --system-app
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
-          mv .coverage.ci_install nc_py_api/
 
       - name: Generate coverage report
         working-directory: nc_py_api
@@ -393,18 +395,23 @@ jobs:
 #        run: |
 #          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
 #          php occ app:enable app_ecosystem_v2
-#          python3 nc_py_api/tests/_install.py &
+#          coverage run --data-file=.coverage.ci_install nc_py_api/tests/_install.py &
 #          echo $! > /tmp/_install.pid
 #          sleep 5s
 #          php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
 #          --host 127.0.0.1 --port 9002 \
 #          --secret $app_secret \
 #          -e --force-scopes --system-app
-#          kill -9 $(cat /tmp/_install.pid)
+#          kill -15 $(cat /tmp/_install.pid)
+#          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+#          mv .coverage.ci_install nc_py_api/
 #
 #      - name: Generate coverage report
 #        working-directory: nc_py_api
-#        run: coverage run -m pytest && coverage xml && coverage html
+#        run: |
+#          coverage run -m pytest
+#          coverage combine || true
+#          coverage xml && coverage html
 #        env:
 #          SKIP_NC_WO_AE: 1
 #
