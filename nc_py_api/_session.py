@@ -311,15 +311,9 @@ class NcSessionApp(NcSessionBasic):
         data = asyncio.run(request.body())
         if data:
             data_hash.update(data)
-            # try:
-            #     data_hash.update(
-            #         dumps(loads(data, parse_int=str, parse_float=str), separators=(",", ":")).encode("UTF-8")
-            #     )
-            # except (JSONDecodeError, TypeError):
-            #     data_hash.update(data)
         ae_data_hash = data_hash.hexdigest()
         if ae_data_hash != headers["AE-DATA-HASH"]:
             raise ValueError(f"Invalid AE-DATA-HASH:{ae_data_hash} !={headers['AE-DATA-HASH']}")
-        # if headers["EX-APP-ID"] != self.cfg.app_name:
-        #     raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
+        if headers["EX-APP-ID"] != self.cfg.app_name:
+            raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
         return True

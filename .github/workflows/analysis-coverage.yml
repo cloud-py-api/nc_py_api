@@ -129,18 +129,21 @@ jobs:
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
-          python3 nc_py_api/tests/_install.py &
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
+          cd ..
           sleep 5s
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
           -e --force-scopes --system-app
-          kill -9 $(cat /tmp/_install.pid)
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest && coverage xml && coverage html
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -258,18 +261,21 @@ jobs:
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
-          python3 nc_py_api/tests/_install.py &
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
+          cd ..
           sleep 5s
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
           -e --force-scopes --system-app
-          kill -9 $(cat /tmp/_install.pid)
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest && coverage xml && coverage html
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -373,28 +379,29 @@ jobs:
 
       - name: Checkout AppEcosystemV2
         uses: actions/checkout@v3
-        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         with:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
 
       - name: Install AppEcosystemV2
-        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
-          python3 nc_py_api/tests/_install.py &
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
+          cd ..
           sleep 5s
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --host 127.0.0.1 --port 9002 \
           --secret $app_secret \
           -e --force-scopes --system-app
-          kill -9 $(cat /tmp/_install.pid)
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest && coverage xml && coverage html
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
         env:
           SKIP_NC_WO_AE: 1
 

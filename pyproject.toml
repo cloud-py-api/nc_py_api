@@ -28,6 +28,12 @@ cover_pylib = true
 include = ["*/nc_py_api/*"]
 omit = ["*/tests/*"]
 
+[tool.coverage.paths]
+source = [
+    "nc_py_api/",
+    "*/site-packages/nc_py_api/"
+]
+
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
