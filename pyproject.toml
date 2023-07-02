@@ -31,7 +31,7 @@ omit = ["*/tests/*"]
 [tool.coverage.paths]
 source = [
     "nc_py_api/",
-    "venv/lib/*/site-packages/nc_py_api/"
+    "*/site-packages/nc_py_api/"
 ]
 
 [tool.coverage.report]

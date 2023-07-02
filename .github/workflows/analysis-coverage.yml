@@ -279,7 +279,7 @@ jobs:
           coverage run --data-file=.coverage.ci -m pytest
           coverage report --data-file=.coverage.ci
           coverage report --data-file=.coverage.ci_install
-          coverage combine
+          coverage combine --debug=pathmap
           coverage report --data-file=.coverage
           coverage xml && coverage html
 
