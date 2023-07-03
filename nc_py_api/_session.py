@@ -48,7 +48,7 @@ class BasicConfig:
     def _get_value(value_name: str, raise_not_found=True, **kwargs):
         value = kwargs.get(value_name, None)
         if not value:
-            value = environ.get(value_name, None)
+            value = environ.get(value_name.upper(), None)
         if not value and raise_not_found:
             raise ValueError(f"`{value_name}` is not found.")
         return value

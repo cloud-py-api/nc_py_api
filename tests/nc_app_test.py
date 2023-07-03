@@ -1,3 +1,4 @@
+from os import environ
 import pytest
 
 from gfixture import NC_APP, NC
@@ -20,6 +21,13 @@ def test_scope_allowed():
         assert NC_APP.scope_allowed(i)
     assert not NC_APP.scope_allowed(0)
     assert not NC_APP.scope_allowed(999999999)
+
+
+def test_app_cfg():
+    app_cfg = NC_APP.app_cfg
+    assert app_cfg.app_name == environ["APP_ID"]
+    assert app_cfg.app_version == environ["APP_VERSION"]
+    assert app_cfg.app_secret == environ["APP_SECRET"].encode("UTF-8")
 
 
 @pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")

@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 from fastapi import Request
 
-from ._session import NcSession, NcSessionApp, NcSessionBasic, ServerVersion
+from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
 from .appconfig_preferences_ex import AppConfigExAPI, PreferencesExAPI
 from .apps import AppAPI
 from .constants import APP_V2_BASIC_URL, ApiScope, LogLvl
@@ -113,6 +113,10 @@ class NextcloudApp(NextcloudBasic):
         if self._session.user != value:
             self._session.user = value
             self._session.update_server_info()
+
+    @property
+    def app_cfg(self) -> AppConfig:
+        return self._session.cfg
 
     def request_sign_check(self, request: Request) -> bool:
         try:
