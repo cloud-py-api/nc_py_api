@@ -75,7 +75,7 @@ class AppConfig(BasicConfig):
         self.ae_version = self._get_value("ae_version", raise_not_found=False, **kwargs)
         if not self.ae_version:
             self.ae_version = "1.0.0"
-        self.app_name = self._get_value("app_name", **kwargs)
+        self.app_name = self._get_value("app_id", **kwargs)
         self.app_version = self._get_value("app_version", **kwargs)
         self.app_secret = self._get_value("app_secret", **kwargs).encode("UTF-8")
 
