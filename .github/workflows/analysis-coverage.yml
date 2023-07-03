@@ -20,6 +20,14 @@ on:
       - '.pre-commit-config.yaml'
   workflow_dispatch:
 
+env:
+  NEXTCLOUD_URL: "http://localhost:8080/index.php"
+  APP_ID: "nc_py_api"
+  APP_VERSION: "1.0.0"
+  APP_SECRET: "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E"
+  NC_AUTH_USER: "admin"
+  NC_AUTH_PASS: "adminpassword"
+
 jobs:
   analysis:
     runs-on: macos-12
@@ -52,13 +60,6 @@ jobs:
           - nextcloud: "27.0.0"
             python: "3.10"
             php-version: "8.2"
-    env:
-      nextcloud_url: "http://localhost:8080/index.php"
-      app_name: "nc_py_api"
-      app_version: "1.0.0"
-      app_secret: "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E"
-      nc_auth_user: "admin"
-      nc_auth_pass: "adminpassword"
 
     services:
       mariadb:
@@ -136,10 +137,10 @@ jobs:
           sleep 5s
           php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
           --net=host --host="127.0.0.1" --expose="local"
-          php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
+          php occ app_ecosystem_v2:app:register $APP_ID $APP_VERSION "NcPyApi" \
           --daemon-config-id 1 \
           --port 9002 \
-          --secret $app_secret \
+          --secret $APP_SECRET \
           -e --force-scopes --system-app
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
@@ -187,12 +188,6 @@ jobs:
             php-version: "8.2"
     env:
       NC_dbname: nextcloud_abz
-      nextcloud_url: "http://localhost:8080/index.php"
-      app_name: "nc_py_api"
-      app_version: "1.0.0"
-      app_secret: "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E"
-      nc_auth_user: "admin"
-      nc_auth_pass: "adminpassword"
 
     services:
       postgres:
@@ -271,10 +266,10 @@ jobs:
           sleep 5s
           php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
           --net=host --host="127.0.0.1" --expose="local"
-          php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
+          php occ app_ecosystem_v2:app:register $APP_ID $APP_VERSION "NcPyApi" \
           --daemon-config-id 1 \
           --port 9002 \
-          --secret $app_secret \
+          --secret $APP_SECRET \
           -e --force-scopes --system-app
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
@@ -316,13 +311,6 @@ jobs:
           nextcloud: [ "27.0.0" ]
           python: [ "3.11" ]
           php-version: [ "8.2" ]
-    env:
-      nextcloud_url: "http://localhost:8080/index.php"
-      app_name: "nc_py_api"
-      app_version: "1.0.0"
-      app_secret: "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E"
-      nc_auth_user: "admin"
-      nc_auth_pass: "adminpassword"
 
     services:
       oracle:
@@ -400,10 +388,10 @@ jobs:
           sleep 5s
           php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
           --net=host --host="127.0.0.1" --expose="local"
-          php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
+          php occ app_ecosystem_v2:app:register $APP_ID $APP_VERSION "NcPyApi" \
           --daemon-config-id 1 \
           --port 9002 \
-          --secret $app_secret \
+          --secret $APP_SECRET \
           -e --force-scopes --system-app
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null

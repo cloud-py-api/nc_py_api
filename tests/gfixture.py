@@ -6,12 +6,12 @@ from nc_py_api import NextcloudApp, Nextcloud
 secret = "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E" \
             "X1T8Pi+T5papEolTLxz3fJSPS8ffC4204YmggxPsbJdCkXHWNPHKWS9B+vTj2SIV"
 if not environ.get("CI", False):  # For local tests
-    environ["nc_auth_user"] = "admin"
-    environ["nc_auth_pass"] = "admin"  # "MrtGY-KfY24-iiDyg-cr4n4-GLsNZ"
-    environ["nextcloud_url"] = "http://nextcloud.local/index.php"
-    environ["app_name"] = "nc_py_api"
-    environ["app_version"] = "1.0.0"
-    environ["app_secret"] = secret
+    environ["NC_AUTH_USER"] = "admin"
+    environ["NC_AUTH_PASS"] = "admin"  # "MrtGY-KfY24-iiDyg-cr4n4-GLsNZ"
+    environ["NEXTCLOUD_URL"] = "http://nextcloud.local/index.php"
+    environ["APP_ID"] = "nc_py_api"
+    environ["APP_VERSION"] = "1.0.0"
+    environ["APP_SECRET"] = secret
 
 NC = Nextcloud()
 if environ.get("SKIP_NC_WO_AE", False):
