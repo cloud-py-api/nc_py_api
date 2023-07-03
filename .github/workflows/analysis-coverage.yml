@@ -135,7 +135,7 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-          --net=host --host="127.0.0.1" --expose-to-host=true
+          --net=host --host="127.0.0.1" --expose="local"
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --daemon-config-id 1 \
           --port 9002 \
@@ -270,7 +270,7 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-          --net=host --host="127.0.0.1" --expose-to-host=true
+          --net=host --host="127.0.0.1" --expose="local"
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --daemon-config-id 1 \
           --port 9002 \
@@ -399,7 +399,7 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-          --net=host --host="127.0.0.1" --expose-to-host=true
+          --net=host --host="127.0.0.1" --expose="local"
           php occ app_ecosystem_v2:app:register $app_name $app_version "NcPyApi" \
           --daemon-config-id 1 \
           --port 9002 \
