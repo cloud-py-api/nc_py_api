@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- `app_cfg` property to `NextcloudApp` class.
+- `app_cfg` property in the `NextcloudApp` class.
 
 ### Fixed
 
