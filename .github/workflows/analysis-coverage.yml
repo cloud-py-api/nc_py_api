@@ -171,252 +171,251 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-#  tests-pgsql:
-#    needs: [analysis]
-#    runs-on: ubuntu-22.04
-#    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • PgSQL
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        nextcloud: [ "26.0.3" ]
-#        python: [ "3.11" ]
-#        php-version: [ "8.1" ]
-#        include:
-#          - nextcloud: "27.0.0"
-#            python: "3.10"
-#            php-version: "8.2"
-#    env:
-#      NC_dbname: nextcloud_abz
-#
-#    services:
-#      postgres:
-#        image: postgres:15
-#        env:
-#          POSTGRES_USER: root
-#          POSTGRES_PASSWORD: rootpassword
-#          POSTGRES_DB: ${{ env.NC_dbname }}
-#          options: >-
-#            --health-cmd pg_isready
-#            --health-interval 10s
-#            --health-timeout 5s
-#            --health-retries 5
-#        ports:
-#          - 5432:5432
-#
-#    steps:
-#      - name: Set up php ${{ matrix.php-version }}
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: ${{ matrix.php-version }}
-#          extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
-#
-#      - uses: actions/setup-python@v4
-#        with:
-#          python-version: ${{ matrix.python }}
-#
-#      - name: cache-nextcloud
-#        id: nextcloud_setup
-#        uses: actions/cache@v3
-#        with:
-#          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
-#          key: ${{ matrix.nextcloud }}
-#
-#      - name: Download Nextcloud
-#        if: steps.nextcloud_setup.outputs.cache-hit != 'true'
-#        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
-#
-#      - name: Set up Nextcloud
-#        run: |
-#          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
-#          mkdir data
-#          php occ maintenance:install --verbose --database=pgsql --database-name=${{ env.NC_dbname }} \
-#          --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-#          --admin-user admin --admin-pass adminpassword
-#          php occ config:system:set loglevel --value=1
-#          php occ config:system:set debug --value=true --type=boolean
-#          php occ config:system:set allow_local_remote_servers --value true
-#          php -S localhost:8080 &
-#
-#      - name: Checkout NcPyApi
-#        uses: actions/checkout@v3
-#        with:
-#          path: nc_py_api
-#
-#      - name: Install NcPyApi
-#        working-directory: nc_py_api
-#        run: python3 -m pip -v install ".[dev]"
-#
-#      - name: Checkout AppEcosystemV2
-#        uses: actions/checkout@v3
-#        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
-#        with:
-#          path: apps/app_ecosystem_v2
-#          repository: cloud-py-api/app_ecosystem_v2
-#
-#      - name: Install AppEcosystemV2
-#        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
-#        run: |
-#          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
-#          php occ app:enable app_ecosystem_v2
-#          cd nc_py_api
-#          coverage run --data-file=.coverage.ci_install tests/_install.py &
-#          echo $! > /tmp/_install.pid
-#          cd ..
-#          sleep 5s
-#          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-#          --net=host --host="127.0.0.1" --expose="local"
-##          echo "{"appid":"$APP_ID","name":"$APP_ID","daemon_config_id":1,"version":"$APP_VERSION","secret":"$APP_SECRET","port":"$APP_PORT"}"
-#          php occ app_ecosystem_v2:app:register \
-#          "{"appid":"$APP_ID","name":"$APP_ID","daemon_config_id":1,"version":"$APP_VERSION","secret":"$APP_SECRET","port":"$APP_PORT"}" \
-#          -e --force-scopes --system-app
-#          kill -15 $(cat /tmp/_install.pid)
-#          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
-#
-#      - name: Generate coverage report
-#        working-directory: nc_py_api
-#        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
-#
-#      - name: HTML coverage to artifacts
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-#          path: nc_py_api/htmlcov
-#          if-no-files-found: error
-#
-#      - name: Upload report to Codecov
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          file: nc_py_api/coverage.xml
-#          fail_ci_if_error: true
-#          verbose: true
-#
-#      - name: Upload NC logs
-#        if: always()
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: nc_log_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-#          path: data/nextcloud.log
-#          if-no-files-found: warn
+  tests-pgsql:
+    needs: [analysis]
+    runs-on: ubuntu-22.04
+    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • PgSQL
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud: [ "26.0.3" ]
+        python: [ "3.11" ]
+        php-version: [ "8.1" ]
+        include:
+          - nextcloud: "27.0.0"
+            python: "3.10"
+            php-version: "8.2"
+    env:
+      NC_dbname: nextcloud_abz
 
-#  tests-oci:
-#    needs: [analysis]
-#    runs-on: ubuntu-22.04
-#    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • OCI
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#          nextcloud: [ "27.0.0" ]
-#          python: [ "3.11" ]
-#          php-version: [ "8.2" ]
-#
-#    services:
-#      oracle:
-#        image: ghcr.io/gvenzl/oracle-xe:11
-#        env:
-#          ORACLE_RANDOM_PASSWORD: true
-#          APP_USER: useroracle
-#          APP_USER_PASSWORD: userpassword
-#        options: >-
-#          --health-cmd healthcheck.sh
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 10
-#        ports:
-#          - 1521:1521/tcp
-#
-#    steps:
-#      - name: Set up php
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: ${{ matrix.php-version }}
-#          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
-#            posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
-#
-#      - uses: actions/setup-python@v4
-#        with:
-#          python-version: ${{ matrix.python }}
-#
-#      - name: cache-nextcloud
-#        id: nextcloud_setup
-#        uses: actions/cache@v3
-#        with:
-#          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
-#          key: ${{ matrix.nextcloud }}
-#
-#      - name: Download Nextcloud
-#        if: steps.nextcloud_setup.outputs.cache-hit != 'true'
-#        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
-#
-#      - name: Set up Nextcloud
-#        run: |
-#          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
-#          mkdir data
-#          php occ maintenance:install --verbose --database=oci --database-name=XE \
-#          --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
-#          --admin-user admin --admin-pass admin
-#          php occ config:system:set loglevel --value=1 --type=integer
-#          php occ config:system:set debug --value=true --type=boolean
-#          php occ config:system:set allow_local_remote_servers --value true
-#          php -S localhost:8080 &
-#
-#      - name: Checkout NcPyApi
-#        uses: actions/checkout@v3
-#        with:
-#          path: nc_py_api
-#
-#      - name: Install NcPyApi
-#        working-directory: nc_py_api
-#        run: python3 -m pip -v install ".[dev]"
-#
-#      - name: Checkout AppEcosystemV2
-#        uses: actions/checkout@v3
-#        with:
-#          path: apps/app_ecosystem_v2
-#          repository: cloud-py-api/app_ecosystem_v2
-#
-#      - name: Install AppEcosystemV2
-#        run: |
-#          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
-#          php occ app:enable app_ecosystem_v2
-#          cd nc_py_api
-#          coverage run --data-file=.coverage.ci_install tests/_install.py &
-#          echo $! > /tmp/_install.pid
-#          cd ..
-#          sleep 5s
-#          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-#          --net=host --host="127.0.0.1" --expose="local"
-#          php occ app_ecosystem_v2:app:register \
-#          "{"appid":"$APP_ID","name":"$APP_ID","daemon_config_id":1,"version":"$APP_VERSION","secret":"$APP_SECRET","port":"$APP_PORT"}" \
-#          -e --force-scopes --system-app
-#          kill -15 $(cat /tmp/_install.pid)
-#          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
-#
-#      - name: Generate coverage report
-#        working-directory: nc_py_api
-#        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
-#        env:
-#          SKIP_NC_WO_AE: 1
-#
-#      - name: HTML coverage to artifacts
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-#          path: nc_py_api/htmlcov
-#          if-no-files-found: error
-#
-#      - name: Upload report to Codecov
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          file: nc_py_api/coverage.xml
-#          fail_ci_if_error: true
-#          verbose: true
-#
-#      - name: Upload NC logs
-#        if: always()
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: nc_log_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-#          path: data/nextcloud.log
-#          if-no-files-found: warn
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: ${{ env.NC_dbname }}
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Set up php ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: cache-nextcloud
+        id: nextcloud_setup
+        uses: actions/cache@v3
+        with:
+          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
+          key: ${{ matrix.nextcloud }}
+
+      - name: Download Nextcloud
+        if: steps.nextcloud_setup.outputs.cache-hit != 'true'
+        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
+
+      - name: Set up Nextcloud
+        run: |
+          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
+          mkdir data
+          php occ maintenance:install --verbose --database=pgsql --database-name=${{ env.NC_dbname }} \
+          --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
+          --admin-user admin --admin-pass adminpassword
+          php occ config:system:set loglevel --value=1
+          php occ config:system:set debug --value=true --type=boolean
+          php occ config:system:set allow_local_remote_servers --value true
+          php -S localhost:8080 &
+
+      - name: Checkout NcPyApi
+        uses: actions/checkout@v3
+        with:
+          path: nc_py_api
+
+      - name: Install NcPyApi
+        working-directory: nc_py_api
+        run: python3 -m pip -v install ".[dev]"
+
+      - name: Checkout AppEcosystemV2
+        uses: actions/checkout@v3
+        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
+        with:
+          path: apps/app_ecosystem_v2
+          repository: cloud-py-api/app_ecosystem_v2
+
+      - name: Install AppEcosystemV2
+        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
+        run: |
+          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
+          php occ app:enable app_ecosystem_v2
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
+          echo $! > /tmp/_install.pid
+          cd ..
+          sleep 5s
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
+          --net=host --host="127.0.0.1" --expose="local"
+          php occ app_ecosystem_v2:app:register \
+          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_id\":1,\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"port\":$APP_PORT}" \
+          -e --force-scopes --system-app
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
+      - name: Generate coverage report
+        working-directory: nc_py_api
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: nc_py_api/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload NC logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc_log_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: data/nextcloud.log
+          if-no-files-found: warn
+
+  tests-oci:
+    needs: [analysis]
+    runs-on: ubuntu-22.04
+    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • OCI
+    strategy:
+      fail-fast: false
+      matrix:
+          nextcloud: [ "27.0.0" ]
+          python: [ "3.11" ]
+          php-version: [ "8.2" ]
+
+    services:
+      oracle:
+        image: ghcr.io/gvenzl/oracle-xe:11
+        env:
+          ORACLE_RANDOM_PASSWORD: true
+          APP_USER: useroracle
+          APP_USER_PASSWORD: userpassword
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 1521:1521/tcp
+
+    steps:
+      - name: Set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
+            posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: cache-nextcloud
+        id: nextcloud_setup
+        uses: actions/cache@v3
+        with:
+          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
+          key: ${{ matrix.nextcloud }}
+
+      - name: Download Nextcloud
+        if: steps.nextcloud_setup.outputs.cache-hit != 'true'
+        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
+
+      - name: Set up Nextcloud
+        run: |
+          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
+          mkdir data
+          php occ maintenance:install --verbose --database=oci --database-name=XE \
+          --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
+          --admin-user admin --admin-pass admin
+          php occ config:system:set loglevel --value=1 --type=integer
+          php occ config:system:set debug --value=true --type=boolean
+          php occ config:system:set allow_local_remote_servers --value true
+          php -S localhost:8080 &
+
+      - name: Checkout NcPyApi
+        uses: actions/checkout@v3
+        with:
+          path: nc_py_api
+
+      - name: Install NcPyApi
+        working-directory: nc_py_api
+        run: python3 -m pip -v install ".[dev]"
+
+      - name: Checkout AppEcosystemV2
+        uses: actions/checkout@v3
+        with:
+          path: apps/app_ecosystem_v2
+          repository: cloud-py-api/app_ecosystem_v2
+
+      - name: Install AppEcosystemV2
+        run: |
+          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
+          php occ app:enable app_ecosystem_v2
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
+          echo $! > /tmp/_install.pid
+          cd ..
+          sleep 5s
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
+          --net=host --host="127.0.0.1" --expose="local"
+          php occ app_ecosystem_v2:app:register \
+          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_id\":1,\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"port\":$APP_PORT}" \
+          -e --force-scopes --system-app
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
+      - name: Generate coverage report
+        working-directory: nc_py_api
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        env:
+          SKIP_NC_WO_AE: 1
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: nc_py_api/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload NC logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc_log_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: data/nextcloud.log
+          if-no-files-found: warn
