@@ -30,25 +30,25 @@ env:
   NC_AUTH_PASS: "adminpassword"
 
 jobs:
-#  analysis:
-#    runs-on: macos-12
-#    name: Analysis
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - uses: actions/setup-python@v4
-#        with:
-#          python-version: "3.9"
-#
-#      - name: Install from source
-#        run: python3 -m pip install ".[dev]" wheel
-#
-#      - name: Run Analysis
-#        run: python3 -m pylint "setup.py" "nc_py_api/"
+  analysis:
+    runs-on: macos-12
+    name: Analysis
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install from source
+        run: python3 -m pip install ".[dev]" wheel
+
+      - name: Run Analysis
+        run: python3 -m pylint "setup.py" "nc_py_api/"
 
   tests-maria:
-#    needs: [analysis]
+    needs: [analysis]
     runs-on: ubuntu-22.04
     name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • Maria
     strategy:
