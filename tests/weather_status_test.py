@@ -19,7 +19,12 @@ def test_get_set_location(nc):
     assert loc["longitude"] == 0.0
     assert isinstance(loc["address"], str)
     assert isinstance(loc["mode"], int)
-    assert nc.weather_status.set_location(address="Paris, 75007, France")
+    try:
+        assert nc.weather_status.set_location(address="Paris, 75007, France")
+    except NextcloudException as e:
+        if e.status_code == 500:
+            pytest.skip("Some network problem on the host")
+        raise e from None
     loc = nc.weather_status.get_location()
     assert loc["latitude"]
     assert loc["longitude"]
@@ -32,7 +37,7 @@ def test_get_set_location(nc):
     assert loc["longitude"] == 12.488776
     if loc["address"].find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
-    assert loc["address"].find("Rom")
+    assert loc["address"].find("Rom") != -1
     assert nc.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
     loc = nc.weather_status.get_location()
     assert loc["latitude"] == 41.896655
