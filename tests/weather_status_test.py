@@ -18,7 +18,7 @@ def test_get_set_location(nc):
     assert loc["longitude"] == 0.0
     assert isinstance(loc["address"], str)
     assert isinstance(loc["mode"], int)
-    assert nc.weather_status.set_location(address="Paris, France")
+    assert nc.weather_status.set_location(address="Paris, 75007, France")
     loc = nc.weather_status.get_location()
     assert loc["latitude"]
     assert loc["longitude"]
@@ -43,7 +43,7 @@ def test_get_set_location_no_lat_lon_address(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_forecast(nc):
-    nc.weather_status.set_location(address="Paris, France")
+    nc.weather_status.set_location(address="Paris, 75007, France")
     forecast = nc.weather_status.get_forecast()
     assert isinstance(forecast, list)
     assert forecast
