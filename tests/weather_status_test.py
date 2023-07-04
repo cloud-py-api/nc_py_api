@@ -1,5 +1,6 @@
 import pytest
 
+from nc_py_api import NextcloudException
 from nc_py_api.weather_status import WeatherLocationMode
 
 from gfixture import NC_TO_TEST
@@ -18,20 +19,31 @@ def test_get_set_location(nc):
     assert loc["longitude"] == 0.0
     assert isinstance(loc["address"], str)
     assert isinstance(loc["mode"], int)
-    assert nc.weather_status.set_location(address="Paris, France")
+    try:
+        assert nc.weather_status.set_location(address="Paris, 75007, France")
+    except NextcloudException as e:
+        if e.status_code == 500:
+            pytest.skip("Some network problem on the host")
+        raise e from None
     loc = nc.weather_status.get_location()
     assert loc["latitude"]
     assert loc["longitude"]
+    if loc["address"].find("Unknown") != -1:
+        pytest.skip("Some network problem on the host")
     assert loc["address"].find("Paris") != -1
     assert nc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
     loc = nc.weather_status.get_location()
     assert loc["latitude"] == 41.896655
     assert loc["longitude"] == 12.488776
+    if loc["address"].find("Unknown") != -1:
+        pytest.skip("Some network problem on the host")
     assert loc["address"].find("Rom") != -1
     assert nc.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
     loc = nc.weather_status.get_location()
     assert loc["latitude"] == 41.896655
     assert loc["longitude"] == 12.488776
+    if loc["address"].find("Unknown") != -1:
+        pytest.skip("Some network problem on the host")
     assert loc["address"].find("Rom") != -1
 
 
@@ -43,7 +55,9 @@ def test_get_set_location_no_lat_lon_address(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_forecast(nc):
-    nc.weather_status.set_location(address="Paris, France")
+    nc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
+    if nc.weather_status.get_location()["address"].find("Unknown") != -1:
+        pytest.skip("Some network problem on the host")
     forecast = nc.weather_status.get_forecast()
     assert isinstance(forecast, list)
     assert forecast
