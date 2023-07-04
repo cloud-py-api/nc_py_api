@@ -55,7 +55,7 @@ def test_get_set_location_no_lat_lon_address(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_forecast(nc):
-    nc.weather_status.set_location(address="Paris, 75007, France")
+    nc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
     if nc.weather_status.get_location()["address"].find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
     forecast = nc.weather_status.get_forecast()
