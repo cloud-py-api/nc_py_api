@@ -2,7 +2,7 @@
 Directly related stuff to FastAPI.
 """
 
-from typing import Annotated, Callable
+from typing import Annotated, Callable, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -39,7 +39,10 @@ def set_enabled_handler(fast_api_app: FastAPI, callback: Callable[[bool, Nextclo
         return JSONResponse(content={"error": r}, status_code=200)
 
 
-def enable_heartbeat(fast_api_app: FastAPI):
+def enable_heartbeat(fast_api_app: FastAPI, callback: Optional[Callable[[], str]] = None):
     @fast_api_app.get("/heartbeat")
     def heartbeat_handler():
-        return JSONResponse(content={"status": "ok"}, status_code=200)
+        return_status = "ok"
+        if callback is not None:
+            return_status = callback()
+        return JSONResponse(content={"status": return_status}, status_code=200)

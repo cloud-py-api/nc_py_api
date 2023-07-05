@@ -136,8 +136,7 @@ jobs:
           echo $! > /tmp/_install.pid
           cd ..
           sleep 5s
-          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-          --net=host --host="127.0.0.1" --expose="local"
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0
           php occ app_ecosystem_v2:app:register \
           "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_id\":1,\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"port\":$APP_PORT}" \
           -e --force-scopes --system-app
@@ -263,8 +262,7 @@ jobs:
           echo $! > /tmp/_install.pid
           cd ..
           sleep 5s
-          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-          --net=host --host="127.0.0.1" --expose="local"
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0
           php occ app_ecosystem_v2:app:register \
           "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_id\":1,\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"port\":$APP_PORT}" \
           -e --force-scopes --system-app
@@ -383,8 +381,7 @@ jobs:
           echo $! > /tmp/_install.pid
           cd ..
           sleep 5s
-          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0 \
-          --net=host --host="127.0.0.1" --expose="local"
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0
           php occ app_ecosystem_v2:app:register \
           "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_id\":1,\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"port\":$APP_PORT}" \
           -e --force-scopes --system-app

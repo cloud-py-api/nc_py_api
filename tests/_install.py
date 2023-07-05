@@ -3,7 +3,7 @@ from os import environ
 import uvicorn
 from fastapi import FastAPI
 
-from nc_py_api import NextcloudApp, set_enabled_handler, ApiScope, set_scopes
+from nc_py_api import NextcloudApp, set_enabled_handler, ApiScope, set_scopes, enable_heartbeat
 
 APP = FastAPI()
 
@@ -30,10 +30,10 @@ def initialization():
             "optional": [],
         },
     )
+    enable_heartbeat(APP)
 
 
 if __name__ == "__main__":
-    app_host = environ.get("APP_HOST", "")
     uvicorn.run(
-        "_install:APP", host=app_host if app_host else "0.0.0.0", port=int(environ["APP_PORT"]), log_level="trace"
+        "_install:APP", host=environ.get("APP_HOST", "127.0.0.1"), port=int(environ["APP_PORT"]), log_level="trace"
     )
