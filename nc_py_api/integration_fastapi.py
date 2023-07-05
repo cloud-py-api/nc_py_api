@@ -37,3 +37,9 @@ def set_enabled_handler(fast_api_app: FastAPI, callback: Callable[[bool, Nextclo
     ):
         r = callback(enabled, nc)
         return JSONResponse(content={"error": r}, status_code=200)
+
+
+def enable_heartbeat(fast_api_app: FastAPI):
+    @fast_api_app.get("/heartbeat")
+    def heartbeat_handler():
+        return JSONResponse(content={"status": "ok"}, status_code=200)

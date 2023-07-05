@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.22 - 2023-07-05]
+
+### Added
+
+- `heartbeat` endpoint support for AppEcosystemV2.
+
 ## [0.0.21 - 2023-07-04]
 
 ### Added
