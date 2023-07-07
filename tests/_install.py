@@ -3,13 +3,17 @@ from os import environ
 import uvicorn
 from fastapi import FastAPI
 
-from nc_py_api import NextcloudApp, set_enabled_handler, ApiScope, set_scopes, enable_heartbeat
+from nc_py_api import NextcloudApp, set_enabled_handler, ApiScope, set_scopes, enable_heartbeat, LogLvl
 
 APP = FastAPI()
 
 
-def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
-    print(f"enabled_handler: enabled={enabled}")
+def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+    print(f"enabled_handler: enabled={enabled}", flush=True)
+    if enabled:
+        nc.log(LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
+    else:
+        nc.log(LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
 
 

@@ -87,7 +87,7 @@ class NextcloudApp(NextcloudBasic):
     def log(self, log_lvl: LogLvl, content: str):
         if self.check_capabilities("app_ecosystem_v2"):
             return
-        if int(log_lvl) < self.capabilities["app_ecosystem_v2"].get("loglevel", 4):
+        if int(log_lvl) < self.capabilities["app_ecosystem_v2"].get("loglevel", 0):
             return
         self._session.ocs(
             method="POST", path=f"{APP_V2_BASIC_URL}/log", json={"level": int(log_lvl), "message": content}

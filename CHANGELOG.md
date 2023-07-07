@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.23 - 2023-07-07]
+
+### Fixed
+
+- `nextcloud_url` can contain `/` at the end.
+- work of `logs` during `enable`/`disable` events.
+
 ## [0.0.22 - 2023-07-05]
 
 ### Added
