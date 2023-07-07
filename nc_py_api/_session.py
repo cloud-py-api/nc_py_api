@@ -38,7 +38,7 @@ class BasicConfig:
 
     def __init__(self, **kwargs):
         self.full_nc_url = self._get_value("nextcloud_url", **kwargs)
-        self.endpoint = self.full_nc_url.removesuffix("/index.php")
+        self.endpoint = self.full_nc_url.removesuffix("/index.php").removesuffix("/")
         self.dav_url_suffix = self._get_value("dav_url_suffix", raise_not_found=False, **kwargs)
         if not self.dav_url_suffix:
             self.dav_url_suffix = options.DAV_URL_SUFFIX
