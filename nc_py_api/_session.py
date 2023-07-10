@@ -213,7 +213,9 @@ class NcSession(NcSessionBasic):
         super().__init__(user=self.cfg.auth[0])
 
     def _create_adapter(self) -> Client:
-        return Client(auth=self.cfg.auth, follow_redirects=True, limits=self.limits)
+        return Client(
+            auth=self.cfg.auth, follow_redirects=True, limits=self.limits, verify=options.VERIFY_NC_CERTIFICATE
+        )
 
 
 class NcSessionApp(NcSessionBasic):
@@ -232,7 +234,7 @@ class NcSessionApp(NcSessionBasic):
         return super()._dav(method, path, headers, data, **kwargs)
 
     def _create_adapter(self) -> Client:
-        adapter = Client(follow_redirects=True, limits=self.limits)
+        adapter = Client(follow_redirects=True, limits=self.limits, verify=options.VERIFY_NC_CERTIFICATE)
         adapter.headers.update(
             {
                 "AE-VERSION": self.cfg.ae_version,
