@@ -464,7 +464,6 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ config:system:set allow_local_remote_servers --value true
-          ./occ app:enable --force app_ecosystem_v2
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
