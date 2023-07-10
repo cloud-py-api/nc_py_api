@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - `VERIFY_NC_CERTIFICATE` option.
+- `apps.ex_app_get_list` and `apps.ex_app_get_info` methods.
 
 ## [0.0.23 - 2023-07-07]
 

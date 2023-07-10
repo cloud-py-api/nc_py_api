@@ -47,3 +47,23 @@ def test_invalid_param(nc):
         nc.apps.enable("")
     with pytest.raises(ValueError):
         nc.apps.disable("")
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_ex_app_get_list(nc):
+    ex_apps = nc.apps.ex_app_get_list()
+    assert isinstance(ex_apps, list)
+    assert isinstance(ex_apps[0], str)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_ex_app_get_info(nc):
+    ex_apps = nc.apps.ex_app_get_info()
+    assert isinstance(ex_apps, list)
+    nc_py_api = [i for i in ex_apps if i["id"] == "nc_py_api"][0]
+    assert nc_py_api["id"] == "nc_py_api"
+    assert isinstance(nc_py_api["name"], str)
+    assert isinstance(nc_py_api["version"], str)
+    assert nc_py_api["enabled"]
+    assert isinstance(nc_py_api["last_response_time"], int)
+    assert nc_py_api["system"]

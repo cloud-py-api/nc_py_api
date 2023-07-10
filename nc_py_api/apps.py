@@ -2,11 +2,21 @@
 Nextcloud API for working with applications.
 """
 
-from typing import Optional
+from typing import Optional, TypedDict
 
 from ._session import NcSessionBasic
+from .constants import APP_V2_BASIC_URL
 
 ENDPOINT = "/ocs/v1.php/cloud/apps"
+
+
+class ExAppInfo(TypedDict):
+    id: str
+    name: str
+    version: str
+    enabled: bool
+    last_response_time: int
+    system: bool
 
 
 class AppAPI:
@@ -44,3 +54,13 @@ class AppAPI:
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         return app_name in self.get_list(enabled=False)
+
+    def ex_app_get_list(self) -> list[str]:
+        """Gets list of the external applications installed on the server."""
+
+        return self._session.ocs(method="GET", path=f"{APP_V2_BASIC_URL}/ex-app/all", params={"extended": 0})
+
+    def ex_app_get_info(self) -> list[ExAppInfo]:
+        """Gets information of the external applications installed on the server."""
+
+        return self._session.ocs(method="GET", path=f"{APP_V2_BASIC_URL}/ex-app/all", params={"extended": 1})
