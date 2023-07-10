@@ -416,3 +416,112 @@ jobs:
           name: nc_log_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
           path: data/nextcloud.log
           if-no-files-found: warn
+
+  tests-latest:
+    needs: [analysis]
+    runs-on: ubuntu-22.04
+    name: Latest • 🐘8.2 • 🐍3.12 • Maria
+
+    services:
+      mariadb:
+        image: mariadb:11.0
+        env:
+          MARIADB_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: nextcloud
+          options: >-
+            --health-cmd mysqladmin ping
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+        ports:
+          - 3306:3306
+
+    steps:
+      - name: Set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Checkout server
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: nextcloud/server
+          ref: "master"
+
+      - name: Set up & run Nextcloud
+        env:
+          DB_PORT: 4444
+        run: |
+          mkdir data
+          ./occ maintenance:install --verbose --database=mysql --database-name=nextcloud \
+          --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
+          --admin-user admin --admin-pass adminpassword
+          ./occ config:system:set loglevel --value=0 --type=integer
+          ./occ config:system:set debug --value=true --type=boolean
+          ./occ config:system:set allow_local_remote_servers --value true
+          ./occ app:enable --force app_ecosystem_v2
+          php -S localhost:8080 &
+
+      - name: Checkout NcPyApi
+        uses: actions/checkout@v3
+        with:
+          path: nc_py_api
+
+      - name: Install NcPyApi
+        working-directory: nc_py_api
+        run: python3 -m pip -v install ".[dev]"
+
+      - name: Checkout AppEcosystemV2
+        uses: actions/checkout@v3
+        with:
+          path: apps/app_ecosystem_v2
+          repository: cloud-py-api/app_ecosystem_v2
+
+      - name: Install AppEcosystemV2
+        run: |
+          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
+          php occ app:enable app_ecosystem_v2
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
+          echo $! > /tmp/_install.pid
+          cd ..
+          sleep 5s
+          php occ app_ecosystem_v2:daemon:register docker-install Docker unix-socket 0 0
+          php occ app_ecosystem_v2:app:register \
+          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_id\":1,\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"system_app\":1}" \
+          -e --force-scopes
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
+      - name: Generate coverage report
+        working-directory: nc_py_api
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_maria_latest
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: nc_py_api/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload NC logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc_log_maria_latest
+          path: data/nextcloud.log
+          if-no-files-found: warn
