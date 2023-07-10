@@ -51,6 +51,8 @@ def test_invalid_param(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_ex_app_get_list(nc):
+    if "app_ecosystem_v2" not in nc.capabilities:
+        pytest.skip("app_ecosystem_v2 is not installed.")
     ex_apps = nc.apps.ex_app_get_list()
     assert isinstance(ex_apps, list)
     assert isinstance(ex_apps[0], str)
@@ -58,6 +60,8 @@ def test_ex_app_get_list(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_ex_app_get_info(nc):
+    if "app_ecosystem_v2" not in nc.capabilities:
+        pytest.skip("app_ecosystem_v2 is not installed.")
     ex_apps = nc.apps.ex_app_get_info()
     assert isinstance(ex_apps, list)
     nc_py_api = [i for i in ex_apps if i["id"] == "nc_py_api"][0]

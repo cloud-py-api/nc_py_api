@@ -6,6 +6,7 @@ from typing import Optional, TypedDict
 
 from ._session import NcSessionBasic
 from .constants import APP_V2_BASIC_URL
+from .misc import require_capabilities
 
 ENDPOINT = "/ocs/v1.php/cloud/apps"
 
@@ -58,9 +59,11 @@ class AppAPI:
     def ex_app_get_list(self) -> list[str]:
         """Gets list of the external applications installed on the server."""
 
+        require_capabilities("app_ecosystem_v2", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{APP_V2_BASIC_URL}/ex-app/all", params={"extended": 0})
 
     def ex_app_get_info(self) -> list[ExAppInfo]:
         """Gets information of the external applications installed on the server."""
 
+        require_capabilities("app_ecosystem_v2", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{APP_V2_BASIC_URL}/ex-app/all", params={"extended": 1})
