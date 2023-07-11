@@ -24,7 +24,7 @@ repos:
         files: nc_py_api/
 
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 0.12.1
+    rev: 0.13.0
     hooks:
     -   id: pyproject-fmt
 
