@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 - `apps.ex_app_get_list` and `apps.ex_app_get_info` methods.
 - `files.download2stream` method.
 
+### Changed
+
+- License changed to `BSD-3 Clause`
+
 ## [0.0.23 - 2023-07-07]
 
 ### Fixed
