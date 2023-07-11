@@ -5,13 +5,13 @@ Session represents one connection to Nextcloud. All related stuff for these live
 import asyncio
 import hmac
 from abc import ABC, abstractmethod
-from contextlib import contextmanager
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from hashlib import sha256
 from json import dumps, loads
 from os import environ
-from typing import Iterator, Optional, TypedDict, Union
+from typing import Optional, TypedDict, Union
 from urllib.parse import quote, urlencode
 
 from fastapi import Request
@@ -160,7 +160,6 @@ class NcSessionBasic(ABC):
             data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
         return self._dav(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
 
-    @contextmanager
     def dav_stream(
         self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs
     ) -> Iterator[Response]:

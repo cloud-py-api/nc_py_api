@@ -174,7 +174,9 @@ class FilesAPI:
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **512Kb**
         """
 
-        with self._session.dav_stream("GET", self._dav_get_obj_path(self._session.user, path)) as response:
+        with self._session.dav_stream(
+            "GET", self._dav_get_obj_path(self._session.user, path)
+        ) as response:  # type: ignore
             check_error(response.status_code, f"download: user={self._session.user}, path={path}")
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 512 * 1024)):
                 fp.write(data_chunk)
