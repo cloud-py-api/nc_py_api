@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := help
 
-.PHONY: doc
+.PHONY: docs
 .PHONY: html
-doc html:
+docs html:
 	$(MAKE) -C docs html
 
 .PHONY: help
