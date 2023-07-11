@@ -1,5 +1,8 @@
 from io import BytesIO
-from random import randbytes
+from random import randbytes, choice
+from string import ascii_lowercase
+from zlib import adler32
+import math
 
 import pytest
 
@@ -7,6 +10,21 @@ from PIL import Image
 from nc_py_api import NextcloudException
 
 from gfixture import NC_TO_TEST
+
+
+class MyBytesIO(BytesIO):
+    def __init__(self):
+        self.n_read_calls = 0
+        self.n_write_calls = 0
+        super().__init__()
+
+    def read(self, *args, **kwargs):
+        self.n_read_calls += 1
+        return super().read(*args, **kwargs)
+
+    def write(self, *args, **kwargs):
+        self.n_write_calls += 1
+        return super().write(*args, **kwargs)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -30,31 +48,33 @@ def test_list_user_root(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download(nc):
-    nc.files.upload("test_file.txt", content=randbytes(64))
+    content = randbytes(64)
+    nc.files.upload("test_file.txt", content=content)
     srv_admin_manual1 = nc.files.download("test_file.txt")
     srv_admin_manual2 = nc.files.download("/test_file.txt")
     assert srv_admin_manual1 == srv_admin_manual2
+    assert srv_admin_manual1 == content
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_file_download2stream(nc):
-    class MyBytesIO(BytesIO):
-        def __init__(self):
-            self.n_calls = 0
-            super().__init__()
-
-        def write(self, content):
-            self.n_calls += 1
-            super().write(content)
-
-    srv_admin_manual1_buf = MyBytesIO()
-    srv_admin_manual2_buf = MyBytesIO()
-    nc.files.upload("test_file.txt", content=randbytes(64))
-    nc.files.download2stream("test_file.txt", srv_admin_manual1_buf)
-    nc.files.download2stream("/test_file.txt", srv_admin_manual2_buf, chunk_size=16)
-    assert srv_admin_manual1_buf.getbuffer() == srv_admin_manual2_buf.getbuffer()
-    assert srv_admin_manual1_buf.n_calls == 1
-    assert srv_admin_manual2_buf.n_calls == 4
+@pytest.mark.parametrize("data_type", ("str", "bytes"))
+@pytest.mark.parametrize("chunk_size", (15, 32, 64, None))
+def test_file_download2stream(nc, data_type, chunk_size):
+    srv_admin_manual_buf = MyBytesIO()
+    if data_type == "str":
+        content = ''.join(choice(ascii_lowercase) for i in range(64))
+    else:
+        content = randbytes(64)
+    nc.files.upload("test_file.txt", content=content)
+    if chunk_size is not None:
+        nc.files.download2stream("/test_file.txt", srv_admin_manual_buf, chunk_size=chunk_size)
+    else:
+        nc.files.download2stream("/test_file.txt", srv_admin_manual_buf)
+    assert nc.files.download("test_file.txt") == srv_admin_manual_buf.getbuffer()
+    if chunk_size is None:
+        assert srv_admin_manual_buf.n_write_calls == 1
+    else:
+        assert srv_admin_manual_buf.n_write_calls == math.ceil(64 / chunk_size)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -83,6 +103,39 @@ def test_file_upload(nc):
     assert nc.files.download(file_name) == b'\x31\x32\x33'
     nc.files.upload(file_name, content="life is good")
     assert nc.files.download(file_name).decode("utf-8") == "life is good"
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+@pytest.mark.parametrize("chunk_size", (63, 64, 65, None))
+def test_file_upload_chunked(nc, chunk_size):
+    file_name = "chunked.bin"
+    buf_upload = MyBytesIO()
+    random_bytes = randbytes(64)
+    buf_upload.write(random_bytes)
+    buf_upload.seek(0)
+    if chunk_size is None:
+        nc.files.upload_stream(file_name, fp=buf_upload)
+    else:
+        nc.files.upload_stream(file_name, fp=buf_upload, chunk_size=chunk_size)
+    if chunk_size is None:
+        assert buf_upload.n_read_calls == 2
+    else:
+        assert buf_upload.n_read_calls == 1 + math.ceil(64 / chunk_size)
+    buf_download = BytesIO()
+    nc.files.download2stream(file_name, fp=buf_download)
+    buf_upload.seek(0)
+    buf_download.seek(0)
+    upload_crc = adler32(buf_upload.read())
+    download_crc = adler32(buf_download.read())
+    assert upload_crc == download_crc
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_file_upload_chunked_zero_size(nc):
+    file_name = "chunked_zero.bin"
+    buf_upload = MyBytesIO()
+    nc.files.upload_stream(file_name, fp=buf_upload)
+    assert nc.files.download(file_name) == b""
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

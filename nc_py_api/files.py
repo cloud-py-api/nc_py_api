@@ -9,6 +9,8 @@ from io import BytesIO
 from json import dumps, loads
 from os import path as p
 from pathlib import Path
+from random import choice
+from string import ascii_lowercase, digits
 from typing import Optional, TypedDict, Union
 from urllib.parse import unquote
 from xml.etree import ElementTree
@@ -156,7 +158,7 @@ class FilesAPI:
         return self._lf_parse_webdav_records(webdav_response, self._session.user, request_info)
 
     def download(self, path: str) -> bytes:
-        """Downloads and returns the contents of a file.
+        """Downloads and returns the content of a file.
 
         :param path: Path to a file to download relative to root directory of the user.
         """
@@ -171,19 +173,64 @@ class FilesAPI:
         :param path: Path to a file to download relative to root directory of the user.
         :param fp: A filename (string), pathlib.Path object or a file object.
             The object must implement the ``file.write`` method and be able to write binary data.
-        :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **512Kb**
+        :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **4Mb**
         """
 
         with self._session.dav_stream(
             "GET", self._dav_get_obj_path(self._session.user, path)
         ) as response:  # type: ignore
-            check_error(response.status_code, f"download: user={self._session.user}, path={path}")
-            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 512 * 1024)):
+            check_error(response.status_code, f"download_stream: user={self._session.user}, path={path}")
+            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
                 fp.write(data_chunk)
 
     def upload(self, path: str, content: Union[bytes, str]) -> None:
+        """Creates a file with the specified content at the specified path.
+
+        :param path: Path to a file to download relative to root directory of the user.
+        :param content: content to create the file. If it is a string, it will be encoded into bytes using UTF-8.
+        """
+
         response = self._session.dav("PUT", self._dav_get_obj_path(self._session.user, path), data=content)
         check_error(response.status_code, f"upload: user={self._session.user}, path={path}, size={len(content)}")
+
+    def upload_stream(self, path: str, fp, **kwargs) -> None:
+        """Creates a file with content provided by `fp` object at the specified path.
+
+        :param path: Path to a file to download relative to root directory of the user.
+        :param fp: A filename (string), pathlib.Path object or a file object.
+            The object must implement the ``file.read`` method providing data with str or bytes type.
+        :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **4Mb**
+        """
+
+        _rnd_folder = "".join(choice(digits + ascii_lowercase) for i in range(64))
+        _dav_path = self._dav_get_obj_path(self._session.user, _rnd_folder, root_path="/uploads")
+        response = self._session.dav("MKCOL", _dav_path)
+        check_error(response.status_code)
+        try:
+            chunk_size = kwargs.get("chunk_size", 4 * 1024 * 1024)
+            start_bytes = end_bytes = 0
+            while True:
+                piece = fp.read(chunk_size)
+                if not piece:
+                    break
+                end_bytes = start_bytes + len(piece)
+                _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
+                response = self._session.dav("PUT", _dav_path + "/" + _filename, data=piece)
+                check_error(
+                    response.status_code, f"upload_stream: user={self._session.user}, path={path}, cur_size={end_bytes}"
+                )
+                start_bytes = end_bytes
+            headers = {"Destination": self._session.cfg.dav_endpoint + self._dav_get_obj_path(self._session.user, path)}
+            response = self._session.dav(
+                "MOVE",
+                _dav_path + "/.file",
+                headers=headers,
+            )
+            check_error(
+                response.status_code, f"upload_stream: user={self._session.user}, path={path}, total_size={end_bytes}"
+            )
+        finally:
+            self._session.dav("DELETE", _dav_path)
 
     def mkdir(self, path: str) -> None:
         response = self._session.dav("MKCOL", self._dav_get_obj_path(self._session.user, path))
@@ -342,8 +389,8 @@ class FilesAPI:
         return self._parse_records([response] if isinstance(response, dict) else response, user, favorite)
 
     @staticmethod
-    def _dav_get_obj_path(user: str, path: str = "") -> str:
-        obj_dav_path = "/files"
+    def _dav_get_obj_path(user: str, path: str = "", root_path="/files") -> str:
+        obj_dav_path = root_path
         if user:
             obj_dav_path += "/" + user
         if path:
