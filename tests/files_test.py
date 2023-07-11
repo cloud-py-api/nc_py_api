@@ -37,11 +37,41 @@ def test_file_download(nc):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_file_not_found(nc):
+def test_file_download2stream(nc):
+    class MyBytesIO(BytesIO):
+        def __init__(self):
+            self.n_calls = 0
+            super().__init__()
+
+        def write(self, content):
+            self.n_calls += 1
+            super().write(content)
+
+    srv_admin_manual1_buf = MyBytesIO()
+    srv_admin_manual2_buf = MyBytesIO()
+    nc.files.upload("test_file.txt", content=randbytes(64))
+    nc.files.download2stream("test_file.txt", srv_admin_manual1_buf)
+    nc.files.download2stream("/test_file.txt", srv_admin_manual2_buf, chunk_size=16)
+    assert srv_admin_manual1_buf.getbuffer() == srv_admin_manual2_buf.getbuffer()
+    assert srv_admin_manual1_buf.n_calls == 1
+    assert srv_admin_manual2_buf.n_calls == 4
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_file_download_not_found(nc):
     with pytest.raises(NextcloudException):
         nc.files.download("file that does not exist on the server")
     with pytest.raises(NextcloudException):
         nc.files.listdir("non existing path")
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_file_download2stream_not_found(nc):
+    buf = BytesIO()
+    with pytest.raises(NextcloudException):
+        nc.files.download2stream("file that does not exist on the server", buf)
+    with pytest.raises(NextcloudException):
+        nc.files.download2stream("non existing path", buf)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

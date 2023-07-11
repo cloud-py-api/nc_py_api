@@ -5,6 +5,7 @@ Session represents one connection to Nextcloud. All related stuff for these live
 import asyncio
 import hmac
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from hashlib import sha256
@@ -152,17 +153,33 @@ class NcSessionBasic(ABC):
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
 
-    def dav(self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs):
+    def dav(self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs) -> Response:
         headers = kwargs.pop("headers", {})
         data_bytes = None
         if data is not None:
             data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
         return self._dav(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
 
+    def dav_stream(
+        self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs
+    ) -> Iterator[Response]:
+        headers = kwargs.pop("headers", {})
+        data_bytes = None
+        if data is not None:
+            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
+        return self._dav_stream(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
+
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
         self.init_adapter()
         timeout = kwargs.pop("timeout", options.TIMEOUT_DAV)
         return self.adapter.request(
+            method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
+        )
+
+    def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
+        self.init_adapter()
+        timeout = kwargs.pop("timeout", options.TIMEOUT_DAV)
+        return self.adapter.stream(
             method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
         )
 
@@ -232,6 +249,10 @@ class NcSessionApp(NcSessionBasic):
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
         self.sign_request(method, path, headers, data)
         return super()._dav(method, path, headers, data, **kwargs)
+
+    def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
+        self.sign_request(method, path, headers, data)
+        return super()._dav_stream(method, path, headers, data, **kwargs)
 
     def _create_adapter(self) -> Client:
         adapter = Client(follow_redirects=True, limits=self.limits, verify=options.VERIFY_NC_CERTIFICATE)

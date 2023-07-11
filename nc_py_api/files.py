@@ -156,9 +156,30 @@ class FilesAPI:
         return self._lf_parse_webdav_records(webdav_response, self._session.user, request_info)
 
     def download(self, path: str) -> bytes:
+        """Downloads and returns the contents of a file.
+
+        :param path: Path to a file to download relative to root directory of the user.
+        """
+
         response = self._session.dav("GET", self._dav_get_obj_path(self._session.user, path))
         check_error(response.status_code, f"download: user={self._session.user}, path={path}")
         return response.content
+
+    def download2stream(self, path: str, fp, **kwargs) -> None:
+        """Downloads file to the given `fp` object.
+
+        :param path: Path to a file to download relative to root directory of the user.
+        :param fp: A filename (string), pathlib.Path object or a file object.
+            The object must implement the ``file.write`` method and be able to write binary data.
+        :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **512Kb**
+        """
+
+        with self._session.dav_stream(
+            "GET", self._dav_get_obj_path(self._session.user, path)
+        ) as response:  # type: ignore
+            check_error(response.status_code, f"download: user={self._session.user}, path={path}")
+            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 512 * 1024)):
+                fp.write(data_chunk)
 
     def upload(self, path: str, content: Union[bytes, str]) -> None:
         response = self._session.dav("PUT", self._dav_get_obj_path(self._session.user, path), data=content)

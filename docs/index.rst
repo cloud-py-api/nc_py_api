@@ -26,6 +26,7 @@ Have a great time with Python and Nextcloud!
 .. toctree::
    :maxdepth: 1
 
+   reference/index.rst
    benchmarks/AppEcosystem.rst
 
 Indices and tables
