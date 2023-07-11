@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - `VERIFY_NC_CERTIFICATE` option.
 - `apps.ex_app_get_list` and `apps.ex_app_get_info` methods.
-- `files.download2stream` method.
+- `files.download2stream` and `files.upload_stream` methods.
 
 ### Changed
 
