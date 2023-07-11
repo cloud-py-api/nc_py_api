@@ -197,7 +197,7 @@ class NcSessionBasic(ABC):
 
     @abstractmethod
     def _create_adapter(self) -> Client:
-        pass
+        pass  # pragma: no cover
 
     def update_server_info(self) -> None:
         self._capabilities = self.ocs(method="GET", path="/ocs/v1.php/cloud/capabilities")
