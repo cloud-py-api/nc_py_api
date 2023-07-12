@@ -7,7 +7,8 @@ exclude *.yaml *.yml Makefile
 
 recursive-exclude * *.yaml *.yml
 
+prune benchmarks
 prune docker
-prune tests
 prune docs
 prune examples
+prune tests
