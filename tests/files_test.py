@@ -3,6 +3,7 @@ from random import randbytes, choice
 from string import ascii_lowercase
 from zlib import adler32
 import math
+from tempfile import NamedTemporaryFile
 
 import pytest
 
@@ -78,6 +79,29 @@ def test_file_download2stream(nc, data_type, chunk_size):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_file_download2file(nc):
+    content = randbytes(64)
+    nc.files.upload("tmp.bin", content)
+    with NamedTemporaryFile() as tmp_file:
+        nc.files.download2stream("tmp.bin", tmp_file.name)
+        assert tmp_file.read() == content
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_file_download2stream_invalid_type(nc):
+    for test_type in (b"13", int(55), ):
+        with pytest.raises(TypeError):
+            nc.files.download2stream("xxx", test_type)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_file_upload_stream_invalid_type(nc):
+    for test_type in (b"13", int(55), ):
+        with pytest.raises(TypeError):
+            nc.files.upload_stream("xxx", test_type)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download_not_found(nc):
     with pytest.raises(NextcloudException):
         nc.files.download("file that does not exist on the server")
@@ -128,6 +152,16 @@ def test_file_upload_chunked(nc, chunk_size):
     upload_crc = adler32(buf_upload.read())
     download_crc = adler32(buf_download.read())
     assert upload_crc == download_crc
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_file_upload_file(nc):
+    content = randbytes(64)
+    with NamedTemporaryFile() as tmp_file:
+        tmp_file.write(content)
+        tmp_file.flush()
+        nc.files.upload_stream("tmp.bin", tmp_file.name)
+    assert nc.files.download("tmp.bin") == content
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

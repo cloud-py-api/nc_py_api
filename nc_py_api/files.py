@@ -2,6 +2,7 @@
 Nextcloud API for working with file system.
 """
 
+import builtins
 from dataclasses import dataclass
 from datetime import datetime
 from email.utils import parsedate_to_datetime
@@ -176,12 +177,13 @@ class FilesAPI:
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **4Mb**
         """
 
-        with self._session.dav_stream(
-            "GET", self._dav_get_obj_path(self._session.user, path)
-        ) as response:  # type: ignore
-            check_error(response.status_code, f"download_stream: user={self._session.user}, path={path}")
-            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
-                fp.write(data_chunk)
+        if isinstance(fp, (str, Path)):
+            with builtins.open(fp, "wb") as f:
+                self.__download2stream(path, f, **kwargs)
+        elif hasattr(fp, "write"):
+            self.__download2stream(path, fp, **kwargs)
+        else:
+            raise TypeError("`fp` must be a path to file or an object with `write` method.")
 
     def upload(self, path: str, content: Union[bytes, str]) -> None:
         """Creates a file with the specified content at the specified path.
@@ -202,35 +204,13 @@ class FilesAPI:
         :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **4Mb**
         """
 
-        _rnd_folder = "".join(choice(digits + ascii_lowercase) for i in range(64))
-        _dav_path = self._dav_get_obj_path(self._session.user, _rnd_folder, root_path="/uploads")
-        response = self._session.dav("MKCOL", _dav_path)
-        check_error(response.status_code)
-        try:
-            chunk_size = kwargs.get("chunk_size", 4 * 1024 * 1024)
-            start_bytes = end_bytes = 0
-            while True:
-                piece = fp.read(chunk_size)
-                if not piece:
-                    break
-                end_bytes = start_bytes + len(piece)
-                _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
-                response = self._session.dav("PUT", _dav_path + "/" + _filename, data=piece)
-                check_error(
-                    response.status_code, f"upload_stream: user={self._session.user}, path={path}, cur_size={end_bytes}"
-                )
-                start_bytes = end_bytes
-            headers = {"Destination": self._session.cfg.dav_endpoint + self._dav_get_obj_path(self._session.user, path)}
-            response = self._session.dav(
-                "MOVE",
-                _dav_path + "/.file",
-                headers=headers,
-            )
-            check_error(
-                response.status_code, f"upload_stream: user={self._session.user}, path={path}, total_size={end_bytes}"
-            )
-        finally:
-            self._session.dav("DELETE", _dav_path)
+        if isinstance(fp, (str, Path)):
+            with builtins.open(fp, "rb") as f:
+                self.__upload_stream(path, f, **kwargs)
+        elif hasattr(fp, "read"):
+            self.__upload_stream(path, fp, **kwargs)
+        else:
+            raise TypeError("`fp` must be a path to file or an object with `read` method.")
 
     def mkdir(self, path: str) -> None:
         response = self._session.dav("MKCOL", self._dav_get_obj_path(self._session.user, path))
@@ -429,3 +409,42 @@ class FilesAPI:
                 _process_or_and(xml_element_where, where_part)
             else:
                 _add_value(xml_element_where, where_part)
+
+    def __download2stream(self, path: str, fp, **kwargs) -> None:
+        with self._session.dav_stream(
+            "GET", self._dav_get_obj_path(self._session.user, path)
+        ) as response:  # type: ignore
+            check_error(response.status_code, f"download_stream: user={self._session.user}, path={path}")
+            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
+                fp.write(data_chunk)
+
+    def __upload_stream(self, path: str, fp, **kwargs) -> None:
+        _rnd_folder = "".join(choice(digits + ascii_lowercase) for i in range(64))
+        _dav_path = self._dav_get_obj_path(self._session.user, _rnd_folder, root_path="/uploads")
+        response = self._session.dav("MKCOL", _dav_path)
+        check_error(response.status_code)
+        try:
+            chunk_size = kwargs.get("chunk_size", 4 * 1024 * 1024)
+            start_bytes = end_bytes = 0
+            while True:
+                piece = fp.read(chunk_size)
+                if not piece:
+                    break
+                end_bytes = start_bytes + len(piece)
+                _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
+                response = self._session.dav("PUT", _dav_path + "/" + _filename, data=piece)
+                check_error(
+                    response.status_code, f"upload_stream: user={self._session.user}, path={path}, cur_size={end_bytes}"
+                )
+                start_bytes = end_bytes
+            headers = {"Destination": self._session.cfg.dav_endpoint + self._dav_get_obj_path(self._session.user, path)}
+            response = self._session.dav(
+                "MOVE",
+                _dav_path + "/.file",
+                headers=headers,
+            )
+            check_error(
+                response.status_code, f"upload_stream: user={self._session.user}, path={path}, total_size={end_bytes}"
+            )
+        finally:
+            self._session.dav("DELETE", _dav_path)
