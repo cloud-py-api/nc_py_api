@@ -15,13 +15,21 @@ repos:
     rev: 5.12.0
     hooks:
     -   id: isort
-        files: nc_py_api/
+        files: >-
+            (?x)^(
+                nc_py_api/|
+                benchmarks/
+            )
 
 -   repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
     -   id: black
-        files: nc_py_api/
+        files: >-
+            (?x)^(
+                nc_py_api/|
+                benchmarks/
+            )
 
 -   repo: https://github.com/tox-dev/pyproject-fmt
     rev: 0.13.0
