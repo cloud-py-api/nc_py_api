@@ -117,9 +117,9 @@ class FilesAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def listdir(self, path="", exclude_self=True, root=False) -> list[FsNode]:
+    def listdir(self, path="", exclude_self=True) -> list[FsNode]:
         properties = PROPFIND_PROPERTIES
-        return self._listdir("" if root else self._session.user, path, properties=properties, exclude_self=exclude_self)
+        return self._listdir(self._session.user, path, properties=properties, exclude_self=exclude_self)
 
     def by_id(self, fileid: int) -> Optional[FsNode]:
         result = self.find(req=["eq", "fileid", fileid])
