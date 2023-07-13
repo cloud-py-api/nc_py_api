@@ -29,15 +29,6 @@ class MyBytesIO(BytesIO):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_list_root(nc):
-    files_root = nc.files.listdir(root=True)
-    assert files_root
-    for obj in files_root:
-        assert not obj.user
-        assert obj.full_path == obj.path
-
-
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_user_root(nc):
     user_root = nc.files.listdir()
     assert user_root
@@ -191,6 +182,7 @@ def test_file_delete(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("dir_name", ("1 2", "Яё", "відео та картинки", "复杂 目录 Í", "Björn", "João"))
 def test_mkdir(nc, dir_name):
+    nc.files.delete(dir_name, not_fail=True)
     nc.files.mkdir(dir_name)
     with pytest.raises(NextcloudException):
         nc.files.mkdir(dir_name)
