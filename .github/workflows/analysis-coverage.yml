@@ -6,7 +6,7 @@ on:
       - '.github/workflows/analysis-coverage.yml'
       - 'nc_py_api/*.*'
       - 'tests/**'
-      - 'setup.py'
+      - 'setup.*'
       - 'pyproject.toml'
       - '.pre-commit-config.yaml'
   push:
@@ -15,7 +15,7 @@ on:
       - '.github/workflows/analysis-coverage.yml'
       - 'pillow_heif/*.*'
       - 'tests/**'
-      - 'setup.py'
+      - 'setup.*'
       - 'pyproject.toml'
       - '.pre-commit-config.yaml'
   workflow_dispatch:
