@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
 
 env:
-  NEXTCLOUD_URL: "http://localhost:8080/index.php"
+  NEXTCLOUD_URL: "http://localhost:8080"
   APP_ID: "nc_py_api"
   APP_PORT: 9009
   APP_VERSION: "1.0.0"
@@ -103,7 +103,7 @@ jobs:
           mkdir data
           php occ maintenance:install --verbose --database=mysql --database-name=nextcloud \
           --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-          --admin-user admin --admin-pass adminpassword
+          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
           php occ config:system:set allow_local_remote_servers --value true
@@ -120,13 +120,11 @@ jobs:
 
       - name: Checkout AppEcosystemV2
         uses: actions/checkout@v3
-        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         with:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
 
       - name: Install AppEcosystemV2
-        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         run: |
           patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
@@ -229,7 +227,7 @@ jobs:
           mkdir data
           php occ maintenance:install --verbose --database=pgsql --database-name=${{ env.NC_dbname }} \
           --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-          --admin-user admin --admin-pass adminpassword
+          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1
           php occ config:system:set debug --value=true --type=boolean
           php occ config:system:set allow_local_remote_servers --value true
@@ -350,7 +348,7 @@ jobs:
           mkdir data
           php occ maintenance:install --verbose --database=oci --database-name=XE \
           --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
-          --admin-user admin --admin-pass admin
+          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
           php occ config:system:set allow_local_remote_servers --value true
@@ -460,7 +458,7 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=mysql --database-name=nextcloud \
           --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-          --admin-user admin --admin-pass adminpassword
+          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ config:system:set allow_local_remote_servers --value true
@@ -521,5 +519,105 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: nc_log_maria_latest
+          path: data/nextcloud.log
+          if-no-files-found: warn
+
+  tests-sqlite:
+    needs: [analysis]
+    runs-on: ubuntu-22.04
+    name: ${{ matrix.nextcloud }} • 🐘8.1 • 🐍3.11 • SQLite
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud: [ 'stable26', 'stable27' ]
+    env:
+      NEXTCLOUD_URL: "http://localhost:8080/index.php"
+
+    steps:
+      - name: Set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: mbstring, fileinfo, intl, sqlite, pdo_sqlite, zip, gd, curl
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Checkout server
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: nextcloud/server
+          ref: ${{ matrix.nextcloud }}
+
+      - name: Set up & run Nextcloud
+        env:
+          DB_PORT: 4444
+        run: |
+          mkdir data
+          ./occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 \
+            --database-port=$DB_PORT --database-user=root --database-pass=rootpassword \
+            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+          ./occ config:system:set loglevel --value=0 --type=integer
+          ./occ config:system:set debug --value=true --type=boolean
+          ./occ config:system:set allow_local_remote_servers --value true
+          php -S localhost:8080 &
+
+      - name: Checkout NcPyApi
+        uses: actions/checkout@v3
+        with:
+          path: nc_py_api
+
+      - name: Install NcPyApi
+        working-directory: nc_py_api
+        run: python3 -m pip -v install ".[dev]"
+
+      - name: Checkout AppEcosystemV2
+        uses: actions/checkout@v3
+        with:
+          path: apps/app_ecosystem_v2
+          repository: cloud-py-api/app_ecosystem_v2
+
+      - name: Install AppEcosystemV2
+        run: |
+          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
+          php occ app:enable app_ecosystem_v2
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
+          echo $! > /tmp/_install.pid
+          cd ..
+          sleep 5s
+          php occ app_ecosystem_v2:daemon:register simulate_docker Docker docker-install unix-socket 0 0
+          php occ app_ecosystem_v2:app:register \
+          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"simulate_docker\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"system_app\":1}" \
+          -e --force-scopes
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
+      - name: Generate coverage report
+        working-directory: nc_py_api
+        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_sqlite_${{ matrix.nextcloud }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: nc_py_api/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload NC logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc_log_sqlite_${{ matrix.nextcloud }}
           path: data/nextcloud.log
           if-no-files-found: warn
