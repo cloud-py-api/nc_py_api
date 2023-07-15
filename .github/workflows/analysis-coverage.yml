@@ -102,8 +102,8 @@ jobs:
           tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
           mkdir data
           php occ maintenance:install --verbose --database=mysql --database-name=nextcloud \
-          --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+            --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
+            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
           php occ config:system:set allow_local_remote_servers --value true
@@ -134,9 +134,9 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install \
-          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-          -e --force-scopes
+          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -226,8 +226,8 @@ jobs:
           tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
           mkdir data
           php occ maintenance:install --verbose --database=pgsql --database-name=${{ env.NC_dbname }} \
-          --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+            --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
+            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1
           php occ config:system:set debug --value=true --type=boolean
           php occ config:system:set allow_local_remote_servers --value true
@@ -260,9 +260,9 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install \
-          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-          -e --force-scopes
+          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -347,8 +347,8 @@ jobs:
           tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
           mkdir data
           php occ maintenance:install --verbose --database=oci --database-name=XE \
-          --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
-          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+            --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
+            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
           php occ config:system:set allow_local_remote_servers --value true
@@ -379,9 +379,9 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install \
-          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-          -e --force-scopes
+          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -457,8 +457,8 @@ jobs:
         run: |
           mkdir data
           ./occ maintenance:install --verbose --database=mysql --database-name=nextcloud \
-          --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
-          --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+            --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
+            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ config:system:set allow_local_remote_servers --value true
@@ -489,9 +489,9 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install \
-          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-          -e --force-scopes
+          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -589,9 +589,9 @@ jobs:
           cd ..
           sleep 5s
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install \
-          "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"protocol\":\"http\",\"port\":$APP_PORT,\"system_app\":1}" \
-          -e --force-scopes
+          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"protocol\":\"http\",\"port\":$APP_PORT,\"system_app\":1}" \
+            -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
