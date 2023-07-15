@@ -6,7 +6,7 @@ from nc_py_api import NextcloudApp, Nextcloud
 if not environ.get("CI", False):  # For local tests
     environ["NC_AUTH_USER"] = "admin"
     environ["NC_AUTH_PASS"] = "admin"  # "MrtGY-KfY24-iiDyg-cr4n4-GLsNZ"
-    environ["NEXTCLOUD_URL"] = "http://nextcloud.local"
+    environ["NEXTCLOUD_URL"] = environ.get("NEXTCLOUD_URL", "http://nextcloud.local")
     environ["APP_ID"] = "nc_py_api"
     environ["APP_VERSION"] = "1.0.0"
     environ["APP_SECRET"] = "12345"
