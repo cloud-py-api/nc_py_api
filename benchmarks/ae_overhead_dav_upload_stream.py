@@ -6,12 +6,11 @@ from typing import Any, Union
 
 import matplotlib.pyplot as plt
 from ae_overhead_common import measure_overhead, os_id
-from cpuinfo import get_cpu_info
 
 from nc_py_api import Nextcloud, NextcloudApp
 
 ITERS = 10
-CACHE_SESS = False
+CACHE_SESS = True
 
 
 def measure_upload_100mb(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]:
@@ -30,6 +29,6 @@ def measure_upload_100mb(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]
 
 
 if __name__ == "__main__":
-    title = f"upload stream 100mb({ITERS} iters, CACHE={CACHE_SESS}) - {os_id()}, {get_cpu_info()['brand_raw']}"
+    title = f"upload stream 100mb, {ITERS} iters, CACHE={CACHE_SESS} - {os_id()}"
     measure_overhead(measure_upload_100mb, title)
     plt.savefig(f"results/dav_upload_stream_100mb__cache{int(CACHE_SESS)}_iters{ITERS}__{getuser()}.png", dpi=200)
