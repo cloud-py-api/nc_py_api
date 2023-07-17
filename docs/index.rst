@@ -15,11 +15,12 @@ Overview
 ========
 
 The main goal of this project is to provide a fast and easy way to develop and deploy Python applications for Nextcloud.
-Option to use it as a client library is a beneficial side effect.
-The code is unified, and the code base for both modes is the same. Tests are carried out for both modes.
+The option to use it as a client library is a beneficial side effect.
+The code is unified, and the codebase for both modes is the same. Tests are carried out for both modes.
 
-If you have any questions or corrections to the documentation,
-we would be glad to address your questions in discussions, corrections in pull requests, and complex problems in issues.
+If you have any questions or corrections regarding the documentation,
+we would be glad to address them in discussions, incorporate corrections through pull requests,
+and handle complex problems through issues.
 
 Have a great time with Python and Nextcloud!
 
