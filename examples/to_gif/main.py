@@ -30,7 +30,7 @@ async def video_to_gif(
     save_path = path.splitext(source_path)[0] + ".gif"
     nc.log(LogLvl.WARNING, f"Processing:{source_path} -> {save_path}")
     source_file = nc.files.download(source_path)
-    nc.log(LogLvl.WARNING, f"File downloaded")
+    nc.log(LogLvl.WARNING, "File downloaded")
     try:
         with tempfile.NamedTemporaryFile(mode="w+b") as tmp_in:
             tmp_in.write(source_file)
@@ -53,9 +53,9 @@ async def video_to_gif(
                 cap.release()
                 imageio.mimsave(tmp_out.name, image_lst)
                 optimize(tmp_out.name)
-                nc.log(LogLvl.WARNING, f"GIF is ready")
+                nc.log(LogLvl.WARNING, "GIF is ready")
                 nc.files.upload(save_path, content=tmp_out.read())
-                nc.log(LogLvl.WARNING, f"Result uploaded")
+                nc.log(LogLvl.WARNING, "Result uploaded")
     except Exception as e:
         nc.log(LogLvl.ERROR, str(e))
     return Response()
