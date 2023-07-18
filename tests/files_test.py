@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 import pytest
 
 from PIL import Image
-from nc_py_api import NextcloudException
+from nc_py_api import NextcloudException, FsNode
 
 from gfixture import NC_TO_TEST
 
@@ -36,6 +36,9 @@ def test_list_user_root(nc):
         assert obj.user
         assert obj.info["nc_id"]
         assert obj.info["fileid"]
+    root_node = FsNode(user=nc.user, path="", name="")
+    user_root2 = nc.files.listdir(root_node)
+    assert user_root == user_root2
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -208,7 +211,12 @@ def test_favorites(nc):
     for n in files:
         nc.files.upload(n, content=n)
         nc.files.setfav(n, True)
-    assert len(nc.files.listfav()) == 3
+    favorites = nc.files.listfav()
+    assert len(favorites) == 3
+    for favorite in favorites:
+        assert isinstance(favorite, FsNode)
+        nc.files.setfav(favorite, False)
+    assert len(nc.files.listfav()) == 0
     for n in files:
         nc.files.delete(n)
 
