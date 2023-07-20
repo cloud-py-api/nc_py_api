@@ -69,5 +69,5 @@ def test_ex_app_get_info(nc):
     assert isinstance(nc_py_api["name"], str)
     assert isinstance(nc_py_api["version"], str)
     assert nc_py_api["enabled"]
-    assert isinstance(nc_py_api["last_response_time"], int)
+    assert isinstance(nc_py_api["last_check_time"], int)
     assert nc_py_api["system"]

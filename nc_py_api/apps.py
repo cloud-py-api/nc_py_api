@@ -16,7 +16,7 @@ class ExAppInfo(TypedDict):
     name: str
     version: str
     enabled: bool
-    last_response_time: int
+    last_check_time: int
     system: bool
 
 
