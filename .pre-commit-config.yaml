@@ -18,7 +18,8 @@ repos:
         files: >-
             (?x)^(
                 nc_py_api/|
-                benchmarks/
+                benchmarks/|
+                tests/
             )
 
 -   repo: https://github.com/psf/black
@@ -28,7 +29,8 @@ repos:
         files: >-
             (?x)^(
                 nc_py_api/|
-                benchmarks/
+                benchmarks/|
+                tests/
             )
 
 -   repo: https://github.com/tox-dev/pyproject-fmt

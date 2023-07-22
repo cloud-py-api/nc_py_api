@@ -20,6 +20,11 @@ class NextcloudException(Exception):
         return f"[{self.status_code}]{reason}{info}"
 
 
+class NextcloudExceptionNotFound(NextcloudException):
+    def __init__(self, reason="Not found", info: str = ""):
+        super().__init__(404, reason=reason, info=info)
+
+
 def check_error(code: int, info: str = ""):
     if 996 <= code <= 999:
         if code == 996:

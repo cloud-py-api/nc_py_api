@@ -1,16 +1,15 @@
-from io import BytesIO
-from random import randbytes, choice
-from string import ascii_lowercase
-from zlib import adler32
 import math
+from io import BytesIO
+from random import choice, randbytes
+from string import ascii_lowercase
 from tempfile import NamedTemporaryFile
+from zlib import adler32
 
 import pytest
-
-from PIL import Image
-from nc_py_api import NextcloudException, FsNode
-
 from gfixture import NC_TO_TEST
+from PIL import Image
+
+from nc_py_api import FsNode, NextcloudException
 
 
 class MyBytesIO(BytesIO):
@@ -57,7 +56,7 @@ def test_file_download(nc):
 def test_file_download2stream(nc, data_type, chunk_size):
     srv_admin_manual_buf = MyBytesIO()
     if data_type == "str":
-        content = ''.join(choice(ascii_lowercase) for i in range(64))
+        content = "".join(choice(ascii_lowercase) for i in range(64))
     else:
         content = randbytes(64)
     nc.files.upload("test_file.txt", content=content)
@@ -83,14 +82,20 @@ def test_file_download2file(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_file_download2stream_invalid_type(nc):
-    for test_type in (b"13", int(55), ):
+    for test_type in (
+        b"13",
+        int(55),
+    ):
         with pytest.raises(TypeError):
             nc.files.download2stream("xxx", test_type)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_file_upload_stream_invalid_type(nc):
-    for test_type in (b"13", int(55), ):
+    for test_type in (
+        b"13",
+        int(55),
+    ):
         with pytest.raises(TypeError):
             nc.files.upload_stream("xxx", test_type)
 
@@ -115,10 +120,10 @@ def test_file_download2stream_not_found(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_upload(nc):
     file_name = "12345.txt"
-    nc.files.upload(file_name, content=b'\x31\x32')
-    assert nc.files.download(file_name) == b'\x31\x32'
-    nc.files.upload(f"/{file_name}", content=b'\x31\x32\x33')
-    assert nc.files.download(file_name) == b'\x31\x32\x33'
+    nc.files.upload(file_name, content=b"\x31\x32")
+    assert nc.files.download(file_name) == b"\x31\x32"
+    nc.files.upload(f"/{file_name}", content=b"\x31\x32\x33")
+    assert nc.files.download(file_name) == b"\x31\x32\x33"
     nc.files.upload(file_name, content="life is good")
     assert nc.files.download(file_name).decode("utf-8") == "life is good"
 
@@ -320,33 +325,33 @@ def test_fs_node_fields(nc):
     for i, result in enumerate(results):
         assert result.user == "admin"
         if result.name == "0_bytes.bin":
-            assert result.path == 'test_root_folder/0_bytes.bin'
+            assert result.path == "test_root_folder/0_bytes.bin"
             assert not result.is_dir
-            assert result.full_path == 'admin/test_root_folder/0_bytes.bin'
+            assert result.full_path == "admin/test_root_folder/0_bytes.bin"
             assert not result.info["size"]
             assert not result.info["content_length"]
             assert result.info["permissions"] == "RGDNVW"
             assert not result.info["favorite"]
         elif result.name == "5_bytes.txt":
-            assert result.path == 'test_root_folder/5_bytes.txt'
+            assert result.path == "test_root_folder/5_bytes.txt"
             assert not result.is_dir
-            assert result.full_path == 'admin/test_root_folder/5_bytes.txt'
+            assert result.full_path == "admin/test_root_folder/5_bytes.txt"
             assert result.info["size"] == 5
             assert result.info["content_length"] == 5
             assert result.info["permissions"] == "RGDNVW"
             assert result.info["favorite"]
         elif result.name == "child_folder":
-            assert result.path == 'test_root_folder/child_folder/'
+            assert result.path == "test_root_folder/child_folder/"
             assert result.is_dir
-            assert result.full_path == 'admin/test_root_folder/child_folder/'
+            assert result.full_path == "admin/test_root_folder/child_folder/"
             assert result.info["size"] == 10
             assert result.info["content_length"] == 0
             assert result.info["permissions"] == "RGDNVCK"
             assert not result.info["favorite"]
         elif result.name == "empty_child_folder":
-            assert result.path == 'test_root_folder/empty_child_folder/'
+            assert result.path == "test_root_folder/empty_child_folder/"
             assert result.is_dir
-            assert result.full_path == 'admin/test_root_folder/empty_child_folder/'
+            assert result.full_path == "admin/test_root_folder/empty_child_folder/"
             assert result.info["size"] == 0
             assert result.info["content_length"] == 0
             assert result.info["permissions"] == "RGDNVCK"

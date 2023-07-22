@@ -1,8 +1,7 @@
 import pytest
+from gfixture import NC_TO_TEST
 
 from nc_py_api import Nextcloud
-
-from gfixture import NC_TO_TEST
 
 APP_NAME = "files_trashbin"
 

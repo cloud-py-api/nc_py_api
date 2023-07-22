@@ -1,8 +1,7 @@
 import pytest
-
-from nc_py_api import NextcloudException, Nextcloud
-
 from gfixture import NC_TO_TEST
+
+from nc_py_api import Nextcloud, NextcloudException
 
 TEST_GROUP_NAME = "test_coverage_group1"
 TEST_GROUP_NAME2 = "test_coverage_group2"
@@ -10,7 +9,7 @@ TEST_GROUP_NAME2 = "test_coverage_group2"
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-@pytest.mark.parametrize("params", ((TEST_GROUP_NAME, ), (TEST_GROUP_NAME, "display name")))
+@pytest.mark.parametrize("params", ((TEST_GROUP_NAME,), (TEST_GROUP_NAME, "display name")))
 def test_create_delete_group(nc, params):
     test_group_name = params[0]
     try:
@@ -90,7 +89,7 @@ def test_group_edit(nc):
     nc.users_groups.delete(TEST_GROUP_NAME)
     with pytest.raises(NextcloudException) as exc_info:
         nc.users_groups.edit(TEST_GROUP_NAME, display_name="earth people")
-    assert exc_info.value.status_code == 996
+    assert exc_info.value.status_code == 996  # this is an invalid response from server due to a server bug.
 
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")

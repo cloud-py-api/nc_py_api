@@ -1,9 +1,7 @@
 import pytest
-
-from nc_py_api import NextcloudException, Nextcloud
-
 from gfixture import NC_TO_TEST
 
+from nc_py_api import Nextcloud, NextcloudException, NextcloudExceptionNotFound
 
 TEST_USER_NAME = "test_cover_user"
 TEST_USER_PASSWORD = "az1dcaNG4c42"
@@ -72,7 +70,7 @@ def test_delete_user(nc):
     except NextcloudException:
         pass
     nc.users.delete(TEST_USER_NAME)
-    with pytest.raises(NextcloudException):
+    with pytest.raises(NextcloudExceptionNotFound):
         nc.users.delete(TEST_USER_NAME)
 
 

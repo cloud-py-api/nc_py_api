@@ -3,7 +3,14 @@ from os import environ
 import uvicorn
 from fastapi import FastAPI
 
-from nc_py_api import NextcloudApp, set_enabled_handler, ApiScope, set_scopes, enable_heartbeat, LogLvl
+from nc_py_api import (
+    ApiScope,
+    LogLvl,
+    NextcloudApp,
+    enable_heartbeat,
+    set_enabled_handler,
+    set_scopes,
+)
 
 APP = FastAPI()
 

@@ -1,10 +1,9 @@
 from os import environ
-import pytest
 
-from gfixture import NC_APP, NC
+import pytest
+from gfixture import NC, NC_APP
 
 from nc_py_api import ApiScope
-
 
 if NC_APP is None:
     pytest.skip("Only for Nextcloud App mode", allow_module_level=True)
@@ -53,8 +52,3 @@ def test_change_user():
     finally:
         NC_APP.user = orig_user
     assert orig_capabilities == NC_APP.capabilities
-
-
-@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
-def test_register_new_app():
-    pass

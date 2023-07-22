@@ -1,5 +1,4 @@
 import pytest
-
 from gfixture import NC_TO_TEST
 
 APP_NAME = "files_trashbin"

@@ -1,7 +1,6 @@
 from os import environ
 
-from nc_py_api import NextcloudApp, Nextcloud
-
+from nc_py_api import Nextcloud, NextcloudApp
 
 if not environ.get("CI", False):  # For local tests
     environ["NC_AUTH_USER"] = "admin"

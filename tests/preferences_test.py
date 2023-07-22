@@ -1,8 +1,7 @@
 import pytest
+from gfixture import NC_TO_TEST
 
 from nc_py_api import NextcloudException
-
-from gfixture import NC_TO_TEST
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

@@ -8,7 +8,7 @@ from typing import Optional, TypedDict, Union
 from ._session import NcSessionBasic
 from .misc import check_capabilities, require_capabilities
 
-ENDPOINT = "/ocs/v2.php/apps/weather_status/api/v1"
+ENDPOINT = "/ocs/v1.php/apps/weather_status/api/v1"
 
 
 class WeatherLocationMode(IntEnum):
