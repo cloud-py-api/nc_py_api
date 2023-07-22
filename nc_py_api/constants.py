@@ -12,7 +12,7 @@ class LogLvl(IntEnum):
     FATAL = 4
 
 
-APP_V2_BASIC_URL = "/ocs/v2.php/apps/app_ecosystem_v2/api/v1"
+APP_V2_BASIC_URL = "/ocs/v1.php/apps/app_ecosystem_v2/api/v1"
 
 
 class ApiScope(IntEnum):
@@ -27,3 +27,10 @@ class ApiScope(IntEnum):
 class ApiScopesStruct(TypedDict):
     required: list[int]
     optional: list[int]
+
+
+class OCSRespond(IntEnum):
+    RESPOND_SERVER_ERROR = 996
+    RESPOND_UNAUTHORISED = 997
+    RESPOND_NOT_FOUND = 998
+    RESPOND_UNKNOWN_ERROR = 999

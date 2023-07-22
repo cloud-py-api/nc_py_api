@@ -1,7 +1,6 @@
-import pytest
-
 from time import time
 
+import pytest
 from gfixture import NC_TO_TEST, NC_VERSION
 
 
@@ -74,11 +73,11 @@ def test_set_status(nc):
     assert r["message"] == "cool status"
     assert r["clearAt"] == time_clear
     assert r["icon"] is None
-    nc.users_status.set("Sick!", status_icon='🤒')
+    nc.users_status.set("Sick!", status_icon="🤒")
     r = nc.users_status.get_current()
     assert r["message"] == "Sick!"
     assert r["clearAt"] is None
-    assert r["icon"] == '🤒'
+    assert r["icon"] == "🤒"
     nc.users_status.set(None)
     r = nc.users_status.get_current()
     assert r["message"] is None

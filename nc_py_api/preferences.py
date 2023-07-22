@@ -5,7 +5,7 @@ Nextcloud API for working with classics app's storage with user context(table oc
 from ._session import NcSessionBasic
 from .misc import check_capabilities, require_capabilities
 
-ENDPOINT = "/ocs/v2.php/apps/provisioning_api/api/v1/config/users"
+ENDPOINT = "/ocs/v1.php/apps/provisioning_api/api/v1/config/users"
 
 
 class PreferencesAPI:

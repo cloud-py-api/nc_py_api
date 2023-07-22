@@ -8,7 +8,7 @@ from ._session import NcSessionBasic
 from .exceptions import NextcloudException
 from .misc import check_capabilities, kwargs_to_dict, require_capabilities
 
-ENDPOINT = "/ocs/v2.php/apps/user_status/api/v1"
+ENDPOINT = "/ocs/v1.php/apps/user_status/api/v1"
 
 
 class PredefinedStatus(TypedDict):

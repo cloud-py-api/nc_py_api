@@ -1,6 +1,6 @@
 import pytest
 
-from nc_py_api import check_error, NextcloudException
+from nc_py_api import NextcloudException, check_error
 
 
 @pytest.mark.parametrize("code", (995, 996, 997, 998, 999, 1000))

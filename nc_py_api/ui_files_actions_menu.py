@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from ._session import NcSessionApp
 from .constants import APP_V2_BASIC_URL
+from .exceptions import NextcloudExceptionNotFound
 from .misc import require_capabilities
 
 
@@ -28,7 +29,7 @@ class UiFilesActionsAPI:
     def __init__(self, session: NcSessionApp):
         self._session = session
 
-    def register(self, name: str, display_name: str, callback_url: str, **kwargs):
+    def register(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         params = {
             "fileActionMenuParams": {
@@ -42,9 +43,13 @@ class UiFilesActionsAPI:
                 "action_handler": callback_url,
             },
         }
-        return self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{ENDPOINT_SUFFIX}", json=params)
+        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{ENDPOINT_SUFFIX}", json=params)
 
-    def unregister(self, name: str):
+    def unregister(self, name: str, not_fail=True) -> None:
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         params = {"fileActionMenuName": name}
-        return self._session.ocs(method="DELETE", path=f"{APP_V2_BASIC_URL}/{ENDPOINT_SUFFIX}", json=params)
+        try:
+            self._session.ocs(method="DELETE", path=f"{APP_V2_BASIC_URL}/{ENDPOINT_SUFFIX}", json=params)
+        except NextcloudExceptionNotFound as e:
+            if not not_fail:
+                raise e from None

@@ -19,7 +19,8 @@ from httpx import Client, Limits, ReadTimeout, Response
 from xxhash import xxh64
 
 from . import options
-from .exceptions import NextcloudException, check_error
+from .constants import OCSRespond
+from .exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
 
 
 class ServerVersion(TypedDict):
@@ -138,8 +139,6 @@ class NcSessionBasic(ABC):
             raise NextcloudException(408, info=info) from None
 
         check_error(response.status_code, info)
-        if not response.text:
-            raise ValueError(f"Response is empty. Status code: {response.status_code}")
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
@@ -149,6 +148,8 @@ class NcSessionBasic(ABC):
                         self.adapter.close()
                         self.init_adapter(restart=True)
                         return self._ocs(method, path_params, headers, data, **kwargs, nested_req=True)
+            if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
+                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
 
