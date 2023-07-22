@@ -62,7 +62,7 @@ def test_register_ui_file_actions():
             items = tmp_png_s.find_elements(By.TAG_NAME, "a")
             for i in items:
                 if i.accessible_name == "Actions":
-                    i.click()
+                    driver.execute_script("arguments[0].click();", i)
                     break
             sleep(0.3)
             driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_any")]')
