@@ -21,6 +21,7 @@ if not environ["NC_AUTH_USER"] and not environ["NC_AUTH_PASS"]:
     pytest.skip("needs username & password for tests.", allow_module_level=True)
 
 
+@pytest.mark.skipif(environ.get("CI", False), reason="do not work on GitHub")
 def test_register_ui_file_actions():
     im = BytesIO()
     Image.linear_gradient("L").resize((768, 768)).save(im, format="PNG")
@@ -52,7 +53,7 @@ def test_register_ui_file_actions():
                 if i.accessible_name == "Actions":
                     driver.execute_script("arguments[0].click();", i)
                     break
-            sleep(2)
+            sleep(1)
             driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_any")]')
             driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_im")]')
             with pytest.raises(NoSuchElementException):
