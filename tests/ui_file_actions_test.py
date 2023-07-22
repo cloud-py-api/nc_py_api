@@ -21,7 +21,7 @@ if not environ["NC_AUTH_USER"] and not environ["NC_AUTH_PASS"]:
     pytest.skip("needs username & password for tests.", allow_module_level=True)
 
 
-@pytest.mark.skipif(environ.get("CI", False), reason="do not work on GitHub")
+@pytest.mark.skipif(environ.get("CI", None) is not None, reason="do not work on GitHub")
 def test_register_ui_file_actions():
     im = BytesIO()
     Image.linear_gradient("L").resize((768, 768)).save(im, format="PNG")
