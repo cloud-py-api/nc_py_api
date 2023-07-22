@@ -33,7 +33,9 @@ def test_register_ui_file_actions():
         NC_APP.ui_files_actions.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
         NC_APP.ui_files_actions.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
         NC_APP.ui_files_actions.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
-        driver = webdriver.Firefox()
+        opts = webdriver.FirefoxOptions()
+        opts.add_argument("--headless")
+        driver = webdriver.Firefox(opts)
         try:
             driver.get(environ["NEXTCLOUD_URL"])
             driver.find_element(By.ID, "user").send_keys(environ["NC_AUTH_USER"])

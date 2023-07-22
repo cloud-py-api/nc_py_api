@@ -92,3 +92,5 @@ share/python-wheels/
 *.egg
 MANIFEST
 converted/
+
+geckodriver.log
