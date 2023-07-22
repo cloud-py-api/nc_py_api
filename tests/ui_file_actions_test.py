@@ -47,7 +47,13 @@ def test_register_ui_file_actions():
             nc_url = nc_url.removesuffix("/")
             driver.get(nc_url + "/index.php/apps/files/")
             WebDriverWait(driver, 15.0).until(exp_cond.url_contains("apps/files"))
-            sleep(2)
+            for i in range(30):
+                try:
+                    driver.find_element(By.ID, "app-content-files")
+                    break
+                except NoSuchElementException:
+                    pass
+                sleep(0.5)
             page_len = len(driver.page_source)
             for i in range(8):
                 try:
@@ -58,13 +64,14 @@ def test_register_ui_file_actions():
                 if len(driver.page_source) == page_len:
                     break
                 page_len = len(driver.page_source)
+            sleep(5)
             tmp_png_s = driver.find_element(By.XPATH, f'//a[contains(@href,"openfile={tmp_png.info["fileid"]}")]')
             items = tmp_png_s.find_elements(By.TAG_NAME, "a")
             for i in items:
                 if i.accessible_name == "Actions":
                     driver.execute_script("arguments[0].click();", i)
                     break
-            sleep(0.5)
+            sleep(5)
             driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_any")]')
             driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_im")]')
             with pytest.raises(NoSuchElementException):
