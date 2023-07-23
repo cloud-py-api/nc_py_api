@@ -1,7 +1,9 @@
+from copy import deepcopy
+
 import pytest
 from gfixture import NC_TO_TEST
 
-APP_NAME = "files_trashbin"
+from nc_py_api.theming import convert_str_color
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -29,3 +31,13 @@ def test_get_theme(nc):
     assert isinstance(theme["background"], str)
     assert isinstance(theme["background_plain"], bool)
     assert isinstance(theme["background_default"], bool)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_convert_str_color_values_in(nc):
+    theme = deepcopy(nc.theme)
+    for i in ("#", ""):
+        theme["color"] = i
+        assert convert_str_color(theme, "color") == (0, 0, 0)
+    theme.pop("color")
+    assert convert_str_color(theme, "color") == (0, 0, 0)

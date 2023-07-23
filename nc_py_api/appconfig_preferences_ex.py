@@ -24,12 +24,9 @@ class BasicAppCfgPref:
         if not key:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
-        try:
-            r = self.get_values([key])
-            if r:
-                return r[0]["configvalue"]
-        except NextcloudExceptionNotFound:
-            pass
+        r = self.get_values([key])
+        if r:
+            return r[0]["configvalue"]
         return default
 
     def get_values(self, keys: list[str]) -> list[AppCfgPrefRecord]:
