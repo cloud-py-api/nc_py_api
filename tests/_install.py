@@ -18,6 +18,16 @@ from nc_py_api import (
 APP = FastAPI()
 
 
+@APP.put("/sec_check")
+def sec_check(
+    value: int,
+    nc: Annotated[NextcloudApp, Depends(nc_app)],
+):
+    print(value)
+    _ = nc
+    return JSONResponse(content={"error": ""}, status_code=200)
+
+
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled_handler: enabled={enabled}", flush=True)
     if enabled:
@@ -27,14 +37,8 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
-@APP.put("/sec_check")
-def sec_check(
-    value: int,
-    nc: Annotated[NextcloudApp, Depends(nc_app)],
-):
-    print(value)
-    _ = nc
-    return JSONResponse(content={"error": ""}, status_code=200)
+def heartbeat_callback():
+    return "ok"
 
 
 @APP.on_event("startup")
@@ -54,7 +58,7 @@ def initialization():
             "optional": [],
         },
     )
-    enable_heartbeat(APP)
+    enable_heartbeat(APP, heartbeat_callback)
 
 
 if __name__ == "__main__":
