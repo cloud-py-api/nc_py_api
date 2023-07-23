@@ -132,7 +132,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           cd ..
-          sleep 5s
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
             "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
@@ -258,7 +258,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           cd ..
-          sleep 5s
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
             "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
@@ -377,7 +377,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           cd ..
-          sleep 5s
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
             "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
@@ -487,7 +487,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           cd ..
-          sleep 5s
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
             "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
@@ -587,7 +587,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           cd ..
-          sleep 5s
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
             "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"protocol\":\"http\",\"port\":$APP_PORT,\"system_app\":1}" \
