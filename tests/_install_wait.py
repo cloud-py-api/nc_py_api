@@ -4,7 +4,7 @@ from time import sleep
 
 from requests import get
 
-# params: url, string to check, number of tries, time to sleep between retries
+# params: app heartbeat url, string to check, number of tries, time to sleep between retries
 if __name__ == "__main__":
     for i in range(int(argv[3])):
         try:

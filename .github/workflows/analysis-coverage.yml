@@ -132,6 +132,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
@@ -258,6 +259,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
@@ -377,6 +379,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
@@ -487,6 +490,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
@@ -587,6 +591,7 @@ jobs:
           coverage run --data-file=.coverage.ci_install tests/_install.py &
           echo $! > /tmp/_install.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
