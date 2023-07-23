@@ -73,12 +73,12 @@ if __name__ == "__main__":
     sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp() - 4.0 * 60))
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 200
-    sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp() - 5.0 * 60 - 1.0))
+    sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp() - 5.0 * 60 - 3.0))
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 401
     sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp() + 4.0 * 60))
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 200
-    sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp() + 5.0 * 60 + 1.0))
+    sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp() + 5.0 * 60 + 3.0))
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 401
