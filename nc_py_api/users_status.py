@@ -5,7 +5,7 @@ Nextcloud API for working with users statuses.
 from typing import Literal, Optional, TypedDict, Union
 
 from ._session import NcSessionBasic
-from .exceptions import NextcloudException
+from .exceptions import NextcloudExceptionNotFound
 from .misc import check_capabilities, kwargs_to_dict, require_capabilities
 
 ENDPOINT = "/ocs/v1.php/apps/user_status/api/v1"
@@ -53,10 +53,8 @@ class UserStatusAPI:
         require_capabilities("user_status", self._session.capabilities)
         try:
             return self._session.ocs(method="GET", path=f"{ENDPOINT}/statuses/{user_id}")
-        except NextcloudException as e:
-            if e.status_code == 404:
-                return None
-            raise e from None
+        except NextcloudExceptionNotFound:
+            return None
 
     def get_predefined(self) -> list[PredefinedStatus]:
         if self._session.nc_version["major"] < 27:

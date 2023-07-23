@@ -1,18 +1,31 @@
 from os import environ
+from typing import Annotated
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from fastapi.responses import JSONResponse
 
 from nc_py_api import (
     ApiScope,
     LogLvl,
     NextcloudApp,
     enable_heartbeat,
+    nc_app,
     set_enabled_handler,
     set_scopes,
 )
 
 APP = FastAPI()
+
+
+@APP.put("/sec_check")
+def sec_check(
+    value: int,
+    nc: Annotated[NextcloudApp, Depends(nc_app)],
+):
+    print(value)
+    _ = nc
+    return JSONResponse(content={"error": ""}, status_code=200)
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
@@ -22,6 +35,10 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     else:
         nc.log(LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
+
+
+def heartbeat_callback():
+    return "ok"
 
 
 @APP.on_event("startup")
@@ -41,7 +58,7 @@ def initialization():
             "optional": [],
         },
     )
-    enable_heartbeat(APP)
+    enable_heartbeat(APP, heartbeat_callback)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ echo "registering nc_py_api as an app for $1 container"
 NEXTCLOUD_URL="http://$2" APP_PORT=9009 APP_ID="nc_py_api" APP_SECRET="12345" APP_VERSION="1.0.0" \
   python3 tests/_install.py > /dev/null 2>&1 &
 echo $! > /tmp/_install.pid
-sleep 7
+python3 tests/_install_wait.py "http://localhost:9009/heartbeat" "\"status\":\"ok\"" 15 0.5
 docker exec "$1" sudo -u www-data php occ app_ecosystem_v2:app:register nc_py_api manual_install --json-info \
   "{\"appid\":\"nc_py_api\",\"name\":\"NC_Py_API\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9009,\"protocol\":\"http\",\"system_app\":1}" \
   -e --force-scopes

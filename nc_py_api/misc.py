@@ -21,7 +21,7 @@ def kwargs_to_dict(keys: list[str], **kwargs) -> dict:
 def require_capabilities(capabilities: Union[str, list[str]], srv_capabilities: dict) -> None:
     result = check_capabilities(capabilities, srv_capabilities)
     if result:
-        raise NextcloudException(404, f"{result} capability is not available")
+        raise NextcloudException(404, f"{result} is not available")
 
 
 def check_capabilities(capabilities: Union[str, list[str]], srv_capabilities: dict) -> list[str]:

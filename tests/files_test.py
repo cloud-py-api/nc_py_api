@@ -303,6 +303,10 @@ def test_find_files(nc):
     assert len(result) == 1
     result = nc.files.find(["and", "gt", "size", 1024 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 0
+    result = nc.files.find(
+        ["or", "and", "gt", "size", 0, "like", "mime", "image/%", "like", "mime", "text/%"], path="test_root_folder"
+    )
+    assert len(result) == 5
     result = nc.files.find(["gte", "size", 0], path="test_root_folder")
     assert len(result) == 6  # 1 sub dir + 3 images + 2 text files
     result = nc.files.find(["like", "mime", "text/%"], path="test_root_folder")
@@ -380,3 +384,23 @@ def test_makedirs(nc):
     assert exc_info.value.status_code == 405
     nc.files.makedirs("abc/def", exist_ok=True)
     nc.files.delete("abc")
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_fs_node_str(nc):
+    nc.files.makedirs("test_root_folder", exist_ok=True)
+    nc.files.upload("test_file_name.txt", content=b"123")
+    try:
+        fs_node1 = nc.files.by_path("test_root_folder")
+        fs_node2 = nc.files.by_path("test_file_name.txt")
+        str_fs_node1 = str(fs_node1)
+        assert str_fs_node1.find("Dir") != -1
+        assert str_fs_node1.find("test_root_folder") != -1
+        assert str_fs_node1.find(f"id={fs_node1.info['fileid']}") != -1
+        str_fs_node2 = str(fs_node2)
+        assert str_fs_node2.find("File") != -1
+        assert str_fs_node2.find("test_file_name.txt") != -1
+        assert str_fs_node2.find(f"id={fs_node2.info['fileid']}") != -1
+    finally:
+        nc.files.delete("test_root_folder")
+        nc.files.delete("test_file_name.txt")
