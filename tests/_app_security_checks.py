@@ -30,9 +30,9 @@ if __name__ == "__main__":
     assert result.status_code == 401  # Missing headers
     headers.update(
         {
-            "AE-VERSION": "1.0.0",
-            "EX-APP-ID": "nc_py_api",
-            "EX-APP-VERSION": "1.0.0",
+            "AE-VERSION": environ.get("AE_VERSION", "1.0.0"),
+            "EX-APP-ID": environ.get("APP_ID", "nc_py_api"),
+            "EX-APP-VERSION": environ.get("APP_VERSION", "1.0.0"),
         }
     )
     sign_request("/sec_check?value=1", headers)
@@ -56,16 +56,8 @@ if __name__ == "__main__":
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 200
     # Invalid AE-DATA-HASH
-    _ = xxh64()
-    _.update(b"some_data")
-    headers["AE-DATA-HASH"] = _.hexdigest()
-    result = requests.put(request_url, headers=headers)
+    result = requests.put(request_url, headers=headers, data=b"some_data")
     assert result.status_code == 401
-    _ = xxh64()
-    _.update(b"")
-    headers["AE-DATA-HASH"] = _.hexdigest()
-    result = requests.put(request_url, headers=headers)
-    assert result.status_code == 200
     # Sign time
     sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp()))
     result = requests.put(request_url, headers=headers)
