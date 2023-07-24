@@ -35,6 +35,7 @@ class FsNodeInfo(TypedDict):
     content_length: int
     last_modified: datetime
     permissions: str
+    """Permissions for the object."""
     favorite: bool
 
 
@@ -98,6 +99,38 @@ class FsNode:
             f"{'Dir' if self.is_dir else 'File'}: `{self.name}` with id={self.info['fileid']}"
             f" last modified at {str(self.last_modified)} and {self.info['permissions']} permissions."
         )
+
+    @property
+    def is_shared(self) -> bool:
+        return self.info["permissions"].find("S") != -1
+
+    @property
+    def is_shareable(self) -> bool:
+        return self.info["permissions"].find("R") != -1
+
+    @property
+    def is_mounted(self) -> bool:
+        return self.info["permissions"].find("M") != -1
+
+    @property
+    def is_readable(self) -> bool:
+        return self.info["permissions"].find("G") != -1
+
+    @property
+    def is_deletable(self) -> bool:
+        return self.info["permissions"].find("D") != -1
+
+    @property
+    def is_updatable(self) -> bool:
+        if self.is_dir:
+            return self.info["permissions"].find("NV") != -1
+        return self.info["permissions"].find("W") != -1
+
+    @property
+    def is_creatable(self) -> bool:
+        if not self.is_dir:
+            return False
+        return self.info["permissions"].find("CK") != -1
 
 
 PROPFIND_PROPERTIES = [

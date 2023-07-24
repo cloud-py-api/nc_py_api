@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Updated documentation, description
--
+- Updated documentation, description.
+- Updated `FsNode` class with properties for parsing permissions.
 
 ## [0.0.24 - 2023-07-18]
 
