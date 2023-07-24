@@ -1,0 +1,2 @@
+xmltodict
+openapi-python-client
