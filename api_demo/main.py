@@ -5,6 +5,7 @@ import xmltodict
 
 from json import JSONDecodeError
 from files_sharing_client.api.shareapi import shareapi_create_share, shareapi_get_share, shareapi_update_share
+from files_sharing_client.client import Client
 
 # Configuration
 host = "HOST_URL"
