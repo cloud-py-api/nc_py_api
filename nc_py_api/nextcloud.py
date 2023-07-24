@@ -11,6 +11,7 @@ from .appconfig_preferences_ex import AppConfigExAPI, PreferencesExAPI
 from .apps import AppAPI
 from .constants import APP_V2_BASIC_URL, ApiScope, LogLvl
 from .files import FilesAPI
+from .files_sharing import FilesSharingAPI
 from .misc import check_capabilities
 from .preferences import PreferencesAPI
 from .theming import ThemingInfo, get_parsed_theme
@@ -24,6 +25,7 @@ from .weather_status import WeatherStatusAPI
 class NextcloudBasic(ABC):
     apps: AppAPI
     files: FilesAPI
+    files_sharing: FilesSharingAPI
     preferences_api: PreferencesAPI
     users: UsersAPI
     users_groups: UserGroupsAPI
@@ -34,6 +36,7 @@ class NextcloudBasic(ABC):
     def _init_api(self, session: NcSessionBasic):
         self.apps = AppAPI(session)
         self.files = FilesAPI(session)
+        self.files_sharing = FilesSharingAPI(session)
         self.preferences_api = PreferencesAPI(session)
         self.users = UsersAPI(session)
         self.users_groups = UserGroupsAPI(session)

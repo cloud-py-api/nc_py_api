@@ -54,6 +54,7 @@ def initialization():
                 ApiScope.USER_STATUS,
                 ApiScope.NOTIFICATIONS,
                 ApiScope.WEATHER_STATUS,
+                ApiScope.FILES_SHARING,
             ],
             "optional": [],
         },
