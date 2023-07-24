@@ -30,6 +30,8 @@ class WeatherStatusAPI:
 
     @property
     def available(self) -> bool:
+        """Returns True if the Nextcloud instance supports this feature, False otherwise."""
+
         return not check_capabilities("weather_status", self._session.capabilities)
 
     def get_location(self) -> WeatherLocation:

@@ -38,6 +38,8 @@ class UserStatusAPI:
 
     @property
     def available(self) -> bool:
+        """Returns True if the Nextcloud instance supports this feature, False otherwise."""
+
         return not check_capabilities("user_status", self._session.capabilities)
 
     def get_list(self, limit: Optional[int] = None, offset: Optional[int] = None) -> list[UserStatus]:

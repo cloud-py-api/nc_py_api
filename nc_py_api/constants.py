@@ -1,6 +1,6 @@
 """Common constants. Do not use them directly, all public ones are imported to __init__.py"""
 
-from enum import IntEnum
+from enum import IntEnum, IntFlag
 from typing import TypedDict
 
 
@@ -36,10 +36,8 @@ class OCSRespond(IntEnum):
     RESPOND_UNKNOWN_ERROR = 999
 
 
-class SharePermissions(IntEnum):
-    """The share permissions to be set.
-
-    All permissions can be combined with each other, except ``PERMISSION_ALL``"""
+class SharePermissions(IntFlag):
+    """The share permissions to be set"""
 
     PERMISSION_READ = 1
     """Access to read"""
@@ -51,8 +49,6 @@ class SharePermissions(IntEnum):
     """Access to remove objects in the share"""
     PERMISSION_SHARE = 16
     """Access to re-share objects in the share"""
-    PERMISSION_ALL = 31
-    """Full access to the shared object"""
 
 
 class ShareType(IntEnum):

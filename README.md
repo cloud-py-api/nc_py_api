@@ -25,7 +25,7 @@ Project cloud-py-api was **abandoned** and divided into two parts:
  * User status manipulation
  * Weather status
  * ~~Nextcloud notifications support~~
- * ~~Shares operations support~~
+ * Shares support
  * ~~Talk support~~
 
 ### Extended Features with installed App_ecosystem_v2:

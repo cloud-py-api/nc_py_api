@@ -1,5 +1,5 @@
 """
-Nextcloud API for working with file system.
+Nextcloud API for working with the file system.
 """
 
 import builtins
@@ -168,6 +168,8 @@ SEARCH_PROPERTIES_MAP = {
 
 
 class FilesAPI:
+    """This class provides all WebDAV functionality related to the files."""
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
