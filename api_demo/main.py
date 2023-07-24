@@ -4,8 +4,7 @@ import base64
 import xmltodict
 
 from json import JSONDecodeError
-from files_sharing_client.api.shareapi import shareapi_create_share, shareapi_get_share, shareapi_update_share, shareapi_delete_share
-from files_sharing_client.client import Client
+from files_sharing_client.api.shareapi import shareapi_create_share, shareapi_get_share, shareapi_update_share
 
 # Configuration
 host = "HOST_URL"
