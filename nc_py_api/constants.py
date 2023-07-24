@@ -34,3 +34,23 @@ class OCSRespond(IntEnum):
     RESPOND_UNAUTHORISED = 997
     RESPOND_NOT_FOUND = 998
     RESPOND_UNKNOWN_ERROR = 999
+
+
+class ShareType(IntEnum):
+    TYPE_USER = 0
+    TYPE_GROUP = 1
+    TYPE_LINK = 3
+    TYPE_EMAIL = 4
+    TYPE_REMOTE = 6
+    TYPE_CIRCLE = 7
+    TYPE_GUEST = 8
+    TYPE_REMOTE_GROUP = 9
+    TYPE_ROOM = 10
+    TYPE_DECK = 11
+    TYPE_SCIENCEMESH = 15
+
+
+class ShareStatus(IntEnum):
+    STATUS_PENDING = 0
+    STATUS_ACCEPTED = 1
+    STATUS_REJECTED = 2
