@@ -1,4 +1,5 @@
 include nc_py_api/*
+include AUTHORS
 include README.md
 include CHANGELOG.md
 include pyproject.toml

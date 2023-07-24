@@ -9,42 +9,44 @@
 ![impl](https://img.shields.io/pypi/implementation/nc_py_api)
 ![pypi](https://img.shields.io/pypi/v/nc_py_api.svg)
 
-### Remark
-
-Project cloud-py-api was **abandoned** and divided into two parts:
- * `nc_py_api` - this repository, which contains Python Framework to work with Nextcloud and `app_ecosystem_v2`
- * `app_ecosystem_v2` - New [Nextcloud Application Ecosystem](https://github.com/cloud-py-api/app_ecosystem_v2) that allows writing applications for Nextcloud in any language
-
-**_Projects stage: under heavy prototyping and developing_**
+Python library that provides a robust and well-documented API that allows developers to interact with and extend Nextcloud's functionality.
 
 ### Basic Features:
- * Listing, enabling and disabling of the applications
  * Operations with Files and Folders
  * ~~Operations with Trash bin and File versions~~
  * Operations with Users and User Groups
- * User status manipulation
+ * User status
  * Weather status
  * ~~Nextcloud notifications support~~
  * Shares support
  * ~~Talk support~~
 
-### Extended Features with installed App_ecosystem_v2:
- * Defining callback routes with FastAPI for Nextcloud
+### Extended Features with AppEcosystemV2:
+ * Defining callback routes with `FastAPI` for Nextcloud
  * Registering UI elements in Nextcloud
  * Storing logs to the `nextcloud.log` file
  * Get/save key-value pairs in AppConfigEx/PreferencesEx tables.
  * **Tons of the cool stuff that is coming soon**
 
+### Support
+
+You can support us in several ways:
+
+- ⭐️ Star our work (it really motivates)
+- ❗️ Create an Issue or feature request (bring to us an excellent idea)
+- 💁 Resolve some Issue or create a Pull Request (contribute to this project)
+- 🙏 Write an example of its use or correct a typo in the documentation.
+
 ### 🚀 How to start
 
-In very close near future we will publish examples
+In a very close near future we will publish examples
 
 ### More Information
 
-- [Documentation](https://nc_py_api.readthedocs.io/)
+- [Documentation](https://cloud-py-api.github.io/nc_py_api/)
   - [Using it as a simple client](to-do)
   - [Writing a simple Nextcloud application](to-do)
-  - [Writing a Nextcloud system application](to-do)
+  - [Writing a Nextcloud System Application](to-do)
 - [Examples](https://github.com/cloud-py-api/nc_py_api/tree/main/examples)
 - [Contribute](https://github.com/cloud-py-api/nc_py_api/blob/main/.github/CONTRIBUTING.md)
   - [Discussions](https://github.com/cloud-py-api/nc_py_api/discussions)
