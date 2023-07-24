@@ -22,6 +22,7 @@ class ApiScope(IntEnum):
     USER_STATUS = 11
     NOTIFICATIONS = 12
     WEATHER_STATUS = 13
+    FILES_SHARING = 14
 
 
 class ApiScopesStruct(TypedDict):
