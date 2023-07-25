@@ -528,6 +528,8 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
+      - run: exit 2
+
   tests-sqlite:
     needs: [analysis]
     runs-on: ubuntu-22.04
