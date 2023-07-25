@@ -1,4 +1,4 @@
-name: Analysis & Coverage (status)
+name: Tests status
 
 on:
   pull_request:
@@ -7,11 +7,12 @@ permissions:
   contents: none
 
 jobs:
-  tests-success:
+  analysis-coverage:
     permissions:
       contents: none
     runs-on: ubuntu-22.04
-    name: Tests-OK
+
+    name: Analysis & Coverage status
     steps:
       - name: Waiting for Analysis & Coverage
         uses: lewagon/wait-on-check-action@v1.3.1
