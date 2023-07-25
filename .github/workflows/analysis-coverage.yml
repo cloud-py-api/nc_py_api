@@ -22,6 +22,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ana_cov-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 env:
   NEXTCLOUD_URL: "http://localhost:8080"
   APP_ID: "nc_py_api"
