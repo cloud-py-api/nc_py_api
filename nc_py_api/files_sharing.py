@@ -96,21 +96,18 @@ class FilesSharingAPI:
         :param permissions: combination of the :py:class:`~nc_py_api.SharePermissions` object values.
         :param share_type: :py:class:`~nc_py_api.ShareType` value.
         :param share_with: the recipient of the shared object.
-        :param kwargs: *Additionally supported arguments*
+        :param kwargs: See below.
 
         Additionally supported arguments:
-            ``public`` - boolean indicating should share be available for non-registered users.
-                default = ``False``
-            ``password`` - string with password to protect share.
-                default = ``""``
-            ``send_password_by_talk`` - boolean indicating should password be automatically delivered using Talk.
-                default = ``False``
-            ``expire_date`` - py:class:`datetime` time when share should expire. `hours, minutes, seconds` are ignored.
-                default = None
-            ``note`` - string with note, if any.
-                default = ``""``
-            ``label`` - string with label, if any.
-                default = ``""``
+
+            * ``public`` - boolean indicating should share be available for non-registered users. default = ``False``
+            * ``password`` - string with password to protect share. default = ``""``
+            * ``send_password_by_talk`` - boolean indicating should password be automatically delivered using Talk.
+              default = ``False``
+            * ``expire_date`` - py:class:`~datetime` time when share should expire.
+              `hours, minutes, seconds` are ignored. default = ``None``
+            * ``note`` - string with note, if any. default = ``""``
+            * ``label`` - string with label, if any. default = ``""``
         """
 
         require_capabilities("files_sharing", self._session.capabilities)

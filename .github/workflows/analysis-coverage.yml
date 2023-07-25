@@ -18,7 +18,9 @@ on:
       - 'setup.*'
       - 'pyproject.toml'
       - '.pre-commit-config.yaml'
-  workflow_dispatch:
+
+permissions:
+  contents: read
 
 env:
   NEXTCLOUD_URL: "http://localhost:8080"
@@ -626,3 +628,12 @@ jobs:
           name: nc_log_sqlite_${{ matrix.nextcloud }}
           path: data/nextcloud.log
           if-no-files-found: warn
+
+  tests-success:
+    permissions:
+      contents: none
+    runs-on: ubuntu-22.04
+    needs: [tests-maria, tests-pgsql, tests-oci, tests-latest, tests-sqlite]
+    name: Tests-OK
+    steps:
+      - run: echo "Tests passed successfully"

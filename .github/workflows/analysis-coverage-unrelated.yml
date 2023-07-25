@@ -1,0 +1,23 @@
+name: Analysis & Coverage
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/analysis-coverage.yml'
+      - 'nc_py_api/*.*'
+      - 'tests/**'
+      - 'setup.*'
+      - 'pyproject.toml'
+      - '.pre-commit-config.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  tests-success:
+    permissions:
+      contents: none
+    runs-on: ubuntu-22.04
+    name: Tests-OK
+    steps:
+      - run: echo "No Tests required"

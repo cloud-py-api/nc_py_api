@@ -53,7 +53,7 @@ body:
     description: |
       Paste or describe the configuration setting, including software versions, to help diagnose the problem more quickly.
     placeholder: >
-      Example: nc_py_apy = 0.15.0, nextcloud = 28.0.4, etc.
+      Example: nc_py_api = 0.15.0, nextcloud = 28.0.4, etc.
   validations:
     required: true
 - type: markdown
