@@ -1,0 +1,22 @@
+name: Analysis & Coverage (status)
+
+on:
+  pull_request:
+
+permissions:
+  contents: none
+
+jobs:
+  tests-success:
+    permissions:
+      contents: none
+    runs-on: ubuntu-22.04
+    name: Tests-OK
+    steps:
+      - name: Waiting for Analysis & Coverage
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          running-workflow-name: 'Analysis & Coverage'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
