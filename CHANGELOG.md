@@ -2,13 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.26 - 2023-0x-xx]
+## [0.0.26 - 2023-07-xx]
 
 ### Added
 
-- First Examples.
 - More documentation.
 - First `Notifications` APIs.
+
+### Changed
+
+- Reworked `User Status API`
 
 ## [0.0.25 - 2023-07-25]
 

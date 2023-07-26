@@ -8,6 +8,7 @@ Reference
    Shares
    Apps
    Users
+   UsersStatus
    WeatherStatus
    Session
    Constants

@@ -36,7 +36,7 @@ class NextcloudBasic(ABC):
     users_groups: UserGroupsAPI
     # """Nextcloud API for managing user groups"""
     users_status: UserStatusAPI
-    # """Nextcloud API for managing user statuses"""
+    """Nextcloud API for managing user statuses"""
     weather_status: WeatherStatusAPI
     """Nextcloud API for user's weather status"""
     _session: NcSessionBasic

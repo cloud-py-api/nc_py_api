@@ -15,18 +15,22 @@ class WeatherLocationMode(IntEnum):
     """Source from where Nextcloud should determine user's location."""
 
     UNKNOWN = 0
-    """Source is not defined."""
+    """Source is not defined"""
     MODE_BROWSER_LOCATION = 1
-    """User location taken from the browser."""
+    """User location taken from the browser"""
     MODE_MANUAL_LOCATION = 2
-    """User has set their location manually."""
+    """User has set their location manually"""
 
 
 class WeatherLocation(TypedDict):
     latitude: float
+    """Latitude in decimal degree format"""
     longitude: float
+    """Longitude in decimal degree format"""
     address: str
+    """Any approximate or exact address"""
     mode: WeatherLocationMode
+    """Weather status mode"""
 
 
 class WeatherStatusAPI:
@@ -42,6 +46,8 @@ class WeatherStatusAPI:
         return not check_capabilities("weather_status", self._session.capabilities)
 
     def get_location(self) -> WeatherLocation:
+        """Returns the current location set on the Nextcloud server for the user."""
+
         require_capabilities("weather_status", self._session.capabilities)
         result = self._session.ocs(method="GET", path=f"{ENDPOINT}/location")
         lat = result.get("lat", "")
@@ -56,6 +62,13 @@ class WeatherStatusAPI:
     def set_location(
         self, latitude: Optional[float] = None, longitude: Optional[float] = None, address: Optional[str] = None
     ) -> bool:
+        """Sets the user's location on the Nextcloud server.
+
+        :param latitude: north–south position of a point on the surface of the Earth.
+        :param longitude: east–west position of a point on the surface of the Earth.
+        :param address: city, index(*optional*) and country, e.g. "Paris, 75007, France"
+        """
+
         require_capabilities("weather_status", self._session.capabilities)
         params: dict[str, Union[str, float]] = {}
         if latitude is not None and longitude is not None:
@@ -68,19 +81,27 @@ class WeatherStatusAPI:
         return result.get("success", False)
 
     def get_forecast(self) -> list[dict]:
+        """Get forecast for the current location."""
+
         require_capabilities("weather_status", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/forecast")
 
     def get_favorites(self) -> list[str]:
+        """Returns favorites addresses list."""
+
         require_capabilities("weather_status", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/favorites")
 
     def set_favorites(self, favorites: list[str]) -> bool:
+        """Sets favorites addresses list."""
+
         require_capabilities("weather_status", self._session.capabilities)
         result = self._session.ocs(method="PUT", path=f"{ENDPOINT}/favorites", json={"favorites": favorites})
         return result.get("success", False)
 
     def set_mode(self, mode: WeatherLocationMode) -> bool:
+        """Change the weather status mode."""
+
         if int(mode) == WeatherLocationMode.UNKNOWN.value:
             raise ValueError("This mode can not be set")
         require_capabilities("weather_status", self._session.capabilities)

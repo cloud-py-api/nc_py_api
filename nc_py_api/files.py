@@ -52,7 +52,7 @@ class FsNode:
     """Path to the object. Does not include the username, but includes the object name."""
 
     name: str
-    """last ``pathname`` component."""
+    """Last ``pathname`` component."""
 
     def __init__(self, user: str, path: str, name: str, **kwargs):
         self.user = user

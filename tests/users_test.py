@@ -131,4 +131,4 @@ def test_edit_user(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_resend_user_email(nc):
-    nc.users.resend_welcome_email()
+    nc.users.resend_welcome_email(nc.user)
