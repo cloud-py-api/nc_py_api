@@ -2,8 +2,9 @@
 Nextcloud API for working with weather statuses.
 """
 
+from dataclasses import dataclass
 from enum import IntEnum
-from typing import Optional, TypedDict, Union
+from typing import Optional, Union
 
 from ._session import NcSessionBasic
 from .misc import check_capabilities, require_capabilities
@@ -22,7 +23,8 @@ class WeatherLocationMode(IntEnum):
     """User has set their location manually"""
 
 
-class WeatherLocation(TypedDict):
+@dataclass
+class WeatherLocation:
     latitude: float
     """Latitude in decimal degree format"""
     longitude: float
@@ -31,6 +33,14 @@ class WeatherLocation(TypedDict):
     """Any approximate or exact address"""
     mode: WeatherLocationMode
     """Weather status mode"""
+
+    def __init__(self, raw_location: dict):
+        lat = raw_location.get("lat", "")
+        lon = raw_location.get("lon", "")
+        self.latitude = float(lat if lat else "0")
+        self.longitude = float(lon if lon else "0")
+        self.address = raw_location.get("address", "")
+        self.mode = WeatherLocationMode(int(raw_location.get("mode", 0)))
 
 
 class WeatherStatusAPI:
@@ -49,15 +59,7 @@ class WeatherStatusAPI:
         """Returns the current location set on the Nextcloud server for the user."""
 
         require_capabilities("weather_status", self._session.capabilities)
-        result = self._session.ocs(method="GET", path=f"{ENDPOINT}/location")
-        lat = result.get("lat", "")
-        lon = result.get("lon", "")
-        return {
-            "latitude": float(lat if lat else "0"),
-            "longitude": float(lon if lon else "0"),
-            "address": result.get("address", ""),
-            "mode": WeatherLocationMode(int(result.get("mode", 0))),
-        }
+        return WeatherLocation(self._session.ocs(method="GET", path=f"{ENDPOINT}/location"))
 
     def set_location(
         self, latitude: Optional[float] = None, longitude: Optional[float] = None, address: Optional[str] = None

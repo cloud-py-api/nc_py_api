@@ -6,8 +6,8 @@ Weather Status
 .. autoclass:: WeatherStatusAPI
     :members:
 
-.. autoclass:: WeatherLocationMode
+.. autoclass:: WeatherLocation
     :members:
 
-.. autoclass:: WeatherLocation
+.. autoclass:: WeatherLocationMode
     :members:

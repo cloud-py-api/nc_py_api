@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Reworked `User Status API`
+- Reworked return type for `weather_status.get_location`
 
 ## [0.0.25 - 2023-07-25]
 
