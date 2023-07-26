@@ -5,6 +5,8 @@ from httpx import codes
 
 
 class NextcloudException(Exception):
+    """The base exception for all Nextcloud operation errors."""
+
     status_code: int
     reason: str
 
@@ -21,6 +23,8 @@ class NextcloudException(Exception):
 
 
 class NextcloudExceptionNotFound(NextcloudException):
+    """The exception that is thrown during operations when the object is not found."""
+
     def __init__(self, reason="Not found", info: str = ""):
         super().__init__(404, reason=reason, info=info)
 

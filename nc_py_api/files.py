@@ -326,7 +326,7 @@ class FilesAPI:
         """Deletes a file/directory (moves to trash if trash is enabled).
 
         :param path: Path to delete.
-        :param not_fail: if set to ``True`` and object is not found, does not raise an exception.
+        :param not_fail: if set to ``True`` and the object is not found, does not raise an exception.
         """
 
         path = path.path if isinstance(path, FsNode) else path
@@ -340,7 +340,7 @@ class FilesAPI:
 
         :param path_src: The path of an existing file/directory.
         :param path_dest: The name of the new one.
-        :param overwrite: If ``True`` and destination object already exists it gets overwritten.
+        :param overwrite: If ``True`` and the destination object already exists, it gets overwritten.
             Default = **False**.
         """
 
@@ -360,7 +360,7 @@ class FilesAPI:
 
         :param path_src: The path of an existing file/directory.
         :param path_dest: The name of the new one.
-        :param overwrite: If ``True`` and destination object already exists it gets overwritten.
+        :param overwrite: If ``True`` and the destination object already exists, it gets overwritten.
             Default = **False**.
         """
 

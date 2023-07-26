@@ -6,21 +6,30 @@ from typing import TypedDict
 
 
 class ThemingInfo(TypedDict):
+    """Nextcloud Theme information"""
+
     name: str
+    """Name of the Nextcloud instance"""
     url: str
+    """Url that set in Theme app"""
     slogan: str
+    """Slogan, e.g. 'a safe home for all your data'"""
     color: tuple[int, int, int]
     color_text: tuple[int, int, int]
     color_element: tuple[int, int, int]
     color_element_bright: tuple[int, int, int]
     color_element_dark: tuple[int, int, int]
     logo: str
+    """Url of the instance's logo"""
     background: str
+    """Either an URL of the background image or a hex color value"""
     background_plain: bool
     background_default: bool
 
 
 def convert_str_color(theming_capability: dict, key: str) -> tuple[int, int, int]:
+    """Returns a tuple of integers representing the RGB color for the specified theme key."""
+
     if key not in theming_capability:
         return 0, 0, 0
     value = theming_capability[key]

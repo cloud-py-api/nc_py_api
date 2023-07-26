@@ -12,9 +12,14 @@ ENDPOINT = "/ocs/v1.php/apps/weather_status/api/v1"
 
 
 class WeatherLocationMode(IntEnum):
+    """Source from where Nextcloud should determine user's location."""
+
     UNKNOWN = 0
+    """Source is not defined."""
     MODE_BROWSER_LOCATION = 1
+    """User location taken from the browser."""
     MODE_MANUAL_LOCATION = 2
+    """User has set their location manually."""
 
 
 class WeatherLocation(TypedDict):
@@ -25,6 +30,8 @@ class WeatherLocation(TypedDict):
 
 
 class WeatherStatusAPI:
+    """The class provides the weather status management API on the Nextcloud server."""
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 

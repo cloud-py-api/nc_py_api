@@ -104,7 +104,7 @@ class FilesSharingAPI:
             * ``password`` - string with password to protect share. default = ``""``
             * ``send_password_by_talk`` - boolean indicating should password be automatically delivered using Talk.
               default = ``False``
-            * ``expire_date`` - py:class:`~datetime` time when share should expire.
+            * ``expire_date`` - :py:class:`~datetime.datetime` time when share should expire.
               `hours, minutes, seconds` are ignored. default = ``None``
             * ``note`` - string with note, if any. default = ``""``
             * ``label`` - string with label, if any. default = ``""``

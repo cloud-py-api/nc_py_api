@@ -24,11 +24,18 @@ from .exceptions import NextcloudException, NextcloudExceptionNotFound, check_er
 
 
 class ServerVersion(TypedDict):
+    """Nextcloud version information"""
+
     major: int
+    """Major version"""
     minor: int
+    """Minor version"""
     micro: int
+    """Micro version"""
     string: str
+    """Full version in string format"""
     extended_support: bool
+    """Indicates if the subscription has extended support"""
 
 
 @dataclass
@@ -66,10 +73,16 @@ class Config(BasicConfig):
 
 @dataclass
 class AppConfig(BasicConfig):
+    """Application configuration"""
+
     ae_version: str
+    """AppEcosystem version"""
     app_name: str
+    """Application name"""
     app_version: str
+    """Application version"""
     app_secret: bytes
+    """Application authentication secret"""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -6,5 +6,9 @@ Reference
 
    Files
    Shares
+   Apps
+   Users
+   WeatherStatus
    Session
-   constants
+   Constants
+   Exceptions

@@ -27,6 +27,8 @@ Have a great time with Python and Nextcloud!
 .. toctree::
    :maxdepth: 1
 
+   Nextcloud
+   Options
    reference/index.rst
    benchmarks/AppEcosystem.rst
 

@@ -57,6 +57,9 @@ pygments_style = "sphinx"
 # Default is False. You can activate this mode temporarily using the -n command-line
 # switch.
 nitpicky = True
+nitpick_ignore_regex = [(r"py:class", r"starlette\.requests\.Request")]
+
+autodoc_member_order = "bysource"
 
 
 def setup(app):
