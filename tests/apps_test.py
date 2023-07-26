@@ -34,6 +34,12 @@ def test_enable_disable_app(nc):
     assert nc.apps.is_installed(APP_NAME)
 
 
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_is_installed_enabled(nc):
+    assert nc.apps.is_enabled(APP_NAME) != nc.apps.is_disabled(APP_NAME)
+    assert nc.apps.is_installed(APP_NAME)
+
+
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_invalid_param(nc):
     with pytest.raises(ValueError):

@@ -13,7 +13,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/analysis-coverage.yml'
-      - 'pillow_heif/*.*'
+      - 'nc_py_api/*.*'
       - 'tests/**'
       - 'setup.*'
       - 'pyproject.toml'

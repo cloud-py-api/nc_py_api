@@ -3,18 +3,20 @@ from time import time
 import pytest
 from gfixture import NC_TO_TEST, NC_VERSION
 
+from nc_py_api import users_status
+
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_available(nc):
     assert nc.users_status.available
 
 
-def compare_user_statuses(p1, p2):
-    assert p1["userId"] == p2["userId"]
-    assert p1["message"] == p2["message"]
-    assert p1["icon"] == p2["icon"]
-    assert p1["clearAt"] == p2["clearAt"]
-    assert p1["status"] == p2["status"]
+def compare_user_statuses(p1: users_status.UserStatus, p2: users_status.UserStatus):
+    assert p1.user_id == p2.user_id
+    assert p1.message == p2.message
+    assert p1.icon == p2.icon
+    assert p1.clear_at == p2.clear_at
+    assert p1.status_type == p2.status_type
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -24,14 +26,14 @@ def test_get_status(nc, message):
     r1 = nc.users_status.get_current()
     r2 = nc.users_status.get(nc.user)
     compare_user_statuses(r1, r2)
-    assert r1["userId"] == "admin"
-    assert r1["icon"] is None
-    assert r1["clearAt"] is None
+    assert r1.user_id == "admin"
+    assert r1.icon is None
+    assert r1.clear_at is None
     if message == "":
         message = None
-    assert r1["message"] == message
-    assert r1["messageId"] is None
-    assert not r1["messageIsPredefined"]
+    assert r1.message == message
+    assert r1.status_id is None
+    assert not r1.predefined
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -48,10 +50,10 @@ def test_get_predefined(nc):
         assert isinstance(r, list)
         assert r
         for i in r:
-            assert isinstance(i["id"], str)
-            assert isinstance(i["message"], str)
-            assert isinstance(i["icon"], str)
-            assert isinstance(i["clearAt"], dict) or i["clearAt"] is None
+            assert isinstance(i.status_id, str)
+            assert isinstance(i.message, str)
+            assert isinstance(i.icon, str)
+            assert isinstance(i.clear_at, users_status.ClearAt) or i.clear_at is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -61,7 +63,7 @@ def test_get_list(nc):
     assert isinstance(r_all, list)
     r_current = nc.users_status.get_current()
     for i in r_all:
-        if i["userId"] == nc.user:
+        if i.user_id == nc.user:
             compare_user_statuses(i, r_current)
 
 
@@ -70,19 +72,19 @@ def test_set_status(nc):
     time_clear = int(time()) + 60
     nc.users_status.set("cool status", time_clear)
     r = nc.users_status.get_current()
-    assert r["message"] == "cool status"
-    assert r["clearAt"] == time_clear
-    assert r["icon"] is None
+    assert r.message == "cool status"
+    assert r.clear_at == time_clear
+    assert r.icon is None
     nc.users_status.set("Sick!", status_icon="🤒")
     r = nc.users_status.get_current()
-    assert r["message"] == "Sick!"
-    assert r["clearAt"] is None
-    assert r["icon"] == "🤒"
+    assert r.message == "Sick!"
+    assert r.clear_at is None
+    assert r.icon == "🤒"
     nc.users_status.set(None)
     r = nc.users_status.get_current()
-    assert r["message"] is None
-    assert r["clearAt"] is None
-    assert r["icon"] is None
+    assert r.message is None
+    assert r.clear_at is None
+    assert r.icon is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -90,8 +92,8 @@ def test_set_status(nc):
 def test_set_status_type(nc, value):
     nc.users_status.set_status_type(value)
     r = nc.users_status.get_current()
-    assert r["status"] == value
-    assert r["statusIsUserDefined"]
+    assert r.status_type == value
+    assert r.status_type_defined
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -102,12 +104,12 @@ def test_set_predefined(nc, clear_at):
     else:
         predefined_statuses = nc.users_status.get_predefined()
         for i in predefined_statuses:
-            nc.users_status.set_predefined(i["id"], clear_at)
+            nc.users_status.set_predefined(i.status_id, clear_at)
             r = nc.users_status.get_current()
-            assert r["message"] == i["message"]
-            assert r["messageId"] == i["id"]
-            assert r["messageIsPredefined"]
-            assert r["clearAt"] == clear_at
+            assert r.message == i.message
+            assert r.status_id == i.status_id
+            assert r.predefined
+            assert r.clear_at == clear_at
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
