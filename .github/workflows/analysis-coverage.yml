@@ -314,7 +314,7 @@ jobs:
 
     services:
       oracle:
-        image: ghcr.io/gvenzl/oracle-xe:11
+        image: ghcr.io/gvenzl/oracle-xe:21
         env:
           ORACLE_RANDOM_PASSWORD: true
           APP_USER: useroracle
