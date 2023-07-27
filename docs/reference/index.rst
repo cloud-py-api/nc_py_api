@@ -8,6 +8,7 @@ Reference
    Shares
    Apps
    Users
+   UsersGroups
    UsersStatus
    WeatherStatus
    Session

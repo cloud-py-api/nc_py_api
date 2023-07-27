@@ -1,7 +1,7 @@
 .. py:currentmodule:: nc_py_api.users
 
-User Management API
--------------------
+User Management
+---------------
 
 .. autoclass:: UsersAPI
     :members:

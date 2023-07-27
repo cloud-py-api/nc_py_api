@@ -2,22 +2,8 @@ name: Analysis & Coverage
 
 on:
   pull_request:
-    paths:
-      - '.github/workflows/analysis-coverage.yml'
-      - 'nc_py_api/*.*'
-      - 'tests/**'
-      - 'setup.*'
-      - 'pyproject.toml'
-      - '.pre-commit-config.yaml'
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/analysis-coverage.yml'
-      - 'nc_py_api/*.*'
-      - 'tests/**'
-      - 'setup.*'
-      - 'pyproject.toml'
-      - '.pre-commit-config.yaml'
 
 permissions:
   contents: read

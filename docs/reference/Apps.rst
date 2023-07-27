@@ -1,7 +1,7 @@
 .. py:currentmodule:: nc_py_api.apps
 
-Applications Management API
----------------------------
+Applications Management
+-----------------------
 
 .. autoclass:: AppAPI
     :members:
