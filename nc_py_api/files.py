@@ -102,32 +102,46 @@ class FsNode:
 
     @property
     def is_shared(self) -> bool:
+        """Check if a file or folder is shared"""
+
         return self.info["permissions"].find("S") != -1
 
     @property
     def is_shareable(self) -> bool:
+        """Check if a file or folder can be shared"""
+
         return self.info["permissions"].find("R") != -1
 
     @property
     def is_mounted(self) -> bool:
+        """Check if a file or folder is mounted"""
+
         return self.info["permissions"].find("M") != -1
 
     @property
     def is_readable(self) -> bool:
+        """Check if the file or folder is readable"""
+
         return self.info["permissions"].find("G") != -1
 
     @property
     def is_deletable(self) -> bool:
+        """Check if a file or folder can be deleted"""
+
         return self.info["permissions"].find("D") != -1
 
     @property
     def is_updatable(self) -> bool:
+        """Check if a file is writable"""
+
         if self.is_dir:
             return self.info["permissions"].find("NV") != -1
         return self.info["permissions"].find("W") != -1
 
     @property
     def is_creatable(self) -> bool:
+        """Check whether new files or folders can be created inside this folder"""
+
         if not self.is_dir:
             return False
         return self.info["permissions"].find("CK") != -1

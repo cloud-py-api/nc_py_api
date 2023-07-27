@@ -404,3 +404,21 @@ def test_fs_node_str(nc):
     finally:
         nc.files.delete("test_root_folder")
         nc.files.delete("test_file_name.txt")
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_fs_node_is_xx(nc):
+    nc.files.delete("test_root_folder", not_fail=True)
+    nc.files.makedirs("test_root_folder", exist_ok=True)
+    try:
+        folder = nc.files.listdir("test_root_folder", exclude_self=False)[0]
+        assert folder.is_dir
+        assert folder.is_creatable
+        assert folder.is_readable
+        assert folder.is_deletable
+        assert folder.is_shareable
+        assert folder.is_updatable
+        assert not folder.is_mounted
+        assert not folder.is_shared
+    finally:
+        nc.files.delete("test_root_folder")
