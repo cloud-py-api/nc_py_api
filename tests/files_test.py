@@ -33,18 +33,32 @@ def test_list_user_root(nc):
     assert user_root
     for obj in user_root:
         assert obj.user
-        assert obj.info["nc_id"]
-        assert obj.info["fileid"]
-    root_node = FsNode(user=nc.user, path="", name="")
+        assert obj.name
+        assert obj.user_path
+        assert obj.file_id
+        assert obj.etag
+    root_node = FsNode(full_path=f"files/{nc.user}/")
     user_root2 = nc.files.listdir(root_node)
     assert user_root == user_root2
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_list_user_root_self_exclude(nc):
+    user_root = nc.files.listdir(exclude_self=True)
+    user_root_with_self = nc.files.listdir(exclude_self=False)
+    assert len(user_root_with_self) == 1 + len(user_root)
+    self_res = [i for i in user_root_with_self if not i.user_path][0]
+    assert self_res.file_id
+    assert self_res.user
+    assert self_res.name
+    assert self_res.etag
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download(nc):
     content = randbytes(64)
-    nc.files.upload("test_file.txt", content=content)
-    srv_admin_manual1 = nc.files.download("test_file.txt")
+    new_file = nc.files.upload("test_file.txt", content=content)
+    srv_admin_manual1 = nc.files.download(new_file)
     srv_admin_manual2 = nc.files.download("/test_file.txt")
     assert srv_admin_manual1 == srv_admin_manual2
     assert srv_admin_manual1 == content
@@ -203,7 +217,7 @@ def test_mkdir(nc, dir_name):
 def test_no_favorites(nc):
     favorites = nc.files.listfav()
     for favorite in favorites:
-        nc.files.setfav(favorite.path, False)
+        nc.files.setfav(favorite.user_path, False)
     assert not nc.files.listfav()
 
 
@@ -211,7 +225,7 @@ def test_no_favorites(nc):
 def test_favorites(nc):
     favorites = nc.files.listfav()
     for favorite in favorites:
-        nc.files.setfav(favorite.path, False)
+        nc.files.setfav(favorite.user_path, False)
     files = ("fav1.txt", "fav2.txt", "fav3.txt")
     for n in files:
         nc.files.upload(n, content=n)
@@ -329,47 +343,48 @@ def test_fs_node_fields(nc):
     for i, result in enumerate(results):
         assert result.user == "admin"
         if result.name == "0_bytes.bin":
-            assert result.path == "test_root_folder/0_bytes.bin"
+            assert result.user_path == "test_root_folder/0_bytes.bin"
             assert not result.is_dir
-            assert result.full_path == "admin/test_root_folder/0_bytes.bin"
-            assert not result.info["size"]
-            assert not result.info["content_length"]
-            assert result.info["permissions"] == "RGDNVW"
-            assert not result.info["favorite"]
+            assert result.full_path == "files/admin/test_root_folder/0_bytes.bin"
+            assert not result.info.size
+            assert not result.info.content_length
+            assert result.info.permissions == "RGDNVW"
+            assert not result.info.favorite
         elif result.name == "5_bytes.txt":
-            assert result.path == "test_root_folder/5_bytes.txt"
+            assert result.user_path == "test_root_folder/5_bytes.txt"
             assert not result.is_dir
-            assert result.full_path == "admin/test_root_folder/5_bytes.txt"
-            assert result.info["size"] == 5
-            assert result.info["content_length"] == 5
-            assert result.info["permissions"] == "RGDNVW"
-            assert result.info["favorite"]
+            assert result.full_path == "files/admin/test_root_folder/5_bytes.txt"
+            assert result.info.size == 5
+            assert result.info.content_length == 5
+            assert result.info.permissions == "RGDNVW"
+            assert result.info.favorite
         elif result.name == "child_folder":
-            assert result.path == "test_root_folder/child_folder/"
+            assert result.user_path == "test_root_folder/child_folder/"
             assert result.is_dir
-            assert result.full_path == "admin/test_root_folder/child_folder/"
-            assert result.info["size"] == 10
-            assert result.info["content_length"] == 0
-            assert result.info["permissions"] == "RGDNVCK"
-            assert not result.info["favorite"]
+            assert result.full_path == "files/admin/test_root_folder/child_folder/"
+            assert result.info.size == 10
+            assert result.info.content_length == 0
+            assert result.info.permissions == "RGDNVCK"
+            assert not result.info.favorite
         elif result.name == "empty_child_folder":
-            assert result.path == "test_root_folder/empty_child_folder/"
+            assert result.user_path == "test_root_folder/empty_child_folder/"
             assert result.is_dir
-            assert result.full_path == "admin/test_root_folder/empty_child_folder/"
-            assert result.info["size"] == 0
-            assert result.info["content_length"] == 0
-            assert result.info["permissions"] == "RGDNVCK"
-            assert not result.info["favorite"]
+            assert result.full_path == "files/admin/test_root_folder/empty_child_folder/"
+            assert result.info.size == 0
+            assert result.info.content_length == 0
+            assert result.info.permissions == "RGDNVCK"
+            assert not result.info.favorite
         else:
             raise ValueError(f"Unknown value:{result.name}")
-        res_by_id = nc.files.by_id(result.info["fileid"])
+        res_by_id = nc.files.by_id(result.file_id)
         assert res_by_id
-        res_by_path = nc.files.by_path(result.path)
+        res_by_path = nc.files.by_path(result.user_path)
         assert res_by_path
         assert res_by_id.info == res_by_path.info == result.info
         assert res_by_id.full_path == res_by_path.full_path == result.full_path
         assert res_by_id.user == res_by_path.user == result.user
-        assert res_by_id.last_modified == res_by_path.last_modified == result.last_modified
+        assert res_by_id.etag == res_by_path.etag == result.etag
+        assert res_by_id.info.last_modified == res_by_path.info.last_modified == result.info.last_modified
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -396,11 +411,11 @@ def test_fs_node_str(nc):
         str_fs_node1 = str(fs_node1)
         assert str_fs_node1.find("Dir") != -1
         assert str_fs_node1.find("test_root_folder") != -1
-        assert str_fs_node1.find(f"id={fs_node1.info['fileid']}") != -1
+        assert str_fs_node1.find(f"id={fs_node1.file_id}") != -1
         str_fs_node2 = str(fs_node2)
         assert str_fs_node2.find("File") != -1
         assert str_fs_node2.find("test_file_name.txt") != -1
-        assert str_fs_node2.find(f"id={fs_node2.info['fileid']}") != -1
+        assert str_fs_node2.find(f"id={fs_node2.file_id}") != -1
     finally:
         nc.files.delete("test_root_folder")
         nc.files.delete("test_file_name.txt")

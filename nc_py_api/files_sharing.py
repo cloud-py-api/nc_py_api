@@ -71,7 +71,7 @@ class FilesSharingAPI:
         """Returns lists of shares."""
 
         require_capabilities("files_sharing", self._session.capabilities)
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         params = {
             "shared_with_me": "true" if shared_with_me else "false",
             "reshares": "true" if reshares else "false",
@@ -111,7 +111,7 @@ class FilesSharingAPI:
         """
 
         require_capabilities("files_sharing", self._session.capabilities)
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         params = {
             "path": path,
             "permissions": int(permissions),

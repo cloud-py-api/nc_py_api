@@ -48,7 +48,7 @@ def test_register_ui_file_actions():
             driver.get(nc_url + "/index.php/apps/files/?dir=/test_ui_action")
             WebDriverWait(driver, 15.0).until(exp_cond.url_contains("apps/files"))
             sleep(2.5)
-            tmp_png_s = driver.find_element(By.XPATH, f'//a[contains(@href,"openfile={tmp_png.info["fileid"]}")]')
+            tmp_png_s = driver.find_element(By.XPATH, f'//a[contains(@href,"openfile={tmp_png.info.fileid}")]')
             items = tmp_png_s.find_elements(By.TAG_NAME, "a")
             for i in items:
                 if i.accessible_name == "Actions":
