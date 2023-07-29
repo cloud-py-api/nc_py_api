@@ -17,7 +17,7 @@ def test_password_confirmation():
     patch_path = path.join(path.dirname(path.abspath(__file__)), "data/nc_pass_confirm.patch")
     cwd_path = path.dirname((path.dirname(path.dirname(path.dirname(path.abspath(__file__))))))
     print(cwd_path)
-    run(["patch", "-p", "-i", patch_path], cwd=cwd_path, check=True)
+    run(["patch", "-p", "1", "-i", patch_path], cwd=cwd_path, check=True)
     try:
         NC.users.create("test_cover_user_spec", password="ThisIsA54StrongPassword013")
     except NextcloudException:
