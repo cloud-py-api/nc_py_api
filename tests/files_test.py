@@ -276,6 +276,13 @@ def test_mkdir(nc, dir_name):
         nc.files.delete(dir_name)
 
 
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_mkdir_invalid_args(nc):
+    with pytest.raises(NextcloudException) as exc_info:
+        nc.files.makedirs("zzzzz/    /zzzzzzzz", exist_ok=True)
+    assert exc_info.value.status_code != 405
+
+
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_mkdir_delete_with_end_slash(nc):
     nc.files.delete("dir_with_slash", not_fail=True)
