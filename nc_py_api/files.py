@@ -539,8 +539,6 @@ class FilesAPI:
         check_error(webdav_res.status_code, info=info)
         if webdav_res.status_code != 207:  # multistatus
             raise NextcloudException(webdav_res.status_code, "Response is not a multistatus.", info=info)
-        if not webdav_res.text:
-            raise NextcloudException(webdav_res.status_code, "Response is empty.", info=info)
         response_data = loads(dumps(xmltodict.parse(webdav_res.text)))
         if "d:error" in response_data:
             err = response_data["d:error"]

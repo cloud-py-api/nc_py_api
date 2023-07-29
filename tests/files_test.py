@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 from io import BytesIO
 from random import choice, randbytes
 from string import ascii_lowercase
@@ -549,3 +550,12 @@ def test_fs_node_is_xx(nc):
         assert not folder.is_shared
     finally:
         nc.files.delete("test_root_folder")
+
+
+def test_fs_node_last_modified_time():
+    fs_node = FsNode("", last_modified="wrong time")
+    assert fs_node.info.last_modified == datetime(1970, 1, 1)
+    fs_node = FsNode("", last_modified="Sat, 29 Jul 2023 11:56:31")
+    assert fs_node.info.last_modified == datetime(2023, 7, 29, 11, 56, 31)
+    fs_node = FsNode("", last_modified=datetime(2022, 4, 5, 1, 2, 3))
+    assert fs_node.info.last_modified == datetime(2022, 4, 5, 1, 2, 3)
