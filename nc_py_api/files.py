@@ -47,7 +47,7 @@ class FsNodeInfo:
         self.fileid = kwargs.get("fileid", 0)
         try:
             self.last_modified = kwargs.get("last_modified", datetime(1970, 1, 1))
-        except ValueError:
+        except (ValueError, TypeError):
             self.last_modified = datetime(1970, 1, 1)
 
     @property
