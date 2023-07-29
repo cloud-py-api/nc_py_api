@@ -1,6 +1,6 @@
 from os import environ, path
 from subprocess import run
-from unittest import mock
+from time import sleep
 
 import pytest
 from gfixture import NC
@@ -18,11 +18,13 @@ def test_password_confirmation():
     patch_path = path.join(path.dirname(path.abspath(__file__)), "data/nc_pass_confirm.patch")
     cwd_path = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
     run(["patch", "-p", "1", "-i", patch_path], cwd=cwd_path, check=True)
-    with mock.patch("gfixture.NC._session.init_adapter") as _init_adapter:
-        try:
-            NC.users.create("test_cover_user_spec", password="ThisIsA54StrongPassword013")
-        except NextcloudException:
-            pass
-        NC.users.delete("test_cover_user_spec")
-    assert _init_adapter.assert_called()
+    sleep(6)
+    NC.update_server_info()
+    old_adapter = NC._session.adapter
+    try:
+        NC.users.create("test_cover_user_spec", password="ThisIsA54StrongPassword013")
+    except NextcloudException:
+        pass
+    NC.users.delete("test_cover_user_spec")
+    assert old_adapter != NC._session.adapter
     run(["git", "apply", "-R", patch_path], cwd=cwd_path, check=True)
