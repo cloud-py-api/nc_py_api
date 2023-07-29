@@ -111,7 +111,7 @@ class FsNode:
 
     @property
     def has_extra(self) -> bool:
-        """Flag indicating whether this ``FsNode`` was obtained by the `mkdir`, `upload`, `move`, `copy`
+        """Flag indicating whether this ``FsNode`` was obtained by the `mkdir` or `upload`
         methods and does not contain extended information."""
 
         return bool(self.info.permissions)
@@ -327,7 +327,7 @@ class FilesAPI:
         full_path = self._dav_get_obj_path(self._session.user, path)
         response = self._session.dav("PUT", full_path, data=content)
         check_error(response.status_code, f"upload: user={self._session.user}, path={path}, size={len(content)}")
-        return FsNode(full_path, **self.__get_etag_fileid_from_response(response))
+        return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
 
     def upload_stream(self, path: Union[str, FsNode], fp, **kwargs) -> FsNode:
         """Creates a file with content provided by `fp` object at the specified path.
@@ -357,7 +357,8 @@ class FilesAPI:
         full_path = self._dav_get_obj_path(self._session.user, path)
         response = self._session.dav("MKCOL", full_path)
         check_error(response.status_code, f"mkdir: user={self._session.user}, path={path}")
-        return FsNode(full_path, **self.__get_etag_fileid_from_response(response))
+        full_path += "/" if not full_path.endswith("/") else ""
+        return FsNode(full_path.lstrip("/"), **self.__get_etag_fileid_from_response(response))
 
     def makedirs(self, path: Union[str, FsNode], exist_ok=False) -> Optional[FsNode]:
         """Creates a new directory and subdirectories.
@@ -416,7 +417,7 @@ class FilesAPI:
             headers=headers,
         )
         check_error(response.status_code, f"move: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
-        return FsNode(full_dest_path, **self.__get_etag_fileid_from_response(response))
+        return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
     def copy(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
         """Copies an existing file/directory.
@@ -439,7 +440,7 @@ class FilesAPI:
             headers=headers,
         )
         check_error(response.status_code, f"copy: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
-        return FsNode(full_dest_path, **self.__get_etag_fileid_from_response(response))
+        return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
     def listfav(self) -> list[FsNode]:
         """Returns a list of the current user's favorite files."""
@@ -632,10 +633,10 @@ class FilesAPI:
             check_error(
                 response.status_code, f"upload_stream: user={self._session.user}, path={path}, total_size={end_bytes}"
             )
-            return FsNode(full_path, **self.__get_etag_fileid_from_response(response))
+            return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
         finally:
             self._session.dav("DELETE", _dav_path)
 
     @staticmethod
     def __get_etag_fileid_from_response(response: Response) -> dict:
-        return {"etag": response.headers.get("OC-Etag", ""), "file_id": response.headers.get("OC-FileId", "")}
+        return {"etag": response.headers.get("OC-Etag", ""), "file_id": response.headers["OC-FileId"]}
