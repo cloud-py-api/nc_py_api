@@ -219,17 +219,20 @@ class FilesAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def listdir(self, path: Union[str, FsNode] = "", exclude_self=True) -> list[FsNode]:
+    def listdir(self, path: Union[str, FsNode] = "", depth: int = 1, exclude_self=True) -> list[FsNode]:
         """Returns a list of all entries in the specified directory.
 
         :param path: path to the directory to get the list.
+        :param depth: how many directory levels should be included in output. Default = **1** (only specified directory)
         :param exclude_self: boolean value indicating whether the `path` itself should be excluded from the list or not.
             Default = **True**.
         """
 
+        if exclude_self and not depth:
+            raise ValueError("Wrong input parameters, query will return nothing.")
         properties = PROPFIND_PROPERTIES
         path = path.user_path if isinstance(path, FsNode) else path
-        return self._listdir(self._session.user, path, properties=properties, exclude_self=exclude_self)
+        return self._listdir(self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self)
 
     def by_id(self, file_id: Union[int, str, FsNode]) -> Optional[FsNode]:
         """Returns :py:class:`FsNode` by file_id if any.
@@ -245,15 +248,14 @@ class FilesAPI:
         """Returns :py:class:`FsNode` by exact path if any."""
 
         path = path.user_path if isinstance(path, FsNode) else path
-        result = self.listdir(path, exclude_self=False)
+        result = self.listdir(path, depth=0, exclude_self=False)
         return result[0] if result else None
 
-    def find(self, req: list, path: Union[str, FsNode] = "", depth=-1) -> list[FsNode]:
+    def find(self, req: list, path: Union[str, FsNode] = "") -> list[FsNode]:
         """Searches a directory for a file or subdirectory with a name.
 
         :param req: list of conditions to search for. Detailed description here...
         :param path: path where to search from. Default = **""**.
-        :param depth: in how many levels of subdirectories to search. Default = **-1**.
         """
 
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
@@ -267,22 +269,15 @@ class FilesAPI:
         for i in PROPFIND_PROPERTIES:
             ElementTree.SubElement(xml_select_prop, i)
         xml_from_scope = ElementTree.SubElement(ElementTree.SubElement(xml_search, "d:from"), "d:scope")
-        if path.startswith("/"):
-            href = f"/files/{self._session.user}{path}"
-        else:
-            href = f"/files/{self._session.user}/{path}"
+        href = f"/files/{self._session.user}/{path.removeprefix('/')}"
         ElementTree.SubElement(xml_from_scope, "d:href").text = href
-        xml_from_scope_depth = ElementTree.SubElement(xml_from_scope, "d:depth")
-        if depth == -1:
-            xml_from_scope_depth.text = "infinity"
-        else:
-            xml_from_scope_depth.text = str(depth)
+        ElementTree.SubElement(xml_from_scope, "d:depth").text = "infinity"
         xml_where = ElementTree.SubElement(xml_search, "d:where")
         self._build_search_req(xml_where, req)
 
         headers = {"Content-Type": "text/xml"}
         webdav_response = self._session.dav("SEARCH", "", data=self._element_tree_as_str(root), headers=headers)
-        request_info = f"find: {self._session.user}, {req}, {path}, {depth}"
+        request_info = f"find: {self._session.user}, {req}, {path}"
         return self._lf_parse_webdav_records(webdav_response, request_info)
 
     def download(self, path: Union[str, FsNode]) -> bytes:
@@ -476,7 +471,7 @@ class FilesAPI:
         )
         check_error(webdav_response.status_code, f"setfav: path={path}, value={value}")
 
-    def _listdir(self, user: str, path: str, properties: list[str], exclude_self: bool) -> list[FsNode]:
+    def _listdir(self, user: str, path: str, properties: list[str], depth: int, exclude_self: bool) -> list[FsNode]:
         root = ElementTree.Element(
             "d:propfind",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
@@ -484,8 +479,9 @@ class FilesAPI:
         prop = ElementTree.SubElement(root, "d:prop")
         for i in properties:
             ElementTree.SubElement(prop, i)
+        headers = {"Depth": "infinity" if depth == -1 else str(depth)}
         webdav_response = self._session.dav(
-            "PROPFIND", self._dav_get_obj_path(user, path), data=self._element_tree_as_str(root)
+            "PROPFIND", self._dav_get_obj_path(user, path), data=self._element_tree_as_str(root), headers=headers
         )
         request_info = f"list: {user}, {path}, {properties}"
         result = self._lf_parse_webdav_records(webdav_response, request_info)

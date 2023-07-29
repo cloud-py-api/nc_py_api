@@ -13,8 +13,9 @@ All notable changes to this project will be documented in this file.
 - Reworked `User Status API`, `Users Group API`
 - Reworked return type for `weather_status.get_location`
 - Reworked `Files API`: `mkdir`, `upload`, `copy`, `move` return new `FsNode` object
-- `FsNode` reworked, changed `TypedDict` to `dataclass`, correct fields names with correct descriptions.
-- `FsNode` now allows comparable for equality.
+- Reworked `listdir`: added `depth` parameter
+- Reworked `FsNode`: changed `info` from `TypedDict` to `dataclass`, correct fields names with correct descriptions.
+- `FsNode` now allows comparison for equality.
 
 ## [0.0.25 - 2023-07-25]
 

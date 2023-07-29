@@ -76,6 +76,25 @@ def test_list_empty_child_dir(nc):
         nc.files.delete("empty_child_folder")
 
 
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_list_dir_wrong_args(nc):
+    with pytest.raises(ValueError):
+        nc.files.listdir(depth=0, exclude_self=True)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_by_path(nc):
+    result = nc.files.by_path("")
+    result2 = nc.files.by_path("/")
+    assert isinstance(result, FsNode)
+    assert isinstance(result2, FsNode)
+    assert result == result2
+    assert result.is_dir == result2.is_dir
+    assert result.is_dir
+    assert result.user == result2.user
+    assert result.user == nc.user
+
+
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download(nc):
     content = randbytes(64)
@@ -372,7 +391,7 @@ def test_move_copy_dir(nc, op_type):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_find_files(nc):
+def test_find_files_listdir_depth(nc):
     nc.files.delete("test_root_folder", not_fail=True)
     im1 = BytesIO()
     im2 = BytesIO()
@@ -391,6 +410,9 @@ def test_find_files(nc):
     nc.files.upload("test_root_folder/child_folder/test.txt", content="content!")
     result = nc.files.find(["and", "gt", "size", 1 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 3
+    result2 = nc.files.find(["and", "gt", "size", 1 * 1024, "like", "mime", "image/%"], path="/test_root_folder")
+    assert len(result2) == 3
+    assert result == result2
     result = nc.files.find(["and", "gt", "size", 40 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 2
     result = nc.files.find(["and", "gt", "size", 100 * 1024, "like", "mime", "image/%"], path="test_root_folder")
@@ -405,6 +427,14 @@ def test_find_files(nc):
     assert len(result) == 6  # 1 sub dir + 3 images + 2 text files
     result = nc.files.find(["like", "mime", "text/%"], path="test_root_folder")
     assert len(result) == 2
+    result = nc.files.listdir("test_root_folder/", depth=1)
+    result2 = nc.files.listdir("test_root_folder/")
+    assert result == result2
+    assert len(result) == 3
+    result = nc.files.listdir("test_root_folder/", depth=2)
+    result2 = nc.files.listdir("test_root_folder/", depth=-1)
+    assert result == result2
+    assert len(result) == 6
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
