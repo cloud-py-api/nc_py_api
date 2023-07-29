@@ -12,7 +12,7 @@ from json import dumps, loads
 from pathlib import Path
 from random import choice
 from string import ascii_lowercase, digits
-from typing import Optional, TypedDict, Union
+from typing import Optional, Union
 from urllib.parse import unquote
 from xml.etree import ElementTree
 
@@ -23,20 +23,47 @@ from ._session import NcSessionBasic
 from .exceptions import NextcloudException, check_error
 
 
-class FsNodeInfo(TypedDict):
+@dataclass
+class FsNodeInfo:
     """Extra FS object attributes from Nextcloud"""
 
-    nc_id: str
-    """Nextcloud instance ID."""
-    fileid: int
-    """Object file ID."""
-    etag: str
     size: int
+    """Length of file in bytes, zero for directories.."""
     content_length: int
-    last_modified: datetime
+    """For directories it is size of all content in it, for files it is equal to ``size``."""
     permissions: str
     """Permissions for the object."""
     favorite: bool
+    """Flag indicating if the object is marked as favorite."""
+    fileid: int
+    """Clear file ID without Nextcloud instance ID."""
+    _last_modified: datetime
+
+    def __init__(self, **kwargs):
+        self.size = kwargs.get("size", 0)
+        self.content_length = kwargs.get("content_length", 0)
+        self.permissions = kwargs.get("permissions", "")
+        self.favorite = kwargs.get("favorite", False)
+        self.fileid = kwargs.get("fileid", 0)
+        try:
+            self.last_modified = kwargs.get("last_modified", datetime(1970, 1, 1))
+        except (ValueError, TypeError):
+            self.last_modified = datetime(1970, 1, 1)
+
+    @property
+    def last_modified(self) -> datetime:
+        """Time when the object was last modified.
+
+        .. note:: ETag if more preferable way to check if the object was changed."""
+
+        return self._last_modified
+
+    @last_modified.setter
+    def last_modified(self, value: Union[str, datetime]):
+        if isinstance(value, str):
+            self._last_modified = parsedate_to_datetime(value)
+        else:
+            self._last_modified = value
 
 
 @dataclass
@@ -45,98 +72,103 @@ class FsNode:
 
     Acceptable itself as a ``path`` parameter for the most file APIs."""
 
-    user: str
-    """The username of the object. May be different from the owner of the object if it is shared."""
+    full_path: str
+    """Path to the object, including the username. Does not include `dav` prefix"""
 
-    path: str
-    """Path to the object. Does not include the username, but includes the object name."""
+    file_id: str
+    """File ID + NC instance ID"""
 
-    name: str
-    """Last ``pathname`` component."""
+    etag: str
+    """An entity tag (ETag) of the object"""
 
-    def __init__(self, user: str, path: str, name: str, **kwargs):
-        self.user = user
-        self.path = path
-        self.name = name
-        self.info: FsNodeInfo = {
-            "nc_id": kwargs.get("nc_id", ""),
-            "fileid": kwargs.get("fileid", 0),
-            "etag": kwargs.get("etag", ""),
-            "size": kwargs.get("size", 0),
-            "content_length": kwargs.get("content_length", 0),
-            "last_modified": datetime(1970, 1, 1),
-            "permissions": kwargs.get("permissions", ""),
-            "favorite": kwargs.get("favorite", False),
-        }
-        if "last_modified" in kwargs:
-            self.last_modified = kwargs["last_modified"]
+    info: FsNodeInfo
+    """Additional extra information for the object"""
 
-    @property
-    def last_modified(self) -> datetime:
-        return self.info["last_modified"]
-
-    @last_modified.setter
-    def last_modified(self, value: Union[str, datetime]):
-        if isinstance(value, str):
-            self.info["last_modified"] = parsedate_to_datetime(value)
-        else:
-            self.info["last_modified"] = value
+    def __init__(self, full_path: str, **kwargs):
+        self.full_path = full_path
+        self.file_id = kwargs.get("file_id", "")
+        self.etag = kwargs.get("etag", "")
+        self.info = FsNodeInfo(**kwargs)
 
     @property
     def is_dir(self) -> bool:
         """Returns ``True`` for the directories, ``False`` otherwise."""
 
-        return self.path.endswith("/")
-
-    @property
-    def full_path(self) -> str:
-        """Full path including username."""
-
-        return f"{self.user}/{self.path.lstrip('/')}" if self.user else self.path
+        return self.full_path.endswith("/")
 
     def __str__(self):
         return (
-            f"{'Dir' if self.is_dir else 'File'}: `{self.name}` with id={self.info['fileid']}"
-            f" last modified at {str(self.last_modified)} and {self.info['permissions']} permissions."
+            f"{'Dir' if self.is_dir else 'File'}: `{self.name}` with id={self.file_id}"
+            f" last modified at {str(self.info.last_modified)} and {self.info.permissions} permissions."
         )
+
+    def __eq__(self, other):
+        if self.file_id and self.file_id == other.file_id:
+            return True
+        return False
+
+    @property
+    def has_extra(self) -> bool:
+        """Flag indicating whether this ``FsNode`` was obtained by the `mkdir` or `upload`
+        methods and does not contain extended information."""
+
+        return bool(self.info.permissions)
+
+    @property
+    def name(self) -> str:
+        """Returns last ``pathname`` component."""
+
+        return self.full_path.rstrip("/").rsplit("/", maxsplit=1)[-1]
+
+    @property
+    def user(self) -> str:
+        """Returns user ID extracted from the `full_path`."""
+
+        return self.full_path.lstrip("/").split("/", maxsplit=2)[1]
+
+    @property
+    def user_path(self) -> str:
+        """Returns path relative to the user's root directory."""
+
+        return self.full_path.lstrip("/").split("/", maxsplit=2)[-1]
 
     @property
     def is_shared(self) -> bool:
         """Check if a file or folder is shared"""
 
-        return self.info["permissions"].find("S") != -1
+        return self.info.permissions.find("S") != -1
 
     @property
     def is_shareable(self) -> bool:
         """Check if a file or folder can be shared"""
 
-        return self.info["permissions"].find("R") != -1
+        return self.info.permissions.find("R") != -1
 
     @property
     def is_mounted(self) -> bool:
         """Check if a file or folder is mounted"""
 
-        return self.info["permissions"].find("M") != -1
+        return self.info.permissions.find("M") != -1
 
     @property
     def is_readable(self) -> bool:
         """Check if the file or folder is readable"""
 
-        return self.info["permissions"].find("G") != -1
+        return self.info.permissions.find("G") != -1
 
     @property
     def is_deletable(self) -> bool:
         """Check if a file or folder can be deleted"""
 
-        return self.info["permissions"].find("D") != -1
+        return self.info.permissions.find("D") != -1
 
     @property
     def is_updatable(self) -> bool:
-        """Check if a file is writable"""
+        """Check if file/directory is writable"""
 
         if self.is_dir:
-            return self.info["permissions"].find("NV") != -1
-        return self.info["permissions"].find("W") != -1
+            return self.info.permissions.find("NV") != -1
+        return self.info.permissions.find("W") != -1
 
     @property
     def is_creatable(self) -> bool:
@@ -144,7 +176,7 @@ class FsNode:
 
         if not self.is_dir:
             return False
-        return self.info["permissions"].find("CK") != -1
+        return self.info.permissions.find("CK") != -1
 
 
 PROPFIND_PROPERTIES = [
@@ -187,40 +219,47 @@ class FilesAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def listdir(self, path: Union[str, FsNode] = "", exclude_self=True) -> list[FsNode]:
+    def listdir(self, path: Union[str, FsNode] = "", depth: int = 1, exclude_self=True) -> list[FsNode]:
         """Returns a list of all entries in the specified directory.
 
-        :param path: Path to the directory to get the list.
-        :param exclude_self: Boolean value indicating whether the `path` itself should be excluded from the list or not.
+        :param path: path to the directory to get the list.
+        :param depth: how many directory levels should be included in output. Default = **1** (only specified directory)
+        :param exclude_self: boolean value indicating whether the `path` itself should be excluded from the list or not.
             Default = **True**.
         """
 
+        if exclude_self and not depth:
+            raise ValueError("Wrong input parameters, query will return nothing.")
         properties = PROPFIND_PROPERTIES
-        path = path.path if isinstance(path, FsNode) else path
-        return self._listdir(self._session.user, path, properties=properties, exclude_self=exclude_self)
+        path = path.user_path if isinstance(path, FsNode) else path
+        return self._listdir(self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self)
 
-    def by_id(self, fileid: int) -> Optional[FsNode]:
-        """Returns :py:class:`FsNode` by fileid if any."""
+    def by_id(self, file_id: Union[int, str, FsNode]) -> Optional[FsNode]:
+        """Returns :py:class:`FsNode` by file_id if any.
 
-        result = self.find(req=["eq", "fileid", fileid])
+        :param file_id: can be full file ID with Nextcloud instance ID or only clear file ID.
+        """
+
+        file_id = file_id.file_id if isinstance(file_id, FsNode) else file_id
+        result = self.find(req=["eq", "fileid", file_id])
         return result[0] if result else None
 
-    def by_path(self, path: str) -> Optional[FsNode]:
+    def by_path(self, path: Union[str, FsNode]) -> Optional[FsNode]:
         """Returns :py:class:`FsNode` by exact path if any."""
 
-        result = self.listdir(path, exclude_self=False)
+        path = path.user_path if isinstance(path, FsNode) else path
+        result = self.listdir(path, depth=0, exclude_self=False)
         return result[0] if result else None
 
-    def find(self, req: list, path: Union[str, FsNode] = "", depth=-1) -> list[FsNode]:
+    def find(self, req: list, path: Union[str, FsNode] = "") -> list[FsNode]:
         """Searches a directory for a file or subdirectory with a name.
 
         :param req: list of conditions to search for. Detailed description here...
-        :param path: Path where to search from. Default = **""**.
-        :param depth: In how many levels of subdirectories to search. Default = **-1**.
+        :param path: path where to search from. Default = **""**.
         """
 
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         root = ElementTree.Element(
             "d:searchrequest",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
@@ -230,31 +269,24 @@ class FilesAPI:
         for i in PROPFIND_PROPERTIES:
             ElementTree.SubElement(xml_select_prop, i)
         xml_from_scope = ElementTree.SubElement(ElementTree.SubElement(xml_search, "d:from"), "d:scope")
-        if path.startswith("/"):
-            href = f"/files/{self._session.user}{path}"
-        else:
-            href = f"/files/{self._session.user}/{path}"
+        href = f"/files/{self._session.user}/{path.removeprefix('/')}"
         ElementTree.SubElement(xml_from_scope, "d:href").text = href
-        xml_from_scope_depth = ElementTree.SubElement(xml_from_scope, "d:depth")
-        if depth == -1:
-            xml_from_scope_depth.text = "infinity"
-        else:
-            xml_from_scope_depth.text = str(depth)
+        ElementTree.SubElement(xml_from_scope, "d:depth").text = "infinity"
         xml_where = ElementTree.SubElement(xml_search, "d:where")
         self._build_search_req(xml_where, req)
 
         headers = {"Content-Type": "text/xml"}
         webdav_response = self._session.dav("SEARCH", "", data=self._element_tree_as_str(root), headers=headers)
-        request_info = f"find: {self._session.user}, {req}, {path}, {depth}"
-        return self._lf_parse_webdav_records(webdav_response, self._session.user, request_info)
+        request_info = f"find: {self._session.user}, {req}, {path}"
+        return self._lf_parse_webdav_records(webdav_response, request_info)
 
     def download(self, path: Union[str, FsNode]) -> bytes:
         """Downloads and returns the content of a file.
 
-        :param path: Path to download file.
+        :param path: path to download file.
         """
 
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         response = self._session.dav("GET", self._dav_get_obj_path(self._session.user, path))
         check_error(response.status_code, f"download: user={self._session.user}, path={path}")
         return response.content
@@ -262,13 +294,13 @@ class FilesAPI:
     def download2stream(self, path: Union[str, FsNode], fp, **kwargs) -> None:
         """Downloads file to the given `fp` object.
 
-        :param path: Path to download file.
-        :param fp: A filename (string), pathlib.Path object or a file object.
+        :param path: path to download file.
+        :param fp: filename (string), pathlib.Path object or a file object.
             The object must implement the ``file.write`` method and be able to write binary data.
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **4Mb**
         """
 
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         if isinstance(fp, (str, Path)):
             with builtins.open(fp, "wb") as f:
                 self.__download2stream(path, f, **kwargs)
@@ -277,90 +309,100 @@ class FilesAPI:
         else:
             raise TypeError("`fp` must be a path to file or an object with `write` method.")
 
-    def upload(self, path: Union[str, FsNode], content: Union[bytes, str]) -> None:
+    def upload(self, path: Union[str, FsNode], content: Union[bytes, str]) -> FsNode:
         """Creates a file with the specified content at the specified path.
 
-        :param path: File upload path.
+        :param path: file's upload path.
         :param content: content to create the file. If it is a string, it will be encoded into bytes using UTF-8.
         """
 
-        path = path.path if isinstance(path, FsNode) else path
-        response = self._session.dav("PUT", self._dav_get_obj_path(self._session.user, path), data=content)
+        path = path.user_path if isinstance(path, FsNode) else path
+        full_path = self._dav_get_obj_path(self._session.user, path)
+        response = self._session.dav("PUT", full_path, data=content)
         check_error(response.status_code, f"upload: user={self._session.user}, path={path}, size={len(content)}")
+        return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
 
-    def upload_stream(self, path: Union[str, FsNode], fp, **kwargs) -> None:
+    def upload_stream(self, path: Union[str, FsNode], fp, **kwargs) -> FsNode:
         """Creates a file with content provided by `fp` object at the specified path.
 
-        :param path: File upload path.
-        :param fp: A filename (string), pathlib.Path object or a file object.
+        :param path: file's upload path.
+        :param fp: filename (string), pathlib.Path object or a file object.
             The object must implement the ``file.read`` method providing data with str or bytes type.
         :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **4Mb**
         """
 
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         if isinstance(fp, (str, Path)):
             with builtins.open(fp, "rb") as f:
-                self.__upload_stream(path, f, **kwargs)
+                return self.__upload_stream(path, f, **kwargs)
         elif hasattr(fp, "read"):
-            self.__upload_stream(path, fp, **kwargs)
+            return self.__upload_stream(path, fp, **kwargs)
         else:
             raise TypeError("`fp` must be a path to file or an object with `read` method.")
 
-    def mkdir(self, path: Union[str, FsNode]) -> None:
+    def mkdir(self, path: Union[str, FsNode]) -> FsNode:
         """Creates a new directory.
 
-        :param path: The path of the directory to be created.
+        :param path: path of the directory to be created.
         """
 
-        path = path.path if isinstance(path, FsNode) else path
-        response = self._session.dav("MKCOL", self._dav_get_obj_path(self._session.user, path))
+        path = path.user_path if isinstance(path, FsNode) else path
+        full_path = self._dav_get_obj_path(self._session.user, path)
+        response = self._session.dav("MKCOL", full_path)
         check_error(response.status_code, f"mkdir: user={self._session.user}, path={path}")
+        full_path += "/" if not full_path.endswith("/") else ""
+        return FsNode(full_path.lstrip("/"), **self.__get_etag_fileid_from_response(response))
 
-    def makedirs(self, path: Union[str, FsNode], exist_ok=False) -> None:
+    def makedirs(self, path: Union[str, FsNode], exist_ok=False) -> Optional[FsNode]:
         """Creates a new directory and subdirectories.
 
-        :param path: The path of the directories to be created.
-        :param exist_ok: Ignore error if any of pathname components already exists.
+        :param path: path of the directories to be created.
+        :param exist_ok: ignore error if any of pathname components already exists.
+        :returns: `FsNode` if directory was created or ``None`` if it was already created.
         """
 
         _path = ""
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
+        result = None
         for i in Path(path).parts:
             _path = os.path.join(_path, i)
             if not exist_ok:
-                self.mkdir(_path)
+                result = self.mkdir(_path)
             else:
                 try:
-                    self.mkdir(_path)
+                    result = self.mkdir(_path)
                 except NextcloudException as e:
                     if e.status_code != 405:
                         raise e from None
+        return result
 
     def delete(self, path: Union[str, FsNode], not_fail=False) -> None:
         """Deletes a file/directory (moves to trash if trash is enabled).
 
-        :param path: Path to delete.
-        :param not_fail: if set to ``True`` and the object is not found, does not raise an exception.
+        :param path: path to delete.
+        :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
 
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         response = self._session.dav("DELETE", self._dav_get_obj_path(self._session.user, path))
         if response.status_code == 404 and not_fail:
             return
         check_error(response.status_code, f"delete: user={self._session.user}, path={path}")
 
-    def move(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> None:
+    def move(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
         """Moves an existing file or a directory.
 
-        :param path_src: The path of an existing file/directory.
-        :param path_dest: The name of the new one.
-        :param overwrite: If ``True`` and the destination object already exists, it gets overwritten.
+        :param path_src: path of an existing file/directory.
+        :param path_dest: name of the new one.
+        :param overwrite: if ``True`` and the destination object already exists, it gets overwritten.
             Default = **False**.
         """
 
-        path_src = path_src.path if isinstance(path_src, FsNode) else path_src
-        path_dest = path_dest.path if isinstance(path_dest, FsNode) else path_dest
-        dest = self._session.cfg.dav_endpoint + self._dav_get_obj_path(self._session.user, path_dest)
+        path_src = path_src.user_path if isinstance(path_src, FsNode) else path_src
+        full_dest_path = self._dav_get_obj_path(
+            self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
+        )
+        dest = self._session.cfg.dav_endpoint + full_dest_path
         headers = {"Destination": dest, "Overwrite": "T" if overwrite else "F"}
         response = self._session.dav(
             "MOVE",
@@ -368,19 +410,22 @@ class FilesAPI:
             headers=headers,
         )
         check_error(response.status_code, f"move: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
+        return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
-    def copy(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> None:
+    def copy(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
         """Copies an existing file/directory.
 
-        :param path_src: The path of an existing file/directory.
-        :param path_dest: The name of the new one.
-        :param overwrite: If ``True`` and the destination object already exists, it gets overwritten.
+        :param path_src: path of an existing file/directory.
+        :param path_dest: name of the new one.
+        :param overwrite: if ``True`` and the destination object already exists, it gets overwritten.
             Default = **False**.
         """
 
-        path_src = path_src.path if isinstance(path_src, FsNode) else path_src
-        path_dest = path_dest.path if isinstance(path_dest, FsNode) else path_dest
-        dest = self._session.cfg.dav_endpoint + self._dav_get_obj_path(self._session.user, path_dest)
+        path_src = path_src.user_path if isinstance(path_src, FsNode) else path_src
+        full_dest_path = self._dav_get_obj_path(
+            self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
+        )
+        dest = self._session.cfg.dav_endpoint + full_dest_path
         headers = {"Destination": dest, "Overwrite": "T" if overwrite else "F"}
         response = self._session.dav(
             "COPY",
@@ -388,6 +433,7 @@ class FilesAPI:
             headers=headers,
         )
         check_error(response.status_code, f"copy: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
+        return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
     def listfav(self) -> list[FsNode]:
         """Returns a list of the current user's favorite files."""
@@ -403,16 +449,16 @@ class FilesAPI:
         )
         request_info = f"listfav: {self._session.user}"
         check_error(webdav_response.status_code, request_info)
-        return self._lf_parse_webdav_records(webdav_response, self._session.user, request_info, favorite=True)
+        return self._lf_parse_webdav_records(webdav_response, request_info, favorite=True)
 
     def setfav(self, path: Union[str, FsNode], value: Union[int, bool]) -> None:
         """Sets or unsets favourite flag for specific file.
 
-        :param path: Path to the object to set the state.
-        :param value: The value to set for the ``favourite`` state.
+        :param path: path to the object to set the state.
+        :param value: value to set for the ``favourite`` state.
         """
 
-        path = path.path if isinstance(path, FsNode) else path
+        path = path.user_path if isinstance(path, FsNode) else path
         root = ElementTree.Element(
             "d:propertyupdate",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns"},
@@ -425,7 +471,7 @@ class FilesAPI:
         )
         check_error(webdav_response.status_code, f"setfav: path={path}, value={value}")
 
-    def _listdir(self, user: str, path: str, properties: list[str], exclude_self: bool) -> list[FsNode]:
+    def _listdir(self, user: str, path: str, properties: list[str], depth: int, exclude_self: bool) -> list[FsNode]:
         root = ElementTree.Element(
             "d:propfind",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
@@ -433,83 +479,72 @@ class FilesAPI:
         prop = ElementTree.SubElement(root, "d:prop")
         for i in properties:
             ElementTree.SubElement(prop, i)
+        headers = {"Depth": "infinity" if depth == -1 else str(depth)}
         webdav_response = self._session.dav(
-            "PROPFIND", self._dav_get_obj_path(user, path), data=self._element_tree_as_str(root)
+            "PROPFIND", self._dav_get_obj_path(user, path), data=self._element_tree_as_str(root), headers=headers
         )
         request_info = f"list: {user}, {path}, {properties}"
-        result = self._lf_parse_webdav_records(webdav_response, user, request_info)
+        result = self._lf_parse_webdav_records(webdav_response, request_info)
         if exclude_self:
-            full_path = f"{user}/{path}".rstrip("/") if user else path.rstrip("/")
             for index, v in enumerate(result):
-                if v.full_path.rstrip("/") == full_path:
+                if v.user_path.rstrip("/") == path.rstrip("/"):
                     del result[index]
                     break
         return result
 
-    def _parse_records(self, fs_records: list[dict], user: str, favorite: bool):
+    def _parse_records(self, fs_records: list[dict], favorite: bool):
         result: list[FsNode] = []
         for record in fs_records:
             obj_full_path = unquote(record.get("d:href", ""))
-            obj_name = obj_full_path.rstrip("/").rsplit("/", maxsplit=1)[-1]
-            if not obj_name:
-                continue
-            dav_full_path = self._session.cfg.dav_url_suffix + self._dav_get_obj_path(user)
-            obg_rel_path = obj_full_path.replace(dav_full_path, "").lstrip("/")
+            obj_full_path = obj_full_path.replace(self._session.cfg.dav_url_suffix, "").lstrip("/")
             propstat = record["d:propstat"]
-            fs_node = self._parse_record(
-                propstat if isinstance(propstat, list) else [propstat], user, obg_rel_path, obj_name
-            )
-            if favorite and not fs_node.info["fileid"]:
-                _fs_node = self.by_path(fs_node.path)
+            fs_node = self._parse_record(obj_full_path, propstat if isinstance(propstat, list) else [propstat])
+            if favorite and not fs_node.file_id:
+                _fs_node = self.by_path(fs_node.user_path)
                 if _fs_node:
-                    _fs_node.info["favorite"] = True
+                    _fs_node.info.favorite = True
                     result.append(_fs_node)
-            elif fs_node.info["fileid"]:
+            elif fs_node.file_id:
                 result.append(fs_node)
         return result
 
     @staticmethod
-    def _parse_record(prop_stats: list[dict], user: str, obj_rel_path: str, obj_name: str) -> FsNode:
-        fs_node = FsNode(user=user, path=obj_rel_path, name=obj_name)
+    def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:
+        fs_node_args = {}
         for prop_stat in prop_stats:
             if str(prop_stat.get("d:status", "")).find("200 OK") == -1:
                 continue
             prop: dict = prop_stat["d:prop"]
             prop_keys = prop.keys()
             if "oc:id" in prop_keys:
-                fs_node.info["nc_id"] = prop["oc:id"]
+                fs_node_args["file_id"] = prop["oc:id"]
             if "oc:fileid" in prop_keys:
-                fs_node.info["fileid"] = int(prop["oc:fileid"])
+                fs_node_args["fileid"] = int(prop["oc:fileid"])
             if "oc:size" in prop_keys:
-                fs_node.info["size"] = int(prop["oc:size"])
+                fs_node_args["size"] = int(prop["oc:size"])
             if "d:getcontentlength" in prop_keys:
-                fs_node.info["content_length"] = int(prop["d:getcontentlength"])
+                fs_node_args["content_length"] = int(prop["d:getcontentlength"])
             if "d:getetag" in prop_keys:
-                fs_node.info["etag"] = prop["d:getetag"]
+                fs_node_args["etag"] = prop["d:getetag"]
             if "d:getlastmodified" in prop_keys:
-                try:
-                    fs_node.last_modified = prop["d:getlastmodified"]
-                except ValueError:
-                    pass
+                fs_node_args["last_modified"] = prop["d:getlastmodified"]
             if "oc:permissions" in prop_keys:
-                fs_node.info["permissions"] = prop["oc:permissions"]
+                fs_node_args["permissions"] = prop["oc:permissions"]
             if "oc:favorite" in prop_keys:
-                fs_node.info["favorite"] = bool(int(prop["oc:favorite"]))
+                fs_node_args["favorite"] = bool(int(prop["oc:favorite"]))
             # xz = prop.get("oc:dDC", "")
-        return fs_node
+        return FsNode(full_path, **fs_node_args)
 
-    def _lf_parse_webdav_records(self, webdav_res: Response, user: str, info: str, favorite=False) -> list[FsNode]:
+    def _lf_parse_webdav_records(self, webdav_res: Response, info: str, favorite=False) -> list[FsNode]:
         check_error(webdav_res.status_code, info=info)
         if webdav_res.status_code != 207:  # multistatus
             raise NextcloudException(webdav_res.status_code, "Response is not a multistatus.", info=info)
-        if not webdav_res.text:
-            raise NextcloudException(webdav_res.status_code, "Response is empty.", info=info)
         response_data = loads(dumps(xmltodict.parse(webdav_res.text)))
         if "d:error" in response_data:
             err = response_data["d:error"]
             raise NextcloudException(reason=f'{err["s:exception"]}: {err["s:message"]}'.replace("\n", ""), info=info)
         response = response_data["d:multistatus"].get("d:response", [])
-        return self._parse_records([response] if isinstance(response, dict) else response, user, favorite)
+        return self._parse_records([response] if isinstance(response, dict) else response, favorite)
 
     @staticmethod
     def _dav_get_obj_path(user: str, path: str = "", root_path="/files") -> str:
@@ -561,8 +596,8 @@ class FilesAPI:
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
                 fp.write(data_chunk)
 
-    def __upload_stream(self, path: str, fp, **kwargs) -> None:
-        _rnd_folder = "".join(choice(digits + ascii_lowercase) for i in range(64))
+    def __upload_stream(self, path: str, fp, **kwargs) -> FsNode:
+        _rnd_folder = "".join(choice(digits + ascii_lowercase) for _ in range(64))
         _dav_path = self._dav_get_obj_path(self._session.user, _rnd_folder, root_path="/uploads")
         response = self._session.dav("MKCOL", _dav_path)
         check_error(response.status_code)
@@ -580,7 +615,8 @@ class FilesAPI:
                     response.status_code, f"upload_stream: user={self._session.user}, path={path}, cur_size={end_bytes}"
                 )
                 start_bytes = end_bytes
-            headers = {"Destination": self._session.cfg.dav_endpoint + self._dav_get_obj_path(self._session.user, path)}
+            full_path = self._dav_get_obj_path(self._session.user, path)
+            headers = {"Destination": self._session.cfg.dav_endpoint + full_path}
             response = self._session.dav(
                 "MOVE",
                 _dav_path + "/.file",
@@ -589,5 +625,10 @@ class FilesAPI:
             check_error(
                 response.status_code, f"upload_stream: user={self._session.user}, path={path}, total_size={end_bytes}"
             )
+            return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
         finally:
             self._session.dav("DELETE", _dav_path)
+
+    @staticmethod
+    def __get_etag_fileid_from_response(response: Response) -> dict:
+        return {"etag": response.headers.get("OC-Etag", ""), "file_id": response.headers["OC-FileId"]}

@@ -49,7 +49,8 @@ class BasicConfig:
         self.endpoint = full_nc_url.removesuffix("/index.php").removesuffix("/")
         self.dav_url_suffix = self._get_value("dav_url_suffix", raise_not_found=False, **kwargs)
         if not self.dav_url_suffix:
-            self.dav_url_suffix = options.DAV_URL_SUFFIX
+            self.dav_url_suffix = "remote.php/dav"
+        self.dav_url_suffix = "/" + self.dav_url_suffix.strip("/")
         self.dav_endpoint = self.endpoint + self.dav_url_suffix
 
     @staticmethod

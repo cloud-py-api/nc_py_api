@@ -8,6 +8,9 @@ Refer to the **fs examples** to see how to use them nicely.
 
 All File APIs are designed to work relative to the current user.
 
+.. autoclass:: FsNodeInfo
+    :members:
+
 .. autoclass:: FsNode
     :members:
 

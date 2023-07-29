@@ -11,9 +11,6 @@ TIMEOUT = 50
 TIMEOUT_DAV = TIMEOUT * 3 if TIMEOUT else None
 """File operations timeout, usually it is OCS timeout multiplied by 3."""
 
-DAV_URL_SUFFIX = "/remote.php/dav"
-"""WebDav url suffix. Why it is here?"""
-
 VERIFY_NC_CERTIFICATE = True
 """Option to enable/disable Nextcloud certificate verification
 
