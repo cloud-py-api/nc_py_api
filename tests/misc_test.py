@@ -2,6 +2,7 @@ import pytest
 from gfixture import NC_APP
 
 from nc_py_api import NextcloudException, check_error, misc
+from nc_py_api._session import BasicConfig  # noqa
 
 
 @pytest.mark.parametrize("code", (995, 996, 997, 998, 999, 1000))
@@ -34,3 +35,10 @@ def test_require_capabilities():
         misc.require_capabilities(
             ["non_exist_capability", "non_exist_capability2", "app_ecosystem_v2"], NC_APP.capabilities
         )
+
+
+def test_config_get_value():
+    BasicConfig()._get_value("non_exist_value", raise_not_found=False)
+    with pytest.raises(ValueError):
+        BasicConfig()._get_value("non_exist_value")
+    assert BasicConfig()._get_value("non_exist_value", non_exist_value=123) == 123
