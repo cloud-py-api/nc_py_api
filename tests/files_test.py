@@ -33,6 +33,7 @@ def test_list_user_root(nc):
     assert user_root
     for obj in user_root:
         assert obj.user == nc.user
+        assert obj.has_extra
         assert obj.name
         assert obj.user_path
         assert obj.file_id
@@ -48,6 +49,9 @@ def test_list_user_root_self_exclude(nc):
     user_root_with_self = nc.files.listdir(exclude_self=False)
     assert len(user_root_with_self) == 1 + len(user_root)
     self_res = [i for i in user_root_with_self if not i.user_path][0]
+    for i in user_root:
+        assert self_res != i
+    assert self_res.has_extra
     assert self_res.file_id
     assert self_res.user == nc.user
     assert self_res.name
@@ -156,7 +160,11 @@ def test_file_upload(nc):
     assert nc.files.by_id(result).info.size == 2
     assert nc.files.download(file_name) == b"\x31\x32"
     result = nc.files.upload(f"/{file_name}", content=b"\x31\x32\x33")
-    assert nc.files.by_path(result).info.size == 3
+    assert not result.has_extra
+    result = nc.files.by_path(result)
+    assert result.info.size == 3
+    assert result.is_updatable
+    assert not result.is_creatable
     assert nc.files.download(file_name) == b"\x31\x32\x33"
     nc.files.upload(file_name, content="life is good")
     assert nc.files.download(file_name).decode("utf-8") == "life is good"
@@ -240,6 +248,7 @@ def test_mkdir(nc, dir_name):
     nc.files.delete(dir_name, not_fail=True)
     result = nc.files.mkdir(dir_name)
     assert result.is_dir
+    assert not result.has_extra
     with pytest.raises(NextcloudException):
         nc.files.mkdir(dir_name)
     nc.files.delete(dir_name)

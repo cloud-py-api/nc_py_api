@@ -105,8 +105,6 @@ class FsNode:
     def __eq__(self, other):
         if self.file_id and self.file_id == other.file_id:
             return True
-        if self.etag and self.full_path == other.full_path and self.etag == other.etag:
-            return True
         return False
 
     @property
@@ -166,7 +164,7 @@ class FsNode:
 
     @property
     def is_updatable(self) -> bool:
-        """Check if a file is writable"""
+        """Check if file/directory is writable"""
 
         if self.is_dir:
             return self.info.permissions.find("NV") != -1
