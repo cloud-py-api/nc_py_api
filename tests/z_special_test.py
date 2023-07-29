@@ -1,5 +1,6 @@
 from os import environ, path
 from subprocess import run
+from unittest import mock
 
 import pytest
 from gfixture import NC
@@ -16,12 +17,12 @@ def test_password_confirmation():
     # patch "PasswordConfirmationMiddleware.php" decreasing asking before Password Confirmation from 30 min to 15 secs
     patch_path = path.join(path.dirname(path.abspath(__file__)), "data/nc_pass_confirm.patch")
     cwd_path = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
-    print(cwd_path)
-    run(["ls", "-la"], cwd=cwd_path, check=True)
     run(["patch", "-p", "1", "-i", patch_path], cwd=cwd_path, check=True)
-    try:
-        NC.users.create("test_cover_user_spec", password="ThisIsA54StrongPassword013")
-    except NextcloudException:
-        pass
-    NC.users.delete("test_cover_user_spec")
+    with mock.patch("gfixture.NC._session.init_adapter") as _init_adapter:
+        try:
+            NC.users.create("test_cover_user_spec", password="ThisIsA54StrongPassword013")
+        except NextcloudException:
+            pass
+        NC.users.delete("test_cover_user_spec")
+    assert _init_adapter.assert_called()
     run(["git", "apply", "-R", patch_path], cwd=cwd_path, check=True)
