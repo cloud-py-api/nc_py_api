@@ -110,10 +110,10 @@ select = ["A", "B", "C", "D212", "E", "F", "UP", "W"]
 "nc_py_api/__init__.py" = ["F401"]
 
 [tool.ruff.extend-per-file-ignores]
-"benchmarks/**/*.py" = ['D']
-"docs/**/*.py" = ['D']
-"examples/**/*.py" = ['D']
-"tests/**/*.py" = ["D", "E402"]
+"benchmarks/**/*.py" = ["D"]
+"docs/**/*.py" = ["D"]
+"examples/**/*.py" = ["D"]
+"tests/**/*.py" = ["D", "E402", "UP"]
 
 [tool.ruff.mccabe]
 max-complexity = 16
