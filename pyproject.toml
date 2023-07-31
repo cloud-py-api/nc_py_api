@@ -70,6 +70,7 @@ dev = [
   "selenium",
 ]
 docs = [
+  "nc_py_api[app]",
   "sphinx>=6.2",
   "sphinx-copybutton",
   "sphinx-inline-tabs",
