@@ -51,7 +51,7 @@ app = [
   "fastapi==0.100.1",
   "httpx==0.24.1",
   "pydantic==2.1.1",
-  "uvicorn[standard]==0.23.1",
+  "uvicorn[standard]==0.23.2",
   "xxhash==3.3",
 ]
 bench = [
