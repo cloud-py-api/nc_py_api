@@ -409,7 +409,7 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  tests-latest:
+  tests-latest-maria-full:
     needs: [analysis]
     runs-on: ubuntu-22.04
     name: Latest • 🐘8.2 • 🐍3.12 • Maria
@@ -518,6 +518,95 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
+  test-latest-pgsql-client:
+    needs: [analysis]
+    runs-on: ubuntu-22.04
+    name: Latest • 🐘8.2 • 🐍3.12 • PgSQL
+    env:
+      NC_dbname: nextcloud_abz
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: rootpassword
+          POSTGRES_DB: ${{ env.NC_dbname }}
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Set up php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Checkout server
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: nextcloud/server
+          ref: "master"
+
+      - name: Set up & run Nextcloud
+        env:
+          DB_PORT: 4444
+        run: |
+          mkdir data
+          ./occ maintenance:install --verbose --database=pgsql --database-name=${{ env.NC_dbname }} \
+            --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
+            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+          ./occ config:system:set loglevel --value=0 --type=integer
+          ./occ config:system:set debug --value=true --type=boolean
+          ./occ config:system:set allow_local_remote_servers --value true
+          php -S localhost:8080 &
+
+      - name: Checkout NcPyApi
+        uses: actions/checkout@v3
+        with:
+          path: nc_py_api
+
+      - name: Install NcPyApi
+        working-directory: nc_py_api
+        run: python3 -m pip -v install . pytest coverage pillow
+
+      - name: Generate coverage report
+        working-directory: nc_py_api
+        run: coverage run && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_pgsql_latest
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: nc_py_api/coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload NC logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc_log_pgsql_latest
+          path: data/nextcloud.log
+          if-no-files-found: warn
+
   tests-sqlite:
     needs: [analysis]
     runs-on: ubuntu-22.04
@@ -623,7 +712,7 @@ jobs:
     permissions:
       contents: none
     runs-on: ubuntu-22.04
-    needs: [tests-maria, tests-pgsql, tests-oci, tests-latest, tests-sqlite]
+    needs: [tests-maria, tests-pgsql, tests-oci, tests-sqlite, tests-latest-maria-full, test-latest-pgsql-client]
     name: Tests-OK
     steps:
       - run: echo "Tests passed successfully"
