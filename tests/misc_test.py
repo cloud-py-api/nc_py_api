@@ -2,6 +2,7 @@ import pytest
 from gfixture import NC_APP
 
 from nc_py_api import NextcloudException, check_error, misc
+from nc_py_api._deffered_error import DeferredError  # noqa
 from nc_py_api._session import BasicConfig  # noqa
 
 
@@ -42,3 +43,13 @@ def test_config_get_value():
     with pytest.raises(ValueError):
         BasicConfig()._get_value("non_exist_value")
     assert BasicConfig()._get_value("non_exist_value", non_exist_value=123) == 123
+
+
+def test_deffered_error():
+    try:
+        import unknown_non_exist_module
+    except ImportError as ex:
+        unknown_non_exist_module = DeferredError(ex)
+
+    with pytest.raises(ModuleNotFoundError):
+        unknown_non_exist_module.some_class_or_func()

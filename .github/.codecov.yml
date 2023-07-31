@@ -1,6 +1,6 @@
 codecov:
   notify:
-    after_n_builds: 4
+    after_n_builds: 7
 
 comment:
   require_changes: true
@@ -11,8 +11,5 @@ coverage:
     project:
       default:
         target: auto
-        threshold: 2%
+        threshold: 1%
     patch: off
-
-fixes:
-  - "nc_py_api/::"
