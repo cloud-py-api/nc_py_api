@@ -13,6 +13,3 @@ coverage:
         target: auto
         threshold: 1%
     patch: off
-
-fixes:
-  - "nc_py_api/::"
