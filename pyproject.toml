@@ -1,7 +1,97 @@
 [build-system]
+build-backend = "hatchling.build"
 requires = [
-  "setuptools>=67.8",
-  "wheel",
+  "hatchling>=1.18",
+]
+
+[project]
+name = "nc-py-api"
+description = "Nextcloud Python Framework"
+readme = "README.md"
+keywords = [
+  "api",
+  "client",
+  "framework",
+  "nextcloud",
+]
+license = "BSD-3-Clause"
+authors = [
+    { name = "Alexander Piskun", email = "bigcat88@icloud.com" },
+]
+requires-python = ">=3.9"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  "requests==2.31",
+  "xmltodict==0.13",
+]
+[project.optional-dependencies]
+app = [
+  "fastapi==0.100.1",
+  "httpx==0.24.1",
+  "pydantic==2.1.1",
+  "uvicorn[standard]==0.23.1",
+  "xxhash==3.3",
+]
+bench = [
+  "matplotlib",
+  "nc_py_api[app]",
+  "numpy",
+  "py-cpuinfo",
+]
+dev = [
+  "coverage",
+  "nc_py_api[bench]",
+  "pillow",
+  "pre-commit",
+  "pylint",
+  "pytest",
+  "selenium",
+]
+docs = [
+  "sphinx>=6.2",
+  "sphinx-copybutton",
+  "sphinx-inline-tabs",
+  "sphinx-issues>=3.0.1",
+  "sphinx-rtd-theme>=1",
+]
+[project.urls]
+Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md"
+Documentation = "https://cloud-py-api.github.io/nc_py_api/"
+Source = "https://github.com/cloud-py-api/nc_py_api"
+
+[tool.hatch.version]
+path = "nc_py_api/_version.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/nc_py_api",
+    "/CHANGELOG.md",
+    "/README.md",
+]
+exclude = [
+    "Makefile",
 ]
 
 [tool.black]

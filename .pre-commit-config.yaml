@@ -38,13 +38,6 @@ repos:
     hooks:
     -   id: pyproject-fmt
 
--   repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
-    hooks:
-    -   id: flake8
-        types: [file, python]
-        files: nc_py_api/
-
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.0.280
     hooks:
@@ -57,17 +50,11 @@ repos:
         files: nc_py_api/
         additional_dependencies: [pytest]
 
--   repo: https://github.com/mgedmin/check-manifest
-    rev: "0.49"
-    hooks:
-    -   id: check-manifest
-        args: [--no-build-isolation]
-
 -   repo: local
     hooks:
     -   id: pylint
         name: pylint
-        entry: pylint "setup.py" "nc_py_api/"
+        entry: pylint "nc_py_api/"
         language: system
         types: [ python ]
         pass_filenames: false

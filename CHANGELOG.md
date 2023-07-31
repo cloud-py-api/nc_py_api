@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.27 - 2023-08-0x]
+
+### Changed
+
+- Switched to `hatching` as a build system, now correct install optional dependencies.
+
 ## [0.0.26 - 2023-07-29]
 
 ### Added
@@ -12,8 +18,8 @@ All notable changes to this project will be documented in this file.
 
 - Reworked `User Status API`, `Users Group API`
 - Reworked return type for `weather_status.get_location`
-- Reworked `Files API`: `mkdir`, `upload`, `copy`, `move` return new `FsNode` object
-- Reworked `listdir`: added `depth` parameter
+- Reworked `Files API`: `mkdir`, `upload`, `copy`, `move` return new `FsNode` object.
+- Reworked `listdir`: added `depth` parameter.
 - Reworked `FsNode`: changed `info` from `TypedDict` to `dataclass`, correct fields names with correct descriptions.
 - `FsNode` now allows comparison for equality.
 
