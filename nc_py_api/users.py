@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with users.
-"""
+"""Nextcloud API for working with users."""
 
 from typing import Optional
 

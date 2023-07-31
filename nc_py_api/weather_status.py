@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with weather statuses.
-"""
+"""Nextcloud API for working with weather statuses."""
 
 from dataclasses import dataclass
 from enum import IntEnum

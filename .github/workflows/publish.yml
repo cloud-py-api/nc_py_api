@@ -18,12 +18,10 @@ jobs:
           python-version: '3.10'
 
       - name: Preparations
-        run: python3 -m pip install check-manifest twine build wheel
+        run: python3 -m pip install -U twine build
 
       - name: Build
-        run: |
-          python3 -m check_manifest
-          python3 -m build
+        run: python3 -m build
 
       - name: Check
         run: twine check dist/*

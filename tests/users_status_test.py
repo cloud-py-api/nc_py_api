@@ -22,7 +22,7 @@ def compare_user_statuses(p1: users_status.UserStatus, p2: users_status.UserStat
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("message", ("1 2 3", None, ""))
 def test_get_status(nc, message):
-    nc.users_status.set(message)
+    nc.users_status.set_status(message)
     r1 = nc.users_status.get_current()
     r2 = nc.users_status.get(nc.user)
     compare_user_statuses(r1, r2)
@@ -70,17 +70,17 @@ def test_get_list(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_set_status(nc):
     time_clear = int(time()) + 60
-    nc.users_status.set("cool status", time_clear)
+    nc.users_status.set_status("cool status", time_clear)
     r = nc.users_status.get_current()
     assert r.message == "cool status"
     assert r.clear_at == time_clear
     assert r.icon is None
-    nc.users_status.set("Sick!", status_icon="🤒")
+    nc.users_status.set_status("Sick!", status_icon="🤒")
     r = nc.users_status.get_current()
     assert r.message == "Sick!"
     assert r.clear_at is None
     assert r.icon == "🤒"
-    nc.users_status.set(None)
+    nc.users_status.set_status(None)
     r = nc.users_status.get_current()
     assert r.message is None
     assert r.clear_at is None

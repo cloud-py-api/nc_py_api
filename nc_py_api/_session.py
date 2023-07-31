@@ -1,6 +1,4 @@
-"""
-Session represents one connection to Nextcloud. All related stuff for these live here.
-"""
+"""Session represents one connection to Nextcloud. All related stuff for these live here."""
 
 import asyncio
 import hmac

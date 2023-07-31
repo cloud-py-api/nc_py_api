@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with the files shares.
-"""
+"""Nextcloud API for working with the files shares."""
 
 from typing import Union
 
@@ -23,7 +21,7 @@ class Share:
         return int(self.raw_data["id"])
 
     @property
-    def type(self) -> ShareType:
+    def share_type(self) -> ShareType:
         return ShareType(int(self.raw_data["share_type"]))
 
     @property

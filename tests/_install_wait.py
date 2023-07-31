@@ -6,7 +6,7 @@ from requests import get
 
 # params: app heartbeat url, string to check, number of tries, time to sleep between retries
 if __name__ == "__main__":
-    for i in range(int(argv[3])):
+    for _ in range(int(argv[3])):
         try:
             result = get(argv[1])
             if result.text:

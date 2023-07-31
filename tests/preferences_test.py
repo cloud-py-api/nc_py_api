@@ -13,9 +13,9 @@ def test_available(nc):
 def test_preferences_set(nc):
     if not nc.preferences_api.available:
         pytest.skip("preferences_api is not available")
-    nc.preferences_api.set("dav", key="user_status_automation", value="yes")
+    nc.preferences_api.set_value("dav", key="user_status_automation", value="yes")
     with pytest.raises(NextcloudException):
-        nc.preferences_api.set("non_existing_app", "some_cfg_name", "2")
+        nc.preferences_api.set_value("non_existing_app", "some_cfg_name", "2")
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

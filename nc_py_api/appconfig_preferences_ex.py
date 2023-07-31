@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with apps V2's storage w/wo user context(table oc_appconfig_ex/oc_preferences_ex).
-"""
+"""Nextcloud API for working with apps V2's storage w/wo user context(table oc_appconfig_ex/oc_preferences_ex)."""
 from typing import Optional, TypedDict, Union
 
 from ._session import NcSessionBasic
@@ -38,7 +36,7 @@ class BasicAppCfgPref:
         data = {"configKeys": keys}
         return self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}/get-values", json=data)
 
-    def set(self, key: str, value: str) -> None:
+    def set_value(self, key: str, value: str) -> None:
         if not key:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
