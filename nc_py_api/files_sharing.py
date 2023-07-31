@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with the files shares.
-"""
+"""Nextcloud API for working with the files shares."""
 
 from typing import Union
 

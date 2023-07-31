@@ -1,5 +1,4 @@
-"""
-Different miscellaneous optimization/helper functions.
+"""Different miscellaneous optimization/helper functions.
 
 For internal use, prototypes can change between versions.
 """

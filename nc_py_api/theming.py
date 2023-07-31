@@ -1,6 +1,4 @@
-"""
-Nextcloud stuff for work with Theming app.
-"""
+"""Nextcloud stuff for work with Theming app."""
 
 from typing import TypedDict
 

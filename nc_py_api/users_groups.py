@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with user groups.
-"""
+"""Nextcloud API for working with user groups."""
 
 from dataclasses import dataclass
 from typing import Optional

@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with drop-down file's menu.
-"""
+"""Nextcloud API for working with drop-down file's menu."""
 
 from pydantic import BaseModel
 

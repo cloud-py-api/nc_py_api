@@ -1,6 +1,4 @@
-"""
-Options to change nc_py_api's runtime behaviour.
-"""
+"""Options to change nc_py_api's runtime behaviour."""
 
 XDEBUG_SESSION = "PHPSTORM"
 """Dev option, for debugging PHP code"""

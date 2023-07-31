@@ -1,6 +1,4 @@
-"""
-Directly related stuff to FastAPI.
-"""
+"""Directly related stuff to FastAPI."""
 
 from typing import Annotated, Callable, Optional
 

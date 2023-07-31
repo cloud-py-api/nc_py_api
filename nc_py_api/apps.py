@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with applications.
-"""
+"""Nextcloud API for working with applications."""
 
 from typing import Optional, TypedDict
 

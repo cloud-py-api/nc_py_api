@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with classics app's storage with user's context (table oc_preferences).
-"""
+"""Nextcloud API for working with classics app's storage with user's context (table oc_preferences)."""
 
 from ._session import NcSessionBasic
 from .misc import check_capabilities, require_capabilities

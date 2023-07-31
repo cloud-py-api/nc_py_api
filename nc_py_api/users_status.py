@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with user statuses.
-"""
+"""Nextcloud API for working with user statuses."""
 
 from dataclasses import dataclass
 from typing import Literal, Optional, Union

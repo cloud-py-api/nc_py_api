@@ -1,6 +1,4 @@
-"""
-Import all possible stuff that can be used.
-"""
+"""Import all possible stuff that can be used."""
 
 from ._version import __version__
 from .constants import ApiScope, LogLvl, SharePermissions, ShareStatus, ShareType

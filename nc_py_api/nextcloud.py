@@ -1,6 +1,4 @@
-"""
-Nextcloud class providing access to all API endpoints.
-"""
+"""Nextcloud class providing access to all API endpoints."""
 from abc import ABC
 from typing import Optional, Union
 

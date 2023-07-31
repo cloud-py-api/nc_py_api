@@ -1,6 +1,4 @@
-"""
-Nextcloud API for working with the file system.
-"""
+"""Nextcloud API for working with the file system."""
 
 import builtins
 import os
