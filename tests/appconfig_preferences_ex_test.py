@@ -25,7 +25,7 @@ def test_cfg_ex_get_values_invalid(class_to_test):
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex_api, NC_APP.preferences_ex_api))
 def test_cfg_ex_set_empty_key(class_to_test):
     with pytest.raises(ValueError):
-        class_to_test.set("", "some value")
+        class_to_test.set_value("", "some value")
 
 
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex_api, NC_APP.preferences_ex_api))
@@ -47,9 +47,9 @@ def test_cfg_ex_get_default(class_to_test):
 def test_cfg_ex_set_delete(value, class_to_test):
     class_to_test.delete("test_key")
     assert class_to_test.get_value("test_key") is None
-    class_to_test.set("test_key", value)
+    class_to_test.set_value("test_key", value)
     assert class_to_test.get_value("test_key") == value
-    class_to_test.set("test_key", "zzz")
+    class_to_test.set_value("test_key", "zzz")
     assert class_to_test.get_value("test_key") == "zzz"
     class_to_test.delete("test_key")
     assert class_to_test.get_value("test_key") is None
@@ -57,7 +57,7 @@ def test_cfg_ex_set_delete(value, class_to_test):
 
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex_api, NC_APP.preferences_ex_api))
 def test_cfg_ex_delete(class_to_test):
-    class_to_test.set("test_key", "123")
+    class_to_test.set_value("test_key", "123")
     assert class_to_test.get_value("test_key")
     class_to_test.delete("test_key")
     assert class_to_test.get_value("test_key") is None
@@ -73,21 +73,21 @@ def test_cfg_ex_delete(class_to_test):
 def test_cfg_ex_get(class_to_test):
     class_to_test.delete(["test key", "test key2"])
     assert len(class_to_test.get_values(["test key", "test key2"])) == 0
-    class_to_test.set("test key", "123")
+    class_to_test.set_value("test key", "123")
     assert len(class_to_test.get_values(["test key", "test key2"])) == 1
-    class_to_test.set("test key2", "123")
+    class_to_test.set_value("test key2", "123")
     assert len(class_to_test.get_values(["test key", "test key2"])) == 2
 
 
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex_api, NC_APP.preferences_ex_api))
 def test_cfg_ex_multiply_delete(class_to_test):
-    class_to_test.set("test_key", "123")
-    class_to_test.set("test_key2", "123")
+    class_to_test.set_value("test_key", "123")
+    class_to_test.set_value("test_key2", "123")
     assert len(class_to_test.get_values(["test_key", "test_key2"])) == 2
     class_to_test.delete(["test_key", "test_key2"])
     assert len(class_to_test.get_values(["test_key", "test_key2"])) == 0
     class_to_test.delete(["test_key", "test_key2"])
-    class_to_test.set("test_key", "123")
+    class_to_test.set_value("test_key", "123")
     assert len(class_to_test.get_values(["test_key", "test_key2"])) == 1
     class_to_test.delete(["test_key", "test_key2"])
     assert len(class_to_test.get_values(["test_key", "test_key2"])) == 0
@@ -104,8 +104,8 @@ def test_cfg_ex_get_non_existing(key, class_to_test):
 
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex_api, NC_APP.preferences_ex_api))
 def test_cfg_ex_get_typing(class_to_test):
-    class_to_test.set("test key", "123")
-    class_to_test.set("test key2", "321")
+    class_to_test.set_value("test key", "123")
+    class_to_test.set_value("test key2", "321")
     r = class_to_test.get_values(["test key", "test key2"])
     assert isinstance(r, list)
     assert r[0]["configkey"] == "test key"

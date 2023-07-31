@@ -18,7 +18,7 @@ def test_create_list_delete_shares(nc):
         n_shares = len(result)
         new_share = nc.files_sharing.create("share_test.txt", SharePermissions.PERMISSION_READ, ShareType.TYPE_LINK)
         assert isinstance(new_share, Share)
-        assert new_share.type == ShareType.TYPE_LINK
+        assert new_share.share_type == ShareType.TYPE_LINK
         assert not new_share.label
         assert not new_share.note
         assert new_share.mimetype.find("text") != -1

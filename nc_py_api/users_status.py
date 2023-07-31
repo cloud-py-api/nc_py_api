@@ -16,13 +16,13 @@ ENDPOINT = "/ocs/v1.php/apps/user_status/api/v1"
 class ClearAt:
     """Determination when a user's predefined status will be cleared."""
 
-    type: str
+    clear_type: str
     """Possible values: ``period``, ``end-of``"""
     time: Union[str, int]
     """Depending of ``type`` it can be number of seconds relative to ``now`` or one of the next values: ``day``"""
 
     def __init__(self, raw_data: dict):
-        self.type = raw_data["type"]
+        self.clear_type = raw_data["type"]
         self.time = raw_data["time"]
 
 
@@ -162,7 +162,7 @@ class UserStatusAPI:
 
         self._session.ocs(method="PUT", path=f"{ENDPOINT}/user_status/status", params={"statusType": value})
 
-    def set(self, message: Optional[str] = None, clear_at: int = 0, status_icon: str = "") -> None:
+    def set_status(self, message: Optional[str] = None, clear_at: int = 0, status_icon: str = "") -> None:
         """Sets current user status.
 
         :param message: Message text to set in the status.

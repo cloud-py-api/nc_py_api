@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Switched to `hatching` as a build system, now correct install optional dependencies.
+- Renamed methods, attributes that was `shadowing a Python builtins`. Enabled additional `Ruff` linters checks.
 
 ## [0.0.26 - 2023-07-29]
 

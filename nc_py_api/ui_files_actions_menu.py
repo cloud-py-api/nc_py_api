@@ -1,5 +1,5 @@
 """
-Nextcloud API for working with drop down file's menu.
+Nextcloud API for working with drop-down file's menu.
 """
 
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ from .misc import require_capabilities
 class UiActionFileInfo(BaseModel):
     fileId: int
     name: str
-    dir: str
+    dir: str  # noqa
 
 
 class UiFileActionHandlerInfo(BaseModel):

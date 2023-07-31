@@ -23,7 +23,7 @@ class Share:
         return int(self.raw_data["id"])
 
     @property
-    def type(self) -> ShareType:
+    def share_type(self) -> ShareType:
         return ShareType(int(self.raw_data["share_type"]))
 
     @property

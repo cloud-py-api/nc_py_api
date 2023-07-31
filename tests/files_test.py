@@ -458,7 +458,7 @@ def test_fs_node_fields(nc):
         nc.files.upload(f"test_root_folder/child_folder/{i}.txt", content=f"{i}")
     results = nc.files.listdir("test_root_folder")
     assert len(results) == 4
-    for i, result in enumerate(results):
+    for _, result in enumerate(results):
         assert result.user == "admin"
         if result.name == "0_bytes.bin":
             assert result.user_path == "test_root_folder/0_bytes.bin"
