@@ -10,14 +10,17 @@ if not environ.get("CI", False):  # For local tests
     environ["APP_VERSION"] = "1.0.0"
     environ["APP_SECRET"] = "12345"
 
-if environ.get("SKIP_NC_WO_AE", False):
+if environ.get("SKIP_NC_CLIENT_TESTS", False):
     NC = None
 else:
     NC = Nextcloud()
 
-NC_APP = NextcloudApp(user="admin")
-if "app_ecosystem_v2" not in NC_APP.capabilities:
+if environ.get("SKIP_AE_TESTS", False):
     NC_APP = None
+else:
+    NC_APP = NextcloudApp(user="admin")
+    if "app_ecosystem_v2" not in NC_APP.capabilities:
+        NC_APP = None
 
 NC_TO_TEST = []
 if NC:
