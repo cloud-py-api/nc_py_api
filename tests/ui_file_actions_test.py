@@ -5,6 +5,9 @@ from time import sleep
 import pytest
 from gfixture import NC_APP
 from PIL import Image
+
+pytest.importorskip("selenium", reason="Selenium is not installed")
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By

@@ -14,7 +14,14 @@ from urllib.parse import quote, urlencode
 
 from fastapi import Request
 from httpx import Client, Limits, ReadTimeout, Response
-from xxhash import xxh64
+
+try:
+    from xxhash import xxh64
+except ImportError as ex:
+    from ._deffered_error import DeferredError
+
+    xxh64 = DeferredError(ex)
+
 
 from . import options
 from .constants import OCSRespond
