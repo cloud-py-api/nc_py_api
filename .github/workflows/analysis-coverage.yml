@@ -582,7 +582,7 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run && coverage xml && coverage html
+        run: coverage run -m pytest && coverage xml && coverage html
         env:
           SKIP_AE_TESTS: 1
 
