@@ -148,6 +148,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
           file: nc_py_api/coverage.xml
           fail_ci_if_error: true
           verbose: true
@@ -275,6 +276,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
           file: nc_py_api/coverage.xml
           fail_ci_if_error: true
           verbose: true
@@ -397,6 +399,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
           file: nc_py_api/coverage.xml
           fail_ci_if_error: true
           verbose: true
@@ -506,6 +509,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage_maria_latest
           file: nc_py_api/coverage.xml
           fail_ci_if_error: true
           verbose: true
@@ -598,6 +602,7 @@ jobs:
 #        with:
 #          token: ${{ secrets.CODECOV_TOKEN }}
 #          file: nc_py_api/coverage.xml
+#  name: coverage_pgsql_latest
 #          fail_ci_if_error: true
 #          verbose: true
 #
@@ -698,6 +703,7 @@ jobs:
 #        uses: codecov/codecov-action@v3
 #        with:
 #          token: ${{ secrets.CODECOV_TOKEN }}
+# name: coverage_sqlite_${{ matrix.nextcloud }}
 #          file: nc_py_api/coverage.xml
 #          fail_ci_if_error: true
 #          verbose: true
