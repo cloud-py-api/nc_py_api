@@ -149,9 +149,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: nc_py_api/coverage.xml
+          file: coverage.xml
           fail_ci_if_error: true
           verbose: true
+          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -277,9 +278,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: nc_py_api/coverage.xml
+          file: coverage.xml
           fail_ci_if_error: true
           verbose: true
+          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -400,9 +402,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: nc_py_api/coverage.xml
+          file: coverage.xml
           fail_ci_if_error: true
           verbose: true
+          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -510,9 +513,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           name: coverage_maria_latest
-          file: nc_py_api/coverage.xml
+          file: coverage.xml
           fail_ci_if_error: true
           verbose: true
+          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
