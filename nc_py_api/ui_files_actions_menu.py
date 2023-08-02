@@ -11,7 +11,11 @@ from .misc import require_capabilities
 class UiActionFileInfo(BaseModel):
     fileId: int
     name: str
-    dir: str  # noqa
+    directory: str
+    etag: str
+    mime: str
+    favorite: str
+    permissions: int
 
 
 class UiFileActionHandlerInfo(BaseModel):
