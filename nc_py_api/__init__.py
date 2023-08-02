@@ -1,10 +1,16 @@
 """Import all possible stuff that can be used."""
 
 from ._version import __version__
-from .constants import ApiScope, LogLvl, SharePermissions, ShareStatus, ShareType
+from .constants import ApiScope, LogLvl
 from .exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
-from .files import FsNode, FsNodeInfo
-from .files_sharing import Share
+from .files_defs import (
+    FsNode,
+    FsNodeInfo,
+    Share,
+    SharePermissions,
+    ShareStatus,
+    ShareType,
+)
 from .integration_fastapi import (
     enable_heartbeat,
     nc_app,
