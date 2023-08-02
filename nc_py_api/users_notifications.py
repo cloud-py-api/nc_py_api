@@ -68,7 +68,8 @@ class NotificationsAPI:
     def by_object_id(self, object_id: str) -> Optional[Notification]:
         """Returns Notification if any by its object ID.
 
-        .. note:: this method is a temporary workaround until `create` can return `notification_id`."""
+        .. note:: this method is a temporary workaround until `create` can return `notification_id`.
+        """
         for i in self.get_all():
             if i.object_id == object_id:
                 return i

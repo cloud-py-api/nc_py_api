@@ -46,7 +46,8 @@ class NextcloudBasic(ABC):
     def check_capabilities(self, capabilities: Union[str, list[str]]) -> list[str]:
         """Returns the list with missing capabilities if any.
 
-        :param capabilities: one or more features to check for."""
+        :param capabilities: one or more features to check for.
+        """
         return check_capabilities(capabilities, self.capabilities)
 
     def update_server_info(self) -> None:
@@ -65,7 +66,8 @@ class NextcloudBasic(ABC):
 class Nextcloud(NextcloudBasic):
     """Nextcloud client class.
 
-    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else."""
+    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.
+    """
 
     _session: NcSession
 
@@ -87,7 +89,8 @@ class NextcloudApp(NextcloudBasic):
     endpoint registration, new authentication method, etc.
 
     .. note:: Instance of this class should not be created directly in ``normal`` applications,
-        it will be provided for each app endpoint call."""
+        it will be provided for each app endpoint call.
+    """
 
     _session: NcSessionApp
     appconfig_ex_api: AppConfigExAPI
@@ -122,7 +125,8 @@ class NextcloudApp(NextcloudBasic):
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
 
-        Useful for applications which declare ``Optional`` scopes, to check if they are allowed for them."""
+        Useful for applications which declare ``Optional`` scopes, to check if they are allowed for them.
+        """
         if self.check_capabilities("app_ecosystem_v2"):
             return False
         return scope in self.capabilities["app_ecosystem_v2"]["scopes"]
