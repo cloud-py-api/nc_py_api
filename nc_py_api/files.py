@@ -54,7 +54,7 @@ SEARCH_PROPERTIES_MAP = {
 
 
 class FilesAPI:
-    """This class provides all File System functionality and File Sharing abilities."""
+    """Class that encapsulates the file system and file sharing functionality."""
 
     sharing: FilesSharingAPI
     """API for managing Files Shares"""
