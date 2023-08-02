@@ -62,7 +62,7 @@ class NextcloudBasic(ABC):
 
     @property
     def theme(self) -> Optional[ThemingInfo]:
-        """Returns Theme information"""
+        """Returns Theme information."""
 
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
@@ -82,7 +82,7 @@ class Nextcloud(NextcloudBasic):
 
     @property
     def user(self) -> str:
-        """Returns current user name"""
+        """Returns current user name."""
 
         return self._session.user
 

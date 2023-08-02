@@ -1,11 +1,11 @@
-"""Common constants. Do not use them directly, all public ones are imported to __init__.py"""
+"""Common constants. Do not use them directly, all public ones are imported from __init__.py."""
 
 from enum import IntEnum
 from typing import TypedDict
 
 
 class LogLvl(IntEnum):
-    """Log levels"""
+    """Log levels."""
 
     DEBUG = 0
     """Debug log level"""
@@ -23,7 +23,7 @@ APP_V2_BASIC_URL = "/ocs/v1.php/apps/app_ecosystem_v2/api/v1"
 
 
 class ApiScope(IntEnum):
-    """Default API scopes"""
+    """Default API scopes."""
 
     SYSTEM = 2
     """Allows access to the System APIs."""

@@ -29,7 +29,7 @@ from .exceptions import NextcloudException, NextcloudExceptionNotFound, check_er
 
 
 class ServerVersion(TypedDict):
-    """Nextcloud version information"""
+    """Nextcloud version information."""
 
     major: int
     """Major version"""
@@ -79,7 +79,7 @@ class Config(BasicConfig):
 
 @dataclass
 class AppConfig(BasicConfig):
-    """Application configuration"""
+    """Application configuration."""
 
     ae_version: str
     """AppEcosystem version"""

@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 @dataclass
 class GroupDetails:
-    """User Group information"""
+    """User Group information."""
 
     group_id: str
     """ID of the group"""
@@ -145,7 +145,7 @@ class WeatherLocation:
 
 @dataclass
 class NotificationInfo:
-    """Extra Notification attributes from Nextcloud"""
+    """Extra Notification attributes from Nextcloud."""
 
     app_name: str
     """Application name that generated notification."""

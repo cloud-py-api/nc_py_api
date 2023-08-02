@@ -4,7 +4,7 @@ from typing import TypedDict
 
 
 class ThemingInfo(TypedDict):
-    """Nextcloud Theme information"""
+    """Nextcloud Theme information."""
 
     name: str
     """Name of the Nextcloud instance"""

@@ -1,4 +1,4 @@
-"""Definitions related to Files and File Sharing"""
+"""Definitions related to Files and File Sharing."""
 
 from dataclasses import dataclass
 from datetime import datetime
@@ -9,7 +9,7 @@ from typing import Union
 
 @dataclass
 class FsNodeInfo:
-    """Extra FS object attributes from Nextcloud"""
+    """Extra FS object attributes from Nextcloud."""
 
     size: int
     """Length of file in bytes, zero for directories.."""
@@ -118,37 +118,37 @@ class FsNode:
 
     @property
     def is_shared(self) -> bool:
-        """Check if a file or folder is shared"""
+        """Check if a file or folder is shared."""
 
         return self.info.permissions.find("S") != -1
 
     @property
     def is_shareable(self) -> bool:
-        """Check if a file or folder can be shared"""
+        """Check if a file or folder can be shared."""
 
         return self.info.permissions.find("R") != -1
 
     @property
     def is_mounted(self) -> bool:
-        """Check if a file or folder is mounted"""
+        """Check if a file or folder is mounted."""
 
         return self.info.permissions.find("M") != -1
 
     @property
     def is_readable(self) -> bool:
-        """Check if the file or folder is readable"""
+        """Check if the file or folder is readable."""
 
         return self.info.permissions.find("G") != -1
 
     @property
     def is_deletable(self) -> bool:
-        """Check if a file or folder can be deleted"""
+        """Check if a file or folder can be deleted."""
 
         return self.info.permissions.find("D") != -1
 
     @property
     def is_updatable(self) -> bool:
-        """Check if file/directory is writable"""
+        """Check if file/directory is writable."""
 
         if self.is_dir:
             return self.info.permissions.find("NV") != -1
@@ -156,7 +156,7 @@ class FsNode:
 
     @property
     def is_creatable(self) -> bool:
-        """Check whether new files or folders can be created inside this folder"""
+        """Check whether new files or folders can be created inside this folder."""
 
         if not self.is_dir:
             return False
@@ -164,7 +164,7 @@ class FsNode:
 
 
 class SharePermissions(IntFlag):
-    """The share permissions to be set"""
+    """The share permissions to be set."""
 
     PERMISSION_READ = 1
     """Access to read"""
@@ -179,7 +179,7 @@ class SharePermissions(IntFlag):
 
 
 class ShareType(IntEnum):
-    """Type of the object that will receive share"""
+    """Type of the object that will receive share."""
 
     TYPE_USER = 0
     """Share to the user"""
@@ -206,7 +206,7 @@ class ShareType(IntEnum):
 
 
 class ShareStatus(IntEnum):
-    """Status of the share"""
+    """Status of the share."""
 
     STATUS_PENDING = 0
     """The share waits for acceptance"""
@@ -232,7 +232,7 @@ class Share:
 
     @property
     def permissions(self) -> SharePermissions:
-        """Recipient permissions"""
+        """Recipient permissions."""
 
         return SharePermissions(int(self.raw_data["permissions"]))
 
