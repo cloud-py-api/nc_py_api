@@ -18,14 +18,12 @@ class FilesSharingAPI:
     @property
     def available(self) -> bool:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-
         return not check_capabilities("files_sharing", self._session.capabilities)
 
     def get_list(
         self, shared_with_me=False, reshares=False, subfiles=False, path: Union[str, FsNode] = ""
     ) -> list[Share]:
         """Returns lists of shares."""
-
         require_capabilities("files_sharing", self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         params = {
@@ -65,7 +63,6 @@ class FilesSharingAPI:
             * ``note`` - string with note, if any. default = ``""``
             * ``label`` - string with label, if any. default = ``""``
         """
-
         require_capabilities("files_sharing", self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         params = {
@@ -94,6 +91,5 @@ class FilesSharingAPI:
 
         :param share_id: The Share object or an ID of the share.
         """
-
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
         self._session.ocs(method="DELETE", path=f"{ENDPOINT_BASE}/shares/{share_id}")

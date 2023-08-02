@@ -71,7 +71,6 @@ class FilesAPI:
         :param exclude_self: boolean value indicating whether the `path` itself should be excluded from the list or not.
             Default = **True**.
         """
-
         if exclude_self and not depth:
             raise ValueError("Wrong input parameters, query will return nothing.")
         properties = PROPFIND_PROPERTIES
@@ -83,14 +82,12 @@ class FilesAPI:
 
         :param file_id: can be full file ID with Nextcloud instance ID or only clear file ID.
         """
-
         file_id = file_id.file_id if isinstance(file_id, FsNode) else file_id
         result = self.find(req=["eq", "fileid", file_id])
         return result[0] if result else None
 
     def by_path(self, path: Union[str, FsNode]) -> Optional[FsNode]:
         """Returns :py:class:`~nc_py_api.files_defs.FsNode` by exact path if any."""
-
         path = path.user_path if isinstance(path, FsNode) else path
         result = self.listdir(path, depth=0, exclude_self=False)
         return result[0] if result else None
@@ -101,7 +98,6 @@ class FilesAPI:
         :param req: list of conditions to search for. Detailed description here...
         :param path: path where to search from. Default = **""**.
         """
-
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
         path = path.user_path if isinstance(path, FsNode) else path
         root = ElementTree.Element(
@@ -129,7 +125,6 @@ class FilesAPI:
 
         :param path: path to download file.
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         response = self._session.dav("GET", self._dav_get_obj_path(self._session.user, path))
         check_error(response.status_code, f"download: user={self._session.user}, path={path}")
@@ -143,7 +138,6 @@ class FilesAPI:
             The object must implement the ``file.write`` method and be able to write binary data.
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **4Mb**
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         if isinstance(fp, (str, Path)):
             with builtins.open(fp, "wb") as f:
@@ -159,7 +153,6 @@ class FilesAPI:
         :param path: file's upload path.
         :param content: content to create the file. If it is a string, it will be encoded into bytes using UTF-8.
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = self._dav_get_obj_path(self._session.user, path)
         response = self._session.dav("PUT", full_path, data=content)
@@ -174,7 +167,6 @@ class FilesAPI:
             The object must implement the ``file.read`` method providing data with str or bytes type.
         :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **4Mb**
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         if isinstance(fp, (str, Path)):
             with builtins.open(fp, "rb") as f:
@@ -189,7 +181,6 @@ class FilesAPI:
 
         :param path: path of the directory to be created.
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = self._dav_get_obj_path(self._session.user, path)
         response = self._session.dav("MKCOL", full_path)
@@ -204,7 +195,6 @@ class FilesAPI:
         :param exist_ok: ignore error if any of pathname components already exists.
         :returns: `FsNode` if directory was created or ``None`` if it was already created.
         """
-
         _path = ""
         path = path.user_path if isinstance(path, FsNode) else path
         result = None
@@ -226,7 +216,6 @@ class FilesAPI:
         :param path: path to delete.
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         response = self._session.dav("DELETE", self._dav_get_obj_path(self._session.user, path))
         if response.status_code == 404 and not_fail:
@@ -241,7 +230,6 @@ class FilesAPI:
         :param overwrite: if ``True`` and the destination object already exists, it gets overwritten.
             Default = **False**.
         """
-
         path_src = path_src.user_path if isinstance(path_src, FsNode) else path_src
         full_dest_path = self._dav_get_obj_path(
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
@@ -264,7 +252,6 @@ class FilesAPI:
         :param overwrite: if ``True`` and the destination object already exists, it gets overwritten.
             Default = **False**.
         """
-
         path_src = path_src.user_path if isinstance(path_src, FsNode) else path_src
         full_dest_path = self._dav_get_obj_path(
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
@@ -281,7 +268,6 @@ class FilesAPI:
 
     def listfav(self) -> list[FsNode]:
         """Returns a list of the current user's favorite files."""
-
         root = ElementTree.Element(
             "oc:filter-files",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
@@ -301,7 +287,6 @@ class FilesAPI:
         :param path: path to the object to set the state.
         :param value: value to set for the ``favourite`` state.
         """
-
         path = path.user_path if isinstance(path, FsNode) else path
         root = ElementTree.Element(
             "d:propertyupdate",

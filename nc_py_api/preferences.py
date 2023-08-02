@@ -13,17 +13,14 @@ class PreferencesAPI:
     @property
     def available(self) -> bool:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-
         return not check_capabilities("provisioning_api", self._session.capabilities)
 
     def set_value(self, app_name: str, key: str, value: str) -> None:
         """Sets the value for the key for the specific application."""
-
         require_capabilities("provisioning_api", self._session.capabilities)
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_name}/{key}", params={"configValue": value})
 
     def delete(self, app_name: str, key: str) -> None:
         """Removes a key and its value for a specific application."""
-
         require_capabilities("provisioning_api", self._session.capabilities)
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{app_name}/{key}")

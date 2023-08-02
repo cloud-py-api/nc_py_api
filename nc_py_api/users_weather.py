@@ -18,12 +18,10 @@ class WeatherStatusAPI:
     @property
     def available(self) -> bool:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-
         return not check_capabilities("weather_status", self._session.capabilities)
 
     def get_location(self) -> WeatherLocation:
         """Returns the current location set on the Nextcloud server for the user."""
-
         require_capabilities("weather_status", self._session.capabilities)
         return WeatherLocation(self._session.ocs(method="GET", path=f"{ENDPOINT}/location"))
 
@@ -36,7 +34,6 @@ class WeatherStatusAPI:
         :param longitude: east–west position of a point on the surface of the Earth.
         :param address: city, index(*optional*) and country, e.g. "Paris, 75007, France"
         """
-
         require_capabilities("weather_status", self._session.capabilities)
         params: dict[str, Union[str, float]] = {}
         if latitude is not None and longitude is not None:
@@ -50,26 +47,22 @@ class WeatherStatusAPI:
 
     def get_forecast(self) -> list[dict]:
         """Get forecast for the current location."""
-
         require_capabilities("weather_status", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/forecast")
 
     def get_favorites(self) -> list[str]:
         """Returns favorites addresses list."""
-
         require_capabilities("weather_status", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/favorites")
 
     def set_favorites(self, favorites: list[str]) -> bool:
         """Sets favorites addresses list."""
-
         require_capabilities("weather_status", self._session.capabilities)
         result = self._session.ocs(method="PUT", path=f"{ENDPOINT}/favorites", json={"favorites": favorites})
         return result.get("success", False)
 
     def set_mode(self, mode: WeatherLocationMode) -> bool:
         """Change the weather status mode."""
-
         if int(mode) == WeatherLocationMode.UNKNOWN.value:
             raise ValueError("This mode can not be set")
         require_capabilities("weather_status", self._session.capabilities)

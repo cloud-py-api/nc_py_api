@@ -103,7 +103,7 @@ preview = true
 [tool.ruff]
 line-length = 120
 target-version = "py39"
-select = ["A", "B", "C", "D200", "D212", "D400", "E", "F", "UP", "Q", "W"]
+select = ["A", "B", "C", "D200", "D202", "D212", "D400", "E", "F", "UP", "Q", "W"]
 #extend-ignore = ["D203"]
 
 [tool.ruff.per-file-ignores]

@@ -27,7 +27,6 @@ class ThemingInfo(TypedDict):
 
 def convert_str_color(theming_capability: dict, key: str) -> tuple[int, int, int]:
     """Returns a tuple of integers representing the RGB color for the specified theme key."""
-
     if key not in theming_capability:
         return 0, 0, 0
     value = theming_capability[key]

@@ -18,7 +18,6 @@ class NotificationsAPI:
     @property
     def available(self) -> bool:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-
         return not check_capabilities("notifications", self._session.capabilities)
 
     def create(
@@ -30,7 +29,6 @@ class NotificationsAPI:
         link: str = "",
     ) -> str:
         """Create a Notification for the current user and returns it's ObjectID."""
-
         if not isinstance(self._session, NcSessionApp):
             raise NotImplementedError("Sending notifications is only supported for `App` mode.")
         if not subject:
@@ -59,13 +57,11 @@ class NotificationsAPI:
 
     def get_all(self) -> list[Notification]:
         """Gets all notifications for a current user."""
-
         require_capabilities("notifications", self._session.capabilities)
         return [Notification(i) for i in self._session.ocs(method="GET", path=ENDPOINT)]
 
     def get_one(self, notification_id: int) -> Notification:
         """Gets a single notification for a current user."""
-
         require_capabilities("notifications", self._session.capabilities)
         return Notification(self._session.ocs(method="GET", path=f"{ENDPOINT}/{notification_id}"))
 
@@ -73,7 +69,6 @@ class NotificationsAPI:
         """Returns Notification if any by its object ID.
 
         .. note:: this method is a temporary workaround until `create` can return `notification_id`."""
-
         for i in self.get_all():
             if i.object_id == object_id:
                 return i
@@ -81,18 +76,15 @@ class NotificationsAPI:
 
     def delete(self, notification_id: int) -> None:
         """Deletes a notification for the current user."""
-
         require_capabilities("notifications", self._session.capabilities)
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{notification_id}")
 
     def delete_all(self) -> None:
         """Deletes all notifications for the current user."""
-
         require_capabilities("notifications", self._session.capabilities)
         self._session.ocs(method="DELETE", path=ENDPOINT)
 
     def exists(self, notification_ids: list[int]) -> list[int]:
         """Checks the existence of notifications for the current user."""
-
         require_capabilities("notifications", self._session.capabilities)
         return self._session.ocs(method="POST", path=f"{ENDPOINT}/exists", json={"ids": notification_ids})

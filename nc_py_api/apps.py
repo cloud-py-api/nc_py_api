@@ -38,7 +38,6 @@ class AppAPI:
         :param app_name: id of the application.
 
         .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode."""
-
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{app_name}")
@@ -49,7 +48,6 @@ class AppAPI:
         :param app_name: id of the application.
 
         .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode."""
-
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_name}")
@@ -59,7 +57,6 @@ class AppAPI:
 
         :param enabled: filter to list all/only enabled/only disabled applications.
         """
-
         params = None
         if enabled is not None:
             params = {"filter": "enabled" if enabled else "disabled"}
@@ -71,7 +68,6 @@ class AppAPI:
 
         :param app_name: id of the application.
         """
-
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         return app_name in self.get_list()
@@ -81,7 +77,6 @@ class AppAPI:
 
         :param app_name: id of the application.
         """
-
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         return app_name in self.get_list(enabled=True)
@@ -91,19 +86,16 @@ class AppAPI:
 
         :param app_name: id of the application.
         """
-
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         return app_name in self.get_list(enabled=False)
 
     def ex_app_get_list(self) -> list[str]:
         """Gets the list of the external applications IDs installed on the server."""
-
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{APP_V2_BASIC_URL}/ex-app/all", params={"extended": 0})
 
     def ex_app_get_info(self) -> list[ExAppInfo]:
         """Gets information of the external applications installed on the server."""
-
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         return self._session.ocs(method="GET", path=f"{APP_V2_BASIC_URL}/ex-app/all", params={"extended": 1})
