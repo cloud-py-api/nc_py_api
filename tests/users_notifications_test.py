@@ -8,7 +8,7 @@ if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
 
 
 def test_available():
-    assert NC_APP.users_status.available
+    assert NC_APP.users.notifications.available
 
 
 @pytest.mark.skipif(NC is None, reason="Not available for NextcloudApp.")
