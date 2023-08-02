@@ -39,7 +39,6 @@ class FsNodeInfo:
         """Time when the object was last modified.
 
         .. note:: ETag if more preferable way to check if the object was changed."""
-
         return self._last_modified
 
     @last_modified.setter
@@ -77,7 +76,6 @@ class FsNode:
     @property
     def is_dir(self) -> bool:
         """Returns ``True`` for the directories, ``False`` otherwise."""
-
         return self.full_path.endswith("/")
 
     def __str__(self):
@@ -95,61 +93,51 @@ class FsNode:
     def has_extra(self) -> bool:
         """Flag indicating whether this ``FsNode`` was obtained by the `mkdir` or `upload`
         methods and does not contain extended information."""
-
         return bool(self.info.permissions)
 
     @property
     def name(self) -> str:
         """Returns last ``pathname`` component."""
-
         return self.full_path.rstrip("/").rsplit("/", maxsplit=1)[-1]
 
     @property
     def user(self) -> str:
         """Returns user ID extracted from the `full_path`."""
-
         return self.full_path.lstrip("/").split("/", maxsplit=2)[1]
 
     @property
     def user_path(self) -> str:
         """Returns path relative to the user's root directory."""
-
         return self.full_path.lstrip("/").split("/", maxsplit=2)[-1]
 
     @property
     def is_shared(self) -> bool:
         """Check if a file or folder is shared."""
-
         return self.info.permissions.find("S") != -1
 
     @property
     def is_shareable(self) -> bool:
         """Check if a file or folder can be shared."""
-
         return self.info.permissions.find("R") != -1
 
     @property
     def is_mounted(self) -> bool:
         """Check if a file or folder is mounted."""
-
         return self.info.permissions.find("M") != -1
 
     @property
     def is_readable(self) -> bool:
         """Check if the file or folder is readable."""
-
         return self.info.permissions.find("G") != -1
 
     @property
     def is_deletable(self) -> bool:
         """Check if a file or folder can be deleted."""
-
         return self.info.permissions.find("D") != -1
 
     @property
     def is_updatable(self) -> bool:
         """Check if file/directory is writable."""
-
         if self.is_dir:
             return self.info.permissions.find("NV") != -1
         return self.info.permissions.find("W") != -1
@@ -157,7 +145,6 @@ class FsNode:
     @property
     def is_creatable(self) -> bool:
         """Check whether new files or folders can be created inside this folder."""
-
         if not self.is_dir:
             return False
         return self.info.permissions.find("CK") != -1
@@ -233,7 +220,6 @@ class Share:
     @property
     def permissions(self) -> SharePermissions:
         """Recipient permissions."""
-
         return SharePermissions(int(self.raw_data["permissions"]))
 
     @property

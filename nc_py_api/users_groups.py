@@ -27,7 +27,6 @@ class UserGroupsAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-
         data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=ENDPOINT, params=data)
         return response_data["groups"] if response_data else []
@@ -41,7 +40,6 @@ class UserGroupsAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-
         data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=f"{ENDPOINT}/details", params=data)
         return [GroupDetails(i) for i in response_data["groups"]] if response_data else []
@@ -52,7 +50,6 @@ class UserGroupsAPI:
         :param group_id: the ID of group to be created.
         :param display_name: display name for a created group.
         """
-
         params = {"groupid": group_id}
         if display_name is not None:
             params["displayname"] = display_name
@@ -64,7 +61,6 @@ class UserGroupsAPI:
         :param group_id: the ID of group to edit info.
         :param display_name: new group display name.
         """
-
         params = {"key": "displayname", "value": display_name}
         self._session.ocs(method="PUT", path=f"{ENDPOINT}/{group_id}", params=params)
 
@@ -73,7 +69,6 @@ class UserGroupsAPI:
 
         :param group_id: the ID of group to remove.
         """
-
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{group_id}")
 
     def get_members(self, group_id: str) -> list[str]:
@@ -81,7 +76,6 @@ class UserGroupsAPI:
 
         :param group_id: Group ID to get the list of members.
         """
-
         response_data = self._session.ocs(method="GET", path=f"{ENDPOINT}/{group_id}")
         return response_data["users"] if response_data else {}
 
@@ -90,5 +84,4 @@ class UserGroupsAPI:
 
         :param group_id: group ID to get the list of subadmins.
         """
-
         return self._session.ocs(method="GET", path=f"{ENDPOINT}/{group_id}/subadmins")

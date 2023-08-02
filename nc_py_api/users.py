@@ -44,7 +44,6 @@ class UsersAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-
         data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=ENDPOINT, params=data)
         return response_data["users"] if response_data else {}
@@ -54,7 +53,6 @@ class UsersAPI:
 
         :param user_id: the identifier of the user about which information is to be returned.
         """
-
         if not user_id:
             user_id = self._session.user
         if not user_id:
@@ -77,7 +75,6 @@ class UsersAPI:
             * ``quota`` - quota for the user, if needed.
             * ``language`` - default language for the user.
         """
-
         password = kwargs.get("password", None)
         email = kwargs.get("email", None)
         if not password and not email:
@@ -93,7 +90,6 @@ class UsersAPI:
 
         :param user_id: id of the user.
         """
-
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{user_id}")
 
     def enable(self, user_id: str) -> None:
@@ -101,7 +97,6 @@ class UsersAPI:
 
         :param user_id: id of the user.
         """
-
         self._session.ocs(method="PUT", path=f"{ENDPOINT}/{user_id}/enable")
 
     def disable(self, user_id: str) -> None:
@@ -109,7 +104,6 @@ class UsersAPI:
 
         :param user_id: id of the user.
         """
-
         self._session.ocs(method="PUT", path=f"{ENDPOINT}/{user_id}/disable")
 
     def resend_welcome_email(self, user_id: str) -> None:
@@ -117,12 +111,10 @@ class UsersAPI:
 
         :param user_id: id of the user.
         """
-
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{user_id}/welcome")
 
     def editable_fields(self) -> list[str]:
         """Returns user fields that avalaible for edit."""
-
         return self._session.ocs(method="GET", path=f"{ENDPOINT_BASE}/user/fields")
 
     def edit(self, user_id: str, **kwargs) -> None:
@@ -131,7 +123,6 @@ class UsersAPI:
         :param user_id: id of the user.
         :param kwargs: dictionary where keys are values from ``editable_fields`` method, and values to set.
         """
-
         for k, v in kwargs.items():
             self._session.ocs(method="PUT", path=f"{ENDPOINT}/{user_id}", params={"key": k, "value": v})
 
@@ -141,7 +132,6 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: the destination group to which add user to.
         """
-
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{user_id}/groups", params={"groupid": group_id})
 
     def remove_from_group(self, user_id: str, group_id: str) -> None:
@@ -150,7 +140,6 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: group from which remove user.
         """
-
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{user_id}/groups", params={"groupid": group_id})
 
     def promote_to_subadmin(self, user_id: str, group_id: str) -> None:
@@ -159,7 +148,6 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: group where user should become administrator.
         """
-
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{user_id}/subadmins", params={"groupid": group_id})
 
     def demote_from_subadmin(self, user_id: str, group_id: str) -> None:
@@ -168,5 +156,4 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: group where user should be removed from administrators.
         """
-
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{user_id}/subadmins", params={"groupid": group_id})

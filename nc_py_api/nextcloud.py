@@ -36,20 +36,17 @@ class NextcloudBasic(ABC):
     @property
     def capabilities(self) -> dict:
         """Returns the capabilities of the Nextcloud instance."""
-
         return self._session.capabilities
 
     @property
     def srv_version(self) -> ServerVersion:
         """Returns dictionary with the server version."""
-
         return self._session.nc_version
 
     def check_capabilities(self, capabilities: Union[str, list[str]]) -> list[str]:
         """Returns the list with missing capabilities if any.
 
         :param capabilities: one or more features to check for."""
-
         return check_capabilities(capabilities, self.capabilities)
 
     def update_server_info(self) -> None:
@@ -57,13 +54,11 @@ class NextcloudBasic(ABC):
 
         *In normal cases, it is called automatically and there is no need to call it manually.*
         """
-
         self._session.update_server_info()
 
     @property
     def theme(self) -> Optional[ThemingInfo]:
         """Returns Theme information."""
-
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
 
@@ -76,14 +71,12 @@ class Nextcloud(NextcloudBasic):
 
     def __init__(self, **kwargs):
         """:param dsdada: ddsdsds"""
-
         self._session = NcSession(**kwargs)
         self._init_api(self._session)
 
     @property
     def user(self) -> str:
         """Returns current user name."""
-
         return self._session.user
 
 
@@ -114,7 +107,6 @@ class NextcloudApp(NextcloudBasic):
         :param log_lvl: level of the log, content belongs to.
         :param content: string to write into the log.
         """
-
         if self.check_capabilities("app_ecosystem_v2"):
             return
         if int(log_lvl) < self.capabilities["app_ecosystem_v2"].get("loglevel", 0):
@@ -125,14 +117,12 @@ class NextcloudApp(NextcloudBasic):
 
     def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
-
         return self._session.ocs("GET", path=f"{APP_V2_BASIC_URL}/users", params={"format": "json"})
 
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
 
         Useful for applications which declare ``Optional`` scopes, to check if they are allowed for them."""
-
         if self.check_capabilities("app_ecosystem_v2"):
             return False
         return scope in self.capabilities["app_ecosystem_v2"]["scopes"]
@@ -143,7 +133,6 @@ class NextcloudApp(NextcloudBasic):
 
         *System Applications* can set it and impersonate the user. For normal applications, it is set automatically.
         """
-
         return self._session.user
 
     @user.setter
@@ -155,7 +144,6 @@ class NextcloudApp(NextcloudBasic):
     @property
     def app_cfg(self) -> AppConfig:
         """Returns deploy config, with AppEcosystem version, Application version and name."""
-
         return self._session.cfg
 
     def request_sign_check(self, request: Request) -> bool:
@@ -165,7 +153,6 @@ class NextcloudApp(NextcloudBasic):
 
         .. note:: In most cases ``nc: Annotated[NextcloudApp, Depends(nc_app)]`` should be used.
         """
-
         try:
             self._session.sign_check(request)
         except ValueError as e:
