@@ -1,7 +1,7 @@
 import pytest
 from gfixture import NC_APP
 
-from nc_py_api import NextcloudExceptionNotFound
+from nc_py_api import NextcloudExceptionNotFound, constants
 
 if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
     pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)
@@ -108,7 +108,27 @@ def test_cfg_ex_get_typing(class_to_test):
     class_to_test.set_value("test key2", "321")
     r = class_to_test.get_values(["test key", "test key2"])
     assert isinstance(r, list)
-    assert r[0]["configkey"] == "test key"
-    assert r[1]["configkey"] == "test key2"
-    assert r[0]["configvalue"] == "123"
-    assert r[1]["configvalue"] == "321"
+    assert r[0].key == "test key"
+    assert r[1].key == "test key2"
+    assert r[0].value == "123"
+    assert r[1].value == "321"
+
+
+def test_appcfg_sensitive():
+    appcfg = NC_APP.appconfig_ex_api
+    appcfg.delete("test_key")
+    appcfg.set_value("test_key", "123", sensitive=True)
+    assert appcfg.get_value("test_key") == "123"
+    assert appcfg.get_values(["test_key"])[0].value == "123"
+    appcfg.delete("test_key")
+    # next code tests `sensitive` value from the `AppEcosystem`
+    params = {"configKey": "test_key", "configValue": "123", "sensitive": True}
+    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg.url_suffix}", json=params)
+    assert result["configkey"] == "test_key"
+    assert result["configvalue"] == "123"
+    assert bool(result["sensitive"]) is True
+    params["sensitive"] = False
+    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg.url_suffix}", json=params)
+    assert result["configkey"] == "test_key"
+    assert result["configvalue"] == "123"
+    assert bool(result["sensitive"]) is False

@@ -1,5 +1,6 @@
 """Nextcloud API for working with apps V2's storage w/wo user context(table oc_appconfig_ex/oc_preferences_ex)."""
-from typing import Optional, TypedDict, Union
+from dataclasses import dataclass
+from typing import Optional, Union
 
 from ._session import NcSessionBasic
 from .constants import APP_V2_BASIC_URL
@@ -7,9 +8,14 @@ from .exceptions import NextcloudExceptionNotFound
 from .misc import require_capabilities
 
 
-class AppCfgPrefRecord(TypedDict):
-    configkey: str
-    configvalue: str
+@dataclass
+class CfgRecord:
+    key: str
+    value: str
+
+    def __init__(self, raw_data: dict):
+        self.key = raw_data["configkey"]
+        self.value = raw_data["configvalue"]
 
 
 class BasicAppCfgPref:
@@ -24,24 +30,18 @@ class BasicAppCfgPref:
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         r = self.get_values([key])
         if r:
-            return r[0]["configvalue"]
+            return r[0].value
         return default
 
-    def get_values(self, keys: list[str]) -> list[AppCfgPrefRecord]:
+    def get_values(self, keys: list[str]) -> list[CfgRecord]:
         if not keys:
             return []
         if not all(keys):
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         data = {"configKeys": keys}
-        return self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}/get-values", json=data)
-
-    def set_value(self, key: str, value: str) -> None:
-        if not key:
-            raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
-        params = {"configKey": key, "configValue": value}
-        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}", json=params)
+        results = self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}/get-values", json=data)
+        return [CfgRecord(i) for i in results]
 
     def delete(self, keys: Union[str, list[str]], not_fail=True) -> None:
         if isinstance(keys, str):
@@ -61,6 +61,22 @@ class BasicAppCfgPref:
 class PreferencesExAPI(BasicAppCfgPref):
     url_suffix = "ex-app/preference"
 
+    def set_value(self, key: str, value: str) -> None:
+        if not key:
+            raise ValueError("`key` parameter can not be empty")
+        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        params = {"configKey": key, "configValue": value}
+        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}", json=params)
+
 
 class AppConfigExAPI(BasicAppCfgPref):
     url_suffix = "ex-app/config"
+
+    def set_value(self, key: str, value: str, sensitive: bool = False) -> None:
+        if not key:
+            raise ValueError("`key` parameter can not be empty")
+        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        params: dict = {"configKey": key, "configValue": value}
+        if sensitive:
+            params["sensitive"] = True
+        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}", json=params)
