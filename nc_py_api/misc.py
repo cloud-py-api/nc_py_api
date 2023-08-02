@@ -3,6 +3,8 @@
 For internal use, prototypes can change between versions.
 """
 
+from random import choice
+from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Union
 
 from .exceptions import NextcloudException
@@ -27,3 +29,8 @@ def check_capabilities(capabilities: Union[str, list[str]], srv_capabilities: di
     if isinstance(capabilities, str):
         capabilities = [capabilities]
     return [i for i in capabilities if i not in srv_capabilities]
+
+
+def random_string(size: int) -> str:
+    letters = ascii_lowercase + ascii_uppercase + digits
+    return "".join(choice(letters) for _ in range(size))

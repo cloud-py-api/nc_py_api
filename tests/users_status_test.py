@@ -3,15 +3,15 @@ from time import time
 import pytest
 from gfixture import NC_TO_TEST, NC_VERSION
 
-from nc_py_api import users_status
+from nc_py_api import users_defs
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_available(nc):
-    assert nc.users_status.available
+    assert nc.users.status.available
 
 
-def compare_user_statuses(p1: users_status.UserStatus, p2: users_status.UserStatus):
+def compare_user_statuses(p1: users_defs.UserStatus, p2: users_defs.UserStatus):
     assert p1.user_id == p2.user_id
     assert p1.message == p2.message
     assert p1.icon == p2.icon
@@ -22,9 +22,9 @@ def compare_user_statuses(p1: users_status.UserStatus, p2: users_status.UserStat
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("message", ("1 2 3", None, ""))
 def test_get_status(nc, message):
-    nc.users_status.set_status(message)
-    r1 = nc.users_status.get_current()
-    r2 = nc.users_status.get(nc.user)
+    nc.users.status.set_status(message)
+    r1 = nc.users.status.get_current()
+    r2 = nc.users.status.get(nc.user)
     compare_user_statuses(r1, r2)
     assert r1.user_id == "admin"
     assert r1.icon is None
@@ -38,12 +38,12 @@ def test_get_status(nc, message):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_status_non_existent_user(nc):
-    assert nc.users_status.get("no such user") is None
+    assert nc.users.status.get("no such user") is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_predefined(nc):
-    r = nc.users_status.get_predefined()
+    r = nc.users.status.get_predefined()
     if nc.srv_version["major"] < 27:
         assert r == []
     else:
@@ -53,15 +53,15 @@ def test_get_predefined(nc):
             assert isinstance(i.status_id, str)
             assert isinstance(i.message, str)
             assert isinstance(i.icon, str)
-            assert isinstance(i.clear_at, users_status.ClearAt) or i.clear_at is None
+            assert isinstance(i.clear_at, users_defs.ClearAt) or i.clear_at is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_list(nc):
-    r_all = nc.users_status.get_list()
+    r_all = nc.users.status.get_list()
     assert r_all
     assert isinstance(r_all, list)
-    r_current = nc.users_status.get_current()
+    r_current = nc.users.status.get_current()
     for i in r_all:
         if i.user_id == nc.user:
             compare_user_statuses(i, r_current)
@@ -70,18 +70,18 @@ def test_get_list(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_set_status(nc):
     time_clear = int(time()) + 60
-    nc.users_status.set_status("cool status", time_clear)
-    r = nc.users_status.get_current()
+    nc.users.status.set_status("cool status", time_clear)
+    r = nc.users.status.get_current()
     assert r.message == "cool status"
     assert r.clear_at == time_clear
     assert r.icon is None
-    nc.users_status.set_status("Sick!", status_icon="🤒")
-    r = nc.users_status.get_current()
+    nc.users.status.set_status("Sick!", status_icon="🤒")
+    r = nc.users.status.get_current()
     assert r.message == "Sick!"
     assert r.clear_at is None
     assert r.icon == "🤒"
-    nc.users_status.set_status(None)
-    r = nc.users_status.get_current()
+    nc.users.status.set_status(None)
+    r = nc.users.status.get_current()
     assert r.message is None
     assert r.clear_at is None
     assert r.icon is None
@@ -90,8 +90,8 @@ def test_set_status(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("value", ("online", "away", "dnd", "invisible", "offline"))
 def test_set_status_type(nc, value):
-    nc.users_status.set_status_type(value)
-    r = nc.users_status.get_current()
+    nc.users.status.set_status_type(value)
+    r = nc.users.status.get_current()
     assert r.status_type == value
     assert r.status_type_defined
 
@@ -100,12 +100,12 @@ def test_set_status_type(nc, value):
 @pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
 def test_set_predefined(nc, clear_at):
     if nc.srv_version["major"] < 27:
-        nc.users_status.set_predefined("meeting")
+        nc.users.status.set_predefined("meeting")
     else:
-        predefined_statuses = nc.users_status.get_predefined()
+        predefined_statuses = nc.users.status.get_predefined()
         for i in predefined_statuses:
-            nc.users_status.set_predefined(i.status_id, clear_at)
-            r = nc.users_status.get_current()
+            nc.users.status.set_predefined(i.status_id, clear_at)
+            r = nc.users.status.get_current()
             assert r.message == i.message
             assert r.status_id == i.status_id
             assert r.predefined
@@ -119,7 +119,7 @@ def test_get_back_status_from_from_empty_user(nc):
     nc._session.user = ""
     try:
         with pytest.raises(ValueError):
-            nc.users_status.get_backup_status("")
+            nc.users.status.get_backup_status("")
     finally:
         nc._session.user = orig_user
 
@@ -127,10 +127,10 @@ def test_get_back_status_from_from_empty_user(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
 def test_get_back_status_from_from_non_exist_user(nc):
-    assert nc.users_status.get_backup_status("mёm_m-m.l") is None
+    assert nc.users.status.get_backup_status("mёm_m-m.l") is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.skipif(NC_VERSION["major"] < 27, reason="Run only on NC27+")
 def test_restore_from_non_existing_back_status(nc):
-    assert nc.users_status.restore_backup_status("no such backup status") is None
+    assert nc.users.status.restore_backup_status("no such backup status") is None

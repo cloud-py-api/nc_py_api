@@ -10,7 +10,7 @@ ENDPOINT = "/ocs/v1.php/cloud/apps"
 
 
 class ExAppInfo(TypedDict):
-    """Information about the External Application"""
+    """Information about the External Application."""
 
     id: str
     """`id` of the application"""

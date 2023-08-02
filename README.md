@@ -17,7 +17,7 @@ Python library that provides a robust and well-documented API that allows develo
  * Operations with Users and User Groups
  * User status
  * Weather status
- * ~~Nextcloud notifications support~~
+ * Notifications support
  * Shares support
  * ~~Talk support~~
 

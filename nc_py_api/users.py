@@ -4,19 +4,36 @@ from typing import Optional
 
 from ._session import NcSessionBasic
 from .misc import kwargs_to_dict
+from .users_groups import UserGroupsAPI
+from .users_notifications import NotificationsAPI
+from .users_status import UserStatusAPI
+from .users_weather import WeatherStatusAPI
 
 ENDPOINT_BASE = "/ocs/v1.php/cloud"
 ENDPOINT = f"{ENDPOINT_BASE}/users"
 
 
 class UsersAPI:
-    """The class provides the user management API on the Nextcloud server.
+    """The class provides the user, user groups, user status API on the Nextcloud server.
 
     .. note:: In NextcloudApp mode, only ``get_list`` and ``get_details`` methods are available.
     """
 
+    groups: UserGroupsAPI
+    # """API for managing user groups"""
+    status: UserStatusAPI
+    """API for managing user statuses"""
+    notifications: NotificationsAPI
+    # """API for managing user notifications"""
+    weather: WeatherStatusAPI
+    """API for managing user weather statuses"""
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
+        self.groups = UserGroupsAPI(session)
+        self.status = UserStatusAPI(session)
+        self.notifications = NotificationsAPI(session)
+        self.weather = WeatherStatusAPI(session)
 
     def get_list(
         self, mask: Optional[str] = "", limit: Optional[int] = None, offset: Optional[int] = None

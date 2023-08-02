@@ -3,52 +3,10 @@
 from typing import Union
 
 from ._session import NcSessionBasic
-from .constants import SharePermissions, ShareType
-from .files import FsNode
+from .files_defs import FsNode, Share, SharePermissions, ShareType
 from .misc import check_capabilities, require_capabilities
 
 ENDPOINT_BASE = "/ocs/v1.php/apps/files_sharing/api/v1/"
-
-
-class Share:
-    """Class represents one Nextcloud Share."""
-
-    def __init__(self, raw_data: dict):
-        self.raw_data = raw_data
-
-    @property
-    def share_id(self) -> int:
-        return int(self.raw_data["id"])
-
-    @property
-    def share_type(self) -> ShareType:
-        return ShareType(int(self.raw_data["share_type"]))
-
-    @property
-    def permissions(self) -> SharePermissions:
-        """Recipient permissions"""
-
-        return SharePermissions(int(self.raw_data["permissions"]))
-
-    @property
-    def url(self) -> str:
-        return self.raw_data.get("url", "")
-
-    @property
-    def path(self) -> str:
-        return self.raw_data.get("path", "")
-
-    @property
-    def label(self) -> str:
-        return self.raw_data.get("label", "")
-
-    @property
-    def note(self) -> str:
-        return self.raw_data.get("note", "")
-
-    @property
-    def mimetype(self) -> str:
-        return self.raw_data.get("mimetype", "")
 
 
 class FilesSharingAPI:

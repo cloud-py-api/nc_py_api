@@ -2,12 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.27 - 2023-08-0x]
+## [0.0.27 - 2023-08-03]
+
+### Added
+
+- `Notifications API`
 
 ### Changed
 
 - Switched to `hatching` as a build system, now correct install optional dependencies.
 - Renamed methods, attributes that was `shadowing a Python builtins`. Enabled additional `Ruff` linters checks.
+- Regroup APIs, now Users related stuff starts with `user`, file related stuff with `file`.
 
 ## [0.0.26 - 2023-07-29]
 

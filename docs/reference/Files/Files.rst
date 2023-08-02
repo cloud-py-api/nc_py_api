@@ -1,5 +1,3 @@
-.. py:currentmodule:: nc_py_api.files
-
 File System
 ===========
 
@@ -8,11 +6,11 @@ Refer to the **fs examples** to see how to use them nicely.
 
 All File APIs are designed to work relative to the current user.
 
-.. autoclass:: FsNodeInfo
+.. autoclass:: nc_py_api.files_defs.FsNodeInfo
     :members:
 
-.. autoclass:: FsNode
+.. autoclass:: nc_py_api.files_defs.FsNode
     :members:
 
-.. autoclass:: FilesAPI
+.. autoclass:: nc_py_api.files.FilesAPI
     :members:

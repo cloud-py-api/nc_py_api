@@ -1,44 +1,12 @@
 """Nextcloud API for working with weather statuses."""
 
-from dataclasses import dataclass
-from enum import IntEnum
 from typing import Optional, Union
 
 from ._session import NcSessionBasic
 from .misc import check_capabilities, require_capabilities
+from .users_defs import WeatherLocation, WeatherLocationMode
 
 ENDPOINT = "/ocs/v1.php/apps/weather_status/api/v1"
-
-
-class WeatherLocationMode(IntEnum):
-    """Source from where Nextcloud should determine user's location."""
-
-    UNKNOWN = 0
-    """Source is not defined"""
-    MODE_BROWSER_LOCATION = 1
-    """User location taken from the browser"""
-    MODE_MANUAL_LOCATION = 2
-    """User has set their location manually"""
-
-
-@dataclass
-class WeatherLocation:
-    latitude: float
-    """Latitude in decimal degree format"""
-    longitude: float
-    """Longitude in decimal degree format"""
-    address: str
-    """Any approximate or exact address"""
-    mode: WeatherLocationMode
-    """Weather status mode"""
-
-    def __init__(self, raw_location: dict):
-        lat = raw_location.get("lat", "")
-        lon = raw_location.get("lon", "")
-        self.latitude = float(lat if lat else "0")
-        self.longitude = float(lon if lon else "0")
-        self.address = raw_location.get("address", "")
-        self.mode = WeatherLocationMode(int(raw_location.get("mode", 0)))
 
 
 class WeatherStatusAPI:

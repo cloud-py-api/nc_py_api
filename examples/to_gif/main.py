@@ -97,4 +97,4 @@ if __name__ == "__main__":
     # environ["app_name"] = "test_app"
     # ---------
     urllib3.disable_warnings()
-    uvicorn.run("main:APP", host="0.0.0.0", port=9001, log_level='trace', reload=True)
+    uvicorn.run("main:APP", host="0.0.0.0", port=9001, log_level="trace", reload=True)

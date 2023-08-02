@@ -1,92 +1,13 @@
 """Nextcloud API for working with user statuses."""
 
-from dataclasses import dataclass
 from typing import Literal, Optional, Union
 
 from ._session import NcSessionBasic
 from .exceptions import NextcloudExceptionNotFound
 from .misc import check_capabilities, kwargs_to_dict, require_capabilities
+from .users_defs import CurrentUserStatus, PredefinedStatus, UserStatus
 
 ENDPOINT = "/ocs/v1.php/apps/user_status/api/v1"
-
-
-@dataclass
-class ClearAt:
-    """Determination when a user's predefined status will be cleared."""
-
-    clear_type: str
-    """Possible values: ``period``, ``end-of``"""
-    time: Union[str, int]
-    """Depending of ``type`` it can be number of seconds relative to ``now`` or one of the next values: ``day``"""
-
-    def __init__(self, raw_data: dict):
-        self.clear_type = raw_data["type"]
-        self.time = raw_data["time"]
-
-
-@dataclass
-class PredefinedStatus:
-    """Definition of the predefined status."""
-
-    status_id: str
-    """ID of the predefined status"""
-    icon: str
-    """Icon in string(UTF) format"""
-    message: str
-    """The message defined for this status. It is translated, so it depends on the user's language setting."""
-    clear_at: Optional[ClearAt]
-    """When the default, if not override, the predefined status will be cleared."""
-
-    def __init__(self, raw_status: dict):
-        self.status_id = raw_status["id"]
-        self.icon = raw_status["icon"]
-        self.message = raw_status["message"]
-        clear_at_raw = raw_status.get("clearAt", None)
-        if clear_at_raw:
-            self.clear_at = ClearAt(clear_at_raw)
-        else:
-            self.clear_at = None
-
-
-@dataclass
-class UserStatus:
-    """Information about user status."""
-
-    user_id: str
-    """The ID of the user this status is for"""
-    message: str
-    """Message of the status"""
-    icon: Optional[str]
-    """The icon picked by the user (must be one emoji)"""
-    clear_at: Optional[int]
-    """Unix Timestamp representing the time to clear the status."""
-    status_type: str
-    """Status type, on of the: online, away, dnd, invisible, offline"""
-
-    def __init__(self, raw_status: dict):
-        self.user_id = raw_status["userId"]
-        self.message = raw_status["message"]
-        self.icon = raw_status["icon"]
-        self.clear_at = raw_status["clearAt"]
-        self.status_type = raw_status["status"]
-
-
-@dataclass
-class CurrentUserStatus(UserStatus):
-    """Information about current user status."""
-
-    status_id: Optional[str]
-    """ID of the predefined status"""
-    predefined: bool
-    """*True* if status if predefined, *False* otherwise"""
-    status_type_defined: bool
-    """*True* if :py:attr:`UserStatus.status_type` is set by user, *False* otherwise"""
-
-    def __init__(self, raw_status: dict):
-        super().__init__(raw_status)
-        self.status_id = raw_status["messageId"]
-        self.predefined = raw_status["messageIsPredefined"]
-        self.status_type_defined = raw_status["statusIsUserDefined"]
 
 
 class UserStatusAPI:

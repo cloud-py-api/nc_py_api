@@ -11,7 +11,11 @@ from .misc import require_capabilities
 class UiActionFileInfo(BaseModel):
     fileId: int
     name: str
-    dir: str  # noqa
+    directory: str
+    etag: str
+    mime: str
+    favorite: str
+    permissions: int
 
 
 class UiFileActionHandlerInfo(BaseModel):
@@ -28,6 +32,8 @@ class UiFilesActionsAPI:
         self._session = session
 
     def register(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
+        """Registers the files a dropdown menu element."""
+
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         params = {
             "fileActionMenuParams": {
@@ -44,6 +50,8 @@ class UiFilesActionsAPI:
         self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{ENDPOINT_SUFFIX}", json=params)
 
     def unregister(self, name: str, not_fail=True) -> None:
+        """Removes files dropdown menu element."""
+
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         params = {"fileActionMenuName": name}
         try:

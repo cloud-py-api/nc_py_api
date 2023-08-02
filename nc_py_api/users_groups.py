@@ -1,38 +1,12 @@
 """Nextcloud API for working with user groups."""
 
-from dataclasses import dataclass
 from typing import Optional
 
 from ._session import NcSessionBasic
 from .misc import kwargs_to_dict
+from .users_defs import GroupDetails
 
 ENDPOINT = "/ocs/v1.php/cloud/groups"
-
-
-@dataclass
-class GroupDetails:
-    """User Group information"""
-
-    group_id: str
-    """ID of the group"""
-    display_name: str
-    """Display name of the group"""
-    user_count: int
-    """Number of users in the group"""
-    disabled: bool
-    """Flag indicating is group disabled"""
-    can_add: bool
-    """Flag showing the caller has enough rights to add users to this group"""
-    can_remove: bool
-    """Flag showing the caller has enough rights to remove users from this group"""
-
-    def __init__(self, raw_group: dict):
-        self.group_id = raw_group["id"]
-        self.display_name = raw_group["displayname"]
-        self.user_count = raw_group["usercount"]
-        self.disabled = bool(raw_group["disabled"])
-        self.can_add = bool(raw_group["canAdd"])
-        self.can_remove = bool(raw_group["canRemove"])
 
 
 class UserGroupsAPI:
