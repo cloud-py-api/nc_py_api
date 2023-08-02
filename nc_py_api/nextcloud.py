@@ -21,7 +21,7 @@ class NextcloudBasic(ABC):
     """Nextcloud API for App management"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
-    preferences_api: PreferencesAPI
+    preferences: PreferencesAPI
     # """Nextcloud User Preferences API"""
     users: UsersAPI
     """Nextcloud API for managing users, user groups, user status, user weather status"""
@@ -30,7 +30,7 @@ class NextcloudBasic(ABC):
     def _init_api(self, session: NcSessionBasic):
         self.apps = AppAPI(session)
         self.files = FilesAPI(session)
-        self.preferences_api = PreferencesAPI(session)
+        self.preferences = PreferencesAPI(session)
         self.users = UsersAPI(session)
 
     @property
@@ -93,15 +93,15 @@ class NextcloudApp(NextcloudBasic):
     """
 
     _session: NcSessionApp
-    appconfig_ex_api: AppConfigExAPI
-    preferences_ex_api: PreferencesExAPI
+    appconfig_ex: AppConfigExAPI
+    preferences_ex: PreferencesExAPI
     ui_files_actions: UiFilesActionsAPI
 
     def __init__(self, **kwargs):
         self._session = NcSessionApp(**kwargs)
         self._init_api(self._session)
-        self.appconfig_ex_api = AppConfigExAPI(self._session)
-        self.preferences_ex_api = PreferencesExAPI(self._session)
+        self.appconfig_ex = AppConfigExAPI(self._session)
+        self.preferences_ex = PreferencesExAPI(self._session)
         self.ui_files_actions = UiFilesActionsAPI(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
