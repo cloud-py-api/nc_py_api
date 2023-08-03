@@ -123,12 +123,12 @@ def test_appcfg_sensitive():
     appcfg.delete("test_key")
     # next code tests `sensitive` value from the `AppEcosystem`
     params = {"configKey": "test_key", "configValue": "123", "sensitive": True}
-    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg.url_suffix}", json=params)
+    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is True
     params["sensitive"] = False
-    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg.url_suffix}", json=params)
+    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is False
