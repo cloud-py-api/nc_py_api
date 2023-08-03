@@ -1,37 +1,13 @@
 """Nextcloud API for working with drop-down file's menu."""
-
-from pydantic import BaseModel
-
 from ._session import NcSessionApp
 from .constants import APP_V2_BASIC_URL
 from .exceptions import NextcloudExceptionNotFound
 from .misc import require_capabilities
 
-
-class UiActionFileInfo(BaseModel):
-    """File Information Nextcloud sends to the External Application."""
-
-    fileId: int
-    name: str
-    directory: str
-    etag: str
-    mime: str
-    favorite: str
-    permissions: int
-
-
-class UiFileActionHandlerInfo(BaseModel):
-    """Action information Nextcloud sends to the External Application."""
-
-    actionName: str
-    actionHandler: str
-    actionFile: UiActionFileInfo
-
-
 ENDPOINT_SUFFIX = "files/actions/menu"
 
 
-class UiFilesActionsAPI:
+class GuiFilesActionsAPI:
     """API for the drop-down menu in Nextcloud ``Files`` app."""
 
     def __init__(self, session: NcSessionApp):

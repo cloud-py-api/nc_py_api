@@ -5,14 +5,14 @@ from typing import Optional, Union
 from fastapi import Request
 
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
-from .appconfig_preferences_ex import AppConfigExAPI, PreferencesExAPI
+from .appcfg_prefs_ex import AppConfigExAPI, PreferencesExAPI
 from .apps import AppAPI
 from .constants import APP_V2_BASIC_URL, ApiScope, LogLvl
 from .files import FilesAPI
+from .gui import GuiApi
 from .misc import check_capabilities
 from .preferences import PreferencesAPI
 from .theming import ThemingInfo, get_parsed_theme
-from .ui_files_actions_menu import UiFilesActionsAPI
 from .users import UsersAPI
 
 
@@ -94,15 +94,15 @@ class NextcloudApp(_NextcloudBasic):
 
     _session: NcSessionApp
     appconfig_ex: AppConfigExAPI
+    gui: GuiApi
     preferences_ex: PreferencesExAPI
-    ui_files_actions: UiFilesActionsAPI
 
     def __init__(self, **kwargs):
         self._session = NcSessionApp(**kwargs)
         self._init_api(self._session)
         self.appconfig_ex = AppConfigExAPI(self._session)
         self.preferences_ex = PreferencesExAPI(self._session)
-        self.ui_files_actions = UiFilesActionsAPI(self._session)
+        self.gui = GuiApi(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file.
