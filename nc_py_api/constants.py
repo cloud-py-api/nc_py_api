@@ -42,11 +42,15 @@ class ApiScope(IntEnum):
 
 
 class ApiScopesStruct(TypedDict):
+    """Reply of the Nextcloud App with the desired scopes."""
+
     required: list[int]
     optional: list[int]
 
 
 class OCSRespond(IntEnum):
+    """Special Nextcloud respond statuses for OCS calls."""
+
     RESPOND_SERVER_ERROR = 996
     RESPOND_UNAUTHORISED = 997
     RESPOND_NOT_FOUND = 998

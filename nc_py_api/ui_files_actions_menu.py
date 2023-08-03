@@ -9,6 +9,8 @@ from .misc import require_capabilities
 
 
 class UiActionFileInfo(BaseModel):
+    """File Information Nextcloud sends to the External Application."""
+
     fileId: int
     name: str
     directory: str
@@ -19,6 +21,8 @@ class UiActionFileInfo(BaseModel):
 
 
 class UiFileActionHandlerInfo(BaseModel):
+    """Action information Nextcloud sends to the External Application."""
+
     actionName: str
     actionHandler: str
     actionFile: UiActionFileInfo
@@ -28,6 +32,8 @@ ENDPOINT_SUFFIX = "files/actions/menu"
 
 
 class UiFilesActionsAPI:
+    """API for the drop-down menu in Nextcloud ``Files`` app."""
+
     def __init__(self, session: NcSessionApp):
         self._session = session
 

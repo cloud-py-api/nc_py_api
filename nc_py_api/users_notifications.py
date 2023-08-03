@@ -12,6 +12,8 @@ ENDPOINT = "/ocs/v2.php/apps/notifications/api/v2/notifications"
 
 
 class NotificationsAPI:
+    """Class representing information about the user's location."""
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 

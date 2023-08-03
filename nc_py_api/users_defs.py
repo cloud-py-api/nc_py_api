@@ -125,6 +125,8 @@ class WeatherLocationMode(IntEnum):
 
 @dataclass
 class WeatherLocation:
+    """Class representing information about the user's location."""
+
     latitude: float
     """Latitude in decimal degree format"""
     longitude: float
@@ -177,7 +179,7 @@ class NotificationInfo:
 
 @dataclass
 class Notification:
-    """A class that represents a Nextcloud Notification."""
+    """Class representing information about Nextcloud notification."""
 
     notification_id: int
     """ID of the notification."""

@@ -16,7 +16,7 @@ from .ui_files_actions_menu import UiFilesActionsAPI
 from .users import UsersAPI
 
 
-class NextcloudBasic(ABC):
+class _NextcloudBasic(ABC):
     apps: AppAPI
     """Nextcloud API for App management"""
     files: FilesAPI
@@ -63,7 +63,7 @@ class NextcloudBasic(ABC):
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
 
-class Nextcloud(NextcloudBasic):
+class Nextcloud(_NextcloudBasic):
     """Nextcloud client class.
 
     Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.
@@ -82,7 +82,7 @@ class Nextcloud(NextcloudBasic):
         return self._session.user
 
 
-class NextcloudApp(NextcloudBasic):
+class NextcloudApp(_NextcloudBasic):
     """Class for creating Nextcloud applications.
 
     Provides additional API required for applications such as user impersonation,
