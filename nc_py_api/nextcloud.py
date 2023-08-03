@@ -5,23 +5,23 @@ from typing import Optional, Union
 from fastapi import Request
 
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
-from .appconfig_preferences_ex import AppConfigExAPI, PreferencesExAPI
+from .appcfg_prefs_ex import AppConfigExAPI, PreferencesExAPI
 from .apps import AppAPI
 from .constants import APP_V2_BASIC_URL, ApiScope, LogLvl
 from .files import FilesAPI
+from .gui import GuiApi
 from .misc import check_capabilities
 from .preferences import PreferencesAPI
 from .theming import ThemingInfo, get_parsed_theme
-from .ui_files_actions_menu import UiFilesActionsAPI
 from .users import UsersAPI
 
 
-class NextcloudBasic(ABC):
+class _NextcloudBasic(ABC):
     apps: AppAPI
     """Nextcloud API for App management"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
-    preferences_api: PreferencesAPI
+    preferences: PreferencesAPI
     # """Nextcloud User Preferences API"""
     users: UsersAPI
     """Nextcloud API for managing users, user groups, user status, user weather status"""
@@ -30,7 +30,7 @@ class NextcloudBasic(ABC):
     def _init_api(self, session: NcSessionBasic):
         self.apps = AppAPI(session)
         self.files = FilesAPI(session)
-        self.preferences_api = PreferencesAPI(session)
+        self.preferences = PreferencesAPI(session)
         self.users = UsersAPI(session)
 
     @property
@@ -46,7 +46,8 @@ class NextcloudBasic(ABC):
     def check_capabilities(self, capabilities: Union[str, list[str]]) -> list[str]:
         """Returns the list with missing capabilities if any.
 
-        :param capabilities: one or more features to check for."""
+        :param capabilities: one or more features to check for.
+        """
         return check_capabilities(capabilities, self.capabilities)
 
     def update_server_info(self) -> None:
@@ -62,10 +63,11 @@ class NextcloudBasic(ABC):
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
 
-class Nextcloud(NextcloudBasic):
+class Nextcloud(_NextcloudBasic):
     """Nextcloud client class.
 
-    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else."""
+    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.
+    """
 
     _session: NcSession
 
@@ -80,26 +82,27 @@ class Nextcloud(NextcloudBasic):
         return self._session.user
 
 
-class NextcloudApp(NextcloudBasic):
+class NextcloudApp(_NextcloudBasic):
     """Class for creating Nextcloud applications.
 
     Provides additional API required for applications such as user impersonation,
     endpoint registration, new authentication method, etc.
 
     .. note:: Instance of this class should not be created directly in ``normal`` applications,
-        it will be provided for each app endpoint call."""
+        it will be provided for each app endpoint call.
+    """
 
     _session: NcSessionApp
-    appconfig_ex_api: AppConfigExAPI
-    preferences_ex_api: PreferencesExAPI
-    ui_files_actions: UiFilesActionsAPI
+    appconfig_ex: AppConfigExAPI
+    gui: GuiApi
+    preferences_ex: PreferencesExAPI
 
     def __init__(self, **kwargs):
         self._session = NcSessionApp(**kwargs)
         self._init_api(self._session)
-        self.appconfig_ex_api = AppConfigExAPI(self._session)
-        self.preferences_ex_api = PreferencesExAPI(self._session)
-        self.ui_files_actions = UiFilesActionsAPI(self._session)
+        self.appconfig_ex = AppConfigExAPI(self._session)
+        self.preferences_ex = PreferencesExAPI(self._session)
+        self.gui = GuiApi(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file.
@@ -122,7 +125,8 @@ class NextcloudApp(NextcloudBasic):
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
 
-        Useful for applications which declare ``Optional`` scopes, to check if they are allowed for them."""
+        Useful for applications which declare ``Optional`` scopes, to check if they are allowed for them.
+        """
         if self.check_capabilities("app_ecosystem_v2"):
             return False
         return scope in self.capabilities["app_ecosystem_v2"]["scopes"]

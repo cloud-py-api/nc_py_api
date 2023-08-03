@@ -11,7 +11,7 @@ ENDPOINT = "/ocs/v1.php/apps/user_status/api/v1"
 
 
 class UserStatusAPI:
-    """The class provides the user status management API on the Nextcloud server."""
+    """Class providing the user status management API on the Nextcloud server."""
 
     def __init__(self, session: NcSessionBasic):
         self._session = session

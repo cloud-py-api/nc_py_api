@@ -12,6 +12,8 @@ ENDPOINT = "/ocs/v2.php/apps/notifications/api/v2/notifications"
 
 
 class NotificationsAPI:
+    """Class representing information about the user's location."""
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
@@ -68,7 +70,8 @@ class NotificationsAPI:
     def by_object_id(self, object_id: str) -> Optional[Notification]:
         """Returns Notification if any by its object ID.
 
-        .. note:: this method is a temporary workaround until `create` can return `notification_id`."""
+        .. note:: this method is a temporary workaround until `create` can return `notification_id`.
+        """
         for i in self.get_all():
             if i.object_id == object_id:
                 return i

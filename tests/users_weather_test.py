@@ -20,7 +20,7 @@ def test_get_set_location(nc):
     try:
         assert nc.users.weather.set_location(address="Paris, 75007, France")
     except NextcloudException as e:
-        if e.status_code == 500:
+        if e.status_code in (500, 996):
             pytest.skip("Some network problem on the host")
         raise e from None
     loc = nc.users.weather.get_location()

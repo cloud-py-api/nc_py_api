@@ -10,7 +10,7 @@ ENDPOINT_BASE = "/ocs/v1.php/apps/files_sharing/api/v1/"
 
 
 class FilesSharingAPI:
-    """This class provides all File Sharing functionality."""
+    """Class provides all File Sharing functionality."""
 
     def __init__(self, session: NcSessionBasic):
         self._session = session

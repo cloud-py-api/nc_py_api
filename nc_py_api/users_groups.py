@@ -10,7 +10,7 @@ ENDPOINT = "/ocs/v1.php/cloud/groups"
 
 
 class UserGroupsAPI:
-    """The class provides an API for managing user groups on the Nextcloud server.
+    """Class providing an API for managing user groups on the Nextcloud server.
 
     .. note:: In NextcloudApp mode, only ``get_list`` and ``get_details`` methods are available.
     """

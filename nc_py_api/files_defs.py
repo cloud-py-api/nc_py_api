@@ -38,7 +38,8 @@ class FsNodeInfo:
     def last_modified(self) -> datetime:
         """Time when the object was last modified.
 
-        .. note:: ETag if more preferable way to check if the object was changed."""
+        .. note:: ETag if more preferable way to check if the object was changed.
+        """
         return self._last_modified
 
     @last_modified.setter
@@ -53,7 +54,8 @@ class FsNodeInfo:
 class FsNode:
     """A class that represents a Nextcloud file object.
 
-    Acceptable itself as a ``path`` parameter for the most file APIs."""
+    Acceptable itself as a ``path`` parameter for the most file APIs.
+    """
 
     full_path: str
     """Path to the object, including the username. Does not include `dav` prefix"""
@@ -92,7 +94,8 @@ class FsNode:
     @property
     def has_extra(self) -> bool:
         """Flag indicating whether this ``FsNode`` was obtained by the `mkdir` or `upload`
-        methods and does not contain extended information."""
+        methods and does not contain extended information.
+        """
         return bool(self.info.permissions)
 
     @property

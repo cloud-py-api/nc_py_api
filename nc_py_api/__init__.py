@@ -11,6 +11,7 @@ from .files_defs import (
     ShareStatus,
     ShareType,
 )
+from .gui_defs import GuiActionFileInfo, GuiFileActionHandlerInfo
 from .integration_fastapi import (
     enable_heartbeat,
     nc_app,
@@ -18,4 +19,3 @@ from .integration_fastapi import (
     set_scopes,
 )
 from .nextcloud import Nextcloud, NextcloudApp
-from .ui_files_actions_menu import UiActionFileInfo, UiFileActionHandlerInfo

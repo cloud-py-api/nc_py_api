@@ -37,7 +37,8 @@ class AppAPI:
 
         :param app_name: id of the application.
 
-        .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode."""
+        .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode.
+        """
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{app_name}")
@@ -47,7 +48,8 @@ class AppAPI:
 
         :param app_name: id of the application.
 
-        .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode."""
+        .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode.
+        """
         if not app_name:
             raise ValueError("`app_name` parameter can not be empty")
         self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_name}")

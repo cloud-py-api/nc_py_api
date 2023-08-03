@@ -10,6 +10,8 @@ from .misc import require_capabilities
 
 @dataclass
 class CfgRecord:
+    """A representation of a single key-value pair returned from the `get_values` method."""
+
     key: str
     value: str
 
@@ -18,8 +20,8 @@ class CfgRecord:
         self.value = raw_data["configvalue"]
 
 
-class BasicAppCfgPref:
-    url_suffix: str
+class _BasicAppCfgPref:
+    _url_suffix: str
 
     def __init__(self, session: NcSessionBasic):
         self._session = session
@@ -40,7 +42,7 @@ class BasicAppCfgPref:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         data = {"configKeys": keys}
-        results = self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}/get-values", json=data)
+        results = self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self._url_suffix}/get-values", json=data)
         return [CfgRecord(i) for i in results]
 
     def delete(self, keys: Union[str, list[str]], not_fail=True) -> None:
@@ -52,25 +54,29 @@ class BasicAppCfgPref:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         try:
-            self._session.ocs(method="DELETE", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}", json={"configKeys": keys})
+            self._session.ocs(method="DELETE", path=f"{APP_V2_BASIC_URL}/{self._url_suffix}", json={"configKeys": keys})
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
 
 
-class PreferencesExAPI(BasicAppCfgPref):
-    url_suffix = "ex-app/preference"
+class PreferencesExAPI(_BasicAppCfgPref):
+    """User specific preferences API."""
+
+    _url_suffix = "ex-app/preference"
 
     def set_value(self, key: str, value: str) -> None:
         if not key:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
         params = {"configKey": key, "configValue": value}
-        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}", json=params)
+        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self._url_suffix}", json=params)
 
 
-class AppConfigExAPI(BasicAppCfgPref):
-    url_suffix = "ex-app/config"
+class AppConfigExAPI(_BasicAppCfgPref):
+    """Non-user(App) specific preferences API."""
+
+    _url_suffix = "ex-app/config"
 
     def set_value(self, key: str, value: str, sensitive: bool = False) -> None:
         if not key:
@@ -79,4 +85,4 @@ class AppConfigExAPI(BasicAppCfgPref):
         params: dict = {"configKey": key, "configValue": value}
         if sensitive:
             params["sensitive"] = True
-        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self.url_suffix}", json=params)
+        self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/{self._url_suffix}", json=params)

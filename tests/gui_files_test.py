@@ -33,9 +33,9 @@ def test_register_ui_file_actions():
         NC_APP.files.makedirs("test_ui_action", exist_ok=True)
         NC_APP.files.upload("test_ui_action/tmp.png", bytes(im.getbuffer()))
         tmp_png = NC_APP.files.by_path("test_ui_action/tmp.png")
-        NC_APP.ui_files_actions.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
-        NC_APP.ui_files_actions.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
-        NC_APP.ui_files_actions.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
+        NC_APP.gui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
+        NC_APP.gui.files_dropdown_menu.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
+        NC_APP.gui.files_dropdown_menu.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
         opts = webdriver.FirefoxOptions()
         opts.add_argument("--headless")
         driver = webdriver.Firefox(opts)
@@ -64,16 +64,16 @@ def test_register_ui_file_actions():
                 driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_txt")]')
         finally:
             driver.quit()
-        NC_APP.ui_files_actions.unregister("test_ui_action_im")
-        NC_APP.ui_files_actions.unregister("test_ui_action_txt")
-        NC_APP.ui_files_actions.unregister("test_ui_action_any")
+        NC_APP.gui.files_dropdown_menu.unregister("test_ui_action_im")
+        NC_APP.gui.files_dropdown_menu.unregister("test_ui_action_txt")
+        NC_APP.gui.files_dropdown_menu.unregister("test_ui_action_any")
     finally:
         NC_APP.files.delete("test_ui_action", not_fail=True)
 
 
 def test_unregister_ui_file_actions():
-    NC_APP.ui_files_actions.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
-    NC_APP.ui_files_actions.unregister("test_ui_action")
-    NC_APP.ui_files_actions.unregister("test_ui_action")
+    NC_APP.gui.files_dropdown_menu.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
+    NC_APP.gui.files_dropdown_menu.unregister("test_ui_action")
+    NC_APP.gui.files_dropdown_menu.unregister("test_ui_action")
     with pytest.raises(NextcloudExceptionNotFound):
-        NC_APP.ui_files_actions.unregister("test_ui_action", not_fail=False)
+        NC_APP.gui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)

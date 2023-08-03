@@ -7,6 +7,8 @@ ENDPOINT = "/ocs/v1.php/apps/provisioning_api/api/v1/config/users"
 
 
 class PreferencesAPI:
+    """API for setting/removing configuration values of applications that support it."""
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
