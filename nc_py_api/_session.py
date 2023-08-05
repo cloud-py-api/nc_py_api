@@ -44,28 +44,50 @@ class ServerVersion(TypedDict):
 
 
 @dataclass
+class RuntimeOptions:
+    xdebug_session: str
+    timeout: Optional[int]
+    timeout_dav: Optional[int]
+    _nc_cert: Union[str, bool]
+
+    def __init__(self, **kwargs):
+        self.xdebug_session = kwargs.get("xdebug_session", options.XDEBUG_SESSION)
+        self.timeout = kwargs.get("npa_timeout", options.NPA_TIMEOUT)
+        self.timeout_dav = kwargs.get("npa_timeout_dav", options.NPA_TIMEOUT_DAV)
+        self._nc_cert = kwargs.get("npa_nc_cert", options.NPA_NC_CERT)
+
+    @property
+    def nc_cert(self) -> Union[str, bool]:
+        return self._nc_cert
+
+
+@dataclass
 class BasicConfig:
     endpoint: str
     dav_endpoint: str
     dav_url_suffix: str
+    options: RuntimeOptions
 
     def __init__(self, **kwargs):
-        full_nc_url = self._get_value("nextcloud_url", **kwargs)
+        full_nc_url = self._get_config_value("nextcloud_url", **kwargs)
         self.endpoint = full_nc_url.removesuffix("/index.php").removesuffix("/")
-        self.dav_url_suffix = self._get_value("dav_url_suffix", raise_not_found=False, **kwargs)
+        self.dav_url_suffix = self._get_config_value("dav_url_suffix", raise_not_found=False, **kwargs)
         if not self.dav_url_suffix:
             self.dav_url_suffix = "remote.php/dav"
         self.dav_url_suffix = "/" + self.dav_url_suffix.strip("/")
         self.dav_endpoint = self.endpoint + self.dav_url_suffix
+        self.options = RuntimeOptions(**kwargs)
 
     @staticmethod
-    def _get_value(value_name: str, raise_not_found=True, **kwargs):
-        value = kwargs.get(value_name, None)
-        if not value:
-            value = environ.get(value_name.upper(), None)
-        if not value and raise_not_found:
+    def _get_config_value(value_name: str, raise_not_found=True, **kwargs):
+        if value_name in kwargs:
+            return kwargs[value_name]
+        value_name_upper = value_name.upper()
+        if value_name_upper in environ:
+            return environ[value_name_upper]
+        if raise_not_found:
             raise ValueError(f"`{value_name}` is not found.")
-        return value
+        return None
 
 
 @dataclass
@@ -74,7 +96,7 @@ class Config(BasicConfig):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.auth = (self._get_value("nc_auth_user", **kwargs), self._get_value("nc_auth_pass", **kwargs))
+        self.auth = (self._get_config_value("nc_auth_user", **kwargs), self._get_config_value("nc_auth_pass", **kwargs))
 
 
 @dataclass
@@ -92,12 +114,12 @@ class AppConfig(BasicConfig):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ae_version = self._get_value("ae_version", raise_not_found=False, **kwargs)
+        self.ae_version = self._get_config_value("ae_version", raise_not_found=False, **kwargs)
         if not self.ae_version:
             self.ae_version = "1.0.0"
-        self.app_name = self._get_value("app_id", **kwargs)
-        self.app_version = self._get_value("app_version", **kwargs)
-        self.app_secret = self._get_value("app_secret", **kwargs).encode("UTF-8")
+        self.app_name = self._get_config_value("app_id", **kwargs)
+        self.app_version = self._get_config_value("app_version", **kwargs)
+        self.app_secret = self._get_config_value("app_secret", **kwargs).encode("UTF-8")
 
 
 class NcSessionBasic(ABC):
@@ -147,7 +169,7 @@ class NcSessionBasic(ABC):
         info = f"request: method={method}, url={url_params}"
         nested_req = kwargs.pop("nested_req", False)
         try:
-            timeout = kwargs.pop("timeout", options.TIMEOUT)
+            timeout = kwargs.pop("timeout", self.cfg.options.timeout)
             if method == "GET":
                 response = self.adapter.get(url_params, headers=headers, timeout=timeout, **kwargs)
             else:
@@ -190,14 +212,15 @@ class NcSessionBasic(ABC):
 
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
         self.init_adapter()
-        timeout = kwargs.pop("timeout", options.TIMEOUT_DAV)
+        # self.cfg.
+        timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
         return self.adapter.request(
             method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
         )
 
     def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
         self.init_adapter()
-        timeout = kwargs.pop("timeout", options.TIMEOUT_DAV)
+        timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
         return self.adapter.stream(
             method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
         )
@@ -249,9 +272,7 @@ class NcSession(NcSessionBasic):
         super().__init__(user=self.cfg.auth[0])
 
     def _create_adapter(self) -> Client:
-        return Client(
-            auth=self.cfg.auth, follow_redirects=True, limits=self.limits, verify=options.VERIFY_NC_CERTIFICATE
-        )
+        return Client(auth=self.cfg.auth, follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
 
 
 class NcSessionApp(NcSessionBasic):
@@ -274,7 +295,7 @@ class NcSessionApp(NcSessionBasic):
         return super()._dav_stream(method, path, headers, data, **kwargs)
 
     def _create_adapter(self) -> Client:
-        adapter = Client(follow_redirects=True, limits=self.limits, verify=options.VERIFY_NC_CERTIFICATE)
+        adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
         adapter.headers.update(
             {
                 "AE-VERSION": self.cfg.ae_version,

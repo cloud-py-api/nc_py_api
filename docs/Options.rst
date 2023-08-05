@@ -6,6 +6,6 @@ Options
 -------
 
 .. autodata:: nc_py_api.options.XDEBUG_SESSION
-.. autodata:: nc_py_api.options.TIMEOUT
-.. autodata:: nc_py_api.options.TIMEOUT_DAV
-.. autodata:: nc_py_api.options.VERIFY_NC_CERTIFICATE
+.. autodata:: nc_py_api.options.NPA_TIMEOUT
+.. autodata:: nc_py_api.options.NPA_TIMEOUT_DAV
+.. autodata:: nc_py_api.options.NPA_NC_CERT

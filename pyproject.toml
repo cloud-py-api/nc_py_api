@@ -43,16 +43,17 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "fastapi==0.101",
-  "httpx==0.24.1",
-  "pydantic==2.1.1",
-  "requests==2.31",
-  "xmltodict==0.13",
+  "fastapi>=0.101",
+  "httpx>=0.24.1",
+  "pydantic>=2.1.1",
+  "python-dotenv>=1",
+  "requests>=2.31",
+  "xmltodict>=0.13",
 ]
 [project.optional-dependencies]
 app = [
-  "uvicorn[standard]==0.23.2",
-  "xxhash==3.3",
+  "uvicorn[standard]>=0.23.2",
+  "xxhash>=3.3",
 ]
 bench = [
   "matplotlib",

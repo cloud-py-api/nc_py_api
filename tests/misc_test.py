@@ -39,10 +39,10 @@ def test_require_capabilities():
 
 
 def test_config_get_value():
-    BasicConfig()._get_value("non_exist_value", raise_not_found=False)
+    BasicConfig()._get_config_value("non_exist_value", raise_not_found=False)
     with pytest.raises(ValueError):
-        BasicConfig()._get_value("non_exist_value")
-    assert BasicConfig()._get_value("non_exist_value", non_exist_value=123) == 123
+        BasicConfig()._get_config_value("non_exist_value")
+    assert BasicConfig()._get_config_value("non_exist_value", non_exist_value=123) == 123
 
 
 def test_deffered_error():
