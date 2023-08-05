@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.27 - 2023-08-03]
+## [0.0.27 - 2023-08-05]
 
 ### Added
 
 - `Notifications API`
+- `options` now independent in each `Nextcloud` class. They can be specified in kwargs, environment or `.env` files.
 
 ### Changed
 

@@ -22,4 +22,4 @@ NPA_NC_CERT = environ.get("NPA_NC_CERT", True)
 """Option to enable/disable Nextcloud certificate verification.
 
 SSL certificates (a.k.a CA bundle) used to  verify the identity of requested hosts. Either `True` (default CA bundle),
- a path to an SSL certificate file, or `False` (which will disable verification)."""
+a path to an SSL certificate file, or `False` (which will disable verification)."""
