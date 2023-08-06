@@ -1,63 +1,83 @@
-"""
-Simplest example.
-"""
-
-from os import path, environ
-from typing import Annotated
-
-import uvicorn
-from fastapi import FastAPI, Depends
-from requests import Response
-import urllib3
+"""Simplest example of files_dropdown_menu + notification."""
 
 import tempfile
-from pygifsicle import optimize
-import imageio
-import cv2
-import numpy
+from os import environ, path
+from typing import Annotated
 
-from nc_py_api import UiFileActionHandlerInfo, LogLvl, NextcloudApp, nc_app, set_enabled_handler, ApiScope, set_scopes
+import cv2
+import imageio
+import numpy
+import urllib3
+import uvicorn
+from fastapi import BackgroundTasks, Depends, FastAPI
+from pygifsicle import optimize
+from requests import Response
+
+from nc_py_api import (
+    ApiScope,
+    GuiActionFileInfo,
+    GuiFileActionHandlerInfo,
+    LogLvl,
+    NextcloudApp,
+    enable_heartbeat,
+    nc_app,
+    set_enabled_handler,
+    set_scopes,
+)
 
 APP = FastAPI()
 
 
-@APP.post("/video_to_gif")
-async def video_to_gif(
-        file: UiFileActionHandlerInfo,
-        nc: Annotated[NextcloudApp, Depends(nc_app)],
-):
-    source_path = path.join(file.actionFile.dir, file.actionFile.name)
+def convert_video_to_gif(input_params: GuiActionFileInfo, nc: NextcloudApp):
+    source_path = path.join(input_params.directory, input_params.name)
     save_path = path.splitext(source_path)[0] + ".gif"
     nc.log(LogLvl.WARNING, f"Processing:{source_path} -> {save_path}")
-    source_file = nc.files.download(source_path)
-    nc.log(LogLvl.WARNING, "File downloaded")
     try:
         with tempfile.NamedTemporaryFile(mode="w+b") as tmp_in:
-            tmp_in.write(source_file)
+            nc.files.download2stream(source_path, tmp_in)
+            nc.log(LogLvl.WARNING, "File downloaded")
             tmp_in.flush()
             cap = cv2.VideoCapture(tmp_in.name)
             with tempfile.NamedTemporaryFile(mode="w+b", suffix=".gif") as tmp_out:
                 image_lst = []
                 previous_frame = None
+                skip = 0
                 while True:
+                    skip += 1
                     ret, frame = cap.read()
+                    if frame is None:
+                        break
+                    if skip == 2:
+                        skip = 0
+                        continue
                     if previous_frame is not None:
                         diff = numpy.mean(previous_frame != frame)
                         if diff < 0.91:
                             continue
-                    if frame is None:
-                        break
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     image_lst.append(frame_rgb)
                     previous_frame = frame
+                    if len(image_lst) > 60:
+                        break
                 cap.release()
                 imageio.mimsave(tmp_out.name, image_lst)
                 optimize(tmp_out.name)
                 nc.log(LogLvl.WARNING, "GIF is ready")
-                nc.files.upload(save_path, content=tmp_out.read())
+                nc.files.upload_stream(save_path, tmp_out)
                 nc.log(LogLvl.WARNING, "Result uploaded")
+                nc.users.notifications.create(f"{input_params.name} finished!", f"{save_path} is waiting for you!")
     except Exception as e:
         nc.log(LogLvl.ERROR, str(e))
+        nc.users.notifications.create("Error occurred", "Error information was written to log file")
+
+
+@APP.post("/video_to_gif")
+async def video_to_gif(
+    file: GuiFileActionHandlerInfo,
+    nc: Annotated[NextcloudApp, Depends(nc_app)],
+    background_tasks: BackgroundTasks,
+):
+    background_tasks.add_task(convert_video_to_gif, file.actionFile, nc)
     return Response()
 
 
@@ -65,9 +85,9 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled={enabled}")
     try:
         if enabled:
-            nc.ui_files_actions.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
+            nc.gui.files_dropdown_menu.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
         else:
-            nc.ui_files_actions.unregister("to_gif")
+            nc.gui.files_dropdown_menu.unregister("to_gif")
     except Exception as e:
         return str(e)
     return ""
@@ -76,25 +96,10 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
 @APP.on_event("startup")
 def initialization():
     set_enabled_handler(APP, enabled_handler)
-    set_scopes(APP, {
-        "required": [ApiScope.DAV],
-        "optional": [ApiScope.NOTIFICATIONS]
-    })
+    set_scopes(APP, {"required": [ApiScope.DAV], "optional": [ApiScope.NOTIFICATIONS]})
+    enable_heartbeat(APP)
 
 
 if __name__ == "__main__":
-    # This should be set by packaging step
-    secret = "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E" \
-             "X1T8Pi+T5papEolTLxz3fJSPS8ffC4204YmggxPsbJdCkXHWNPHKWS9B+vTj2SIV"
-    if "app_name" not in environ:
-        environ["app_name"] = "nc_py_api"
-    if "app_version" not in environ:
-        environ["app_version"] = "1.0.0"
-    if "app_secret" not in environ:
-        environ["app_secret"] = secret
-    if "nextcloud_url" not in environ:
-        environ["nextcloud_url"] = "http://nextcloud.local/index.php"
-    # environ["app_name"] = "test_app"
-    # ---------
     urllib3.disable_warnings()
-    uvicorn.run("main:APP", host="0.0.0.0", port=9001, log_level="trace", reload=True)
+    uvicorn.run("main:APP", host=environ.get("APP_HOST", "127.0.0.1"), port=int(environ["APP_PORT"]), log_level="trace")
