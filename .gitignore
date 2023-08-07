@@ -24,7 +24,6 @@ vendor
 /out
 /dev/
 local
-.run/
 tmp
 .phpdoc
 clover.unit.xml
