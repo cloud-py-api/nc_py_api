@@ -70,7 +70,7 @@ class UsersAPI:
             * ``password`` - password that should be set for user.
             * ``email`` - email of the new user. If ``password`` is not provided, then this field should be filled.
             * ``displayname`` - display name of the new user.
-            * ``groups`` - groups IDs to which user belongs.
+            * ``groups`` - list of groups IDs to which user belongs.
             * ``subadmin`` - boolean indicating is user should be the subadmin.
             * ``quota`` - quota for the user, if needed.
             * ``language`` - default language for the user.
@@ -83,7 +83,7 @@ class UsersAPI:
         for k in ("password", "displayname", "email", "groups", "subadmin", "quota", "language"):
             if k in kwargs:
                 data[k] = kwargs[k]
-        self._session.ocs(method="POST", path=ENDPOINT, params=data)
+        self._session.ocs(method="POST", path=ENDPOINT, json=data)
 
     def delete(self, user_id: str) -> None:
         """Deletes user from the Nextcloud server.

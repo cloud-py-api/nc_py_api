@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 - Finished documentation.
 - Different small adjustments to API, to be it more consistent.
 
+### Fixed
+
+- Assign groups in user creation
+
 ## [0.0.27 - 2023-08-05]
 
 ### Added
