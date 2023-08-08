@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.28 - 2023-08-11]
+
+### Changed
+
+- Finished documentation.
+- Different small adjustments to API, to be it more consistent.
+
 ## [0.0.27 - 2023-08-05]
 
 ### Added

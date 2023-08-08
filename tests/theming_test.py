@@ -3,7 +3,7 @@ from copy import deepcopy
 import pytest
 from gfixture import NC_TO_TEST
 
-from nc_py_api.theming import convert_str_color
+from nc_py_api.theming import _convert_str_color  # noqa
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -38,6 +38,6 @@ def test_convert_str_color_values_in(nc):
     theme = deepcopy(nc.theme)
     for i in ("#", ""):
         theme["color"] = i
-        assert convert_str_color(theme, "color") == (0, 0, 0)
+        assert _convert_str_color(theme, "color") == (0, 0, 0)
     theme.pop("color")
-    assert convert_str_color(theme, "color") == (0, 0, 0)
+    assert _convert_str_color(theme, "color") == (0, 0, 0)

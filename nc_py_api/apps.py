@@ -13,7 +13,7 @@ class ExAppInfo(TypedDict):
     """Information about the External Application."""
 
     id: str
-    """`id` of the application"""
+    """`ID` of the application"""
     name: str
     """Display name"""
     version: str
@@ -32,27 +32,23 @@ class AppAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def disable(self, app_name: str) -> None:
+    def disable(self, app_id: str) -> None:
         """Disables the application.
 
-        :param app_name: id of the application.
-
         .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode.
         """
-        if not app_name:
-            raise ValueError("`app_name` parameter can not be empty")
-        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{app_name}")
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{app_id}")
 
-    def enable(self, app_name: str) -> None:
+    def enable(self, app_id: str) -> None:
         """Enables the application.
 
-        :param app_name: id of the application.
-
         .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode.
         """
-        if not app_name:
-            raise ValueError("`app_name` parameter can not be empty")
-        self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_name}")
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_id}")
 
     def get_list(self, enabled: Optional[bool] = None) -> list[str]:
         """Get the list of installed applications.
@@ -65,32 +61,23 @@ class AppAPI:
         result = self._session.ocs(method="GET", path=ENDPOINT, params=params)
         return list(result["apps"].values()) if isinstance(result["apps"], dict) else result["apps"]
 
-    def is_installed(self, app_name: str) -> bool:
-        """Checks if such application is installed.
+    def is_installed(self, app_id: str) -> bool:
+        """Returns ``True`` if specified application is installed."""
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        return app_id in self.get_list()
 
-        :param app_name: id of the application.
-        """
-        if not app_name:
-            raise ValueError("`app_name` parameter can not be empty")
-        return app_name in self.get_list()
+    def is_enabled(self, app_id: str) -> bool:
+        """Returns ``True`` if specified application is enabled."""
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        return app_id in self.get_list(enabled=True)
 
-    def is_enabled(self, app_name: str) -> bool:
-        """Checks if such application is enabled.
-
-        :param app_name: id of the application.
-        """
-        if not app_name:
-            raise ValueError("`app_name` parameter can not be empty")
-        return app_name in self.get_list(enabled=True)
-
-    def is_disabled(self, app_name: str) -> bool:
-        """Checks if such application is disabled.
-
-        :param app_name: id of the application.
-        """
-        if not app_name:
-            raise ValueError("`app_name` parameter can not be empty")
-        return app_name in self.get_list(enabled=False)
+    def is_disabled(self, app_id: str) -> bool:
+        """Returns ``True`` if specified application is disabled."""
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        return app_id in self.get_list(enabled=False)
 
     def ex_app_get_list(self) -> list[str]:
         """Gets the list of the external applications IDs installed on the server."""

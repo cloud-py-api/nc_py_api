@@ -8,3 +8,9 @@ Exceptions
 
 .. autoclass:: NextcloudExceptionNotFound
     :members:
+
+
+Functions
+---------
+
+.. autofunction:: check_error

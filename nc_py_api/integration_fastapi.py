@@ -10,6 +10,7 @@ from .nextcloud import NextcloudApp
 
 
 def nc_app(request: Request) -> NextcloudApp:
+    """Authentication handler for requests from Nextcloud to the application."""
     user = request.headers.get("NC-USER-ID", "")
     request_id = request.headers.get("AE-REQUEST-ID", None)
     headers = {"AE-REQUEST-ID": request_id} if request_id else {}
@@ -20,6 +21,8 @@ def nc_app(request: Request) -> NextcloudApp:
 
 
 def set_scopes(fast_api_app: FastAPI, desired_scopes: ApiScopesStruct):
+    """Defines the required and optional API scopes needed for the application."""
+
     @fast_api_app.get("/scopes")
     def scopes_handler(
         _nc: Annotated[NextcloudApp, Depends(nc_app)],
@@ -28,6 +31,8 @@ def set_scopes(fast_api_app: FastAPI, desired_scopes: ApiScopesStruct):
 
 
 def set_enabled_handler(fast_api_app: FastAPI, callback: Callable[[bool, NextcloudApp], str]):
+    """Sets ``enabled``/``disabled`` applications handlers."""
+
     @fast_api_app.put("/enabled")
     def enabled_handler(
         enabled: bool,
@@ -38,6 +43,8 @@ def set_enabled_handler(fast_api_app: FastAPI, callback: Callable[[bool, Nextclo
 
 
 def enable_heartbeat(fast_api_app: FastAPI, callback: Optional[Callable[[], str]] = None):
+    """Enables ``heartbeat`` application endpoint. **callback** is *Optional*."""
+
     @fast_api_app.get("/heartbeat")
     def heartbeat_handler():
         return_status = "ok"

@@ -106,7 +106,7 @@ class AppConfig(BasicConfig):
     ae_version: str
     """AppEcosystem version"""
     app_name: str
-    """Application name"""
+    """Application ID"""
     app_version: str
     """Application version"""
     app_secret: bytes

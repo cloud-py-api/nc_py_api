@@ -93,9 +93,7 @@ class FsNode:
 
     @property
     def has_extra(self) -> bool:
-        """Flag indicating whether this ``FsNode`` was obtained by the `mkdir` or `upload`
-        methods and does not contain extended information.
-        """
+        """Flag showing that this "FsNode" originates from the mkdir/upload methods and lacks extended information."""
         return bool(self.info.permissions)
 
     @property
@@ -214,10 +212,12 @@ class Share:
 
     @property
     def share_id(self) -> int:
+        """Unique ID of the share."""
         return int(self.raw_data["id"])
 
     @property
     def share_type(self) -> ShareType:
+        """Type of the share."""
         return ShareType(int(self.raw_data["share_type"]))
 
     @property
@@ -227,20 +227,25 @@ class Share:
 
     @property
     def url(self) -> str:
+        """URL at which Share is avalaible."""
         return self.raw_data.get("url", "")
 
     @property
     def path(self) -> str:
+        """Share path relative to the user's root directory."""
         return self.raw_data.get("path", "")
 
     @property
     def label(self) -> str:
+        """Label for the Shared object."""
         return self.raw_data.get("label", "")
 
     @property
     def note(self) -> str:
+        """Note for the Shared object."""
         return self.raw_data.get("note", "")
 
     @property
     def mimetype(self) -> str:
+        """Mimetype of the Shared object."""
         return self.raw_data.get("mimetype", "")
