@@ -4,7 +4,6 @@
 from typing import Optional
 
 from ._session import NcSessionApp, NcSessionBasic
-from .constants import APP_V2_BASIC_URL
 from .misc import check_capabilities, random_string, require_capabilities
 from .users_defs import Notification
 
@@ -55,7 +54,7 @@ class NotificationsAPI:
         }
         if link:
             params["params"]["subject_params"]["link"] = link
-        return self._session.ocs(method="POST", path=f"{APP_V2_BASIC_URL}/notification", json=params)["object_id"]
+        return self._session.ocs(method="POST", path=f"{self._session.ae_url}/notification", json=params)["object_id"]
 
     def get_all(self) -> list[Notification]:
         """Gets all notifications for a current user."""

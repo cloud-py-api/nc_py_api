@@ -1,7 +1,7 @@
 import pytest
 from gfixture import NC_APP
 
-from nc_py_api import NextcloudExceptionNotFound, constants
+from nc_py_api import NextcloudExceptionNotFound
 
 if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
     pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)
@@ -122,13 +122,22 @@ def test_appcfg_sensitive():
     assert appcfg.get_values(["test_key"])[0].value == "123"
     appcfg.delete("test_key")
     # next code tests `sensitive` value from the `AppEcosystem`
+    params = {"configKey": "test_key", "configValue": "123"}
+    result = NC_APP._session.ocs(method="POST", path=f"{NC_APP._session.ae_url}/{appcfg._url_suffix}", json=params)
+    assert not result["sensitive"]  # by default if sensitive value is unspecified it is False
+    appcfg.delete("test_key")
     params = {"configKey": "test_key", "configValue": "123", "sensitive": True}
-    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg._url_suffix}", json=params)
+    result = NC_APP._session.ocs(method="POST", path=f"{NC_APP._session.ae_url}/{appcfg._url_suffix}", json=params)
+    assert result["configkey"] == "test_key"
+    assert result["configvalue"] == "123"
+    assert bool(result["sensitive"]) is True
+    params.pop("sensitive")  # if we not specify value, AppEcosystem should not change it.
+    result = NC_APP._session.ocs(method="POST", path=f"{NC_APP._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is True
     params["sensitive"] = False
-    result = NC_APP._session.ocs(method="POST", path=f"{constants.APP_V2_BASIC_URL}/{appcfg._url_suffix}", json=params)
+    result = NC_APP._session.ocs(method="POST", path=f"{NC_APP._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is False

@@ -28,6 +28,10 @@ class NextcloudExceptionNotFound(NextcloudException):
 
 
 def check_error(code: int, info: str = ""):
+    """Checks HTTP code from Nextcloud, and raises exception in case of error.
+
+    For the OCS and DAV `code` be code returned by HTTP and not the status from ``ocs_meta``.
+    """
     if 996 <= code <= 999:
         if code == 996:
             phrase = "Server error"

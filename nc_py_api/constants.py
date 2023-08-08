@@ -19,9 +19,6 @@ class LogLvl(IntEnum):
     """Fatal log level"""
 
 
-APP_V2_BASIC_URL = "/ocs/v1.php/apps/app_ecosystem_v2/api/v1"
-
-
 class ApiScope(IntEnum):
     """Default API scopes."""
 

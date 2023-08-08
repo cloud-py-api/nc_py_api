@@ -7,12 +7,12 @@ from fastapi import Request
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
 from .appcfg_prefs_ex import AppConfigExAPI, PreferencesExAPI
 from .apps import AppAPI
-from .constants import APP_V2_BASIC_URL, ApiScope, LogLvl
+from .constants import ApiScope, LogLvl
 from .files import FilesAPI
 from .gui import GuiApi
 from .misc import check_capabilities
 from .preferences import PreferencesAPI
-from .theming import ThemingInfo, get_parsed_theme
+from .theming import ThemingInfo, _get_parsed_theme
 from .users import UsersAPI
 
 
@@ -22,7 +22,7 @@ class _NextcloudBasic(ABC):
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
     preferences: PreferencesAPI
-    # """Nextcloud User Preferences API"""
+    """Nextcloud User Preferences API"""
     users: UsersAPI
     """Nextcloud API for managing users, user groups, user status, user weather status"""
     _session: NcSessionBasic
@@ -60,7 +60,7 @@ class _NextcloudBasic(ABC):
     @property
     def theme(self) -> Optional[ThemingInfo]:
         """Returns Theme information."""
-        return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
+        return _get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
 
 class Nextcloud(_NextcloudBasic):
@@ -72,7 +72,12 @@ class Nextcloud(_NextcloudBasic):
     _session: NcSession
 
     def __init__(self, **kwargs):
-        """:param dsdada: ddsdsds"""
+        """If the parameters are not specified, they will be taken from the environment.
+
+        :param nextcloud_url: url of the nextcloud instance.
+        :param nc_auth_user: login username.
+        :param nc_auth_pass: password or app-password for the username.
+        """
         self._session = NcSession(**kwargs)
         self._init_api(self._session)
 
@@ -94,10 +99,16 @@ class NextcloudApp(_NextcloudBasic):
 
     _session: NcSessionApp
     appconfig_ex: AppConfigExAPI
+    """Nextcloud App Preferences API for ExApps"""
     gui: GuiApi
     preferences_ex: PreferencesExAPI
+    """Nextcloud User Preferences API for ExApps"""
 
     def __init__(self, **kwargs):
+        """The parameters will be taken from the environment.
+
+        They can be overridden by specifying them in **kwargs**, but this behavior is highly discouraged.
+        """
         self._session = NcSessionApp(**kwargs)
         self._init_api(self._session)
         self.appconfig_ex = AppConfigExAPI(self._session)
@@ -115,12 +126,12 @@ class NextcloudApp(_NextcloudBasic):
         if int(log_lvl) < self.capabilities["app_ecosystem_v2"].get("loglevel", 0):
             return
         self._session.ocs(
-            method="POST", path=f"{APP_V2_BASIC_URL}/log", json={"level": int(log_lvl), "message": content}
+            method="POST", path=f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content}
         )
 
     def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
-        return self._session.ocs("GET", path=f"{APP_V2_BASIC_URL}/users", params={"format": "json"})
+        return self._session.ocs("GET", path=f"{self._session.ae_url}/users", params={"format": "json"})
 
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
