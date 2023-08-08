@@ -45,6 +45,20 @@ def test_create_user(nc):
     nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
     with pytest.raises(NextcloudException):
         nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
+    nc.users.delete(TEST_USER_NAME)
+
+
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+def test_create_user_with_groups(nc):
+    try:
+        nc.users.delete(TEST_USER_NAME)
+    except NextcloudException:
+        pass
+    nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD, groups=["admin"])
+    admin_group = nc.users.groups.get_members("admin")
+    assert TEST_USER_NAME in admin_group
+    nc.users.delete(TEST_USER_NAME)
 
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
