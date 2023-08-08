@@ -263,6 +263,11 @@ class NcSessionBasic(ABC):
             extended_support=v["extendedSupport"],
         )
 
+    @property
+    def ae_url(self) -> str:
+        """Return base url for the App Ecosystem endpoints."""
+        return "/ocs/v1.php/apps/app_ecosystem_v2/api/v1"
+
 
 class NcSession(NcSessionBasic):
     cfg: Config

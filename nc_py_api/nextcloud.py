@@ -7,7 +7,7 @@ from fastapi import Request
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
 from .appcfg_prefs_ex import AppConfigExAPI, PreferencesExAPI
 from .apps import AppAPI
-from .constants import APP_V2_BASIC_URL, ApiScope, LogLvl
+from .constants import ApiScope, LogLvl
 from .files import FilesAPI
 from .gui import GuiApi
 from .misc import check_capabilities
@@ -126,12 +126,12 @@ class NextcloudApp(_NextcloudBasic):
         if int(log_lvl) < self.capabilities["app_ecosystem_v2"].get("loglevel", 0):
             return
         self._session.ocs(
-            method="POST", path=f"{APP_V2_BASIC_URL}/log", json={"level": int(log_lvl), "message": content}
+            method="POST", path=f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content}
         )
 
     def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
-        return self._session.ocs("GET", path=f"{APP_V2_BASIC_URL}/users", params={"format": "json"})
+        return self._session.ocs("GET", path=f"{self._session.ae_url}/users", params={"format": "json"})
 
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.

@@ -43,7 +43,7 @@ Getting list of files of User
 
 This is a hard way to get list of all files recursively:
 
-.. literalinclude:: ../examples/as_client/files_examples.py
+.. literalinclude:: ../examples/as_client/files_listing.py
 
 This code do the same in one DAV call, but prints **directories** in addition to files:
 
@@ -66,3 +66,20 @@ To print only files, you can use list comprehension:
     all_files = [i for i in nc.files.listdir(depth=-1) if not i.is_dir]
     for obj in all_files:
         print(obj.user_path)
+
+Uploading a single file
+"""""""""""""""""""""""
+
+It is always better to use ``upload_stream`` instead of ``upload`` as it works
+with chunks and ``in future`` will support **multi threaded** upload.
+
+.. literalinclude:: ../examples/as_client/files_upload.py
+
+Downloading a single file
+"""""""""""""""""""""""""
+
+A very simple example of downloading an image as one piece of data to memory and displaying it.
+
+.. note:: For big files, it is always better to use ``download2stream`` method, as it uses chunks.
+
+.. literalinclude:: ../examples/as_client/files_download.py

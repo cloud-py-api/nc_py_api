@@ -44,7 +44,7 @@ In a very close near future we will publish examples
 ### More Information
 
 - [Documentation](https://cloud-py-api.github.io/nc_py_api/)
-  - [Using it as a simple client](to-do)
+  - [First steps](https://cloud-py-api.github.io/nc_py_api/FirstSteps.html)
   - [Writing a simple Nextcloud application](to-do)
   - [Writing a Nextcloud System Application](to-do)
 - [Examples](https://github.com/cloud-py-api/nc_py_api/tree/main/examples)
