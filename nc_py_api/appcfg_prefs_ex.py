@@ -82,7 +82,7 @@ class AppConfigExAPI(_BasicAppCfgPref):
 
     _url_suffix = "ex-app/config"
 
-    def set_value(self, key: str, value: str, sensitive: Optional[bool]) -> None:
+    def set_value(self, key: str, value: str, sensitive: Optional[bool] = None) -> None:
         """Sets a value and if specified the sensitive flag for a key.
 
         .. note:: A sensitive flag ensures key values are truncated in Nextcloud logs.
