@@ -52,27 +52,33 @@ def test_invalid_param(nc):
         nc.apps.enable("")
     with pytest.raises(ValueError):
         nc.apps.disable("")
+    with pytest.raises(ValueError):
+        nc.apps.ex_app_is_enabled("")
+    with pytest.raises(ValueError):
+        nc.apps.ex_app_is_disabled("")
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_ex_app_get_list(nc):
     if "app_ecosystem_v2" not in nc.capabilities:
         pytest.skip("app_ecosystem_v2 is not installed.")
+    enabled_ex_apps = nc.apps.ex_app_get_list(enabled=True)
+    assert isinstance(enabled_ex_apps, list)
+    for i in enabled_ex_apps:
+        assert i.enabled is True
+        assert nc.apps.ex_app_is_enabled(i.app_id) is True
+        assert nc.apps.ex_app_is_disabled(i.app_id) is False
+    assert "nc_py_api" in [i.app_id for i in enabled_ex_apps]
     ex_apps = nc.apps.ex_app_get_list()
     assert isinstance(ex_apps, list)
-    assert isinstance(ex_apps[0], str)
-
-
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_ex_app_get_info(nc):
-    if "app_ecosystem_v2" not in nc.capabilities:
-        pytest.skip("app_ecosystem_v2 is not installed.")
-    ex_apps = nc.apps.ex_app_get_info()
-    assert isinstance(ex_apps, list)
-    nc_py_api = [i for i in ex_apps if i["id"] == "nc_py_api"][0]
-    assert nc_py_api["id"] == "nc_py_api"
-    assert isinstance(nc_py_api["name"], str)
-    assert isinstance(nc_py_api["version"], str)
-    assert nc_py_api["enabled"]
-    assert isinstance(nc_py_api["last_check_time"], int)
-    assert nc_py_api["system"]
+    assert "nc_py_api" in [i.app_id for i in ex_apps]
+    assert len(ex_apps) >= len(enabled_ex_apps)
+    for app in ex_apps:
+        assert isinstance(app.app_id, str)
+        assert isinstance(app.name, str)
+        assert isinstance(app.version, str)
+        assert isinstance(app.enabled, bool)
+        assert isinstance(app.last_check_time, int)
+        assert isinstance(app.system, bool)
+        if app.app_id == "nc_py_api":
+            assert app.system is True
