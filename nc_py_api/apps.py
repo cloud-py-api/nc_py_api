@@ -109,4 +109,4 @@ class AppAPI:
         """Returns ``True`` if specified external application is disabled."""
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
-        return app_id in [i.app_id for i in self.ex_app_get_list(True) if not i.enabled]
+        return app_id not in [i.app_id for i in self.ex_app_get_list(True)]
