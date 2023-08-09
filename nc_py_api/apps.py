@@ -1,6 +1,7 @@
 """Nextcloud API for working with applications."""
 
-from typing import Optional, TypedDict
+from dataclasses import dataclass
+from typing import Optional
 
 from ._session import NcSessionBasic
 from .misc import require_capabilities
@@ -8,10 +9,11 @@ from .misc import require_capabilities
 ENDPOINT = "/ocs/v1.php/cloud/apps"
 
 
-class ExAppInfo(TypedDict):
+@dataclass
+class ExAppInfo:
     """Information about the External Application."""
 
-    id: str
+    app_id: str
     """`ID` of the application"""
     name: str
     """Display name"""
@@ -23,6 +25,14 @@ class ExAppInfo(TypedDict):
     """UTC time of last successful application check"""
     system: bool
     """Flag indicating if the application is a system application"""
+
+    def __init__(self, raw_data: dict):
+        self.app_id = raw_data["id"]
+        self.name = raw_data["name"]
+        self.version = raw_data["version"]
+        self.enabled = bool(raw_data["enabled"])
+        self.last_check_time = raw_data["last_check_time"]
+        self.system = raw_data["system"]
 
 
 class AppAPI:
@@ -78,12 +88,25 @@ class AppAPI:
             raise ValueError("`app_id` parameter can not be empty")
         return app_id in self.get_list(enabled=False)
 
-    def ex_app_get_list(self) -> list[str]:
-        """Gets the list of the external applications IDs installed on the server."""
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
-        return self._session.ocs(method="GET", path=f"{self._session.ae_url}/ex-app/all", params={"extended": 0})
+    def ex_app_get_list(self, enabled: bool = False) -> list[ExAppInfo]:
+        """Gets information of the enabled external applications installed on the server.
 
-    def ex_app_get_info(self) -> list[ExAppInfo]:
-        """Gets information of the external applications installed on the server."""
+        :param enabled: Flag indicating whether to return only enabled applications or all applications.
+            Default = **False**.
+        """
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
-        return self._session.ocs(method="GET", path=f"{self._session.ae_url}/ex-app/all", params={"extended": 1})
+        url_param = "enabled" if enabled else "all"
+        r = self._session.ocs(method="GET", path=f"{self._session.ae_url}/ex-app/{url_param}")
+        return [ExAppInfo(i) for i in r]
+
+    def ex_app_is_enabled(self, app_id: str) -> bool:
+        """Returns ``True`` if specified external application is enabled."""
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        return app_id in [i.app_id for i in self.ex_app_get_list(True)]
+
+    def ex_app_is_disabled(self, app_id: str) -> bool:
+        """Returns ``True`` if specified external application is disabled."""
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        return app_id not in [i.app_id for i in self.ex_app_get_list(True)]
