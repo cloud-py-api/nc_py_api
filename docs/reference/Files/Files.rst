@@ -9,8 +9,8 @@ All File APIs are designed to work relative to the current user.
 .. autoclass:: nc_py_api.files.files.FilesAPI
     :members:
 
-.. autoclass:: nc_py_api.files.fs_node.FsNodeInfo
+.. autoclass:: nc_py_api.files.FsNodeInfo
     :members:
 
-.. autoclass:: nc_py_api.files.fs_node.FsNode
+.. autoclass:: nc_py_api.files.FsNode
     :members:

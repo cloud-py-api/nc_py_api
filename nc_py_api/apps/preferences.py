@@ -3,11 +3,11 @@
 from .._misc import check_capabilities, require_capabilities
 from .._session import NcSessionBasic
 
-_EP_BASE = "/ocs/v1.php/apps/provisioning_api/api/v1/config/users"
-
 
 class PreferencesAPI:
     """API for setting/removing configuration values of applications that support it."""
+
+    _ep_base: str = "/ocs/v1.php/apps/provisioning_api/api/v1/config/users"
 
     def __init__(self, session: NcSessionBasic):
         self._session = session
@@ -20,9 +20,9 @@ class PreferencesAPI:
     def set_value(self, app_name: str, key: str, value: str) -> None:
         """Sets the value for the key for the specific application."""
         require_capabilities("provisioning_api", self._session.capabilities)
-        self._session.ocs(method="POST", path=f"{_EP_BASE}/{app_name}/{key}", params={"configValue": value})
+        self._session.ocs(method="POST", path=f"{self._ep_base}/{app_name}/{key}", params={"configValue": value})
 
     def delete(self, app_name: str, key: str) -> None:
         """Removes a key and its value for a specific application."""
         require_capabilities("provisioning_api", self._session.capabilities)
-        self._session.ocs(method="DELETE", path=f"{_EP_BASE}/{app_name}/{key}")
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{app_name}/{key}")

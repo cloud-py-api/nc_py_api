@@ -16,7 +16,7 @@ from httpx import Response
 
 from .._exceptions import NextcloudException, check_error
 from .._session import NcSessionBasic
-from .fs_node import FsNode
+from . import FsNode
 from .sharing import _FilesSharingAPI
 
 PROPFIND_PROPERTIES = [
@@ -78,7 +78,7 @@ class FilesAPI:
         return self._listdir(self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self)
 
     def by_id(self, file_id: Union[int, str, FsNode]) -> Optional[FsNode]:
-        """Returns :py:class:`~nc_py_api.files.fs_node.FsNode` by file_id if any.
+        """Returns :py:class:`~nc_py_api.files.FsNode` by file_id if any.
 
         :param file_id: can be full file ID with Nextcloud instance ID or only clear file ID.
         """
@@ -87,7 +87,7 @@ class FilesAPI:
         return result[0] if result else None
 
     def by_path(self, path: Union[str, FsNode]) -> Optional[FsNode]:
-        """Returns :py:class:`~nc_py_api.files.fs_node.FsNode` by exact path if any."""
+        """Returns :py:class:`~nc_py_api.files.FsNode` by exact path if any."""
         path = path.user_path if isinstance(path, FsNode) else path
         result = self.listdir(path, depth=0, exclude_self=False)
         return result[0] if result else None

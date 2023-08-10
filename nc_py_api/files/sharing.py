@@ -1,16 +1,13 @@
 """Nextcloud API for working with the files shares."""
 
-from enum import IntEnum, IntFlag
-from typing import Union
+import enum
+import typing
 
-from .._misc import check_capabilities, require_capabilities
-from .._session import NcSessionBasic
-from .fs_node import FsNode
-
-_EP_BASE = "/ocs/v1.php/apps/files_sharing/api/v1/"
+from .. import _misc, _session
+from . import FsNode
 
 
-class SharePermissions(IntFlag):
+class SharePermissions(enum.IntFlag):
     """The share permissions to be set."""
 
     PERMISSION_READ = 1
@@ -25,7 +22,7 @@ class SharePermissions(IntFlag):
     """Access to re-share objects in the share"""
 
 
-class ShareType(IntEnum):
+class ShareType(enum.IntEnum):
     """Type of the object that will receive share."""
 
     TYPE_USER = 0
@@ -52,7 +49,7 @@ class ShareType(IntEnum):
     """Share to the Reva instance(Science Mesh)"""
 
 
-class ShareStatus(IntEnum):
+class ShareStatus(enum.IntEnum):
     """Status of the share."""
 
     STATUS_PENDING = 0
@@ -113,19 +110,21 @@ class Share:
 class _FilesSharingAPI:
     """Class provides all File Sharing functionality."""
 
-    def __init__(self, session: NcSessionBasic):
+    _ep_base: str = "/ocs/v1.php/apps/files_sharing/api/v1/"
+
+    def __init__(self, session: _session.NcSessionBasic):
         self._session = session
 
     @property
     def available(self) -> bool:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-        return not check_capabilities("files_sharing", self._session.capabilities)
+        return not _misc.check_capabilities("files_sharing", self._session.capabilities)
 
     def get_list(
-        self, shared_with_me=False, reshares=False, subfiles=False, path: Union[str, FsNode] = ""
+        self, shared_with_me=False, reshares=False, subfiles=False, path: typing.Union[str, FsNode] = ""
     ) -> list[Share]:
         """Returns lists of shares."""
-        require_capabilities("files_sharing", self._session.capabilities)
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         params = {
             "shared_with_me": "true" if shared_with_me else "false",
@@ -134,12 +133,12 @@ class _FilesSharingAPI:
         }
         if path:
             params["path"] = path
-        result = self._session.ocs(method="GET", path=f"{_EP_BASE}/shares", params=params)
+        result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares", params=params)
         return [Share(i) for i in result]
 
     def create(
         self,
-        path: Union[str, FsNode],
+        path: typing.Union[str, FsNode],
         permissions: SharePermissions,
         share_type: ShareType,
         share_with: str = "",
@@ -164,7 +163,7 @@ class _FilesSharingAPI:
             * ``note`` - string with note, if any. default = ``""``
             * ``label`` - string with label, if any. default = ``""``
         """
-        require_capabilities("files_sharing", self._session.capabilities)
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         params = {
             "path": path,
@@ -185,13 +184,13 @@ class _FilesSharingAPI:
             params["note"] = kwargs["note"]
         if "label" in kwargs:
             params["label"] = kwargs["label"]
-        return Share(self._session.ocs(method="POST", path=f"{_EP_BASE}/shares", params=params))
+        return Share(self._session.ocs(method="POST", path=f"{self._ep_base}/shares", params=params))
 
-    def delete(self, share_id: Union[int, Share]) -> None:
+    def delete(self, share_id: typing.Union[int, Share]) -> None:
         """Removes the given share.
 
         :param share_id: The Share object or an ID of the share.
         """
-        require_capabilities("files_sharing", self._session.capabilities)
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
-        self._session.ocs(method="DELETE", path=f"{_EP_BASE}/shares/{share_id}")
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/shares/{share_id}")

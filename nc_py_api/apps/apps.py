@@ -6,8 +6,6 @@ from typing import Optional
 from .._misc import require_capabilities
 from .._session import NcSessionBasic
 
-_EP_BASE = "/ocs/v1.php/cloud/apps"
-
 
 @dataclass
 class ExAppInfo:
@@ -38,6 +36,8 @@ class ExAppInfo:
 class AppsAPI:
     """The class provides the application management API on the Nextcloud server."""
 
+    _ep_base: str = "/ocs/v1.php/cloud/apps"
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
@@ -48,7 +48,7 @@ class AppsAPI:
         """
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
-        self._session.ocs(method="DELETE", path=f"{_EP_BASE}/{app_id}")
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{app_id}")
 
     def enable(self, app_id: str) -> None:
         """Enables the application.
@@ -57,7 +57,7 @@ class AppsAPI:
         """
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
-        self._session.ocs(method="POST", path=f"{_EP_BASE}/{app_id}")
+        self._session.ocs(method="POST", path=f"{self._ep_base}/{app_id}")
 
     def get_list(self, enabled: Optional[bool] = None) -> list[str]:
         """Get the list of installed applications.
@@ -67,7 +67,7 @@ class AppsAPI:
         params = None
         if enabled is not None:
             params = {"filter": "enabled" if enabled else "disabled"}
-        result = self._session.ocs(method="GET", path=_EP_BASE, params=params)
+        result = self._session.ocs(method="GET", path=self._ep_base, params=params)
         return list(result["apps"].values()) if isinstance(result["apps"], dict) else result["apps"]
 
     def is_installed(self, app_id: str) -> bool:

@@ -8,8 +8,6 @@ from typing import Optional
 from .._misc import check_capabilities, random_string, require_capabilities
 from .._session import NcSessionApp, NcSessionBasic
 
-_EP_BASE = "/ocs/v2.php/apps/notifications/api/v2/notifications"
-
 
 @dataclass
 class NotificationInfo:
@@ -66,6 +64,8 @@ class Notification:
 class _NotificationsAPI:
     """Class providing an API for managing user notifications on the Nextcloud server."""
 
+    _ep_base: str = "/ocs/v2.php/apps/notifications/api/v2/notifications"
+
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
@@ -115,12 +115,12 @@ class _NotificationsAPI:
     def get_all(self) -> list[Notification]:
         """Gets all notifications for a current user."""
         require_capabilities("notifications", self._session.capabilities)
-        return [Notification(i) for i in self._session.ocs(method="GET", path=_EP_BASE)]
+        return [Notification(i) for i in self._session.ocs(method="GET", path=self._ep_base)]
 
     def get_one(self, notification_id: int) -> Notification:
         """Gets a single notification for a current user."""
         require_capabilities("notifications", self._session.capabilities)
-        return Notification(self._session.ocs(method="GET", path=f"{_EP_BASE}/{notification_id}"))
+        return Notification(self._session.ocs(method="GET", path=f"{self._ep_base}/{notification_id}"))
 
     def by_object_id(self, object_id: str) -> Optional[Notification]:
         """Returns Notification if any by its object ID.
@@ -135,14 +135,14 @@ class _NotificationsAPI:
     def delete(self, notification_id: int) -> None:
         """Deletes a notification for the current user."""
         require_capabilities("notifications", self._session.capabilities)
-        self._session.ocs(method="DELETE", path=f"{_EP_BASE}/{notification_id}")
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{notification_id}")
 
     def delete_all(self) -> None:
         """Deletes all notifications for the current user."""
         require_capabilities("notifications", self._session.capabilities)
-        self._session.ocs(method="DELETE", path=_EP_BASE)
+        self._session.ocs(method="DELETE", path=self._ep_base)
 
     def exists(self, notification_ids: list[int]) -> list[int]:
         """Checks the existence of notifications for the current user."""
         require_capabilities("notifications", self._session.capabilities)
-        return self._session.ocs(method="POST", path=f"{_EP_BASE}/exists", json={"ids": notification_ids})
+        return self._session.ocs(method="POST", path=f"{self._ep_base}/exists", json={"ids": notification_ids})

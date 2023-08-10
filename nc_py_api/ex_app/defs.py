@@ -1,10 +1,10 @@
 """Additional definitions for NextcloudApp."""
 
-from enum import IntEnum
-from typing import TypedDict
+import enum
+import typing
 
 
-class LogLvl(IntEnum):
+class LogLvl(enum.IntEnum):
     """Log levels."""
 
     DEBUG = 0
@@ -19,7 +19,7 @@ class LogLvl(IntEnum):
     """Fatal log level"""
 
 
-class ApiScope(IntEnum):
+class ApiScope(enum.IntEnum):
     """Default API scopes."""
 
     SYSTEM = 2
@@ -38,7 +38,7 @@ class ApiScope(IntEnum):
     """Allows access to APIs that provide File Sharing."""
 
 
-class ApiScopesStruct(TypedDict):
+class ApiScopesStruct(typing.TypedDict):
     """Reply of the Nextcloud App with the desired scopes."""
 
     required: list[int]
