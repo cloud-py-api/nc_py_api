@@ -3,6 +3,7 @@ import sys
 from subprocess import Popen
 
 import pytest
+from _install_wait import check_heartbeat
 from gfixture import NC_APP, NC_TO_TEST
 
 from nc_py_api import Nextcloud
@@ -19,7 +20,10 @@ def test_ex_app_enable_disable(nc):
         env=os.environ,
         cwd=os.getcwd(),
     )
+    url = f"http://127.0.0.1:{os.environ.get('APP_PORT', 9009)}/heartbeat"
     try:
+        if check_heartbeat(url, '"status":"ok"', 15, 0.3):
+            raise RuntimeError("`_install_only_enabled_handler` can not start.")
         if nc.apps.ex_app_is_enabled("nc_py_api"):
             nc.apps.ex_app_disable("nc_py_api")
         assert nc.apps.ex_app_is_disabled("nc_py_api") is True
