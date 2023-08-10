@@ -1,7 +1,8 @@
 import pytest
 from gfixture import NC_TO_TEST
 
-from nc_py_api import Share, SharePermissions, ShareType
+from nc_py_api import SharePermissions, ShareType
+from nc_py_api.files.sharing import Share
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

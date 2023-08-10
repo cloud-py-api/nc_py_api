@@ -5,8 +5,8 @@ from typing import Annotated, Callable, Optional
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
-from .constants import ApiScopesStruct
-from .nextcloud import NextcloudApp
+from ..nextcloud import NextcloudApp
+from .defs import ApiScopesStruct
 
 
 def nc_app(request: Request) -> NextcloudApp:

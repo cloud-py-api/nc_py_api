@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from enum import IntEnum
 from hashlib import sha256
 from json import dumps, loads
 from os import environ
@@ -24,8 +25,16 @@ except ImportError as ex:
 
 
 from . import options
-from .constants import OCSRespond
-from .exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
+from ._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
+
+
+class OCSRespond(IntEnum):
+    """Special Nextcloud respond statuses for OCS calls."""
+
+    RESPOND_SERVER_ERROR = 996
+    RESPOND_UNAUTHORISED = 997
+    RESPOND_NOT_FOUND = 998
+    RESPOND_UNKNOWN_ERROR = 999
 
 
 class ServerVersion(TypedDict):

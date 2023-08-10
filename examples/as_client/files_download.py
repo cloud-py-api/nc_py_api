@@ -1,8 +1,8 @@
 from io import BytesIO
+
 from PIL import Image  # this example requires `pillow` to be installed
 
 import nc_py_api
-
 
 if __name__ == "__main__":
     # run this example after ``files_upload.py`` or adjust the image file path.

@@ -3,7 +3,7 @@ from os import environ
 import pytest
 from gfixture import NC, NC_APP
 
-from nc_py_api import ApiScope
+from nc_py_api.ex_app import ApiScope
 
 if NC_APP is None:
     pytest.skip("Only for Nextcloud App mode", allow_module_level=True)

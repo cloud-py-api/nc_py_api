@@ -1,7 +1,7 @@
 import pytest
 from gfixture import NC, NC_APP
 
-from nc_py_api import users_defs
+from nc_py_api.users.notifications import Notification, NotificationInfo
 
 if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
     pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)
@@ -20,8 +20,8 @@ def test_create_as_client():
 def test_create():
     obj_id = NC_APP.users.notifications.create("subject0123", "message456")
     new_notification = NC_APP.users.notifications.by_object_id(obj_id)
-    assert isinstance(new_notification, users_defs.Notification)
-    assert isinstance(new_notification.info, users_defs.NotificationInfo)
+    assert isinstance(new_notification, Notification)
+    assert isinstance(new_notification.info, NotificationInfo)
     assert new_notification.info.subject == "subject0123"
     assert new_notification.info.message == "message456"
     assert new_notification.info.icon
@@ -31,8 +31,8 @@ def test_create():
 def test_create_link_icon():
     obj_id = NC_APP.users.notifications.create("1", "", link="https://some.link/gg")
     new_notification = NC_APP.users.notifications.by_object_id(obj_id)
-    assert isinstance(new_notification, users_defs.Notification)
-    assert isinstance(new_notification.info, users_defs.NotificationInfo)
+    assert isinstance(new_notification, Notification)
+    assert isinstance(new_notification.info, NotificationInfo)
     assert new_notification.info.subject == "1"
     assert not new_notification.info.message
     assert new_notification.info.icon

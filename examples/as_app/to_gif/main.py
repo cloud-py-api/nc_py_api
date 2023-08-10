@@ -13,12 +13,12 @@ from fastapi import BackgroundTasks, Depends, FastAPI
 from pygifsicle import optimize
 from requests import Response
 
-from nc_py_api import (
+from nc_py_api import NextcloudApp
+from nc_py_api.ex_app import (
     ApiScope,
-    GuiActionFileInfo,
-    GuiFileActionHandlerInfo,
     LogLvl,
-    NextcloudApp,
+    UiActionFileInfo,
+    UiFileActionHandlerInfo,
     enable_heartbeat,
     nc_app,
     set_enabled_handler,
@@ -28,7 +28,7 @@ from nc_py_api import (
 APP = FastAPI()
 
 
-def convert_video_to_gif(input_params: GuiActionFileInfo, nc: NextcloudApp):
+def convert_video_to_gif(input_params: UiActionFileInfo, nc: NextcloudApp):
     source_path = path.join(input_params.directory, input_params.name)
     save_path = path.splitext(source_path)[0] + ".gif"
     nc.log(LogLvl.WARNING, f"Processing:{source_path} -> {save_path}")
@@ -73,7 +73,7 @@ def convert_video_to_gif(input_params: GuiActionFileInfo, nc: NextcloudApp):
 
 @APP.post("/video_to_gif")
 async def video_to_gif(
-    file: GuiFileActionHandlerInfo,
+    file: UiFileActionHandlerInfo,
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):

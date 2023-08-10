@@ -3,10 +3,10 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from ._session import NcSessionBasic
-from .misc import require_capabilities
+from .._misc import require_capabilities
+from .._session import NcSessionBasic
 
-ENDPOINT = "/ocs/v1.php/cloud/apps"
+_EP_BASE = "/ocs/v1.php/cloud/apps"
 
 
 @dataclass
@@ -35,7 +35,7 @@ class ExAppInfo:
         self.system = raw_data["system"]
 
 
-class AppAPI:
+class AppsAPI:
     """The class provides the application management API on the Nextcloud server."""
 
     def __init__(self, session: NcSessionBasic):
@@ -48,7 +48,7 @@ class AppAPI:
         """
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
-        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{app_id}")
+        self._session.ocs(method="DELETE", path=f"{_EP_BASE}/{app_id}")
 
     def enable(self, app_id: str) -> None:
         """Enables the application.
@@ -57,7 +57,7 @@ class AppAPI:
         """
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
-        self._session.ocs(method="POST", path=f"{ENDPOINT}/{app_id}")
+        self._session.ocs(method="POST", path=f"{_EP_BASE}/{app_id}")
 
     def get_list(self, enabled: Optional[bool] = None) -> list[str]:
         """Get the list of installed applications.
@@ -67,7 +67,7 @@ class AppAPI:
         params = None
         if enabled is not None:
             params = {"filter": "enabled" if enabled else "disabled"}
-        result = self._session.ocs(method="GET", path=ENDPOINT, params=params)
+        result = self._session.ocs(method="GET", path=_EP_BASE, params=params)
         return list(result["apps"].values()) if isinstance(result["apps"], dict) else result["apps"]
 
     def is_installed(self, app_id: str) -> bool:
@@ -87,6 +87,24 @@ class AppAPI:
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
         return app_id in self.get_list(enabled=False)
+
+    def ex_app_disable(self, app_id: str) -> None:
+        """Disables the external application.
+
+        .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode.
+        """
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        self._session.ocs(method="PUT", path=f"{self._session.ae_url}/ex-app/{app_id}/enabled", json={"enabled": 0})
+
+    def ex_app_enable(self, app_id: str) -> None:
+        """Enables the external application.
+
+        .. note:: Does not work in NextcloudApp mode, only for Nextcloud client mode.
+        """
+        if not app_id:
+            raise ValueError("`app_id` parameter can not be empty")
+        self._session.ocs(method="PUT", path=f"{self._session.ae_url}/ex-app/{app_id}/enabled", json={"enabled": 1})
 
     def ex_app_get_list(self, enabled: bool = False) -> list[ExAppInfo]:
         """Gets information of the enabled external applications installed on the server.
@@ -109,4 +127,4 @@ class AppAPI:
         """Returns ``True`` if specified external application is disabled."""
         if not app_id:
             raise ValueError("`app_id` parameter can not be empty")
-        return app_id not in [i.app_id for i in self.ex_app_get_list(True)]
+        return app_id in [i.app_id for i in self.ex_app_get_list() if not i.enabled]

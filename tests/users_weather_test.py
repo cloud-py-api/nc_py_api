@@ -1,7 +1,8 @@
 import pytest
 from gfixture import NC_TO_TEST
 
-from nc_py_api import NextcloudException, users_defs
+from nc_py_api import NextcloudException
+from nc_py_api.users.weather import WeatherLocationMode
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -76,15 +77,15 @@ def test_get_set_favorites(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_set_mode(nc):
-    nc.users.weather.set_mode(users_defs.WeatherLocationMode.MODE_BROWSER_LOCATION)
-    assert nc.users.weather.get_location().mode == users_defs.WeatherLocationMode.MODE_BROWSER_LOCATION.value
-    nc.users.weather.set_mode(users_defs.WeatherLocationMode.MODE_MANUAL_LOCATION)
-    assert nc.users.weather.get_location().mode == users_defs.WeatherLocationMode.MODE_MANUAL_LOCATION.value
+    nc.users.weather.set_mode(WeatherLocationMode.MODE_BROWSER_LOCATION)
+    assert nc.users.weather.get_location().mode == WeatherLocationMode.MODE_BROWSER_LOCATION.value
+    nc.users.weather.set_mode(WeatherLocationMode.MODE_MANUAL_LOCATION)
+    assert nc.users.weather.get_location().mode == WeatherLocationMode.MODE_MANUAL_LOCATION.value
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_set_mode_invalid(nc):
     with pytest.raises(ValueError):
-        nc.users.weather.set_mode(users_defs.WeatherLocationMode.UNKNOWN)
+        nc.users.weather.set_mode(WeatherLocationMode.UNKNOWN)
     with pytest.raises(ValueError):
         nc.users.weather.set_mode(0)

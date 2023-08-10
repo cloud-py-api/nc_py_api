@@ -1,4 +1,4 @@
-.. py:currentmodule:: nc_py_api
+.. py:currentmodule:: nc_py_api.ex_app
 
 Constants
 =========
@@ -7,13 +7,4 @@ Constants
     :members:
 
 .. autoclass:: LogLvl
-    :members:
-
-.. autoclass:: SharePermissions
-    :members:
-
-.. autoclass:: ShareType
-    :members:
-
-.. autoclass:: ShareStatus
     :members:

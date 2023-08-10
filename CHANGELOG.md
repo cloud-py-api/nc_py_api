@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.28 - 2023-08-11]
 
+### Added
+
+- APIs for enabling\disabling External Applications.
+
 ### Changed
 
-- Finished documentation.
-- Different small adjustments to API, to be it more consistent.
+- Much more documentation.
+- Regroup APIs, hopes for the last time.
 
 ### Fixed
 

@@ -7,7 +7,7 @@ from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Union
 
-from .exceptions import NextcloudException
+from ._exceptions import NextcloudException
 
 
 def kwargs_to_dict(keys: list[str], **kwargs) -> dict:

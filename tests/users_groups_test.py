@@ -1,7 +1,8 @@
 import pytest
 from gfixture import NC_APP, NC_TO_TEST
 
-from nc_py_api import Nextcloud, NextcloudException, users_defs
+from nc_py_api import Nextcloud, NextcloudException
+from nc_py_api.users.groups import GroupDetails
 
 TEST_GROUP_NAME = "test_coverage_group1"
 TEST_GROUP_NAME2 = "test_coverage_group2"
@@ -145,4 +146,4 @@ def test_app_mode():
     groups_detailed_list = NC_APP.users.groups.get_details()
     assert isinstance(groups_detailed_list, list)
     for i in groups_detailed_list:
-        assert isinstance(i, users_defs.GroupDetails)
+        assert isinstance(i, GroupDetails)

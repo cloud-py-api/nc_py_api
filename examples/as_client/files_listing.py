@@ -1,6 +1,5 @@
 import nc_py_api
 
-
 if __name__ == "__main__":
     # create Nextcloud client instance class
     nc = nc_py_api.Nextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")

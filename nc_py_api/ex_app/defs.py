@@ -1,4 +1,4 @@
-"""Common constants. Do not use them directly, all public ones are imported from __init__.py."""
+"""Additional definitions for NextcloudApp."""
 
 from enum import IntEnum
 from typing import TypedDict
@@ -43,12 +43,3 @@ class ApiScopesStruct(TypedDict):
 
     required: list[int]
     optional: list[int]
-
-
-class OCSRespond(IntEnum):
-    """Special Nextcloud respond statuses for OCS calls."""
-
-    RESPOND_SERVER_ERROR = 996
-    RESPOND_UNAUTHORISED = 997
-    RESPOND_NOT_FOUND = 998
-    RESPOND_UNKNOWN_ERROR = 999

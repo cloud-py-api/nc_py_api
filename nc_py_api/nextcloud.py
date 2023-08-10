@@ -4,20 +4,20 @@ from typing import Optional, Union
 
 from fastapi import Request
 
+from ._misc import check_capabilities
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
-from .appcfg_prefs_ex import AppConfigExAPI, PreferencesExAPI
-from .apps import AppAPI
-from .constants import ApiScope, LogLvl
-from .files import FilesAPI
-from .gui import GuiApi
-from .misc import check_capabilities
-from .preferences import PreferencesAPI
-from .theming import ThemingInfo, _get_parsed_theme
-from .users import UsersAPI
+from ._theming import ThemingInfo, get_parsed_theme
+from .apps.apps import AppsAPI
+from .apps.preferences import PreferencesAPI
+from .apps.preferences_ex import AppConfigExAPI, PreferencesExAPI
+from .ex_app.defs import ApiScope, LogLvl
+from .ex_app.ui.ui import UiApi
+from .files.files import FilesAPI
+from .users.users import UsersAPI
 
 
 class _NextcloudBasic(ABC):
-    apps: AppAPI
+    apps: AppsAPI
     """Nextcloud API for App management"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
@@ -28,7 +28,7 @@ class _NextcloudBasic(ABC):
     _session: NcSessionBasic
 
     def _init_api(self, session: NcSessionBasic):
-        self.apps = AppAPI(session)
+        self.apps = AppsAPI(session)
         self.files = FilesAPI(session)
         self.preferences = PreferencesAPI(session)
         self.users = UsersAPI(session)
@@ -60,7 +60,7 @@ class _NextcloudBasic(ABC):
     @property
     def theme(self) -> Optional[ThemingInfo]:
         """Returns Theme information."""
-        return _get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
+        return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
 
 class Nextcloud(_NextcloudBasic):
@@ -100,7 +100,7 @@ class NextcloudApp(_NextcloudBasic):
     _session: NcSessionApp
     appconfig_ex: AppConfigExAPI
     """Nextcloud App Preferences API for ExApps"""
-    gui: GuiApi
+    ui: UiApi
     preferences_ex: PreferencesExAPI
     """Nextcloud User Preferences API for ExApps"""
 
@@ -113,7 +113,7 @@ class NextcloudApp(_NextcloudBasic):
         self._init_api(self._session)
         self.appconfig_ex = AppConfigExAPI(self._session)
         self.preferences_ex = PreferencesExAPI(self._session)
-        self.gui = GuiApi(self._session)
+        self.ui = UiApi(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file.

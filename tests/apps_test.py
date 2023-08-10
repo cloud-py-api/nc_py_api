@@ -1,5 +1,9 @@
+import os
+import sys
+from subprocess import Popen
+
 import pytest
-from gfixture import NC_TO_TEST
+from gfixture import NC_APP, NC_TO_TEST
 
 from nc_py_api import Nextcloud
 
@@ -22,16 +26,16 @@ def test_list_apps(nc):
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_enable_disable_app(nc):
-    assert nc.apps.is_installed(APP_NAME)
+def test_app_enable_disable(nc):
+    assert nc.apps.is_installed(APP_NAME) is True
     if nc.apps.is_enabled(APP_NAME):
         nc.apps.disable(APP_NAME)
-    assert nc.apps.is_disabled(APP_NAME)
-    assert not nc.apps.is_enabled(APP_NAME)
-    assert nc.apps.is_installed(APP_NAME)
+    assert nc.apps.is_disabled(APP_NAME) is True
+    assert nc.apps.is_enabled(APP_NAME) is False
+    assert nc.apps.is_installed(APP_NAME) is True
     nc.apps.enable(APP_NAME)
-    assert nc.apps.is_enabled(APP_NAME)
-    assert nc.apps.is_installed(APP_NAME)
+    assert nc.apps.is_enabled(APP_NAME) is True
+    assert nc.apps.is_installed(APP_NAME) is True
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -66,8 +70,6 @@ def test_ex_app_get_list(nc):
     assert isinstance(enabled_ex_apps, list)
     for i in enabled_ex_apps:
         assert i.enabled is True
-        assert nc.apps.ex_app_is_enabled(i.app_id) is True
-        assert nc.apps.ex_app_is_disabled(i.app_id) is False
     assert "nc_py_api" in [i.app_id for i in enabled_ex_apps]
     ex_apps = nc.apps.ex_app_get_list()
     assert isinstance(ex_apps, list)
@@ -82,3 +84,24 @@ def test_ex_app_get_list(nc):
         assert isinstance(app.system, bool)
         if app.app_id == "nc_py_api":
             assert app.system is True
+
+
+@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
+@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
+@pytest.mark.skipif(NC_APP is None, reason="Not available without NextcloudApp.")
+def test_ex_app_enable_disable(nc):
+    r = Popen(
+        [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "_install_only_enabled_handler.py")],
+        env=os.environ,
+        cwd=os.getcwd(),
+    )
+    try:
+        if nc.apps.ex_app_is_enabled("nc_py_api"):
+            nc.apps.ex_app_disable("nc_py_api")
+        assert nc.apps.ex_app_is_disabled("nc_py_api") is True
+        assert nc.apps.ex_app_is_enabled("nc_py_api") is False
+        nc.apps.ex_app_enable("nc_py_api")
+        assert nc.apps.ex_app_is_disabled("nc_py_api") is False
+        assert nc.apps.ex_app_is_enabled("nc_py_api") is True
+    finally:
+        r.terminate()
