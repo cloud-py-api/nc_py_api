@@ -56,6 +56,10 @@ def test_invalid_param(nc):
         nc.apps.ex_app_is_enabled("")
     with pytest.raises(ValueError):
         nc.apps.ex_app_is_disabled("")
+    with pytest.raises(ValueError):
+        nc.apps.ex_app_disable("")
+    with pytest.raises(ValueError):
+        nc.apps.ex_app_enable("")
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
