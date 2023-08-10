@@ -3,7 +3,7 @@ from time import time
 import pytest
 from gfixture import NC_TO_TEST, NC_VERSION
 
-from nc_py_api import users_defs
+from nc_py_api.users.status import ClearAt, UserStatus
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -11,7 +11,7 @@ def test_available(nc):
     assert nc.users.status.available
 
 
-def compare_user_statuses(p1: users_defs.UserStatus, p2: users_defs.UserStatus):
+def compare_user_statuses(p1: UserStatus, p2: UserStatus):
     assert p1.user_id == p2.user_id
     assert p1.message == p2.message
     assert p1.icon == p2.icon
@@ -53,7 +53,7 @@ def test_get_predefined(nc):
             assert isinstance(i.status_id, str)
             assert isinstance(i.message, str)
             assert isinstance(i.icon, str)
-            assert isinstance(i.clear_at, users_defs.ClearAt) or i.clear_at is None
+            assert isinstance(i.clear_at, ClearAt) or i.clear_at is None
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

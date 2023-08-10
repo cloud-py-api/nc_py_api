@@ -1,16 +1,13 @@
 """Nextcloud API for working with users."""
 
-from typing import Optional
+import typing
 
-from ._session import NcSessionBasic
-from .misc import kwargs_to_dict
-from .users_groups import UserGroupsAPI
-from .users_notifications import NotificationsAPI
-from .users_status import UserStatusAPI
-from .users_weather import WeatherStatusAPI
-
-ENDPOINT_BASE = "/ocs/v1.php/cloud"
-ENDPOINT = f"{ENDPOINT_BASE}/users"
+from .._misc import kwargs_to_dict
+from .._session import NcSessionBasic
+from .groups import _UserGroupsAPI
+from .notifications import _NotificationsAPI
+from .status import _UserStatusAPI
+from .weather import _WeatherStatusAPI
 
 
 class UsersAPI:
@@ -19,24 +16,26 @@ class UsersAPI:
     .. note:: In NextcloudApp mode, only ``get_list`` and ``get_details`` methods are available.
     """
 
-    groups: UserGroupsAPI
-    # """API for managing user groups"""
-    status: UserStatusAPI
+    groups: _UserGroupsAPI
+    """API for managing user groups"""
+    status: _UserStatusAPI
     """API for managing user statuses"""
-    notifications: NotificationsAPI
-    # """API for managing user notifications"""
-    weather: WeatherStatusAPI
+    notifications: _NotificationsAPI
+    """API for managing user notifications"""
+    weather: _WeatherStatusAPI
     """API for managing user weather statuses"""
+
+    _ep_base: str = "/ocs/v1.php/cloud/users"
 
     def __init__(self, session: NcSessionBasic):
         self._session = session
-        self.groups = UserGroupsAPI(session)
-        self.status = UserStatusAPI(session)
-        self.notifications = NotificationsAPI(session)
-        self.weather = WeatherStatusAPI(session)
+        self.groups = _UserGroupsAPI(session)
+        self.status = _UserStatusAPI(session)
+        self.notifications = _NotificationsAPI(session)
+        self.weather = _WeatherStatusAPI(session)
 
     def get_list(
-        self, mask: Optional[str] = "", limit: Optional[int] = None, offset: Optional[int] = None
+        self, mask: typing.Optional[str] = "", limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
     ) -> list[str]:
         """Returns list of user IDs.
 
@@ -45,7 +44,7 @@ class UsersAPI:
         :param offset: offset of results.
         """
         data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
-        response_data = self._session.ocs(method="GET", path=ENDPOINT, params=data)
+        response_data = self._session.ocs(method="GET", path=self._ep_base, params=data)
         return response_data["users"] if response_data else {}
 
     def get_details(self, user_id: str = "") -> dict:
@@ -57,7 +56,7 @@ class UsersAPI:
             user_id = self._session.user
         if not user_id:
             raise ValueError("user_id can not be empty.")
-        return self._session.ocs(method="GET", path=f"{ENDPOINT}/{user_id}")
+        return self._session.ocs(method="GET", path=f"{self._ep_base}/{user_id}")
 
     def create(self, user_id: str, **kwargs) -> None:
         """Create a new user on the Nextcloud server.
@@ -83,39 +82,39 @@ class UsersAPI:
         for k in ("password", "displayname", "email", "groups", "subadmin", "quota", "language"):
             if k in kwargs:
                 data[k] = kwargs[k]
-        self._session.ocs(method="POST", path=ENDPOINT, json=data)
+        self._session.ocs(method="POST", path=self._ep_base, json=data)
 
     def delete(self, user_id: str) -> None:
         """Deletes user from the Nextcloud server.
 
         :param user_id: id of the user.
         """
-        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{user_id}")
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}")
 
     def enable(self, user_id: str) -> None:
         """Enables user on the Nextcloud server.
 
         :param user_id: id of the user.
         """
-        self._session.ocs(method="PUT", path=f"{ENDPOINT}/{user_id}/enable")
+        self._session.ocs(method="PUT", path=f"{self._ep_base}/{user_id}/enable")
 
     def disable(self, user_id: str) -> None:
         """Disables user on the Nextcloud server.
 
         :param user_id: id of the user.
         """
-        self._session.ocs(method="PUT", path=f"{ENDPOINT}/{user_id}/disable")
+        self._session.ocs(method="PUT", path=f"{self._ep_base}/{user_id}/disable")
 
     def resend_welcome_email(self, user_id: str) -> None:
         """Send welcome email for specified user again.
 
         :param user_id: id of the user.
         """
-        self._session.ocs(method="POST", path=f"{ENDPOINT}/{user_id}/welcome")
+        self._session.ocs(method="POST", path=f"{self._ep_base}/{user_id}/welcome")
 
     def editable_fields(self) -> list[str]:
         """Returns user fields that avalaible for edit."""
-        return self._session.ocs(method="GET", path=f"{ENDPOINT_BASE}/user/fields")
+        return self._session.ocs(method="GET", path="/ocs/v1.php/cloud/user/fields")
 
     def edit(self, user_id: str, **kwargs) -> None:
         """Edits user metadata.
@@ -124,7 +123,7 @@ class UsersAPI:
         :param kwargs: dictionary where keys are values from ``editable_fields`` method, and values to set.
         """
         for k, v in kwargs.items():
-            self._session.ocs(method="PUT", path=f"{ENDPOINT}/{user_id}", params={"key": k, "value": v})
+            self._session.ocs(method="PUT", path=f"{self._ep_base}/{user_id}", params={"key": k, "value": v})
 
     def add_to_group(self, user_id: str, group_id: str) -> None:
         """Adds user to the group.
@@ -132,7 +131,7 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: the destination group to which add user to.
         """
-        self._session.ocs(method="POST", path=f"{ENDPOINT}/{user_id}/groups", params={"groupid": group_id})
+        self._session.ocs(method="POST", path=f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
 
     def remove_from_group(self, user_id: str, group_id: str) -> None:
         """Removes user from the group.
@@ -140,7 +139,7 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: group from which remove user.
         """
-        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{user_id}/groups", params={"groupid": group_id})
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
 
     def promote_to_subadmin(self, user_id: str, group_id: str) -> None:
         """Makes user admin of the group.
@@ -148,7 +147,7 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: group where user should become administrator.
         """
-        self._session.ocs(method="POST", path=f"{ENDPOINT}/{user_id}/subadmins", params={"groupid": group_id})
+        self._session.ocs(method="POST", path=f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
 
     def demote_from_subadmin(self, user_id: str, group_id: str) -> None:
         """Removes user from the admin role of the group.
@@ -156,4 +155,4 @@ class UsersAPI:
         :param user_id: ID of the user.
         :param group_id: group where user should be removed from administrators.
         """
-        self._session.ocs(method="DELETE", path=f"{ENDPOINT}/{user_id}/subadmins", params={"groupid": group_id})
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})

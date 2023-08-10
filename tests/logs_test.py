@@ -4,7 +4,8 @@ from unittest import mock
 import pytest
 from gfixture import NC_APP
 
-from nc_py_api import LogLvl, NextcloudException
+from nc_py_api import NextcloudException
+from nc_py_api.ex_app import LogLvl
 
 if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
     pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)

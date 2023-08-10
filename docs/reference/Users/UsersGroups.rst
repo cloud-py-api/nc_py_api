@@ -1,8 +1,8 @@
 User Groups Management
 ----------------------
 
-.. autoclass:: nc_py_api.users_groups.UserGroupsAPI
+.. autoclass:: nc_py_api.users.groups._UserGroupsAPI
     :members:
 
-.. autoclass:: nc_py_api.users_defs.GroupDetails
+.. autoclass:: nc_py_api.users.groups.GroupDetails
     :members:

@@ -19,6 +19,7 @@ repos:
             (?x)^(
                 nc_py_api/|
                 benchmarks/|
+                examples/|
                 tests/
             )
 
@@ -30,6 +31,7 @@ repos:
             (?x)^(
                 nc_py_api/|
                 benchmarks/|
+                examples/|
                 tests/
             )
 

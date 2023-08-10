@@ -5,15 +5,7 @@ import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 
-from nc_py_api import (
-    ApiScope,
-    LogLvl,
-    NextcloudApp,
-    enable_heartbeat,
-    nc_app,
-    set_enabled_handler,
-    set_scopes,
-)
+from nc_py_api import NextcloudApp, ex_app
 
 APP = FastAPI()
 
@@ -21,7 +13,7 @@ APP = FastAPI()
 @APP.put("/sec_check")
 def sec_check(
     value: int,
-    nc: Annotated[NextcloudApp, Depends(nc_app)],
+    nc: Annotated[NextcloudApp, Depends(ex_app.nc_app)],
 ):
     print(value)
     _ = nc
@@ -31,9 +23,9 @@ def sec_check(
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled_handler: enabled={enabled}", flush=True)
     if enabled:
-        nc.log(LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
+        nc.log(ex_app.LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
     else:
-        nc.log(LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
+        nc.log(ex_app.LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
 
 
@@ -43,23 +35,23 @@ def heartbeat_callback():
 
 @APP.on_event("startup")
 def initialization():
-    set_enabled_handler(APP, enabled_handler)
-    set_scopes(
+    ex_app.set_enabled_handler(APP, enabled_handler)
+    ex_app.set_scopes(
         APP,
         {
             "required": [
-                ApiScope.SYSTEM,
-                ApiScope.DAV,
-                ApiScope.USER_INFO,
-                ApiScope.USER_STATUS,
-                ApiScope.NOTIFICATIONS,
-                ApiScope.WEATHER_STATUS,
-                ApiScope.FILES_SHARING,
+                ex_app.ApiScope.SYSTEM,
+                ex_app.ApiScope.DAV,
+                ex_app.ApiScope.USER_INFO,
+                ex_app.ApiScope.USER_STATUS,
+                ex_app.ApiScope.NOTIFICATIONS,
+                ex_app.ApiScope.WEATHER_STATUS,
+                ex_app.ApiScope.FILES_SHARING,
             ],
             "optional": [],
         },
     )
-    enable_heartbeat(APP, heartbeat_callback)
+    ex_app.enable_heartbeat(APP, heartbeat_callback)
 
 
 if __name__ == "__main__":

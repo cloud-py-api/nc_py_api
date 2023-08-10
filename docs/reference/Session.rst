@@ -6,14 +6,14 @@ Session Structures
 .. autoclass:: ServerVersion
     :members:
 
-.. autoclass:: nc_py_api.theming.ThemingInfo
+.. autoclass:: nc_py_api._theming.ThemingInfo
     :members:
 
 .. autoclass:: AppConfig
     :members:
 
-Sessions Internal
-=================
+Internal
+^^^^^^^^
 
 Currently Session API is private, and not exposed.
 

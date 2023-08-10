@@ -7,4 +7,5 @@ Users API
    Users
    UsersGroups
    UsersStatus
+   Notifications
    WeatherStatus

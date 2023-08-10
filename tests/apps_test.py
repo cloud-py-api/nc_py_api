@@ -22,16 +22,16 @@ def test_list_apps(nc):
 
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_enable_disable_app(nc):
-    assert nc.apps.is_installed(APP_NAME)
+def test_app_enable_disable(nc):
+    assert nc.apps.is_installed(APP_NAME) is True
     if nc.apps.is_enabled(APP_NAME):
         nc.apps.disable(APP_NAME)
-    assert nc.apps.is_disabled(APP_NAME)
-    assert not nc.apps.is_enabled(APP_NAME)
-    assert nc.apps.is_installed(APP_NAME)
+    assert nc.apps.is_disabled(APP_NAME) is True
+    assert nc.apps.is_enabled(APP_NAME) is False
+    assert nc.apps.is_installed(APP_NAME) is True
     nc.apps.enable(APP_NAME)
-    assert nc.apps.is_enabled(APP_NAME)
-    assert nc.apps.is_installed(APP_NAME)
+    assert nc.apps.is_enabled(APP_NAME) is True
+    assert nc.apps.is_installed(APP_NAME) is True
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -56,6 +56,10 @@ def test_invalid_param(nc):
         nc.apps.ex_app_is_enabled("")
     with pytest.raises(ValueError):
         nc.apps.ex_app_is_disabled("")
+    with pytest.raises(ValueError):
+        nc.apps.ex_app_disable("")
+    with pytest.raises(ValueError):
+        nc.apps.ex_app_enable("")
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -66,8 +70,6 @@ def test_ex_app_get_list(nc):
     assert isinstance(enabled_ex_apps, list)
     for i in enabled_ex_apps:
         assert i.enabled is True
-        assert nc.apps.ex_app_is_enabled(i.app_id) is True
-        assert nc.apps.ex_app_is_disabled(i.app_id) is False
     assert "nc_py_api" in [i.app_id for i in enabled_ex_apps]
     ex_apps = nc.apps.ex_app_get_list()
     assert isinstance(ex_apps, list)

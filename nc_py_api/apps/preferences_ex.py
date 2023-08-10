@@ -2,9 +2,9 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
-from ._session import NcSessionBasic
-from .exceptions import NextcloudExceptionNotFound
-from .misc import require_capabilities
+from .._exceptions import NextcloudExceptionNotFound
+from .._misc import require_capabilities
+from .._session import NcSessionBasic
 
 
 @dataclass
