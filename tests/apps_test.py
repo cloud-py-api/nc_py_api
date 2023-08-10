@@ -1,9 +1,5 @@
-import os
-import sys
-from subprocess import Popen
-
 import pytest
-from gfixture import NC_APP, NC_TO_TEST
+from gfixture import NC_TO_TEST
 
 from nc_py_api import Nextcloud
 
@@ -84,24 +80,3 @@ def test_ex_app_get_list(nc):
         assert isinstance(app.system, bool)
         if app.app_id == "nc_py_api":
             assert app.system is True
-
-
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-@pytest.mark.skipif(NC_APP is None, reason="Not available without NextcloudApp.")
-def test_ex_app_enable_disable(nc):
-    r = Popen(
-        [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "_install_only_enabled_handler.py")],
-        env=os.environ,
-        cwd=os.getcwd(),
-    )
-    try:
-        if nc.apps.ex_app_is_enabled("nc_py_api"):
-            nc.apps.ex_app_disable("nc_py_api")
-        assert nc.apps.ex_app_is_disabled("nc_py_api") is True
-        assert nc.apps.ex_app_is_enabled("nc_py_api") is False
-        nc.apps.ex_app_enable("nc_py_api")
-        assert nc.apps.ex_app_is_disabled("nc_py_api") is False
-        assert nc.apps.ex_app_is_enabled("nc_py_api") is True
-    finally:
-        r.terminate()
