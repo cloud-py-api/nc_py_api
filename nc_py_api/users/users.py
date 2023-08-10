@@ -1,6 +1,6 @@
 """Nextcloud API for working with users."""
 
-from typing import Optional
+import typing
 
 from .._misc import kwargs_to_dict
 from .._session import NcSessionBasic
@@ -35,7 +35,7 @@ class UsersAPI:
         self.weather = _WeatherStatusAPI(session)
 
     def get_list(
-        self, mask: Optional[str] = "", limit: Optional[int] = None, offset: Optional[int] = None
+        self, mask: typing.Optional[str] = "", limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
     ) -> list[str]:
         """Returns list of user IDs.
 

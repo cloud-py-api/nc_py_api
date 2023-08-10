@@ -8,6 +8,6 @@ Reference
    Apps
    Files/index.rst
    Users/index.rst
-   Session
-   Constants
+   ExApp
    Exceptions
+   Session
