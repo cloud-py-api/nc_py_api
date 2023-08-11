@@ -699,9 +699,12 @@ jobs:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
 
+      - name: Patch base.php
+        if: ${{ startsWith(matrix.nextcloud, 'stable26') }}
+        run: patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
+
       - name: Install AppEcosystemV2
         run: |
-          patch -p 1 -i apps/app_ecosystem_v2/base_php.patch
           php occ app:enable app_ecosystem_v2
           cd nc_py_api
           coverage run --data-file=.coverage.ci_install tests/_install.py &
