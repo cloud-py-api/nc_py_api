@@ -1,4 +1,6 @@
 import math
+import os
+import zipfile
 from datetime import datetime
 from io import BytesIO
 from random import choice, randbytes
@@ -539,6 +541,56 @@ def test_fs_node_str(nc):
     finally:
         nc.files.delete("test_root_folder")
         nc.files.delete("test_file_name.txt")
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_download_as_zip(nc):
+    nc.files.makedirs("test_root_folder/test_subfolder", exist_ok=True)
+    try:
+        nc.files.mkdir("test_root_folder/test_subfolder2")
+        nc.files.upload("test_root_folder/0.txt", content="")
+        nc.files.upload("test_root_folder/1.txt", content="123")
+        nc.files.upload("test_root_folder/test_subfolder/0.txt", content="")
+        result = nc.files.download_directory_as_zip("test_root_folder")
+        try:
+            with zipfile.ZipFile(result, "r") as zip_ref:
+                assert zip_ref.filelist[0].filename == "test_root_folder/"
+                assert not zip_ref.filelist[0].file_size
+                assert zip_ref.filelist[1].filename == "test_root_folder/0.txt"
+                assert not zip_ref.filelist[1].file_size
+                assert zip_ref.filelist[2].filename == "test_root_folder/1.txt"
+                assert zip_ref.filelist[2].file_size == 3
+                assert zip_ref.filelist[3].filename == "test_root_folder/test_subfolder/"
+                assert not zip_ref.filelist[3].file_size
+                assert zip_ref.filelist[4].filename == "test_root_folder/test_subfolder/0.txt"
+                assert not zip_ref.filelist[4].file_size
+                assert zip_ref.filelist[5].filename == "test_root_folder/test_subfolder2/"
+                assert not zip_ref.filelist[5].file_size
+                assert len(zip_ref.filelist) == 6
+        finally:
+            os.remove(result)
+        result = nc.files.download_directory_as_zip("test_root_folder/test_subfolder", "2.zip")
+        try:
+            assert str(result) == "2.zip"
+            with zipfile.ZipFile(result, "r") as zip_ref:
+                assert zip_ref.filelist[0].filename == "test_subfolder/"
+                assert not zip_ref.filelist[0].file_size
+                assert zip_ref.filelist[1].filename == "test_subfolder/0.txt"
+                assert not zip_ref.filelist[1].file_size
+                assert len(zip_ref.filelist) == 2
+        finally:
+            os.remove("2.zip")
+        result = nc.files.download_directory_as_zip("test_root_folder/test_subfolder2", "empty_folder.zip")
+        try:
+            assert str(result) == "empty_folder.zip"
+            with zipfile.ZipFile(result, "r") as zip_ref:
+                assert zip_ref.filelist[0].filename == "test_subfolder2/"
+                assert not zip_ref.filelist[0].file_size
+                assert len(zip_ref.filelist) == 1
+        finally:
+            os.remove("empty_folder.zip")
+    finally:
+        nc.files.delete("test_root_folder")
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])

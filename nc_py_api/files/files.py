@@ -147,6 +147,31 @@ class FilesAPI:
         else:
             raise TypeError("`fp` must be a path to file or an object with `write` method.")
 
+    def download_directory_as_zip(
+        self, path: Union[str, FsNode], local_path: Union[str, Path, None] = None, **kwargs
+    ) -> Path:
+        """Downloads a remote directory as zip archive.
+
+        :param path: path to directory to download.
+        :param local_path: relative or absolute file path to save zip file.
+        :returns: Path to the saved zip archive.
+
+        .. note:: This works only for directories, you should not use this to download a file.
+        """
+        path = path.user_path if isinstance(path, FsNode) else path
+        with self._session.get_stream(
+            "/index.php/apps/files/ajax/download.php", params={"dir": path}
+        ) as response:  # type: ignore
+            check_error(response.status_code, f"download_directory_as_zip: user={self._session.user}, path={path}")
+            result_path = local_path if local_path else os.path.basename(path)
+            with open(
+                result_path,
+                "wb",
+            ) as fp:
+                for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
+                    fp.write(data_chunk)
+        return Path(result_path)
+
     def upload(self, path: Union[str, FsNode], content: Union[bytes, str]) -> FsNode:
         """Creates a file with the specified content at the specified path.
 

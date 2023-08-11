@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - APIs for enabling\disabling External Applications.
+- FileAPI: `download_directory_as_zip` method.
 
 ### Changed
 

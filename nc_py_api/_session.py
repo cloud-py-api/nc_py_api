@@ -150,6 +150,18 @@ class NcSessionBasic(ABC):
         if hasattr(self, "adapter") and self.adapter:
             self.adapter.close()
 
+    def get_stream(self, path: str, params: Optional[dict] = None, **kwargs) -> Iterator[Response]:
+        return self._get_stream(
+            f"{quote(path)}?{urlencode(params, True)}" if params else quote(path), kwargs.get("headers", {}), **kwargs
+        )
+
+    def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
+        self.init_adapter()
+        timeout = kwargs.pop("timeout", self.cfg.options.timeout)
+        return self.adapter.stream(
+            "GET", f"{self.cfg.endpoint}{path_params}", headers=headers, timeout=timeout, **kwargs
+        )
+
     def ocs(
         self,
         method: str,
@@ -295,6 +307,10 @@ class NcSessionApp(NcSessionBasic):
     def __init__(self, **kwargs):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
+
+    def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
+        self.sign_request("GET", path_params, headers, None)
+        return super()._get_stream(path_params, headers, **kwargs)
 
     def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
         self.sign_request(method, path_params, headers, data)
