@@ -57,7 +57,9 @@ def test_log_without_app_ecosystem_v2():
     log_lvl = srv_capabilities["app_ecosystem_v2"].pop("loglevel")
     srv_capabilities.pop("app_ecosystem_v2")
     patched_capabilities = {"capabilities": srv_capabilities, "version": srv_version}
-    with mock.patch.dict("gfixture.NC_APP._session._capabilities", patched_capabilities, clear=True):
-        with mock.patch("gfixture.NC_APP._session._ocs") as _ocs:
-            NC_APP.log(log_lvl, "will not be sent")
-            _ocs.assert_not_called()
+    with (
+        mock.patch.dict("gfixture.NC_APP._session._capabilities", patched_capabilities, clear=True),
+        mock.patch("gfixture.NC_APP._session._ocs") as _ocs,
+    ):
+        NC_APP.log(log_lvl, "will not be sent")
+        _ocs.assert_not_called()

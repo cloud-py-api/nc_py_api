@@ -1,3 +1,5 @@
+import contextlib
+
 import pytest
 from gfixture import NC_APP, NC_TO_TEST
 
@@ -13,10 +15,8 @@ TEST_GROUP_NAME2 = "test_coverage_group2"
 @pytest.mark.parametrize("params", ((TEST_GROUP_NAME,), (TEST_GROUP_NAME, "display name")))
 def test_create_delete_group(nc, params):
     test_group_name = params[0]
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.groups.delete(test_group_name)
-    except NextcloudException:
-        pass
     nc.users.groups.create(*params)
     with pytest.raises(NextcloudException):
         nc.users.groups.create(*params)
@@ -29,10 +29,8 @@ def test_create_delete_group(nc, params):
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_group_get_list(nc):
     for i in (TEST_GROUP_NAME, TEST_GROUP_NAME2):
-        try:
+        with contextlib.suppress(NextcloudException):
             nc.users.groups.create(i)
-        except NextcloudException:
-            pass
     groups = nc.users.groups.get_list()
     assert isinstance(groups, list)
     assert len(groups) >= 2
@@ -58,14 +56,10 @@ def test_get_non_existing_group(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_group_get_details(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.groups.delete(TEST_GROUP_NAME)
-    except NextcloudException:
-        pass
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.groups.create(TEST_GROUP_NAME)
-    except NextcloudException:
-        pass
     groups = nc.users.groups.get_details(mask=TEST_GROUP_NAME)
     assert len(groups) == 1
     group = groups[0]
@@ -81,10 +75,8 @@ def test_group_get_details(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_group_edit(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.groups.create(TEST_GROUP_NAME)
-    except NextcloudException:
-        pass
     nc.users.groups.edit(TEST_GROUP_NAME, display_name="earth people")
     assert nc.users.groups.get_details(mask=TEST_GROUP_NAME)[0].display_name == "earth people"
     nc.users.groups.delete(TEST_GROUP_NAME)
@@ -100,10 +92,8 @@ def test_group_edit(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_group_members_promote_demote(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.groups.create(TEST_GROUP_NAME)
-    except NextcloudException:
-        pass
     group_members = nc.users.groups.get_members(TEST_GROUP_NAME)
     assert not group_members
     assert isinstance(group_members, list)
@@ -111,10 +101,8 @@ def test_group_members_promote_demote(nc):
     assert isinstance(group_subadmins, list)
     assert not group_subadmins
     try:
-        try:
+        with contextlib.suppress(NextcloudException):
             nc.users.create("test_group_user", password="test_group_user")
-        except NextcloudException:
-            pass
         nc.users.add_to_group("test_group_user", TEST_GROUP_NAME)
         group_members = nc.users.groups.get_members(TEST_GROUP_NAME)
         assert group_members
@@ -133,10 +121,8 @@ def test_group_members_promote_demote(nc):
         assert not group_members
     finally:
         nc.users.groups.delete(TEST_GROUP_NAME)
-        try:
+        with contextlib.suppress(NextcloudException):
             nc.users.delete("test_group_user")
-        except NextcloudException:
-            pass
 
 
 @pytest.mark.skipif(NC_APP is None, reason="Test only for NextcloudApp.")

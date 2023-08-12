@@ -9,9 +9,8 @@ def check_heartbeat(url: str, regexp: str, n_tries: int, wait_interval: float) -
     for _ in range(n_tries):
         try:
             result = get(url)
-            if result.text:
-                if re.search(regexp, result.text, re.IGNORECASE) is not None:
-                    return 0
+            if result.text and re.search(regexp, result.text, re.IGNORECASE) is not None:
+                return 0
         except Exception as _:
             _ = _
         sleep(wait_interval)

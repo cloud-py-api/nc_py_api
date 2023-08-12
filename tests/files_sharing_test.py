@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 
 import pytest
@@ -235,10 +236,8 @@ def test_get_inherited(nc):
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
 def test_share_with(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         NC.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    except NextcloudException:
-        pass
     nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
     assert not nc_second_user.files.sharing.get_list()
     nc.files.makedirs("test_folder1/test_subfolder", exist_ok=True)
@@ -260,7 +259,7 @@ def test_share_with(nc):
     finally:
         nc.files.delete("share_test.txt", not_fail=True)
         nc.files.delete("test_folder1", not_fail=True)
-        # NC.users.delete(TEST_USER_NAME)
+        NC.users.delete(TEST_USER_NAME)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

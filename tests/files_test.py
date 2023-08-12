@@ -113,10 +113,7 @@ def test_file_download(nc):
 @pytest.mark.parametrize("chunk_size", (15, 32, 64, None))
 def test_file_download2stream(nc, data_type, chunk_size):
     srv_admin_manual_buf = MyBytesIO()
-    if data_type == "str":
-        content = "".join(choice(ascii_lowercase) for _ in range(64))
-    else:
-        content = randbytes(64)
+    content = "".join(choice(ascii_lowercase) for _ in range(64)) if data_type == "str" else randbytes(64)
     nc.files.upload("test_file.txt", content=content)
     if chunk_size is not None:
         nc.files.download2stream("/test_file.txt", srv_admin_manual_buf, chunk_size=chunk_size)
@@ -384,10 +381,7 @@ def test_move_copy_dir(nc, op_type):
     files = ("file1.txt", "file2.txt", "file3.txt")
     for n in files:
         nc.files.upload(f"{dir_name}/{n}", content=n)
-    if op_type == "move":
-        result = nc.files.move(dir_name, dest_dir_name)
-    else:
-        result = nc.files.copy(dir_name, dest_dir_name)
+    result = nc.files.move(dir_name, dest_dir_name) if op_type == "move" else nc.files.copy(dir_name, dest_dir_name)
     assert result.file_id
     assert result.is_dir
     assert nc.files.by_path(result).is_dir
@@ -509,10 +503,7 @@ def test_fs_node_fields(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_makedirs(nc):
-    try:
-        nc.files.delete("abc")
-    except NextcloudException:
-        pass
+    nc.files.delete("abc", not_fail=True)
     result = nc.files.makedirs("abc/def")
     assert result.is_dir
     with pytest.raises(NextcloudException) as exc_info:
