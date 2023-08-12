@@ -1,3 +1,5 @@
+import contextlib
+
 import pytest
 from gfixture import NC_TO_TEST
 
@@ -38,10 +40,8 @@ def test_get_user_404(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_create_user(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.delete(TEST_USER_NAME)
-    except NextcloudException:
-        pass
     nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
     with pytest.raises(NextcloudException):
         nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
@@ -51,10 +51,8 @@ def test_create_user(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_create_user_with_groups(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.delete(TEST_USER_NAME)
-    except NextcloudException:
-        pass
     nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD, groups=["admin"])
     admin_group = nc.users.groups.get_members("admin")
     assert TEST_USER_NAME in admin_group
@@ -64,10 +62,8 @@ def test_create_user_with_groups(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_create_user_no_name_mail(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.delete(TEST_USER_NAME)
-    except NextcloudException:
-        pass
     with pytest.raises(ValueError):
         nc.users.create(TEST_USER_NAME)
     with pytest.raises(ValueError):
@@ -79,10 +75,8 @@ def test_create_user_no_name_mail(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_delete_user(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    except NextcloudException:
-        pass
     nc.users.delete(TEST_USER_NAME)
     with pytest.raises(NextcloudExceptionNotFound):
         nc.users.delete(TEST_USER_NAME)
@@ -91,10 +85,8 @@ def test_delete_user(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_users_get_list(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    except NextcloudException:
-        pass
     users = nc.users.get_list()
     assert isinstance(users, list)
     assert "admin" in users
@@ -109,10 +101,8 @@ def test_users_get_list(nc):
 @pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 def test_enable_disable_user(nc):
-    try:
+    with contextlib.suppress(NextcloudException):
         nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    except NextcloudException:
-        pass
     nc.users.disable(TEST_USER_NAME)
     user = nc.users.get_details(TEST_USER_NAME)
     assert not user["enabled"]

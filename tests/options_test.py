@@ -43,8 +43,5 @@ def test_timeouts():
 @pytest.mark.skipif(not NC_TO_TEST, reason="Need Nextcloud or NextcloudApp.")
 def test_xdebug_session():
     nc_py_api.options.XDEBUG_SESSION = "12345"
-    if isinstance(NC_TO_TEST, nc_py_api.Nextcloud):
-        new_nc = nc_py_api.Nextcloud()
-    else:
-        new_nc = nc_py_api.NextcloudApp()
+    new_nc = nc_py_api.Nextcloud() if isinstance(NC_TO_TEST[0], nc_py_api.Nextcloud) else nc_py_api.NextcloudApp()
     assert new_nc._session.adapter.cookies["XDEBUG_SESSION"] == "12345"

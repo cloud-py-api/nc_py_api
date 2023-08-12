@@ -10,10 +10,8 @@ if not environ.get("CI", False):  # For local tests
     environ["APP_VERSION"] = "1.0.0"
     environ["APP_SECRET"] = "12345"
 
-if environ.get("SKIP_NC_CLIENT_TESTS", False):
-    NC = None
-else:
-    NC = Nextcloud()
+
+NC = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
 
 if environ.get("SKIP_AE_TESTS", False):
     NC_APP = None

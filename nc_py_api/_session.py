@@ -204,12 +204,14 @@ class NcSessionBasic(ABC):
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
-            if not nested_req:
-                if ocs_meta["statuscode"] == 403:
-                    if str(ocs_meta["message"]).lower().find("password confirmation is required") != -1:
-                        self.adapter.close()
-                        self.init_adapter(restart=True)
-                        return self._ocs(method, path_params, headers, data, **kwargs, nested_req=True)
+            if (
+                not nested_req
+                and ocs_meta["statuscode"] == 403
+                and str(ocs_meta["message"]).lower().find("password confirmation is required") != -1
+            ):
+                self.adapter.close()
+                self.init_adapter(restart=True)
+                return self._ocs(method, path_params, headers, data, **kwargs, nested_req=True)
             if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
                 raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)

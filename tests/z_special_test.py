@@ -1,3 +1,4 @@
+import contextlib
 from os import environ, path
 from subprocess import run
 from time import sleep
@@ -21,10 +22,8 @@ def test_password_confirmation():
     sleep(6)
     NC.update_server_info()
     old_adapter = NC._session.adapter
-    try:
+    with contextlib.suppress(NextcloudException):
         NC.users.create("test_cover_user_spec", password="ThisIsA54StrongPassword013")
-    except NextcloudException:
-        pass
     NC.users.delete("test_cover_user_spec")
     assert old_adapter != NC._session.adapter
     run(["git", "apply", "-R", patch_path], cwd=cwd_path, check=True)
