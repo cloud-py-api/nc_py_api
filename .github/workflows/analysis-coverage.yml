@@ -78,6 +78,14 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - name: Stable26
+        if: ${{ startsWith(matrix.nextcloud, '26.') }}
+        run: echo "NC_BRANCH_NAME=stable26" >> $GITHUB_ENV
+
+      - name: Stable27
+        if: ${{ startsWith(matrix.nextcloud, '27.') }}
+        run: echo "NC_BRANCH_NAME=stable27" >> $GITHUB_ENV
+
       - name: cache-nextcloud
         id: nextcloud_setup
         uses: actions/cache@v3
@@ -138,6 +146,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
+          ref: ${{ env.NC_BRANCH_NAME }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -220,6 +229,14 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - name: Stable26
+        if: ${{ startsWith(matrix.nextcloud, '26.') }}
+        run: echo "NC_BRANCH_NAME=stable26" >> $GITHUB_ENV
+
+      - name: Stable27
+        if: ${{ startsWith(matrix.nextcloud, '27.') }}
+        run: echo "NC_BRANCH_NAME=stable27" >> $GITHUB_ENV
+
       - name: cache-nextcloud
         id: nextcloud_setup
         uses: actions/cache@v3
@@ -282,6 +299,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
+          ref: ${{ env.NC_BRANCH_NAME }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -784,6 +802,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
+          ref: ${{ matrix.nextcloud }}
 
       - name: Install Talk
         working-directory: apps/spreed
