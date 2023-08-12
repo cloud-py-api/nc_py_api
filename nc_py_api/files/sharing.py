@@ -1,5 +1,5 @@
 """Nextcloud API for working with the files shares."""
-
+import datetime
 import enum
 import typing
 
@@ -61,7 +61,7 @@ class ShareStatus(enum.IntEnum):
 
 
 class Share:
-    """Class represents one Nextcloud Share."""
+    """Information about Share."""
 
     def __init__(self, raw_data: dict):
         self.raw_data = raw_data
@@ -77,6 +77,11 @@ class Share:
         return ShareType(int(self.raw_data["share_type"]))
 
     @property
+    def share_with(self) -> str:
+        """To whom Share was created."""
+        return self.raw_data["share_with"]
+
+    @property
     def permissions(self) -> SharePermissions:
         """Recipient permissions."""
         return SharePermissions(int(self.raw_data["permissions"]))
@@ -89,7 +94,7 @@ class Share:
     @property
     def path(self) -> str:
         """Share path relative to the user's root directory."""
-        return self.raw_data.get("path", "")
+        return self.raw_data.get("path", "").lstrip("/")
 
     @property
     def label(self) -> str:
@@ -106,11 +111,45 @@ class Share:
         """Mimetype of the Shared object."""
         return self.raw_data.get("mimetype", "")
 
+    @property
+    def share_owner(self) -> str:
+        """Share's creator ID."""
+        return self.raw_data.get("uid_owner", "")
+
+    @property
+    def file_owner(self) -> str:
+        """File/directory owner ID."""
+        return self.raw_data.get("uid_file_owner", "")
+
+    @property
+    def password(self) -> str:
+        """Password to access share."""
+        return self.raw_data.get("password", "")
+
+    @property
+    def send_password_by_talk(self) -> bool:
+        """Flag indicating was password send by Talk."""
+        return self.raw_data.get("send_password_by_talk", False)
+
+    @property
+    def expire_date(self) -> datetime.datetime:
+        """Share expiration time."""
+        try:
+            return datetime.datetime.fromisoformat(self.raw_data["expiration"])
+        except (ValueError, TypeError, KeyError):
+            return datetime.datetime(1970, 1, 1)
+
+    def __str__(self):
+        return (
+            f"{self.share_type.name}: `{self.path}` with id={self.share_id}"
+            f" from {self.share_owner} to {self.share_with}"
+        )
+
 
 class _FilesSharingAPI:
     """Class provides all File Sharing functionality."""
 
-    _ep_base: str = "/ocs/v1.php/apps/files_sharing/api/v1/"
+    _ep_base: str = "/ocs/v1.php/apps/files_sharing/api/v1"
 
     def __init__(self, session: _session.NcSessionBasic):
         self._session = session
@@ -123,7 +162,13 @@ class _FilesSharingAPI:
     def get_list(
         self, shared_with_me=False, reshares=False, subfiles=False, path: typing.Union[str, FsNode] = ""
     ) -> list[Share]:
-        """Returns lists of shares."""
+        """Returns lists of shares.
+
+        :param shared_with_me: Shares should be with the current user.
+        :param reshares: Only get shares by the current user and reshares.
+        :param subfiles: Only get all sub shares in a folder.
+        :param path: Get shares for a specific path.
+        """
         _misc.require_capabilities("files_sharing", self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         params = {
@@ -136,25 +181,38 @@ class _FilesSharingAPI:
         result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares", params=params)
         return [Share(i) for i in result]
 
+    def get_by_id(self, share_id: int) -> Share:
+        """Get Share by share ID."""
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares/{share_id}")
+        return Share(result[0] if isinstance(result, list) else result)
+
+    def get_inherited(self, path: str) -> list[Share]:
+        """Get all shares relative to a file, e.g., parent folders shares."""
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares/inherited", params={"path": path})
+        return [Share(i) for i in result]
+
     def create(
         self,
         path: typing.Union[str, FsNode],
-        permissions: SharePermissions,
         share_type: ShareType,
+        permissions: typing.Optional[SharePermissions] = None,
         share_with: str = "",
         **kwargs,
     ) -> Share:
         """Creates a new share.
 
         :param path: The path of an existing file/directory.
-        :param permissions: combination of the :py:class:`~nc_py_api.files.sharing.SharePermissions` object values.
         :param share_type: :py:class:`~nc_py_api.files.sharing.ShareType` value.
+        :param permissions: combination of the :py:class:`~nc_py_api.files.sharing.SharePermissions` object values.
         :param share_with: the recipient of the shared object.
         :param kwargs: See below.
 
         Additionally supported arguments:
 
-            * ``public`` - boolean indicating should share be available for non-registered users. default = ``False``
+            * ``public_upload`` - indicating should share be available for upload for non-registered users.
+              default = ``False``
             * ``password`` - string with password to protect share. default = ``""``
             * ``send_password_by_talk`` - boolean indicating should password be automatically delivered using Talk.
               default = ``False``
@@ -167,15 +225,16 @@ class _FilesSharingAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         params = {
             "path": path,
-            "permissions": int(permissions),
             "shareType": int(share_type),
         }
+        if permissions is not None:
+            params["permissions"] = int(permissions)
         if share_with:
-            kwargs["shareWith"] = share_with
-        if kwargs.get("public", False):
+            params["shareWith"] = share_with
+        if kwargs.get("public_upload", False):
             params["publicUpload"] = "true"
         if "password" in kwargs:
-            params["publicUpload"] = kwargs["password"]
+            params["password"] = kwargs["password"]
         if kwargs.get("send_password_by_talk", False):
             params["sendPasswordByTalk"] = "true"
         if "expire_date" in kwargs:
@@ -186,6 +245,32 @@ class _FilesSharingAPI:
             params["label"] = kwargs["label"]
         return Share(self._session.ocs(method="POST", path=f"{self._ep_base}/shares", params=params))
 
+    def update(self, share_id: typing.Union[int, Share], **kwargs) -> Share:
+        """Updates the share options.
+
+        :param share_id: ID of the Share to update.
+        :param kwargs: Available for update: ``permissions``, ``password``, ``send_password_by_talk``,
+          ``public_upload``, ``expire_date``, ``note``, ``label``.
+        """
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        share_id = share_id.share_id if isinstance(share_id, Share) else share_id
+        params: dict = {}
+        if "permissions" in kwargs:
+            params["permissions"] = int(kwargs["permissions"])
+        if "password" in kwargs:
+            params["password"] = kwargs["password"]
+        if kwargs.get("send_password_by_talk", False):
+            params["sendPasswordByTalk"] = "true"
+        if kwargs.get("public_upload", False):
+            params["publicUpload"] = "true"
+        if "expire_date" in kwargs:
+            params["expireDate"] = kwargs["expire_date"].isoformat()
+        if "note" in kwargs:
+            params["note"] = kwargs["note"]
+        if "label" in kwargs:
+            params["label"] = kwargs["label"]
+        return Share(self._session.ocs(method="PUT", path=f"{self._ep_base}/shares/{share_id}", params=params))
+
     def delete(self, share_id: typing.Union[int, Share]) -> None:
         """Removes the given share.
 
@@ -194,3 +279,30 @@ class _FilesSharingAPI:
         _misc.require_capabilities("files_sharing", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
         self._session.ocs(method="DELETE", path=f"{self._ep_base}/shares/{share_id}")
+
+    def get_pending(self) -> list[Share]:
+        """Returns all pending shares for current user."""
+        return [Share(i) for i in self._session.ocs(method="GET", path=f"{self._ep_base}/shares/pending")]
+
+    def accept_share(self, share_id: typing.Union[int, Share]):
+        """Accept pending share."""
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        share_id = share_id.share_id if isinstance(share_id, Share) else share_id
+        self._session.ocs(method="POST", path=f"{self._ep_base}/pending/{share_id}")
+
+    def decline_share(self, share_id: typing.Union[int, Share]):
+        """Decline pending share."""
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        share_id = share_id.share_id if isinstance(share_id, Share) else share_id
+        self._session.ocs(method="DELETE", path=f"{self._ep_base}/pending/{share_id}")
+
+    def get_deleted(self) -> list[Share]:
+        """Get a list of deleted shares."""
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        return [Share(i) for i in self._session.ocs(method="GET", path=f"{self._ep_base}/deletedshares")]
+
+    def undelete(self, share_id: typing.Union[int, Share]) -> None:
+        """Undelete a deleted share."""
+        _misc.require_capabilities("files_sharing", self._session.capabilities)
+        share_id = share_id.share_id if isinstance(share_id, Share) else share_id
+        self._session.ocs(method="POST", path=f"{self._ep_base}/deletedshares/{share_id}")
