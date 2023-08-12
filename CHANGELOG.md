@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.29 - 2023-08-14]
 
+### Added
+
+- Finished `Share` API.
+
 ### Fixed
 
 - `options` error when setting timeouts with the `.env` file.
+- ShareAPI.create wrong handling of `share_with` parameter.
 
 ## [0.0.28 - 2023-08-11]
 
