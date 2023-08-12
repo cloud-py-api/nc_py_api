@@ -133,6 +133,21 @@ jobs:
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
+      - name: Checkout Talk
+        uses: actions/checkout@v3
+        with:
+          path: apps/spreed
+          repository: nextcloud/spreed
+
+      - name: Install Talk
+        working-directory: apps/spreed
+        run: |
+          make dev-setup
+          make build-js
+
+      - name: Enable Talk
+        run: php occ app:enable spreed
+
       - name: Generate coverage report
         working-directory: nc_py_api
         run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
@@ -261,6 +276,21 @@ jobs:
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
+      - name: Checkout Talk
+        uses: actions/checkout@v3
+        with:
+          path: apps/spreed
+          repository: nextcloud/spreed
+
+      - name: Install Talk
+        working-directory: apps/spreed
+        run: |
+          make dev-setup
+          make build-js
+
+      - name: Enable Talk
+        run: php occ app:enable spreed
 
       - name: Generate coverage report
         working-directory: nc_py_api
@@ -504,6 +534,21 @@ jobs:
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
+      - name: Checkout Talk
+        uses: actions/checkout@v3
+        with:
+          path: apps/spreed
+          repository: nextcloud/spreed
+
+      - name: Install Talk
+        working-directory: apps/spreed
+        run: |
+          make dev-setup
+          make build-js
+
+      - name: Enable Talk
+        run: php occ app:enable spreed
+
       - name: Generate coverage report
         working-directory: nc_py_api
         run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
@@ -602,6 +647,21 @@ jobs:
       - name: Install NcPyApi
         working-directory: nc_py_api
         run: python3 -m pip -v install . pytest coverage pillow
+
+      - name: Checkout Talk
+        uses: actions/checkout@v3
+        with:
+          path: apps/spreed
+          repository: nextcloud/spreed
+
+      - name: Install Talk
+        working-directory: apps/spreed
+        run: |
+          make dev-setup
+          make build-js
+
+      - name: Enable Talk
+        run: php occ app:enable spreed
 
       - name: Generate coverage report
         working-directory: nc_py_api
@@ -718,6 +778,21 @@ jobs:
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
+      - name: Checkout Talk
+        uses: actions/checkout@v3
+        with:
+          path: apps/spreed
+          repository: nextcloud/spreed
+
+      - name: Install Talk
+        working-directory: apps/spreed
+        run: |
+          make dev-setup
+          make build-js
+
+      - name: Enable Talk
+        run: php occ app:enable spreed
 
       - name: Generate coverage report
         working-directory: nc_py_api

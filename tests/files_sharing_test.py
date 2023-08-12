@@ -103,6 +103,8 @@ def test_create_public_upload(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_password(nc):
+    if nc.check_capabilities("spreed"):
+        pytest.skip(reason="Talk is not installed.")
     nc.files.upload("share_test.txt", content="content of file")
     try:
         new_share = nc.files.sharing.create("share_test.txt", ShareType.TYPE_LINK, password="s2dDS_z44ad1")
@@ -176,6 +178,8 @@ def test_get_list(nc):
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_update(nc):
+    if nc.check_capabilities("spreed"):
+        pytest.skip(reason="Talk is not installed.")
     nc.files.makedirs("share_test", exist_ok=True)
     try:
         new_share = nc.files.sharing.create(
