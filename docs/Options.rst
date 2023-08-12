@@ -25,6 +25,8 @@ With .env
 
 Place **.env** file in your project's directory, and it will be automatically loaded using `dotenv <https://github.com/theskumar/python-dotenv>`_
 
+`Loading occurs only once, when "nc_py_api" is imported into the Python interpreter.`
+
 Modifying at module level
 """""""""""""""""""""""""
 

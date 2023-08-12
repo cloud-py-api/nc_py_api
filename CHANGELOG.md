@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.29 - 2023-08-14]
+
+### Fixed
+
+- `options` error when setting timeouts with the `.env` file.
+
 ## [0.0.28 - 2023-08-11]
 
 ### Added
