@@ -722,6 +722,9 @@ jobs:
       - name: Generate coverage report
         working-directory: nc_py_api
         run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        env:
+          NPA_TIMEOUT: None
+          NPA_TIMEOUT_DAV: None
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
