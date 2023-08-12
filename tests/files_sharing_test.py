@@ -1,9 +1,11 @@
 import datetime
 
 import pytest
-from gfixture import NC_TO_TEST
+from gfixture import NC, NC_TO_TEST
+from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import (
+    Nextcloud,
     NextcloudException,
     NextcloudExceptionNotFound,
     SharePermissions,
@@ -228,6 +230,37 @@ def test_get_inherited(nc):
         assert new_share.url == new_share2.url
     finally:
         nc.files.delete("test_folder1")
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
+def test_share_with(nc):
+    try:
+        NC.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
+    except NextcloudException:
+        pass
+    nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
+    assert not nc_second_user.files.sharing.get_list()
+    nc.files.makedirs("test_folder1/test_subfolder", exist_ok=True)
+    shared_file = nc.files.upload("share_test.txt", content="content of file")
+    try:
+        folder_share = nc.files.sharing.create("test_folder1", ShareType.TYPE_USER, share_with=TEST_USER_NAME)
+        file_share = nc.files.sharing.create(shared_file, ShareType.TYPE_USER, share_with=TEST_USER_NAME)
+        shares_list1 = nc.files.sharing.get_list(path="test_folder1/")
+        shares_list2 = nc.files.sharing.get_list(path="share_test.txt")
+        second_user_shares_list = nc_second_user.files.sharing.get_list()
+        second_user_shares_list_with_me = nc_second_user.files.sharing.get_list(shared_with_me=True)
+        nc.files.sharing.delete(folder_share)
+        nc.files.sharing.delete(file_share)
+        assert not second_user_shares_list
+        assert len(second_user_shares_list_with_me) == 2
+        assert len(shares_list1) == 1
+        assert len(shares_list2) == 1
+        assert not nc_second_user.files.sharing.get_list()
+    finally:
+        nc.files.delete("share_test.txt", not_fail=True)
+        nc.files.delete("test_folder1", not_fail=True)
+        # NC.users.delete(TEST_USER_NAME)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)

@@ -164,9 +164,9 @@ class _FilesSharingAPI:
     ) -> list[Share]:
         """Returns lists of shares.
 
-        :param shared_with_me: Only get shares with the current user.
+        :param shared_with_me: Shares should be with the current user.
         :param reshares: Only get shares by the current user and reshares.
-        :param subfiles: Only get all shares in a folder.
+        :param subfiles: Only get all sub shares in a folder.
         :param path: Get shares for a specific path.
         """
         _misc.require_capabilities("files_sharing", self._session.capabilities)

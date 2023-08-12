@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ "26.0.4" ]
+        nextcloud: [ "26.0.5" ]
         python: [ "3.9" ]
         php-version: [ "8.1" ]
         include:
@@ -155,6 +155,7 @@ jobs:
           make build-js
 
       - name: Enable Talk
+        if: ${{ !startsWith(matrix.nextcloud, '27.') }}  # for some reason, currently Talk fails with 27.0.2
         run: php occ app:enable spreed
 
       - name: Generate coverage report
@@ -193,7 +194,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ "26.0.4" ]
+        nextcloud: [ "26.0.5" ]
         python: [ "3.11" ]
         php-version: [ "8.1" ]
         include:
@@ -308,6 +309,7 @@ jobs:
           make build-js
 
       - name: Enable Talk
+        if: ${{ !startsWith(matrix.nextcloud, '27.') }}  # for some reason, currently Talk fails with 27.0.2
         run: php occ app:enable spreed
 
       - name: Generate coverage report
