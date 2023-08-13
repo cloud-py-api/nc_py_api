@@ -85,9 +85,9 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled={enabled}")
     try:
         if enabled:
-            nc.gui.files_dropdown_menu.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
+            nc.ui.files_dropdown_menu.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
         else:
-            nc.gui.files_dropdown_menu.unregister("to_gif")
+            nc.ui.files_dropdown_menu.unregister("to_gif")
     except Exception as e:
         return str(e)
     return ""
