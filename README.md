@@ -51,5 +51,5 @@ In a very close near future we will publish examples
 - [Contribute](https://github.com/cloud-py-api/nc_py_api/blob/main/.github/CONTRIBUTING.md)
   - [Discussions](https://github.com/cloud-py-api/nc_py_api/discussions)
   - [Issues](https://github.com/cloud-py-api/nc_py_api/issues)
-  - [Setting up dev environment](to-do)
+  - [Setting up dev environment](https://cloud-py-api.github.io/nc_py_api/DevSetup.html)
 - [Changelog](https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md)

@@ -31,6 +31,7 @@ Have a great time with Python and Nextcloud!
    FirstSteps
    Options
    reference/index.rst
+   DevSetup
    benchmarks/AppEcosystem.rst
 
 Indices and tables
