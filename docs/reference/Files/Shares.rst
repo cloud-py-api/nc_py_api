@@ -15,6 +15,3 @@ Refer to the **share examples** to see how to use them nicely.
 
 .. autoclass:: nc_py_api.files.sharing.ShareType
     :members:
-
-.. autoclass:: nc_py_api.files.sharing.ShareStatus
-    :members:

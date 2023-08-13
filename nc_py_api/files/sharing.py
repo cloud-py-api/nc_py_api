@@ -49,17 +49,6 @@ class ShareType(enum.IntEnum):
     """Share to the Reva instance(Science Mesh)"""
 
 
-class ShareStatus(enum.IntEnum):
-    """Status of the share."""
-
-    STATUS_PENDING = 0
-    """The share waits for acceptance"""
-    STATUS_ACCEPTED = 1
-    """The share was for accepted"""
-    STATUS_REJECTED = 2
-    """The share was for rejected"""
-
-
 class Share:
     """Information about Share."""
 
@@ -284,13 +273,13 @@ class _FilesSharingAPI:
         """Returns all pending shares for current user."""
         return [Share(i) for i in self._session.ocs(method="GET", path=f"{self._ep_base}/shares/pending")]
 
-    def accept_share(self, share_id: typing.Union[int, Share]):
+    def accept_share(self, share_id: typing.Union[int, Share]) -> None:
         """Accept pending share."""
         _misc.require_capabilities("files_sharing", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
         self._session.ocs(method="POST", path=f"{self._ep_base}/pending/{share_id}")
 
-    def decline_share(self, share_id: typing.Union[int, Share]):
+    def decline_share(self, share_id: typing.Union[int, Share]) -> None:
         """Decline pending share."""
         _misc.require_capabilities("files_sharing", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
