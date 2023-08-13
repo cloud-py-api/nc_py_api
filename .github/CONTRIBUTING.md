@@ -9,11 +9,7 @@ Please send a pull request to the `main` branch.  Feel free to ask questions [vi
 
 - Fork the nc_py_api repository.
 - Create a new branch from `main`.
-- Install dev requirements with `pip install ".[dev]"`
-- Develop bug fixes, features, tests, etc.
-- Most of the tests are designed to run from under the GitHub actions. If you want to run them locally, see this [guide](to-do)
-- Install `pylint` locally, it will run during `pre-commit`.
-- Install `pre-commit` hooks by `pre-commit install` command.
+- Set up development environment as described in a [Setting up dev environment](https://cloud-py-api.github.io/nc_py_api/DevSetup.html)
 - Create a pull request to pull the changes from your branch to the nc_py_api `main`.
 
 ### Guidelines
@@ -21,7 +17,7 @@ Please send a pull request to the `main` branch.  Feel free to ask questions [vi
 - Separate code commits from reformatting commits.
 - Where possible, provide tests for any newly added code.
 - Follow PEP 8.
-- Update CHANGELOG.md as needed or appropriate with your bug fixes, feature additions and tests.
+- Update CHANGELOG.md as needed or appropriate with your bug fixes, feature additions, and tests.
 
 ## Security vulnerabilities
 

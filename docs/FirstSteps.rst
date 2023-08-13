@@ -43,7 +43,7 @@ Getting list of files of User
 
 This is a hard way to get list of all files recursively:
 
-.. literalinclude:: ../examples/as_client/files_listing.py
+.. literalinclude:: ../examples/as_client/files/listing.py
 
 This code do the same in one DAV call, but prints **directories** in addition to files:
 
@@ -73,7 +73,7 @@ Uploading a single file
 It is always better to use ``upload_stream`` instead of ``upload`` as it works
 with chunks and ``in future`` will support **multi threaded** upload.
 
-.. literalinclude:: ../examples/as_client/files_upload.py
+.. literalinclude:: ../examples/as_client/files/upload.py
 
 Downloading a single file
 """""""""""""""""""""""""
@@ -82,4 +82,4 @@ A very simple example of downloading an image as one piece of data to memory and
 
 .. note:: For big files, it is always better to use ``download2stream`` method, as it uses chunks.
 
-.. literalinclude:: ../examples/as_client/files_download.py
+.. literalinclude:: ../examples/as_client/files/download.py
