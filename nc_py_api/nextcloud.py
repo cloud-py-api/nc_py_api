@@ -3,6 +3,7 @@ from abc import ABC
 from typing import Optional, Union
 
 from fastapi import Request
+from httpx import Headers as HttpxHeaders
 
 from ._misc import check_capabilities
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
@@ -56,6 +57,11 @@ class _NextcloudBasic(ABC):
         *In normal cases, it is called automatically and there is no need to call it manually.*
         """
         self._session.update_server_info()
+
+    @property
+    def response_headers(self) -> HttpxHeaders:
+        """Returns headers from the last response."""
+        return self._session.response_headers
 
     @property
     def theme(self) -> Optional[ThemingInfo]:

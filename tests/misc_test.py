@@ -1,5 +1,5 @@
 import pytest
-from gfixture import NC_APP
+from gfixture import NC_APP, NC_TO_TEST
 
 from nc_py_api import NextcloudException
 from nc_py_api._deffered_error import DeferredError  # noqa
@@ -53,3 +53,10 @@ def test_deffered_error():
 
     with pytest.raises(ModuleNotFoundError):
         unknown_non_exist_module.some_class_or_func()
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_ocs_response_headers(nc):
+    old_headers = nc.response_headers
+    nc.users.get_details()
+    assert old_headers != nc.response_headers

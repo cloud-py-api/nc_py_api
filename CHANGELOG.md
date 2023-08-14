@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.30 - 2023-08-17]
+
+### Added
+
+- `Nextcloud.response_headers` property, to get headers from last response.
+
 ## [0.0.29 - 2023-08-13]
 
 ### Added
