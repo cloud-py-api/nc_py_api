@@ -58,6 +58,19 @@ if __name__ == "__main__":
     # Invalid AE-DATA-HASH
     result = requests.put(request_url, headers=headers, data=b"some_data")
     assert result.status_code == 401
+    # Invalid EX-APP-VERSION
+    sign_request("/sec_check?value=0", headers)
+    result = requests.put(request_url, headers=headers)
+    assert result.status_code == 200
+    old_version = headers["EX-APP-VERSION"]
+    headers["EX-APP-VERSION"] = "999.0.0"
+    sign_request("/sec_check?value=0", headers)
+    result = requests.put(request_url, headers=headers)
+    assert result.status_code == 401
+    headers["EX-APP-VERSION"] = old_version
+    sign_request("/sec_check?value=0", headers)
+    result = requests.put(request_url, headers=headers)
+    assert result.status_code == 200
     # Sign time
     sign_request("/sec_check?value=0", headers, time=int(datetime.now(timezone.utc).timestamp()))
     result = requests.put(request_url, headers=headers)

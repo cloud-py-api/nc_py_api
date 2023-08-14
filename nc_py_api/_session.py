@@ -369,7 +369,7 @@ class NcSessionApp(NcSessionBasic):
         if "NC-USER-ID" in sign_headers:
             headers["NC-USER-ID"] = sign_headers["NC-USER-ID"]
 
-    def sign_check(self, request: Request):
+    def sign_check(self, request: Request) -> None:
         current_time = int(datetime.now(timezone.utc).timestamp())
         headers = {
             "AE-VERSION": request.headers.get("AE-VERSION", ""),
@@ -386,8 +386,9 @@ class NcSessionApp(NcSessionBasic):
         if empty_headers:
             raise ValueError(f"Missing required headers:{empty_headers}")
 
-        if headers["EX-APP-VERSION"] != self.adapter.headers.get("EX-APP-VERSION"):
-            pass  # TO-DO: we should reject all requests and ask server to update our app version
+        our_version = self.adapter.headers.get("EX-APP-VERSION", "")
+        if headers["EX-APP-VERSION"] != our_version:
+            raise ValueError(f"Invalid EX-APP-VERSION:{headers['EX-APP-VERSION']} <=> {our_version}")
 
         request_time = int(headers["AE-SIGN-TIME"])
         if request_time < current_time - 5 * 60 or request_time > current_time + 5 * 60:
@@ -411,4 +412,3 @@ class NcSessionApp(NcSessionBasic):
             raise ValueError(f"Invalid AE-DATA-HASH:{ae_data_hash} !={headers['AE-DATA-HASH']}")
         if headers["EX-APP-ID"] != self.cfg.app_name:
             raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
-        return True
