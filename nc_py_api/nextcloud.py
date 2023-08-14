@@ -60,7 +60,7 @@ class _NextcloudBasic(ABC):
 
     @property
     def response_headers(self) -> HttpxHeaders:
-        """Returns headers from the last response."""
+        """Returns the `HTTPX headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
         return self._session.response_headers
 
     @property
