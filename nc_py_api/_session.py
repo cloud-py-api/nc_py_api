@@ -14,7 +14,9 @@ from typing import Optional, TypedDict, Union
 from urllib.parse import quote, urlencode
 
 from fastapi import Request
-from httpx import Client, Limits, ReadTimeout, Response
+from httpx import Client
+from httpx import Headers as HttpxHeaders
+from httpx import Limits, ReadTimeout, Response
 
 try:
     from xxhash import xxh64
@@ -137,6 +139,7 @@ class NcSessionBasic(ABC):
     user: str
     custom_headers: dict
     _capabilities: dict
+    response_headers: HttpxHeaders
 
     @abstractmethod
     def __init__(self, **kwargs):
@@ -145,6 +148,7 @@ class NcSessionBasic(ABC):
         self.custom_headers = kwargs.get("headers", {})
         self.limits = Limits(max_keepalive_connections=20, max_connections=20, keepalive_expiry=60.0)
         self.init_adapter()
+        self.response_headers = HttpxHeaders()
 
     def __del__(self):
         if hasattr(self, "adapter") and self.adapter:
@@ -200,6 +204,7 @@ class NcSessionBasic(ABC):
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
+        self.response_headers = response.headers
         check_error(response.status_code, info)
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
@@ -235,11 +240,12 @@ class NcSessionBasic(ABC):
 
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
         self.init_adapter()
-        # self.cfg.
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        return self.adapter.request(
+        result = self.adapter.request(
             method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
         )
+        self.response_headers = result.headers
+        return result
 
     def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
         self.init_adapter()

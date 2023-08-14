@@ -20,7 +20,8 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_inline_tabs",
     "sphinx_issues",
-    "sphinx_rtd_theme"]
+    "sphinx_rtd_theme",
+]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
@@ -57,7 +58,10 @@ pygments_style = "sphinx"
 # Default is False. You can activate this mode temporarily using the -n command-line
 # switch.
 nitpicky = True
-nitpick_ignore_regex = [(r"py:class", r"starlette\.requests\.Request")]
+nitpick_ignore_regex = [
+    (r"py:class", r"starlette\.requests\.Request"),
+    (r"py:.*", r"httpx.*"),
+]
 
 autodoc_member_order = "bysource"
 

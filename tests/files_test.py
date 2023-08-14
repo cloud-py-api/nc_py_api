@@ -115,10 +115,12 @@ def test_file_download2stream(nc, data_type, chunk_size):
     srv_admin_manual_buf = MyBytesIO()
     content = "".join(choice(ascii_lowercase) for _ in range(64)) if data_type == "str" else randbytes(64)
     nc.files.upload("test_file.txt", content=content)
+    old_headers = nc.response_headers
     if chunk_size is not None:
         nc.files.download2stream("/test_file.txt", srv_admin_manual_buf, chunk_size=chunk_size)
     else:
         nc.files.download2stream("/test_file.txt", srv_admin_manual_buf)
+    assert nc.response_headers != old_headers
     assert nc.files.download("test_file.txt") == srv_admin_manual_buf.getbuffer()
     if chunk_size is None:
         assert srv_admin_manual_buf.n_write_calls == 1
@@ -542,7 +544,9 @@ def test_download_as_zip(nc):
         nc.files.upload("test_root_folder/0.txt", content="")
         nc.files.upload("test_root_folder/1.txt", content="123")
         nc.files.upload("test_root_folder/test_subfolder/0.txt", content="")
+        old_headers = nc.response_headers
         result = nc.files.download_directory_as_zip("test_root_folder")
+        assert nc.response_headers != old_headers
         try:
             with zipfile.ZipFile(result, "r") as zip_ref:
                 assert zip_ref.filelist[0].filename == "test_root_folder/"
@@ -560,7 +564,9 @@ def test_download_as_zip(nc):
                 assert len(zip_ref.filelist) == 6
         finally:
             os.remove(result)
+        old_headers = nc.response_headers
         result = nc.files.download_directory_as_zip("test_root_folder/test_subfolder", "2.zip")
+        assert nc.response_headers != old_headers
         try:
             assert str(result) == "2.zip"
             with zipfile.ZipFile(result, "r") as zip_ref:
