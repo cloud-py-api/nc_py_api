@@ -1,4 +1,4 @@
-"""Directly related stuff to FastAPI."""
+"""FastAPI directly related stuff."""
 
 from typing import Annotated, Callable, Optional
 
@@ -19,24 +19,29 @@ def nc_app(request: Request) -> NextcloudApp:
     return nextcloud_app
 
 
-def set_enabled_handler(fast_api_app: FastAPI, callback: Callable[[bool, NextcloudApp], str]):
-    """Sets ``enabled``/``disabled`` applications handlers."""
+def set_handlers(
+    fast_api_app: FastAPI,
+    enabled_handler: Callable[[bool, NextcloudApp], str],
+    heartbeat_handler: Optional[Callable[[], str]] = None,
+):
+    """Defines handlers for the application.
+
+    :param fast_api_app: FastAPI() call return value.
+    :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
+    :param heartbeat_handler: Optional, callback that will be called for the `heartbeat` deploy event.
+    """
 
     @fast_api_app.put("/enabled")
-    def enabled_handler(
+    def enabled_callback(
         enabled: bool,
         nc: Annotated[NextcloudApp, Depends(nc_app)],
     ):
-        r = callback(enabled, nc)
+        r = enabled_handler(enabled, nc)
         return JSONResponse(content={"error": r}, status_code=200)
 
-
-def enable_heartbeat(fast_api_app: FastAPI, callback: Optional[Callable[[], str]] = None):
-    """Enables ``heartbeat`` application endpoint. **callback** is *Optional*."""
-
     @fast_api_app.get("/heartbeat")
-    def heartbeat_handler():
+    def heartbeat_callback():
         return_status = "ok"
-        if callback is not None:
-            return_status = callback()
+        if heartbeat_handler is not None:
+            return_status = heartbeat_handler()
         return JSONResponse(content={"status": return_status}, status_code=200)

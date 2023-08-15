@@ -2,14 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.30 - 2023-08-17]
+## [0.0.30 - 2023-08-15]
 
 ### Added
 
 - `Nextcloud.response_headers` property, to get headers from last response.
+
 ### Changed
 
-- Reworked `External API` declarations, skeleton made much simpler.
+- Reworked skeleton for the applications, added skeleton to examples.
 
 ## [0.0.29 - 2023-08-13]
 

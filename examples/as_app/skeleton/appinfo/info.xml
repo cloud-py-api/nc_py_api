@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <info>
-	<id>app_python_skeleton</id>
-	<name>App Python Skeleton</name>
+	<id>skeleton</id>
+	<name>App Skeleton</name>
 	<summary>Nextcloud Python Application Skeleton</summary>
 	<description>
-	<![CDATA[Example of the Nextcloud application written in python]]>
+	<![CDATA[Simplest skeleton of the Nextcloud application written in python]]>
 	</description>
 	<version>1.0.0</version>
 	<licence>MIT</licence>
@@ -21,7 +21,7 @@
 	<ex-app>
 		<docker-install>
 			<registry>ghcr.io</registry>
-			<image>cloud-py-api/py_app_v2-skeleton</image>
+			<image>cloud-py-api/skeleton</image>
 			<image-tag>latest</image-tag>
 		</docker-install>
 		<scopes>

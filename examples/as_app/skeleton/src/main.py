@@ -5,7 +5,7 @@ Simplest example.
 from fastapi import FastAPI
 
 from nc_py_api import NextcloudApp
-from nc_py_api.ex_app import LogLvl, run_app
+from nc_py_api.ex_app import LogLvl, run_app, set_handlers
 
 APP = FastAPI()
 
@@ -23,5 +23,10 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
+@APP.on_event("startup")
+def initialization():
+    set_handlers(APP, enabled_handler)
+
+
 if __name__ == "__main__":
-    run_app(APP, enabled_handler, "main:APP", log_level="trace")
+    run_app("main:APP", log_level="trace")

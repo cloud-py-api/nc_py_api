@@ -31,5 +31,10 @@ def heartbeat_callback():
     return "ok"
 
 
+@APP.on_event("startup")
+def initialization():
+    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback)
+
+
 if __name__ == "__main__":
-    ex_app.run_app(APP, enabled_handler, "_install:APP", heartbeat_callback, log_level="trace")
+    ex_app.run_app("_install:APP", log_level="trace")
