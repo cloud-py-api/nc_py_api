@@ -1,7 +1,6 @@
 """Additional definitions for NextcloudApp."""
 
 import enum
-import typing
 
 
 class LogLvl(enum.IntEnum):
@@ -24,22 +23,15 @@ class ApiScope(enum.IntEnum):
 
     SYSTEM = 2
     """Allows access to the System APIs."""
-    DAV = 3
+    FILES = 10
     """Allows access to the Nextcloud file base."""
-    USER_INFO = 10
-    """Allows access to APIs that work with users."""
-    USER_STATUS = 11
-    """Allows access to APIs that work with users statuses."""
-    NOTIFICATIONS = 12
-    """Allows access to APIs that provide Notifications."""
-    WEATHER_STATUS = 13
-    """Allows access to APIs that provide Weather status."""
-    FILES_SHARING = 14
+    FILES_SHARING = 11
     """Allows access to APIs that provide File Sharing."""
-
-
-class ApiScopesStruct(typing.TypedDict):
-    """Reply of the Nextcloud App with the desired scopes."""
-
-    required: list[int]
-    optional: list[int]
+    USER_INFO = 30
+    """Allows access to APIs that work with users."""
+    USER_STATUS = 31
+    """Allows access to APIs that work with users statuses."""
+    NOTIFICATIONS = 32
+    """Allows access to APIs that provide Notifications."""
+    WEATHER_STATUS = 33
+    """Allows access to APIs that provide Weather status."""

@@ -1,28 +1,23 @@
 """Simplest example of files_dropdown_menu + notification."""
 
 import tempfile
-from os import environ, path
+from os import path
 from typing import Annotated
 
 import cv2
 import imageio
 import numpy
-import urllib3
-import uvicorn
 from fastapi import BackgroundTasks, Depends, FastAPI
 from pygifsicle import optimize
 from requests import Response
 
 from nc_py_api import NextcloudApp
 from nc_py_api.ex_app import (
-    ApiScope,
     LogLvl,
     UiActionFileInfo,
     UiFileActionHandlerInfo,
-    enable_heartbeat,
     nc_app,
-    set_enabled_handler,
-    set_scopes,
+    run_app,
 )
 
 APP = FastAPI()
@@ -93,13 +88,10 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
-@APP.on_event("startup")
-def initialization():
-    set_enabled_handler(APP, enabled_handler)
-    set_scopes(APP, {"required": [ApiScope.DAV], "optional": [ApiScope.NOTIFICATIONS]})
-    enable_heartbeat(APP)
-
-
 if __name__ == "__main__":
-    urllib3.disable_warnings()
-    uvicorn.run("main:APP", host=environ.get("APP_HOST", "127.0.0.1"), port=int(environ["APP_PORT"]), log_level="trace")
+    run_app(
+        APP,
+        enabled_handler,
+        "main:APP",
+        log_level="trace",
+    )

@@ -27,7 +27,7 @@ build-push:
 .PHONY: deploy
 deploy:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:deploy to_gif docker_dev \
-		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/info.xml
+		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: run28
 run28:
@@ -42,5 +42,5 @@ run27:
 .PHONY: manual_register
 manual_register:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif manual_install --json-info \
-  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9029,\"protocol\":\"http\",\"system_app\":0}" \
+  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9029,\"scopes\":{\"required\":[10],\"optional\":[32]},\"protocol\":\"http\",\"system_app\":0}" \
   -e --force-scopes
