@@ -1,7 +1,5 @@
-from os import environ
 from typing import Annotated
 
-import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 
@@ -33,28 +31,5 @@ def heartbeat_callback():
     return "ok"
 
 
-@APP.on_event("startup")
-def initialization():
-    ex_app.set_enabled_handler(APP, enabled_handler)
-    ex_app.set_scopes(
-        APP,
-        {
-            "required": [
-                ex_app.ApiScope.SYSTEM,
-                ex_app.ApiScope.DAV,
-                ex_app.ApiScope.USER_INFO,
-                ex_app.ApiScope.USER_STATUS,
-                ex_app.ApiScope.NOTIFICATIONS,
-                ex_app.ApiScope.WEATHER_STATUS,
-                ex_app.ApiScope.FILES_SHARING,
-            ],
-            "optional": [],
-        },
-    )
-    ex_app.enable_heartbeat(APP, heartbeat_callback)
-
-
 if __name__ == "__main__":
-    uvicorn.run(
-        "_install:APP", host=environ.get("APP_HOST", "127.0.0.1"), port=int(environ["APP_PORT"]), log_level="trace"
-    )
+    ex_app.run_app(APP, enabled_handler, "_install:APP", heartbeat_callback, log_level="trace")

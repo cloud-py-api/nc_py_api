@@ -6,7 +6,6 @@ from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from ..nextcloud import NextcloudApp
-from .defs import ApiScopesStruct
 
 
 def nc_app(request: Request) -> NextcloudApp:
@@ -18,16 +17,6 @@ def nc_app(request: Request) -> NextcloudApp:
     if not nextcloud_app.request_sign_check(request):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     return nextcloud_app
-
-
-def set_scopes(fast_api_app: FastAPI, desired_scopes: ApiScopesStruct):
-    """Defines the required and optional API scopes needed for the application."""
-
-    @fast_api_app.get("/scopes")
-    def scopes_handler(
-        _nc: Annotated[NextcloudApp, Depends(nc_app)],
-    ):
-        return JSONResponse(content=desired_scopes, status_code=200)
 
 
 def set_enabled_handler(fast_api_app: FastAPI, callback: Callable[[bool, NextcloudApp], str]):

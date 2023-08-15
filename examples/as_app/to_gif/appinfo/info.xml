@@ -9,11 +9,12 @@
 	<version>1.0.0</version>
 	<licence>MIT</licence>
 	<author mail="andrey18106x@gmail.com" homepage="https://github.com/andrey18106">Andrey Borysenko</author>
+	<author mail="bigcat88@icloud.com" homepage="https://github.com/bigcat88">Alexander Piskun</author>
 	<namespace>ToGifExample</namespace>
 	<category>tools</category>
-	<website>https://github.com/cloud-py-api/nc_py_apy</website>
-	<bugs>https://github.com/cloud-py-api/nc_py_apy/issues</bugs>
-	<repository type="git">https://github.com/cloud-py-api/nc_py_apy</repository>
+	<website>https://github.com/cloud-py-api/nc_py_api</website>
+	<bugs>https://github.com/cloud-py-api/nc_py_api/issues</bugs>
+	<repository type="git">https://github.com/cloud-py-api/nc_py_api</repository>
 	<dependencies>
 		<nextcloud min-version="27" max-version="28"/>
 	</dependencies>
@@ -23,6 +24,14 @@
 			<image>cloud-py-api/to_gif</image>
 			<image-tag>latest</image-tag>
 		</docker-install>
+		<scopes>
+			<required>
+				<value>2</value>
+			</required>
+			<optional>
+				<value>32</value>
+			</optional>
+		</scopes>
 		<protocol>http</protocol>
 		<system>0</system>
 	</ex-app>
