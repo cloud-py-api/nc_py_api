@@ -15,7 +15,7 @@ help:
 	@echo "  run27             install ToGif for Nextcloud 27"
 	@echo "  "
 	@echo "  For development of this example use PyCharm run configurations. Development is always set for last Nextcloud."
-	@echo "  First run 'to_gif' and then 'make manual_register', after that you can use/debug/develop it and easy test."
+	@echo "  First run 'ToGif' and then 'make manual_register', after that you can use/debug/develop it and easy test."
 	@echo "  "
 	@echo "  manual_register   perform registration of running 'to_gif' into the 'manual_install' deploy daemon."
 
@@ -32,12 +32,14 @@ deploy:
 .PHONY: run28
 run28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister to_gif --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes \
+		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: run27
 run27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister to_gif --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes \
+		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: manual_register
 manual_register:

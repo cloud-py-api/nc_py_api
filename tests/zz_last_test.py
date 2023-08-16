@@ -15,12 +15,14 @@ from nc_py_api import Nextcloud
 @pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 @pytest.mark.skipif(NC_APP is None, reason="Not available without NextcloudApp.")
 def test_ex_app_enable_disable(nc):
+    child_environment = os.environ.copy()
+    child_environment["APP_PORT"] = os.environ.get("APP_PORT", "9009")
     r = Popen(
         [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "_install_only_enabled_handler.py")],
-        env=os.environ,
+        env=child_environment,
         cwd=os.getcwd(),
     )
-    url = f"http://127.0.0.1:{os.environ.get('APP_PORT', 9009)}/heartbeat"
+    url = f"http://127.0.0.1:{child_environment['APP_PORT']}/heartbeat"
     try:
         if check_heartbeat(url, '"status":"ok"', 15, 0.3):
             raise RuntimeError("`_install_only_enabled_handler` can not start.")
