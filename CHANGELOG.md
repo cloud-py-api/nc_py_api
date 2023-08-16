@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.31 - 2023-08-17]
+
+### Added
+
+- `FsNode` can be created from Nextcloud `UiActionFileInfo` reply.
+- Finished documentation.
+
 ## [0.0.30 - 2023-08-15]
 
 ### Added

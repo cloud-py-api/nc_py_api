@@ -18,6 +18,7 @@ from nc_py_api.ex_app import (
     UiFileActionHandlerInfo,
     nc_app,
     run_app,
+    set_handlers,
 )
 
 APP = FastAPI()
@@ -88,10 +89,13 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
+@APP.on_event("startup")
+def initialization():
+    set_handlers(APP, enabled_handler)
+
+
 if __name__ == "__main__":
     run_app(
-        APP,
-        enabled_handler,
         "main:APP",
         log_level="trace",
     )
