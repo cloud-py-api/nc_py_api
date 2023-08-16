@@ -6,10 +6,10 @@ from gfixture import NC, NC_TO_TEST
 from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import (
+    FilePermissions,
     Nextcloud,
     NextcloudException,
     NextcloudExceptionNotFound,
-    SharePermissions,
     ShareType,
 )
 from nc_py_api.files.sharing import Share
@@ -36,14 +36,14 @@ def test_create_delete(nc):
 def test_share_fields(nc):
     shared_file = nc.files.upload("share_test.txt", content="content of file")
     try:
-        new_share = nc.files.sharing.create(shared_file, ShareType.TYPE_LINK, SharePermissions.PERMISSION_READ)
+        new_share = nc.files.sharing.create(shared_file, ShareType.TYPE_LINK, FilePermissions.PERMISSION_READ)
         try:
             get_by_id = nc.files.sharing.get_by_id(new_share.share_id)
             assert new_share.share_type == ShareType.TYPE_LINK
             assert not new_share.label
             assert not new_share.note
             assert new_share.mimetype.find("text") != -1
-            assert new_share.permissions & SharePermissions.PERMISSION_READ
+            assert new_share.permissions & FilePermissions.PERMISSION_READ
             assert new_share.url
             assert new_share.path == shared_file.user_path
             assert get_by_id.share_id == new_share.share_id
@@ -64,23 +64,23 @@ def test_share_fields(nc):
 def test_create_permissions(nc):
     nc.files.makedirs("share_test", exist_ok=True)
     try:
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, SharePermissions.PERMISSION_CREATE)
+        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_CREATE)
         nc.files.sharing.delete(new_share)
         assert (
             new_share.permissions
-            == SharePermissions.PERMISSION_READ | SharePermissions.PERMISSION_CREATE | SharePermissions.PERMISSION_SHARE
+            == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
         )
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, SharePermissions.PERMISSION_DELETE)
+        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE)
         nc.files.sharing.delete(new_share)
         assert (
             new_share.permissions
-            == SharePermissions.PERMISSION_READ | SharePermissions.PERMISSION_DELETE | SharePermissions.PERMISSION_SHARE
+            == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_DELETE | FilePermissions.PERMISSION_SHARE
         )
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, SharePermissions.PERMISSION_UPDATE)
+        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE)
         nc.files.sharing.delete(new_share)
         assert (
             new_share.permissions
-            == SharePermissions.PERMISSION_READ | SharePermissions.PERMISSION_UPDATE | SharePermissions.PERMISSION_SHARE
+            == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_UPDATE | FilePermissions.PERMISSION_SHARE
         )
     finally:
         nc.files.delete("share_test")
@@ -94,11 +94,11 @@ def test_create_public_upload(nc):
         nc.files.sharing.delete(new_share)
         assert (
             new_share.permissions
-            == SharePermissions.PERMISSION_READ
-            | SharePermissions.PERMISSION_UPDATE
-            | SharePermissions.PERMISSION_SHARE
-            | SharePermissions.PERMISSION_DELETE
-            | SharePermissions.PERMISSION_CREATE
+            == FilePermissions.PERMISSION_READ
+            | FilePermissions.PERMISSION_UPDATE
+            | FilePermissions.PERMISSION_SHARE
+            | FilePermissions.PERMISSION_DELETE
+            | FilePermissions.PERMISSION_CREATE
         )
     finally:
         nc.files.delete("share_test")
@@ -188,18 +188,18 @@ def test_create_update(nc):
         new_share = nc.files.sharing.create(
             "share_test",
             ShareType.TYPE_LINK,
-            permissions=SharePermissions.PERMISSION_READ
-            + SharePermissions.PERMISSION_SHARE
-            + SharePermissions.PERMISSION_UPDATE,
+            permissions=FilePermissions.PERMISSION_READ
+            + FilePermissions.PERMISSION_SHARE
+            + FilePermissions.PERMISSION_UPDATE,
         )
         update_share = nc.files.sharing.update(new_share, password="s2dDS_z44ad1")
         assert update_share.password
-        assert update_share.permissions != SharePermissions.PERMISSION_READ + SharePermissions.PERMISSION_SHARE
+        assert update_share.permissions != FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_SHARE
         update_share = nc.files.sharing.update(
-            new_share, permissions=SharePermissions.PERMISSION_READ + SharePermissions.PERMISSION_SHARE
+            new_share, permissions=FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_SHARE
         )
         assert update_share.password
-        assert update_share.permissions == SharePermissions.PERMISSION_READ + SharePermissions.PERMISSION_SHARE
+        assert update_share.permissions == FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_SHARE
         assert update_share.send_password_by_talk is False
         update_share = nc.files.sharing.update(new_share, send_password_by_talk=True, public_upload=True)
         assert update_share.password

@@ -3,6 +3,6 @@
 from . import ex_app, options
 from ._exceptions import NextcloudException, NextcloudExceptionNotFound
 from ._version import __version__
-from .files import FsNode
-from .files.sharing import SharePermissions, ShareType
+from .files import FilePermissions, FsNode
+from .files.sharing import ShareType
 from .nextcloud import Nextcloud, NextcloudApp

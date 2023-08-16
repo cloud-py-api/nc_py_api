@@ -44,5 +44,5 @@ run27:
 .PHONY: manual_register
 manual_register:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif manual_install --json-info \
-  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9030,\"scopes\":{\"required\":[10],\"optional\":[32]},\"protocol\":\"http\",\"system_app\":0}" \
+  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9031,\"scopes\":{\"required\":[10],\"optional\":[32]},\"protocol\":\"http\",\"system_app\":0}" \
   -e --force-scopes

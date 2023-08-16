@@ -10,8 +10,5 @@ Refer to the `Sharing examples <https://github.com/cloud-py-api/nc_py_api/tree/m
 .. autoclass:: nc_py_api.files.sharing.Share
     :members:
 
-.. autoclass:: nc_py_api.files.sharing.SharePermissions
-    :members:
-
 .. autoclass:: nc_py_api.files.sharing.ShareType
     :members:

@@ -3,6 +3,7 @@
 import dataclasses
 import datetime
 import email.utils
+import enum
 import typing
 
 
@@ -37,7 +38,7 @@ class FsNodeInfo:
     def last_modified(self) -> datetime.datetime:
         """Time when the object was last modified.
 
-        .. note:: ETag if more preferable way to check if the object was changed.
+        .. note:: ETag is a more preferable way to check if the object was changed.
         """
         return self._last_modified
 
@@ -148,3 +149,18 @@ class FsNode:
         if not self.is_dir:
             return False
         return self.info.permissions.find("CK") != -1
+
+
+class FilePermissions(enum.IntFlag):
+    """List of available permissions for files/directories."""
+
+    PERMISSION_READ = 1
+    """Access to read"""
+    PERMISSION_UPDATE = 2
+    """Access to write"""
+    PERMISSION_CREATE = 4
+    """Access to create new objects in the directory"""
+    PERMISSION_DELETE = 8
+    """Access to remove object(s)"""
+    PERMISSION_SHARE = 16
+    """Access to re-share object(s)"""

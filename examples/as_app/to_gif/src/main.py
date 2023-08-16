@@ -11,10 +11,9 @@ from fastapi import BackgroundTasks, Depends, FastAPI
 from pygifsicle import optimize
 from requests import Response
 
-from nc_py_api import NextcloudApp
+from nc_py_api import FsNode, NextcloudApp
 from nc_py_api.ex_app import (
     LogLvl,
-    UiActionFileInfo,
     UiFileActionHandlerInfo,
     nc_app,
     run_app,
@@ -24,13 +23,12 @@ from nc_py_api.ex_app import (
 APP = FastAPI()
 
 
-def convert_video_to_gif(input_params: UiActionFileInfo, nc: NextcloudApp):
-    source_path = path.join(input_params.directory, input_params.name)
-    save_path = path.splitext(source_path)[0] + ".gif"
-    nc.log(LogLvl.WARNING, f"Processing:{source_path} -> {save_path}")
+def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
+    save_path = path.splitext(input_file.user_path)[0] + ".gif"
+    nc.log(LogLvl.WARNING, f"Processing:{input_file.user_path} -> {save_path}")
     try:
         with tempfile.NamedTemporaryFile(mode="w+b") as tmp_in:
-            nc.files.download2stream(source_path, tmp_in)
+            nc.files.download2stream(input_file, tmp_in)
             nc.log(LogLvl.WARNING, "File downloaded")
             tmp_in.flush()
             cap = cv2.VideoCapture(tmp_in.name)
@@ -61,7 +59,7 @@ def convert_video_to_gif(input_params: UiActionFileInfo, nc: NextcloudApp):
                 nc.log(LogLvl.WARNING, "GIF is ready")
                 nc.files.upload_stream(save_path, tmp_out)
                 nc.log(LogLvl.WARNING, "Result uploaded")
-                nc.users.notifications.create(f"{input_params.name} finished!", f"{save_path} is waiting for you!")
+                nc.users.notifications.create(f"{input_file.name} finished!", f"{save_path} is waiting for you!")
     except Exception as e:
         nc.log(LogLvl.ERROR, str(e))
         nc.users.notifications.create("Error occurred", "Error information was written to log file")
@@ -73,7 +71,7 @@ async def video_to_gif(
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(convert_video_to_gif, file.actionFile, nc)
+    background_tasks.add_task(convert_video_to_gif, file.actionFile.to_fs_node(), nc)
     return Response()
 
 

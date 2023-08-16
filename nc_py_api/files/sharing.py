@@ -4,22 +4,7 @@ import enum
 import typing
 
 from .. import _misc, _session
-from . import FsNode
-
-
-class SharePermissions(enum.IntFlag):
-    """The share permissions to be set."""
-
-    PERMISSION_READ = 1
-    """Access to read"""
-    PERMISSION_UPDATE = 2
-    """Access to write"""
-    PERMISSION_CREATE = 4
-    """Access to create new objects in the share"""
-    PERMISSION_DELETE = 8
-    """Access to remove objects in the share"""
-    PERMISSION_SHARE = 16
-    """Access to re-share objects in the share"""
+from . import FilePermissions, FsNode
 
 
 class ShareType(enum.IntEnum):
@@ -71,9 +56,9 @@ class Share:
         return self.raw_data["share_with"]
 
     @property
-    def permissions(self) -> SharePermissions:
+    def permissions(self) -> FilePermissions:
         """Recipient permissions."""
-        return SharePermissions(int(self.raw_data["permissions"]))
+        return FilePermissions(int(self.raw_data["permissions"]))
 
     @property
     def url(self) -> str:
@@ -186,7 +171,7 @@ class _FilesSharingAPI:
         self,
         path: typing.Union[str, FsNode],
         share_type: ShareType,
-        permissions: typing.Optional[SharePermissions] = None,
+        permissions: typing.Optional[FilePermissions] = None,
         share_with: str = "",
         **kwargs,
     ) -> Share:
@@ -194,7 +179,7 @@ class _FilesSharingAPI:
 
         :param path: The path of an existing file/directory.
         :param share_type: :py:class:`~nc_py_api.files.sharing.ShareType` value.
-        :param permissions: combination of the :py:class:`~nc_py_api.files.sharing.SharePermissions` object values.
+        :param permissions: combination of the :py:class:`~nc_py_api.files.FilePermissions` values.
         :param share_with: the recipient of the shared object.
         :param kwargs: See below.
 
