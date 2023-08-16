@@ -33,9 +33,9 @@ def test_app_cfg():
 def test_scope_allow_app_ecosystem_disabled():
     NC.apps.disable("app_ecosystem_v2")
     try:
-        assert NC_APP.scope_allowed(ApiScope.DAV)
+        assert NC_APP.scope_allowed(ApiScope.FILES)
         NC_APP.update_server_info()
-        assert not NC_APP.scope_allowed(ApiScope.DAV)
+        assert not NC_APP.scope_allowed(ApiScope.FILES)
     finally:
         NC.apps.enable("app_ecosystem_v2")
         NC_APP.update_server_info()
