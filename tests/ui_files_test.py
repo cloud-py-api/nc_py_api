@@ -104,7 +104,8 @@ def test_ui_file_to_fs_node():
             favorite=str(fs_object.info.favorite),
             permissions=permissions,
             userId=fs_object.user,
-            shared="true" if fs_object.is_shared else "false",
+            shareOwner="some_user" if fs_object.is_shared else None,
+            shareOwnerId="some_user_id" if fs_object.is_shared else None,
         )
         fs_node = file_info.to_fs_node()
         assert isinstance(fs_node, FsNode)
