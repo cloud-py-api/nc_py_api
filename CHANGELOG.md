@@ -7,7 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - `FsNode` can be created from Nextcloud `UiActionFileInfo` reply.
-- Finished documentation.
+
+### Fixed
+
+- `files.find` error when searching by `"name"`. Thanks to @CooperGerman
 
 ## [0.0.30 - 2023-08-15]
 

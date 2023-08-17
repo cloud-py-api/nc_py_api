@@ -83,3 +83,12 @@ A very simple example of downloading an image as one piece of data to memory and
 .. note:: For big files, it is always better to use ``download2stream`` method, as it uses chunks.
 
 .. literalinclude:: ../examples/as_client/files/download.py
+
+Searching for a file
+""""""""""""""""""""
+
+Example of using ``file.find()`` to search for file objects.
+
+.. note:: We welcome the idea of how to make the definition of search queries more friendly.
+
+.. literalinclude:: ../examples/as_client/files/find.py

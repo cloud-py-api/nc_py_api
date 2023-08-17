@@ -410,7 +410,7 @@ def test_find_files_listdir_depth(nc):
     nc.files.mkdir("test_root_folder")
     nc.files.mkdir("test_root_folder/child_folder")
     nc.files.upload("test_root_folder/image1.png", content=im1.read())
-    nc.files.upload("test_root_folder/test_root.txt", content="content!")
+    nc.files.upload("test_root_folder/test_root_very_unique_name768.txt", content="content!")
     nc.files.upload("test_root_folder/child_folder/image2.gif", content=im2.read())
     nc.files.upload("test_root_folder/child_folder/image3.jpg", content=im3.read())
     nc.files.upload("test_root_folder/child_folder/test.txt", content="content!")
@@ -429,6 +429,14 @@ def test_find_files_listdir_depth(nc):
         ["or", "and", "gt", "size", 0, "like", "mime", "image/%", "like", "mime", "text/%"], path="test_root_folder"
     )
     assert len(result) == 5
+    result = nc.files.find(["eq", "name", "test_root_very_unique_name768.txt"])
+    assert len(result) == 1
+    result = nc.files.find(["like", "name", "test_root_very_unique_name76%"])
+    assert len(result) == 1
+    result = nc.files.find(["eq", "name", "test_root_very_unique_name768.txt"], path="test_root_folder/child_folder")
+    assert not result
+    result = nc.files.find(["like", "name", "test_root_very_unique_name76%"], path="test_root_folder/child_folder")
+    assert not result
     result = nc.files.find(["gte", "size", 0], path="test_root_folder")
     assert len(result) == 6  # 1 sub dir + 3 images + 2 text files
     result = nc.files.find(["like", "mime", "text/%"], path="test_root_folder")
