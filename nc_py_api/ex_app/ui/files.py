@@ -16,23 +16,33 @@ class UiActionFileInfo(BaseModel):
     """File Information Nextcloud sends to the External Application."""
 
     fileId: int
+    """FileID without Nextcloud instance ID"""
     name: str
+    """Name of the file/directory"""
     directory: str
+    """Directory relative to the user's home directory"""
     etag: str
     mime: str
     fileType: str
+    """**file** or **dir**"""
     size: int
+    """size of file/directory"""
     favorite: str
+    """**true** or **false**"""
     permissions: int
+    """Combination of :py:class:`~nc_py_api.files.FilePermissions` values"""
     mtime: int
+    """Last modified time"""
     userId: str
+    """The ID of the user performing the action."""
     shared: str
+    """**true** or **false**"""
 
     def to_fs_node(self) -> FsNode:
         """Returns created ``FsNode`` from the file info given.
 
-        .. note:: :py:class:FsNode.file_id in this case is ``without`` **instance_id**
-            and equal to :py:class:FsNode.info.fileid.
+        .. note:: :py:attr:`~nc_py_api.files.FsNode.file_id` in this case is ``without`` **instance_id**
+            and equal to :py:attr:`~nc_py_api.files.FsNodeInfo.fileid`.
         """
         user_path = os.path.join(self.directory, self.name).rstrip("/")
         is_dir = bool(self.fileType.lower() == "dir")
@@ -68,12 +78,15 @@ class UiFileActionHandlerInfo(BaseModel):
     """Action information Nextcloud sends to the External Application."""
 
     actionName: str
+    """Name of the action, useful when App registers multiple actions for one handler."""
     actionHandler: str
+    """Callback url, which was called with this information."""
     actionFile: UiActionFileInfo
+    """Information about the file on which the action run."""
 
 
 class _UiFilesActionsAPI:
-    """API for the drop-down menu in Nextcloud ``Files`` app."""
+    """API for the drop-down menu in Nextcloud **Files app**."""
 
     def __init__(self, session: NcSessionApp):
         self._session = session

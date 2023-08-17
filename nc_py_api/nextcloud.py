@@ -107,6 +107,7 @@ class NextcloudApp(_NextcloudBasic):
     appconfig_ex: AppConfigExAPI
     """Nextcloud App Preferences API for ExApps"""
     ui: UiApi
+    """Nextcloud UI API for ExApps"""
     preferences_ex: PreferencesExAPI
     """Nextcloud User Preferences API for ExApps"""
 
@@ -142,7 +143,7 @@ class NextcloudApp(_NextcloudBasic):
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
 
-        Useful for applications which declare ``Optional`` scopes, to check if they are allowed for them.
+        Useful for applications that declare optional scopes to check if they are allowed.
         """
         if self.check_capabilities("app_ecosystem_v2"):
             return False

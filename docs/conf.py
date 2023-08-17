@@ -21,11 +21,16 @@ extensions = [
     "sphinx_inline_tabs",
     "sphinx_issues",
     "sphinx_rtd_theme",
+    "sphinxcontrib.autodoc_pydantic",
 ]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    # "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
+    # "redis": ("https://redis-py.readthedocs.io/en/stable/", None),
 }
+
+autodoc_pydantic_model_show_json = False
 
 # General information about the project.
 project = "NcPyApi"
@@ -48,7 +53,7 @@ html_theme_options = {
     "display_version": True,
 }
 
-# If true, `todos` produce output, else they produce nothing.
+# If true, `todos` produce output. Else they produce nothing.
 todo_include_todos = False
 
 # The name of the Pygments (syntax highlighting) style to use.
