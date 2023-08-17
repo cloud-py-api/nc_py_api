@@ -71,6 +71,7 @@ dev = [
   "selenium",
 ]
 docs = [
+  "autodoc_pydantic>=2.0.1",
   "nc_py_api[app]",
   "sphinx>=6.2",
   "sphinx-copybutton",

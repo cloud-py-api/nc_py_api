@@ -15,7 +15,11 @@ Session Structures
 Internal
 ^^^^^^^^
 
-Currently Session API is private, and not exposed.
+.. note:: The Session API is currently private and subject to change without deprecation.
 
 .. autoclass:: NcSessionBasic
     :members:
+
+.. autoclass:: NcSessionApp
+    :members:
+    :inherited-members:
