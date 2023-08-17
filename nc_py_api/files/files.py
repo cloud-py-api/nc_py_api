@@ -44,7 +44,7 @@ PROPFIND_PROPERTIES = [
 ]
 
 SEARCH_PROPERTIES_MAP = {
-    "name:": "d:displayname",  # like, eq
+    "name": "d:displayname",  # like, eq
     "mime": "d:getcontenttype",  # like, eq
     "last_modified": "d:getlastmodified",  # gt, eq, lt
     "size": "oc:size",  # gt, gte, eq, lt
