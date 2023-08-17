@@ -1,5 +1,6 @@
 """Nextcloud API for working with drop-down file's menu."""
 import os
+import typing
 from datetime import datetime, timezone
 
 from pydantic import BaseModel
@@ -35,8 +36,10 @@ class UiActionFileInfo(BaseModel):
     """Last modified time"""
     userId: str
     """The ID of the user performing the action."""
-    shared: str
-    """**true** or **false**"""
+    shareOwner: typing.Optional[str]
+    """If the object is shared, this is a display name of the share owner."""
+    shareOwnerId: typing.Optional[str]
+    """If the object is shared, this is the owner ID of the share."""
 
     def to_fs_node(self) -> FsNode:
         """Returns created ``FsNode`` from the file info given.
@@ -50,7 +53,7 @@ class UiActionFileInfo(BaseModel):
             user_path += "/"
         full_path = os.path.join(f"files/{self.userId}", user_path.lstrip("/"))
 
-        permissions = "S" if self.shared.lower() == "true" else ""
+        permissions = "S" if self.shareOwnerId else ""
         if self.permissions & FilePermissions.PERMISSION_SHARE:
             permissions += "R"
         if self.permissions & FilePermissions.PERMISSION_READ:
