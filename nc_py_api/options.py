@@ -1,6 +1,6 @@
 """Options to change nc_py_api's runtime behavior.
 
-Each setting only affects newly created instances of Nextcloud or NextcloudApp class, unless otherwise specified.
+Each setting only affects newly created instances of **Nextcloud**/**NextcloudApp** class, unless otherwise specified.
 Specifying options in **kwargs** has higher priority than this.
 """
 import typing
