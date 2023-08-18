@@ -73,7 +73,10 @@ You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.
 
 It's advisable to write these steps as commands in a Makefile for quick use.
 
-Examples for such Makefiles can be found in this repository. `Skeleton <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/skeleton/Makefile>`_ `ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ `nc_py_api <https://github.com/cloud-py-api/nc_py_api/blob/main/scripts/dev_register.sh>`_
+Examples for such Makefiles can be found in this repository:
+`Skeleton <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/skeleton/Makefile>`_ ,
+`ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ ,
+`nc_py_api <https://github.com/cloud-py-api/nc_py_api/blob/main/scripts/dev_register.sh>`_
 
 During the execution of `php occ app_ecosystem_v2:app:register`, the **enabled_handler** will be called,
 as we pass the flag ``-e``, meaning ``enable after registration``.
