@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/cloud-py-api/nc_py_api/docs/resources/logo_py_nc.png" alt="NcPyApi logo">
+    <img src="https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/docs/resources/nc_py_api_logo.png" alt="NcPyApi logo">
 </p>
 
 # Official Nextcloud Python Framework
