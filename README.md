@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="https://raw.githubusercontent.com/cloud-py-api/nc_py_api/docs/resources/logo_py_nc.png" alt="NcPyApi logo">
+</p>
+
 # Official Nextcloud Python Framework
 
 [![Analysis & Coverage](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml/badge.svg)](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml)

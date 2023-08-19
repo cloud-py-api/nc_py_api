@@ -1,7 +1,7 @@
 Writing a Nextcloud Application
 ===============================
 
-This chapter assumes that you are already familiar with the concept of the AppEcosystem(to-do: link).
+This chapter assumes that you are already familiar with the `concepts <https://cloud-py-api.github.io/app_ecosystem_v2/Concepts.html>`_ of the AppEcosystem.
 
 As a first step, let's take a look at the structure of a basic Python application.
 
@@ -49,7 +49,7 @@ First register ``manual_install`` daemon:
 
     php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
 
-Then, launch your application. Since this is a manual deployment, it's your responsibility to set all the environment variables.
+Then, launch your application. Since this is a manual deployment, it's your responsibility to set minimum of the environment variables.
 Here they are:
 
 * APP_ID - ID of the application.
@@ -87,7 +87,8 @@ Pack & Deploy
 -------------
 
 Before reading this chapter, please review the basic information about deployment
-and the currently supported types of deployments in the AppEcosystem documentation: to-do.
+and the currently supported types of
+`deployments configurations <https://cloud-py-api.github.io/app_ecosystem_v2/DeployConfigurations.html>`_ in the AppEcosystem documentation.
 
 to-do
 
