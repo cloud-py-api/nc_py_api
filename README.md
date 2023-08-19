@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="https://raw.githubusercontent.com/cloud-py-api/nc_py_api/docs/resources/logo_py_nc.png" alt="NcPyApi logo">
+</p>
+
 # Official Nextcloud Python Framework
 
 [![Analysis & Coverage](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml/badge.svg)](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml)
@@ -11,22 +15,42 @@
 
 Python library that provides a robust and well-documented API that allows developers to interact with and extend Nextcloud's functionality.
 
-### Basic Features:
- * Operations with Files and Folders
- * ~~Operations with Trash bin and File versions~~
- * Operations with Users and User Groups
- * User status
- * Weather status
- * Notifications support
- * Shares support
- * ~~Talk support~~
+### The key features are:
+ * **Fast**: High performance, and as low-latency as possible.
+ * **Intuitive**: Fast to code, easy to use.
+ * **Reliable**: Minimum number of incompatible changes.
+ * **Robust**: All code is covered with tests as much as possible.
+ * **Easy**: Designed to be easy to use with excellent documentation.
 
-### Extended Features with AppEcosystemV2:
- * Defining callback routes with `FastAPI` for Nextcloud
- * Registering UI elements in Nextcloud
- * Storing logs to the `nextcloud.log` file
- * Get/save key-value pairs in AppConfigEx/PreferencesEx tables.
- * **Tons of the cool stuff that is coming soon**
+### Capabilities
+| **_Capability_** | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
+|------------------|:------------:|:------------:|:------------:|
+| Filesystem*      |      ✅       |      ✅       |      ✅       |
+| Shares           |      ✅       |      ✅       |      ✅       |
+| Users & Groups   |      ✅       |      ✅       |      ✅       |
+| User status      |      ✅       |      ✅       |      ✅       |
+| Weather status   |      ✅       |      ✅       |      ✅       |
+| Notifications    |      ✅       |      ✅       |      ✅       |
+| Nextcloud Talk   |      ❌       |      ❌       |      ❌       |
+| Text Provider**  |      ❌       |      ❌       |      ❌       |
+
+&ast;missing `Trash bin` and `File version` support.<br>
+&ast;&ast;available only for NextcloudApp
+
+### Differences between the NextCloud and NextCloudApp classes
+
+The **NextCloud** class functions as a standard NextCloud client,
+enabling you to make API requests using a username and password.
+
+On the other hand, the **NextCloudApp** class is designed for creating applications for NextCloud.<br>
+It uses the [AppEcosystem](https://github.com/cloud-py-api/app_ecosystem_v2) to allow
+applications to impersonate users through a separate authentication mechanism.
+
+Both classes offer most of the same APIs,
+but NextCloudApp has a broader selection since applications typically require access to more APIs.
+
+Any code written for the NextCloud class can easily be adapted for use with the NextCloudApp class,
+as long as it doesn't involve calls that require user password verification.
 
 ### Support
 
@@ -37,19 +61,31 @@ You can support us in several ways:
 - 💁 Resolve some Issue or create a Pull Request (contribute to this project)
 - 🙏 Write an example of its use or correct a typo in the documentation.
 
-### 🚀 How to start
-
-In a very close near future we will publish examples
-
-### More Information
+## More Information
 
 - [Documentation](https://cloud-py-api.github.io/nc_py_api/)
   - [First steps](https://cloud-py-api.github.io/nc_py_api/FirstSteps.html)
-  - [Writing a simple Nextcloud application](to-do)
-  - [Writing a Nextcloud System Application](to-do)
+  - [More APIs](https://cloud-py-api.github.io/nc_py_api/MoreAPIs.html)
+  - [Writing a simple Nextcloud application](https://cloud-py-api.github.io/nc_py_api/NextcloudApp.html)
+  - [Writing a Nextcloud System Application](https://cloud-py-api.github.io/nc_py_api/NextcloudSysApp.html)
 - [Examples](https://github.com/cloud-py-api/nc_py_api/tree/main/examples)
 - [Contribute](https://github.com/cloud-py-api/nc_py_api/blob/main/.github/CONTRIBUTING.md)
   - [Discussions](https://github.com/cloud-py-api/nc_py_api/discussions)
   - [Issues](https://github.com/cloud-py-api/nc_py_api/issues)
   - [Setting up dev environment](https://cloud-py-api.github.io/nc_py_api/DevSetup.html)
 - [Changelog](https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md)
+
+### Motivation
+
+_Python's language, elegant and clear,_<br>
+_Weaves logic's threads without fear,_<br>
+_And in the sky, where clouds take form,_<br>
+_Nextcloud emerges, a digital norm._<br>
+
+_Together they stand, a duo bright,_<br>
+_Python and Nextcloud, day and night,_<br>
+_In a digital dance, they guide and sail,_<br>
+_Shaping tomorrow, where new ideas prevail._<br>
+
+#### **Know that we are always here to support and assist you on your journey.**
+### P.S: **_Good luck, and we hope you have fun!_**

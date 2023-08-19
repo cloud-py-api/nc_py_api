@@ -7,14 +7,12 @@ For this part, you will need an environment with **nc_py_api** installed and Nex
 
 Full support is only available from version ``27.1`` of Nextcloud.
 
-Nextcloud client
-^^^^^^^^^^^^^^^^
 
 .. note:: In many cases, even if you want to develop an application,
     it's a good idea to first debug and develop part of it as a client.
 
-Creation
-""""""""
+Creating Nextcloud client class
+"""""""""""""""""""""""""""""""
 
 .. code-block:: python
 
@@ -92,3 +90,11 @@ Example of using ``file.find()`` to search for file objects.
 .. note:: We welcome the idea of how to make the definition of search queries more friendly.
 
 .. literalinclude:: ../examples/as_client/files/find.py
+
+Conclusion
+""""""""""
+
+Once you have a good understanding of working with files, you can move on to more APIs.
+
+You don't have to learn them all at the same time, but it's good to at least have a general idea, so let's go with
+:ref:`more-apis`!

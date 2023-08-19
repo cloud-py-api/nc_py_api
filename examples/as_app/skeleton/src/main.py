@@ -23,10 +23,14 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
+# Of course, you can use `FastAPI lifespan: <https://fastapi.tiangolo.com/advanced/events/#lifespan>` instead of this.
+# The only requirement for the application is to define `/enabled` and `/heartbeat` handlers.
 @APP.on_event("startup")
 def initialization():
     set_handlers(APP, enabled_handler)
 
 
 if __name__ == "__main__":
+    # Wrapper around `uvicorn.run`.
+    # You are free to call it directly, just use `APP_HOST` and `APP_PORT` from the environment.
     run_app("main:APP", log_level="trace")

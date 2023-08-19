@@ -29,6 +29,9 @@ Have a great time with Python and Nextcloud!
 
    Installation
    FirstSteps
+   MoreAPIs
+   NextcloudApp
+   NextcloudSysApp
    Options
    reference/index.rst
    DevSetup
