@@ -11,6 +11,9 @@ Full support is only available from version ``27.1`` of Nextcloud.
 .. note:: In many cases, even if you want to develop an application,
     it's a good idea to first debug and develop part of it as a client.
 
+Basics
+^^^^^^
+
 Creating Nextcloud client class
 """""""""""""""""""""""""""""""
 
@@ -35,6 +38,40 @@ To test if this works, let's print the capabilities of the Nextcloud instance:
     nc = Nextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
     pretty_capabilities = dumps(nc.capabilities, indent=4, sort_keys=True)
     print(pretty_capabilities)
+
+Checking Nextcloud capabilities
+"""""""""""""""""""""""""""""""
+
+In most cases, APIs perform capability checks before invoking them and raise a :class:`~nc_py_api._exceptions.NextcloudMissingCapabilities`
+exception if the Nextcloud instance lacks the requisite capability.
+However, there are situations where this approach might not be the most convenient,
+and you may wish to earlier whether a certain capability is available and active.
+
+To address this need, the ``check_capabilities`` method is provided.
+This method offers a straightforward way to proactively check for the existence and status of a particular capability.
+
+Using this method is quite simple:
+
+.. code-block:: python
+
+    import nc_py_api
+
+
+    nc = Nextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
+    if nc.check_capabilities("files_sharing"):  # check one capability
+        print("Sharing API is not present.")
+
+    # check child values in the same call
+    if nc.check_capabilities("files_sharing.api_enabled"):
+        print("Sharing API is present, but is not enabled.")
+
+    # check multiply capabilities at one
+    missing_cap = nc.check_capabilities(["files_sharing.api_enabled", "user_status.enabled"])
+    if missing_cap:
+        print(f"Missing capabilities: {missing_cap}")
+
+Files
+^^^^^
 
 Getting list of files of User
 """""""""""""""""""""""""""""
@@ -92,7 +129,7 @@ Example of using ``file.find()`` to search for file objects.
 .. literalinclude:: ../examples/as_client/files/find.py
 
 Conclusion
-""""""""""
+^^^^^^^^^^
 
 Once you have a good understanding of working with files, you can move on to more APIs.
 

@@ -36,6 +36,8 @@ def test_require_capabilities():
         require_capabilities(["non_exist_capability", "app_ecosystem_v2"], NC_APP.capabilities)
     with pytest.raises(NextcloudException):
         require_capabilities(["non_exist_capability", "non_exist_capability2", "app_ecosystem_v2"], NC_APP.capabilities)
+    with pytest.raises(NextcloudException):
+        require_capabilities("app_ecosystem_v2.non_exist_capability", NC_APP.capabilities)
 
 
 def test_config_get_value():
