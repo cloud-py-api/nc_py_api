@@ -22,11 +22,29 @@ def require_capabilities(capabilities: Union[str, list[str]], srv_capabilities: 
         raise NextcloudException(404, f"{result} is not available")
 
 
+def __check_sub_capability(split_capabilities: list[str], srv_capabilities: dict) -> bool:
+    """Returns ``True`` if such capability is present and **enabled**."""
+    n_split_capabilities = len(split_capabilities)
+    capabilities_nesting = srv_capabilities
+    for i, v in enumerate(split_capabilities):
+        if i != 0 and i == n_split_capabilities - 1:
+            return bool(capabilities_nesting.get(v, False))
+        if v not in capabilities_nesting:
+            return False
+        capabilities_nesting = capabilities_nesting[v]
+    return True
+
+
 def check_capabilities(capabilities: Union[str, list[str]], srv_capabilities: dict) -> list[str]:
     """Checks for capabilities and returns a list of missing ones."""
     if isinstance(capabilities, str):
         capabilities = [capabilities]
-    return [i for i in capabilities if i not in srv_capabilities]
+    missing_capabilities = []
+    for capability in capabilities:
+        split_capabilities = capability.split(".")
+        if not __check_sub_capability(split_capabilities, srv_capabilities):
+            missing_capabilities.append(capability)
+    return missing_capabilities
 
 
 def random_string(size: int) -> str:

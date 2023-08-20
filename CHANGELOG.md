@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.32 - 2023-08-2x]
+
+### Changed
+
+- `require_capabilities`/`check_capabilities` can accept value with `dot`: like `files_sharing.api_enabled` and check for sub-values.
+
 ## [0.0.31 - 2023-08-17]
 
 ### Added

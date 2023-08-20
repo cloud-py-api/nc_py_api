@@ -98,7 +98,7 @@ class _UserStatusAPI:
     @property
     def available(self) -> bool:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-        return not check_capabilities("user_status", self._session.capabilities)
+        return not check_capabilities("user_status.enabled", self._session.capabilities)
 
     def get_list(self, limit: Optional[int] = None, offset: Optional[int] = None) -> list[UserStatus]:
         """Returns statuses for all users.
@@ -106,14 +106,14 @@ class _UserStatusAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         data = kwargs_to_dict(["limit", "offset"], limit=limit, offset=offset)
         result = self._session.ocs(method="GET", path=f"{self._ep_base}/statuses", params=data)
         return [UserStatus(i) for i in result]
 
     def get_current(self) -> CurrentUserStatus:
         """Returns the current user status."""
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         return CurrentUserStatus(self._session.ocs(method="GET", path=f"{self._ep_base}/user_status"))
 
     def get(self, user_id: str) -> Optional[UserStatus]:
@@ -121,7 +121,7 @@ class _UserStatusAPI:
 
         :param user_id: User ID for getting status.
         """
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         try:
             return UserStatus(self._session.ocs(method="GET", path=f"{self._ep_base}/statuses/{user_id}"))
         except NextcloudExceptionNotFound:
@@ -131,7 +131,7 @@ class _UserStatusAPI:
         """Returns a list of predefined statuses available for installation on this Nextcloud instance."""
         if self._session.nc_version["major"] < 27:
             return []
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         result = self._session.ocs(method="GET", path=f"{self._ep_base}/predefined_statuses")
         return [PredefinedStatus(i) for i in result]
 
@@ -143,7 +143,7 @@ class _UserStatusAPI:
         """
         if self._session.nc_version["major"] < 27:
             return
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         params: dict[str, Union[int, str]] = {"messageId": status_id}
         if clear_at:
             params["clearAt"] = clear_at
@@ -151,6 +151,7 @@ class _UserStatusAPI:
 
     def set_status_type(self, value: Literal["online", "away", "dnd", "invisible", "offline"]) -> None:
         """Sets the status type for the current user."""
+        require_capabilities("user_status.enabled", self._session.capabilities)
         self._session.ocs(method="PUT", path=f"{self._ep_base}/user_status/status", params={"statusType": value})
 
     def set_status(self, message: Optional[str] = None, clear_at: int = 0, status_icon: str = "") -> None:
@@ -160,12 +161,12 @@ class _UserStatusAPI:
         :param clear_at: Unix Timestamp, representing the time to clear the status.
         :param status_icon: The icon picked by the user (must be one emoji)
         """
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         if message is None:
             self._session.ocs(method="DELETE", path=f"{self._ep_base}/user_status/message")
             return
         if status_icon:
-            require_capabilities("supports_emoji", self._session.capabilities["user_status"])
+            require_capabilities("user_status.supports_emoji", self._session.capabilities)
         params: dict[str, Union[int, str]] = {"message": message}
         if clear_at:
             params["clearAt"] = clear_at
@@ -178,7 +179,7 @@ class _UserStatusAPI:
 
         :param user_id: User ID for getting status.
         """
-        require_capabilities("user_status", self._session.capabilities)
+        require_capabilities("user_status.enabled", self._session.capabilities)
         user_id = user_id if user_id else self._session.user
         if not user_id:
             raise ValueError("user_id can not be empty.")
@@ -189,7 +190,7 @@ class _UserStatusAPI:
 
         :param status_id: backup status ID.
         """
-        require_capabilities("user_status", self._session.capabilities)
-        require_capabilities("restore", self._session.capabilities["user_status"])
+        require_capabilities("user_status.enabled", self._session.capabilities)
+        require_capabilities("user_status.restore", self._session.capabilities)
         result = self._session.ocs(method="DELETE", path=f"{self._ep_base}/user_status/revert/{status_id}")
         return result if result else None
