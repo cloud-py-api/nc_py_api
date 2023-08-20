@@ -27,6 +27,13 @@ class NextcloudExceptionNotFound(NextcloudException):
         super().__init__(404, reason=reason, info=info)
 
 
+class NextcloudMissingCapabilities(NextcloudException):
+    """The exception that is thrown when required capability for API is missing."""
+
+    def __init__(self, reason="Missing capability", info: str = ""):
+        super().__init__(412, reason=reason, info=info)
+
+
 def check_error(code: int, info: str = ""):
     """Checks HTTP code from Nextcloud, and raises exception in case of error.
 

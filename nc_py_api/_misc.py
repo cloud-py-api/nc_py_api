@@ -7,7 +7,7 @@ from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Union
 
-from ._exceptions import NextcloudException
+from ._exceptions import NextcloudMissingCapabilities
 
 
 def kwargs_to_dict(keys: list[str], **kwargs) -> dict:
@@ -19,7 +19,7 @@ def require_capabilities(capabilities: Union[str, list[str]], srv_capabilities: 
     """Checks for capabilities and raises an exception if any of them are missing."""
     result = check_capabilities(capabilities, srv_capabilities)
     if result:
-        raise NextcloudException(404, f"{result} is not available")
+        raise NextcloudMissingCapabilities(info=str(result))
 
 
 def __check_sub_capability(split_capabilities: list[str], srv_capabilities: dict) -> bool:
