@@ -688,6 +688,7 @@ jobs:
         run: coverage run -m pytest && coverage xml && coverage html
         env:
           SKIP_AE_TESTS: 1
+          NPA_NC_CERT: ''
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -821,6 +822,7 @@ jobs:
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None
+          NPA_NC_CERT: False
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3

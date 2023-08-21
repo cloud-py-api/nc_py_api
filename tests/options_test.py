@@ -35,6 +35,16 @@ def test_timeouts():
             env_f.write("NPA_TIMEOUT_DAV=11")
         r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
         assert not r.stderr
+        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_NC_CERT is False"]
+        with open(env_file, "w") as env_f:
+            env_f.write("NPA_NC_CERT=False")
+        r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
+        assert not r.stderr
+        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_NC_CERT == ''"]
+        with open(env_file, "w") as env_f:
+            env_f.write('NPA_NC_CERT=""')
+        r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
+        assert not r.stderr
     finally:
         if os.path.exists(env_backup_file):
             os.rename(env_backup_file, env_file)
