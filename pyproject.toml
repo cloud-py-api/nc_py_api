@@ -181,4 +181,5 @@ messages_control.disable = [
     "missing-function-docstring",
     "line-too-long",
     "too-few-public-methods",
+    "too-many-public-methods",
 ]

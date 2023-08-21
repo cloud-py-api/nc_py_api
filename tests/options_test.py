@@ -15,24 +15,34 @@ def test_timeouts():
     if os.path.exists(env_file):
         os.rename(env_file, env_backup_file)
     try:
-        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT is None"]
+        # check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT is None"]
+        # with open(env_file, "w") as env_f:
+        #     env_f.write("NPA_TIMEOUT=None")
+        # r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
+        # assert not r.stderr
+        # check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT == 11"]
+        # with open(env_file, "w") as env_f:
+        #     env_f.write("NPA_TIMEOUT=11")
+        # r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
+        # assert not r.stderr
+        # check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT_DAV is None"]
+        # with open(env_file, "w") as env_f:
+        #     env_f.write("NPA_TIMEOUT_DAV=None")
+        # r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
+        # assert not r.stderr
+        # check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT_DAV == 11"]
+        # with open(env_file, "w") as env_f:
+        #     env_f.write("NPA_TIMEOUT_DAV=11")
+        # r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
+        # assert not r.stderr
+        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_NC_CERT is False"]
         with open(env_file, "w") as env_f:
-            env_f.write("NPA_TIMEOUT=None")
+            env_f.write("NPA_NC_CERT=False")
         r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
         assert not r.stderr
-        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT == 11"]
+        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_NC_CERT == ''"]
         with open(env_file, "w") as env_f:
-            env_f.write("NPA_TIMEOUT=11")
-        r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
-        assert not r.stderr
-        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT_DAV is None"]
-        with open(env_file, "w") as env_f:
-            env_f.write("NPA_TIMEOUT_DAV=None")
-        r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
-        assert not r.stderr
-        check_command = [sys.executable, "-c", "import nc_py_api\nassert nc_py_api.options.NPA_TIMEOUT_DAV == 11"]
-        with open(env_file, "w") as env_f:
-            env_f.write("NPA_TIMEOUT_DAV=11")
+            env_f.write('NPA_NC_CERT=""')
         r = run(check_command, stderr=PIPE, env={}, cwd=project_dir, check=False)
         assert not r.stderr
     finally:

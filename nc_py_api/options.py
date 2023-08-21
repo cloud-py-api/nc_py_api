@@ -27,8 +27,14 @@ try:
 except (TypeError, ValueError):
     NPA_TIMEOUT_DAV = None
 
-NPA_NC_CERT = environ.get("NPA_NC_CERT", True)
+NPA_NC_CERT: typing.Union[bool, str]
 """Option to enable/disable Nextcloud certificate verification.
 
 SSL certificates (a.k.a CA bundle) used to  verify the identity of requested hosts. Either **True** (default CA bundle),
 a path to an SSL certificate file, or **False** (which will disable verification)."""
+str_val = environ.get("NPA_NC_CERT", "True")
+NPA_NC_CERT = True
+if str_val.lower() in ("false", "0"):
+    NPA_NC_CERT = False
+elif str_val.lower() not in ("true", "1"):
+    NPA_NC_CERT = str_val
