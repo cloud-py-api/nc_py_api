@@ -1,5 +1,4 @@
 import contextlib
-import time
 
 import pytest
 from gfixture import NC, NC_TO_TEST
@@ -68,9 +67,11 @@ def test_conversation_create_delete(nc):
 def test_get_conversations_modified_since(nc):
     conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
-        time.sleep(1)
-        conversations = nc.talk.get_user_conversations(modified_since=True)
+        conversations = nc.talk.get_user_conversations()
         assert conversations
+        nc.talk.modified_since += 1  # read notes for ``modified_since`` param in docs.
+        conversations = nc.talk.get_user_conversations(modified_since=True)
+        assert not conversations
         conversations = nc.talk.get_user_conversations(modified_since=True)
         assert not conversations
         conversations = nc.talk.get_user_conversations(modified_since=9992708529, no_status_update=False)

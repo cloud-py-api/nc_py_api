@@ -448,6 +448,10 @@ class _TalkAPI:
         :param modified_since: When provided only conversations with a newer **lastActivity**
             (and one-to-one conversations when includeStatus is provided) are returned.
             Can be set to ``True`` to automatically use last ``modified_since`` from previous calls. Default = **0**.
+
+            .. note:: In rare cases, when a request arrives between seconds, it is possible that return data
+                will contain part of the conversations from the last call that was not modified(
+                their `last_activity` will be the same as ``talk.modified_since``).
         """
         params: dict = {}
         if no_status_update:
