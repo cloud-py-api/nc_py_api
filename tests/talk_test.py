@@ -7,6 +7,9 @@ from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import NextcloudException, talk
 
+if NC_TO_TEST and NC_TO_TEST[0].talk.available is False:
+    pytest.skip("Nextcloud Talk is not installed.", allow_module_level=True)
+
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_available(nc):
