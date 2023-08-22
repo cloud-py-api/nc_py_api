@@ -2,11 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.32 - 2023-08-2x]
+## [0.0.40 - 2023-08-22]
+
+### Added
+
+- Basic APIs for Nextcloud Talk(Part 1)
 
 ### Changed
 
 - `require_capabilities`/`check_capabilities` can accept value with `dot`: like `files_sharing.api_enabled` and check for sub-values.
+- Refactored all API(except `Files`) again.
+
+### Fixed
+
+- `options.NPA_NC_CERT` bug, when setting throw `.env` file.
 
 ## [0.0.31 - 2023-08-17]
 

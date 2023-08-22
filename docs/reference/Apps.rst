@@ -1,32 +1,32 @@
 Applications Management
 -----------------------
 
-.. autoclass:: nc_py_api.apps.apps.AppsAPI
+.. autoclass:: nc_py_api.apps._AppsAPI
     :members:
 
-.. autoclass:: nc_py_api.apps.apps.ExAppInfo
+.. autoclass:: nc_py_api.apps.ExAppInfo
     :members:
 
 Preferences
 ^^^^^^^^^^^
 
-.. autoclass:: nc_py_api.apps.preferences_ex.CfgRecord
+.. autoclass:: nc_py_api._preferences_ex.CfgRecord
     :members:
     :undoc-members:
 
 User specific
 """""""""""""
 
-.. autoclass:: nc_py_api.apps.preferences.PreferencesAPI
+.. autoclass:: nc_py_api._preferences.PreferencesAPI
     :members:
 
-.. autoclass:: nc_py_api.apps.preferences_ex.PreferencesExAPI
+.. autoclass:: nc_py_api._preferences_ex.PreferencesExAPI
     :members:
     :inherited-members:
 
 Non-user specific
 """""""""""""""""
 
-.. autoclass:: nc_py_api.apps.preferences_ex.AppConfigExAPI
+.. autoclass:: nc_py_api._preferences_ex.AppConfigExAPI
     :members:
     :inherited-members:

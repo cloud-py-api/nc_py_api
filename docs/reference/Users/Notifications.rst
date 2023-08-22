@@ -1,11 +1,11 @@
 Notifications
 -------------
 
-.. autoclass:: nc_py_api.users.notifications._NotificationsAPI
+.. autoclass:: nc_py_api.notifications._NotificationsAPI
     :members:
 
-.. autoclass:: nc_py_api.users.notifications.Notification
+.. autoclass:: nc_py_api.notifications.Notification
     :members:
 
-.. autoclass:: nc_py_api.users.notifications.NotificationInfo
+.. autoclass:: nc_py_api.notifications.NotificationInfo
     :members:

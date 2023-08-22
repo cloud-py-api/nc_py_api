@@ -1,39 +1,51 @@
 """Nextcloud API for working with user groups."""
 
-from dataclasses import dataclass
-from typing import Optional
+import dataclasses
+import typing
 
-from .._misc import kwargs_to_dict
-from .._session import NcSessionBasic
+from ._misc import kwargs_to_params
+from ._session import NcSessionBasic
 
 
-@dataclass
+@dataclasses.dataclass
 class GroupDetails:
     """User Group information."""
 
-    group_id: str
-    """ID of the group"""
-    display_name: str
-    """Display name of the group"""
-    user_count: int
-    """Number of users in the group"""
-    disabled: bool
-    """Flag indicating is group disabled"""
-    can_add: bool
-    """Flag showing the caller has enough rights to add users to this group"""
-    can_remove: bool
-    """Flag showing the caller has enough rights to remove users from this group"""
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
 
-    def __init__(self, raw_group: dict):
-        self.group_id = raw_group["id"]
-        self.display_name = raw_group["displayname"]
-        self.user_count = raw_group["usercount"]
-        self.disabled = bool(raw_group["disabled"])
-        self.can_add = bool(raw_group["canAdd"])
-        self.can_remove = bool(raw_group["canRemove"])
+    @property
+    def group_id(self) -> str:
+        """ID of the group."""
+        return self._raw_data["id"]
+
+    @property
+    def display_name(self) -> str:
+        """A display name of the group."""
+        return self._raw_data["displayname"]
+
+    @property
+    def user_count(self) -> int:
+        """Number of users in the group."""
+        return self._raw_data["usercount"]
+
+    @property
+    def disabled(self) -> bool:
+        """Flag indicating is group disabled."""
+        return bool(self._raw_data["disabled"])
+
+    @property
+    def can_add(self) -> bool:
+        """Flag indicating the caller has enough rights to add users to this group."""
+        return bool(self._raw_data["canAdd"])
+
+    @property
+    def can_remove(self) -> bool:
+        """Flag indicating the caller has enough rights to remove users from this group."""
+        return bool(self._raw_data["canRemove"])
 
 
-class _UserGroupsAPI:
+class _UsersGroupsAPI:
     """Class providing an API for managing user groups on the Nextcloud server.
 
     .. note:: In NextcloudApp mode, only ``get_list`` and ``get_details`` methods are available.
@@ -45,7 +57,7 @@ class _UserGroupsAPI:
         self._session = session
 
     def get_list(
-        self, mask: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None
+        self, mask: typing.Optional[str] = None, limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
     ) -> list[str]:
         """Returns a list of user groups IDs.
 
@@ -53,12 +65,12 @@ class _UserGroupsAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-        data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
+        data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=self._ep_base, params=data)
         return response_data["groups"] if response_data else []
 
     def get_details(
-        self, mask: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None
+        self, mask: typing.Optional[str] = None, limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
     ) -> list[GroupDetails]:
         """Returns a list of user groups with detailed information.
 
@@ -66,11 +78,11 @@ class _UserGroupsAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-        data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
+        data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=f"{self._ep_base}/details", params=data)
         return [GroupDetails(i) for i in response_data["groups"]] if response_data else []
 
-    def create(self, group_id: str, display_name: Optional[str] = None) -> None:
+    def create(self, group_id: str, display_name: typing.Optional[str] = None) -> None:
         """Creates the users group.
 
         :param group_id: the ID of group to be created.

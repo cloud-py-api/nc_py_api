@@ -1,15 +1,15 @@
 """Nextcloud API for working with Notifications."""
 
-from dataclasses import dataclass
-from datetime import datetime
-from email.utils import parsedate_to_datetime
-from typing import Optional
+import dataclasses
+import datetime
+import email.utils
+import typing
 
-from .._misc import check_capabilities, random_string, require_capabilities
-from .._session import NcSessionApp, NcSessionBasic
+from ._misc import check_capabilities, random_string, require_capabilities
+from ._session import NcSessionApp, NcSessionBasic
 
 
-@dataclass
+@dataclasses.dataclass
 class NotificationInfo:
     """Extra Notification attributes from Nextcloud."""
 
@@ -17,7 +17,7 @@ class NotificationInfo:
     """Application name that generated notification."""
     user_id: str
     """User name for which this notification is."""
-    time: datetime
+    time: datetime.datetime
     """Time when the notification was created."""
     subject: str
     """Subject of the notification."""
@@ -32,16 +32,16 @@ class NotificationInfo:
         self.app_name = raw_info["app"]
         self.user_id = raw_info["user"]
         try:
-            self.time = parsedate_to_datetime(raw_info["datetime"])
+            self.time = email.utils.parsedate_to_datetime(raw_info["datetime"])
         except (ValueError, TypeError):
-            self.time = datetime(1970, 1, 1)
+            self.time = datetime.datetime(1970, 1, 1)
         self.subject = raw_info["subject"]
         self.message = raw_info["message"]
         self.link = raw_info.get("link", "")
         self.icon = raw_info.get("icon", "")
 
 
-@dataclass
+@dataclasses.dataclass
 class Notification:
     """Class representing information about Nextcloud notification."""
 
@@ -78,8 +78,8 @@ class _NotificationsAPI:
         self,
         subject: str,
         message: str = "",
-        subject_params: Optional[dict] = None,
-        message_params: Optional[dict] = None,
+        subject_params: typing.Optional[dict] = None,
+        message_params: typing.Optional[dict] = None,
         link: str = "",
     ) -> str:
         """Create a Notification for the current user and returns it's ObjectID.
@@ -122,7 +122,7 @@ class _NotificationsAPI:
         require_capabilities("notifications", self._session.capabilities)
         return Notification(self._session.ocs(method="GET", path=f"{self._ep_base}/{notification_id}"))
 
-    def by_object_id(self, object_id: str) -> Optional[Notification]:
+    def by_object_id(self, object_id: str) -> typing.Optional[Notification]:
         """Returns Notification if any by its object ID.
 
         .. note:: this method is a temporary workaround until `create` can return `notification_id`.
