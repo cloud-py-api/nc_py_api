@@ -1,11 +1,11 @@
 Weather Status
 --------------
 
-.. autoclass:: nc_py_api.users.weather._WeatherStatusAPI
+.. autoclass:: nc_py_api.weather_status._WeatherStatusAPI
     :members:
 
-.. autoclass:: nc_py_api.users.weather.WeatherLocation
+.. autoclass:: nc_py_api.weather_status.WeatherLocation
     :members:
 
-.. autoclass:: nc_py_api.users.weather.WeatherLocationMode
+.. autoclass:: nc_py_api.weather_status.WeatherLocationMode
     :members:

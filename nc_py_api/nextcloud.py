@@ -6,33 +6,53 @@ from fastapi import Request
 from httpx import Headers as HttpxHeaders
 
 from ._misc import check_capabilities
+from ._preferences import PreferencesAPI
+from ._preferences_ex import AppConfigExAPI, PreferencesExAPI
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
 from ._theming import ThemingInfo, get_parsed_theme
-from .apps.apps import AppsAPI
-from .apps.preferences import PreferencesAPI
-from .apps.preferences_ex import AppConfigExAPI, PreferencesExAPI
+from .apps import _AppsAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
-from .users.users import UsersAPI
+from .notifications import _NotificationsAPI
+from .talk import _TalkAPI
+from .user_status import _UserStatusAPI
+from .users import _UsersAPI
+from .users_groups import _UsersGroupsAPI
+from .weather_status import _WeatherStatusAPI
 
 
-class _NextcloudBasic(ABC):
-    apps: AppsAPI
+class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
+    apps: _AppsAPI
     """Nextcloud API for App management"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
     preferences: PreferencesAPI
     """Nextcloud User Preferences API"""
-    users: UsersAPI
-    """Nextcloud API for managing users, user groups, user status, user weather status"""
+    notifications: _NotificationsAPI
+    """Nextcloud API for managing user notifications"""
+    talk: _TalkAPI
+    """Nextcloud Talk Api"""
+    users: _UsersAPI
+    """Nextcloud API for managing users."""
+    users_groups: _UsersGroupsAPI
+    """Nextcloud API for managing user groups."""
+    user_status: _UserStatusAPI
+    """Nextcloud API for managing users statuses"""
+    weather_status: _WeatherStatusAPI
+    """Nextcloud API for managing user weather statuses"""
     _session: NcSessionBasic
 
     def _init_api(self, session: NcSessionBasic):
-        self.apps = AppsAPI(session)
+        self.apps = _AppsAPI(session)
         self.files = FilesAPI(session)
         self.preferences = PreferencesAPI(session)
-        self.users = UsersAPI(session)
+        self.notifications = _NotificationsAPI(session)
+        self.talk = _TalkAPI(session)
+        self.users = _UsersAPI(session)
+        self.users_groups = _UsersGroupsAPI(session)
+        self.user_status = _UserStatusAPI(session)
+        self.weather_status = _WeatherStatusAPI(session)
 
     @property
     def capabilities(self) -> dict:
@@ -106,10 +126,10 @@ class NextcloudApp(_NextcloudBasic):
     _session: NcSessionApp
     appconfig_ex: AppConfigExAPI
     """Nextcloud App Preferences API for ExApps"""
-    ui: UiApi
-    """Nextcloud UI API for ExApps"""
     preferences_ex: PreferencesExAPI
     """Nextcloud User Preferences API for ExApps"""
+    ui: UiApi
+    """Nextcloud UI API for ExApps"""
 
     def __init__(self, **kwargs):
         """The parameters will be taken from the environment.
@@ -161,6 +181,8 @@ class NextcloudApp(_NextcloudBasic):
     def user(self, value: str):
         if self._session.user != value:
             self._session.user = value
+            self.talk.config_sha = ""
+            self.talk.modified_since = 0
             self._session.update_server_info()
 
     @property

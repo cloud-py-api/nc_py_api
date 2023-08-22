@@ -35,3 +35,5 @@ class ApiScope(enum.IntEnum):
     """Allows access to APIs that provide Notifications."""
     WEATHER_STATUS = 33
     """Allows access to APIs that provide Weather status."""
+    TALK = 50
+    """Allows access to Talk API endpoints."""
