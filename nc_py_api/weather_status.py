@@ -1,14 +1,14 @@
 """Nextcloud API for working with weather statuses."""
 
-from dataclasses import dataclass
-from enum import IntEnum
-from typing import Optional, Union
+import dataclasses
+import enum
+import typing
 
-from .._misc import check_capabilities, require_capabilities
-from .._session import NcSessionBasic
+from ._misc import check_capabilities, require_capabilities
+from ._session import NcSessionBasic
 
 
-class WeatherLocationMode(IntEnum):
+class WeatherLocationMode(enum.IntEnum):
     """Source from where Nextcloud should determine user's location."""
 
     UNKNOWN = 0
@@ -19,7 +19,7 @@ class WeatherLocationMode(IntEnum):
     """User has set their location manually"""
 
 
-@dataclass
+@dataclasses.dataclass
 class WeatherLocation:
     """Class representing information about the user's location."""
 
@@ -60,7 +60,10 @@ class _WeatherStatusAPI:
         return WeatherLocation(self._session.ocs(method="GET", path=f"{self._ep_base}/location"))
 
     def set_location(
-        self, latitude: Optional[float] = None, longitude: Optional[float] = None, address: Optional[str] = None
+        self,
+        latitude: typing.Optional[float] = None,
+        longitude: typing.Optional[float] = None,
+        address: typing.Optional[str] = None,
     ) -> bool:
         """Sets the user's location on the Nextcloud server.
 
@@ -69,7 +72,7 @@ class _WeatherStatusAPI:
         :param address: city, index(*optional*) and country, e.g. "Paris, 75007, France"
         """
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        params: dict[str, Union[str, float]] = {}
+        params: dict[str, typing.Union[str, float]] = {}
         if latitude is not None and longitude is not None:
             params.update({"lat": latitude, "lon": longitude})
         elif address:

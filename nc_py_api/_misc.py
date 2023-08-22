@@ -5,14 +5,25 @@ For internal use, prototypes can change between versions.
 
 from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
-from typing import Union
+from typing import Callable, Union
 
 from ._exceptions import NextcloudMissingCapabilities
 
 
-def kwargs_to_dict(keys: list[str], **kwargs) -> dict:
-    """Creates dictionary from ``kwargs`` by keys, the value of each is not ``None``."""
-    return {k: kwargs[k] for k in keys if kwargs[k] is not None}
+def __check_for_none(v):
+    return v is not None
+
+
+def kwargs_to_params(keys: list[str], filter_func: Callable = __check_for_none, **kwargs) -> dict:
+    """Returns dictionary from ``kwargs`` by keys. By default, only pairs with ``not None`` values returned."""
+    return {k: kwargs[k] for k in keys if filter_func(kwargs[k])}
+
+
+def clear_from_params_empty(keys: list[str], params: dict) -> None:
+    """Removes key:values pairs from ``params`` which values are empty."""
+    for key in keys:
+        if key in params and not params[key]:
+            params.pop(key)
 
 
 def require_capabilities(capabilities: Union[str, list[str]], srv_capabilities: dict) -> None:

@@ -1,13 +1,13 @@
 """Nextcloud API for working with apps V2's storage w/wo user context(table oc_appconfig_ex/oc_preferences_ex)."""
-from dataclasses import dataclass
-from typing import Optional, Union
+import dataclasses
+import typing
 
-from .._exceptions import NextcloudExceptionNotFound
-from .._misc import require_capabilities
-from .._session import NcSessionBasic
+from ._exceptions import NextcloudExceptionNotFound
+from ._misc import require_capabilities
+from ._session import NcSessionBasic
 
 
-@dataclass
+@dataclasses.dataclass
 class CfgRecord:
     """A representation of a single key-value pair returned from the **get_values** method."""
 
@@ -25,7 +25,7 @@ class _BasicAppCfgPref:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def get_value(self, key: str, default=None) -> Optional[str]:
+    def get_value(self, key: str, default=None) -> typing.Optional[str]:
         """Returns the value of the key, if found, or the specified default value."""
         if not key:
             raise ValueError("`key` parameter can not be empty")
@@ -48,7 +48,7 @@ class _BasicAppCfgPref:
         )
         return [CfgRecord(i) for i in results]
 
-    def delete(self, keys: Union[str, list[str]], not_fail=True) -> None:
+    def delete(self, keys: typing.Union[str, list[str]], not_fail=True) -> None:
         """Deletes config/preference entries by the provided keys."""
         if isinstance(keys, str):
             keys = [keys]
@@ -85,7 +85,7 @@ class AppConfigExAPI(_BasicAppCfgPref):
 
     _url_suffix = "ex-app/config"
 
-    def set_value(self, key: str, value: str, sensitive: Optional[bool] = None) -> None:
+    def set_value(self, key: str, value: str, sensitive: typing.Optional[bool] = None) -> None:
         """Sets a value and if specified the sensitive flag for a key.
 
         .. note:: A sensitive flag ensures key values are truncated in Nextcloud logs.

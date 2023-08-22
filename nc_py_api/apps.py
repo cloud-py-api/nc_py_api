@@ -1,13 +1,13 @@
 """Nextcloud API for working with applications."""
 
-from dataclasses import dataclass
-from typing import Optional
+import dataclasses
+import typing
 
-from .._misc import require_capabilities
-from .._session import NcSessionBasic
+from ._misc import require_capabilities
+from ._session import NcSessionBasic
 
 
-@dataclass
+@dataclasses.dataclass
 class ExAppInfo:
     """Information about the External Application."""
 
@@ -33,7 +33,7 @@ class ExAppInfo:
         self.system = raw_data["system"]
 
 
-class AppsAPI:
+class _AppsAPI:
     """The class provides the application management API on the Nextcloud server."""
 
     _ep_base: str = "/ocs/v1.php/cloud/apps"
@@ -59,7 +59,7 @@ class AppsAPI:
             raise ValueError("`app_id` parameter can not be empty")
         self._session.ocs(method="POST", path=f"{self._ep_base}/{app_id}")
 
-    def get_list(self, enabled: Optional[bool] = None) -> list[str]:
+    def get_list(self, enabled: typing.Optional[bool] = None) -> list[str]:
         """Get the list of installed applications.
 
         :param enabled: filter to list all/only enabled/only disabled applications.

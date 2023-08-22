@@ -2,37 +2,20 @@
 
 import typing
 
-from .._misc import kwargs_to_dict
-from .._session import NcSessionBasic
-from .groups import _UserGroupsAPI
-from .notifications import _NotificationsAPI
-from .status import _UserStatusAPI
-from .weather import _WeatherStatusAPI
+from ._misc import kwargs_to_params
+from ._session import NcSessionBasic
 
 
-class UsersAPI:
+class _UsersAPI:
     """The class provides the user, user groups, user status API on the Nextcloud server.
 
     .. note:: In NextcloudApp mode, only ``get_list`` and ``get_details`` methods are available.
     """
 
-    groups: _UserGroupsAPI
-    """API for managing user groups"""
-    status: _UserStatusAPI
-    """API for managing user statuses"""
-    notifications: _NotificationsAPI
-    """API for managing user notifications"""
-    weather: _WeatherStatusAPI
-    """API for managing user weather statuses"""
-
     _ep_base: str = "/ocs/v1.php/cloud/users"
 
     def __init__(self, session: NcSessionBasic):
         self._session = session
-        self.groups = _UserGroupsAPI(session)
-        self.status = _UserStatusAPI(session)
-        self.notifications = _NotificationsAPI(session)
-        self.weather = _WeatherStatusAPI(session)
 
     def get_list(
         self, mask: typing.Optional[str] = "", limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
@@ -43,7 +26,7 @@ class UsersAPI:
         :param limit: limits the number of results.
         :param offset: offset of results.
         """
-        data = kwargs_to_dict(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
+        data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs(method="GET", path=self._ep_base, params=data)
         return response_data["users"] if response_data else {}
 

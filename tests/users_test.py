@@ -54,7 +54,7 @@ def test_create_user_with_groups(nc):
     with contextlib.suppress(NextcloudException):
         nc.users.delete(TEST_USER_NAME)
     nc.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD, groups=["admin"])
-    admin_group = nc.users.groups.get_members("admin")
+    admin_group = nc.users_groups.get_members("admin")
     assert TEST_USER_NAME in admin_group
     nc.users.delete(TEST_USER_NAME)
 
