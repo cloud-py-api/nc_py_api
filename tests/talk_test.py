@@ -5,7 +5,7 @@ import pytest
 from gfixture import NC, NC_TO_TEST
 from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
-from nc_py_api import NextcloudException, talk
+from nc_py_api import Nextcloud, NextcloudException, talk
 
 if NC_TO_TEST and NC_TO_TEST[0].talk.available is False:
     pytest.skip("Nextcloud Talk is not installed.", allow_module_level=True)
@@ -84,16 +84,18 @@ def test_get_conversations_modified_since(nc):
 def test_get_conversations_include_status(nc):
     with contextlib.suppress(NextcloudException):
         NC.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
+    nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
+    nc_second_user.user_status.set_status_type("away")
     conversation = nc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, TEST_USER_NAME)
     try:
-        time.sleep(1)
+        conversations = nc.talk.get_user_conversations(include_status=False)
+        assert conversations
+        first_conv = [i for i in conversations if i.conversation_id == conversation.conversation_id][0]
+        assert not first_conv.status_type
         conversations = nc.talk.get_user_conversations(include_status=True)
         assert conversations
         first_conv = [i for i in conversations if i.conversation_id == conversation.conversation_id][0]
-        assert first_conv.status_type == "offline"
-        assert first_conv.status_clear_at is None
-        conversations = nc.talk.get_user_conversations(modified_since=True)
-        assert not conversations
+        assert first_conv.status_type == "away"
     finally:
         nc.talk.leave_conversation(conversation.token)
         NC.users.delete(TEST_USER_NAME)
