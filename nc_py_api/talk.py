@@ -504,7 +504,8 @@ class _TalkAPI:
         """Deletes a conversation.
 
         .. note:: Deleting a conversation that is the parent of breakout rooms, will also delete them.
-            ``ONE_TO_ONE`` conversations can not be deleted, use :py:class:`~nc_py_api.talk.leave_conversation`.
+            ``ONE_TO_ONE`` conversations can not be deleted for them
+            :py:class:`~nc_py_api.talk._TalkAPI.leave_conversation` should be used.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
         """
