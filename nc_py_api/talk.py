@@ -400,7 +400,7 @@ class Conversation(_UserStatus):
 
         .. note:: Only available with ``avatar`` capability.
         """
-        return self._raw_data["isCustomAvatar"]
+        return self._raw_data.get("isCustomAvatar", False)
 
     @property
     def call_start_time(self) -> int:

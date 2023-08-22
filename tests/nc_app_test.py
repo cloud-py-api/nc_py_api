@@ -45,9 +45,9 @@ def test_change_user():
     orig_user = NC_APP.user
     try:
         orig_capabilities = NC_APP.capabilities
-        assert NC_APP.users.status.available
+        assert NC_APP.user_status.available
         NC_APP.user = ""
-        assert not NC_APP.users.status.available
+        assert not NC_APP.user_status.available
         assert orig_capabilities != NC_APP.capabilities
     finally:
         NC_APP.user = orig_user
