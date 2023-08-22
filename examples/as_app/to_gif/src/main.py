@@ -59,10 +59,10 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
                 nc.log(LogLvl.WARNING, "GIF is ready")
                 nc.files.upload_stream(save_path, tmp_out)
                 nc.log(LogLvl.WARNING, "Result uploaded")
-                nc.users.notifications.create(f"{input_file.name} finished!", f"{save_path} is waiting for you!")
+                nc.notifications.create(f"{input_file.name} finished!", f"{save_path} is waiting for you!")
     except Exception as e:
         nc.log(LogLvl.ERROR, str(e))
-        nc.users.notifications.create("Error occurred", "Error information was written to log file")
+        nc.notifications.create("Error occurred", "Error information was written to log file")
 
 
 @APP.post("/video_to_gif")
