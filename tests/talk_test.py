@@ -72,8 +72,6 @@ def test_get_conversations_modified_since(nc):
         nc.talk.modified_since += 1  # read notes for ``modified_since`` param in docs.
         conversations = nc.talk.get_user_conversations(modified_since=True)
         assert not conversations
-        conversations = nc.talk.get_user_conversations(modified_since=True)
-        assert not conversations
         conversations = nc.talk.get_user_conversations(modified_since=9992708529, no_status_update=False)
         assert not conversations
     finally:
