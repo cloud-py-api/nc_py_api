@@ -26,10 +26,10 @@
 		</docker-install>
 		<scopes>
 			<required>
-				<value>10</value>
+				<value>FILES</value>
 			</required>
 			<optional>
-				<value>32</value>
+				<value>NOTIFICATIONS</value>
 			</optional>
 		</scopes>
 		<protocol>http</protocol>
