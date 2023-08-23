@@ -23,16 +23,18 @@ Python library that provides a robust and well-documented API that allows develo
  * **Easy**: Designed to be easy to use with excellent documentation.
 
 ### Capabilities
-| **_Capability_** | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
-|------------------|:------------:|:------------:|:------------:|
-| Filesystem*      |      ✅       |      ✅       |      ✅       |
-| Shares           |      ✅       |      ✅       |      ✅       |
-| Users & Groups   |      ✅       |      ✅       |      ✅       |
-| User status      |      ✅       |      ✅       |      ✅       |
-| Weather status   |      ✅       |      ✅       |      ✅       |
-| Notifications    |      ✅       |      ✅       |      ✅       |
-| Nextcloud Talk   |      ❌       |      ❌       |      ❌       |
-| Text Provider**  |      ❌       |      ❌       |      ❌       |
+| **_Capability_**  | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
+|-------------------|:------------:|:------------:|:------------:|
+| Filesystem*       |      ✅       |      ✅       |      ✅       |
+| Shares            |      ✅       |      ✅       |      ✅       |
+| Users & Groups    |      ✅       |      ✅       |      ✅       |
+| User status       |      ✅       |      ✅       |      ✅       |
+| Weather status    |      ✅       |      ✅       |      ✅       |
+| Notifications     |      ✅       |      ✅       |      ✅       |
+| Nextcloud Talk    |      ❌       |      ❌       |      ❌       |
+| Talk Bot API**    |     N/A      |      ✅       |      ✅       |
+| Text Processing** |     N/A      |      ❌       |      ❌       |
+| SpeechToText**    |     N/A      |      ❌       |      ❌       |
 
 &ast;missing `Trash bin` and `File version` support.<br>
 &ast;&ast;available only for NextcloudApp
@@ -66,7 +68,8 @@ You can support us in several ways:
 - [Documentation](https://cloud-py-api.github.io/nc_py_api/)
   - [First steps](https://cloud-py-api.github.io/nc_py_api/FirstSteps.html)
   - [More APIs](https://cloud-py-api.github.io/nc_py_api/MoreAPIs.html)
-  - [Writing a simple Nextcloud application](https://cloud-py-api.github.io/nc_py_api/NextcloudApp.html)
+  - [Writing a simple Nextcloud Application](https://cloud-py-api.github.io/nc_py_api/NextcloudApp.html)
+  - [Using Nextcloud Talk Bot API in Application](https://cloud-py-api.github.io/nc_py_api/NextcloudTalkBot.html)
   - [Writing a Nextcloud System Application](https://cloud-py-api.github.io/nc_py_api/NextcloudSysApp.html)
 - [Examples](https://github.com/cloud-py-api/nc_py_api/tree/main/examples)
 - [Contribute](https://github.com/cloud-py-api/nc_py_api/blob/main/.github/CONTRIBUTING.md)

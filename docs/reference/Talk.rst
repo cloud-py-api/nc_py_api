@@ -5,6 +5,10 @@ Talk API
     :members:
     :inherited-members:
 
+.. autoclass:: nc_py_api.talk.TalkMessage
+    :members:
+    :inherited-members:
+
 .. autoclass:: nc_py_api.talk._TalkAPI
     :members:
 
@@ -46,5 +50,9 @@ Talk API
     :undoc-members:
 
 .. autoclass:: nc_py_api.talk.BreakoutRoomStatus
+    :members:
+    :undoc-members:
+
+.. autoclass:: nc_py_api.talk.AttendeeTypes
     :members:
     :undoc-members:

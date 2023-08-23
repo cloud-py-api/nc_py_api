@@ -9,6 +9,16 @@ from ._session import NcSessionBasic
 from .user_status import _UserStatus
 
 
+class AttendeeTypes(enum.StrEnum):
+    """Talk attendee types."""
+
+    USERS = "users"
+    GROUPS = "groups"
+    CIRCLES = "circles"
+    GUESTS = "guests"
+    EMAILS = "emails"
+
+
 class ConversationType(enum.IntEnum):
     """Talk conversation types."""
 
@@ -147,6 +157,111 @@ class BreakoutRoomStatus(enum.IntEnum):
     """Breakout rooms lobbies are disabled."""
     STARTED = 1
     """Breakout rooms lobbies are enabled."""
+
+
+@dataclasses.dataclass
+class TalkMessage:
+    """Talk message."""
+
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def message_id(self) -> int:
+        """Numeric identifier of the message. Most methods that require this should accept this class itself."""
+        return self._raw_data["id"]
+
+    @property
+    def token(self) -> str:
+        """Token identifier of the conversation which is used for further interaction."""
+        return self._raw_data["id"]
+
+    @property
+    def actor_type(self) -> str:
+        """Actor types of the chat message: **users**, **guests**, **bots**, **bridged**."""
+        return self._raw_data["actorType"]
+
+    @property
+    def actor_id(self) -> str:
+        """Actor id of the message author."""
+        return self._raw_data["actorId"]
+
+    @property
+    def actor_display_name(self) -> str:
+        """A display name of the message author."""
+        return self._raw_data["actorDisplayName"]
+
+    @property
+    def timestamp(self) -> int:
+        """Timestamp in seconds and UTC time zone."""
+        return self._raw_data["timestamp"]
+
+    @property
+    def system_message(self) -> str:
+        """Empty for the normal chat message or the type of the system message (untranslated)."""
+        return self._raw_data["systemMessage"]
+
+    @property
+    def message_type(self) -> str:
+        """Currently known types are "comment", "comment_deleted", "system" and "command"."""
+        return self._raw_data["messageType"]
+
+    @property
+    def is_replyable(self) -> bool:
+        """True if the user can post a reply to this message.
+
+        .. note:: Only available with ``chat-replies`` capability.
+        """
+        return self._raw_data["isReplyable"]
+
+    @property
+    def reference_id(self) -> str:
+        """A reference string that was given while posting the message to be able to identify sent message again.
+
+        .. note:: Only available with ``chat-reference-id`` capability.
+        """
+        return self._raw_data["referenceId"]
+
+    @property
+    def message(self) -> str:
+        """Message string with placeholders.
+
+        See `Rich Object String <https://nextcloud-talk.readthedocs.io/en/latest/chat/#parent-data>`_.
+        """
+        return self._raw_data["message"]
+
+    @property
+    def message_parameters(self) -> dict:
+        """Message parameters for the ``message``."""
+        return self._raw_data["messageParameters"]
+
+    @property
+    def expiration_timestamp(self) -> int:
+        """Unix time stamp when the message expires and show be removed from the client's UI without further note.
+
+        .. note:: Only available with ``message-expiration`` capability.
+        """
+        return self._raw_data["expirationTimestamp"]
+
+    @property
+    def parent(self) -> list:
+        """To be refactored: `Description here <https://nextcloud-talk.readthedocs.io/en/latest/chat/#parent-data>`_."""
+        return self._raw_data["parent"]
+
+    @property
+    def reactions(self) -> dict:
+        """An array map with relation between reaction emoji and total count of reactions with this emoji."""
+        return self._raw_data.get("reactions", {})
+
+    @property
+    def reactions_self(self) -> list[str]:
+        """When the user reacted, this is the list of emojis the user reacted with."""
+        return self._raw_data.get("reactionsSelf", [])
+
+    @property
+    def markdown(self) -> bool:
+        """Whether the message should be rendered as markdown or shown as plain text."""
+        return self._raw_data.get("markdown", False)
 
 
 @dataclasses.dataclass(init=False)
@@ -369,6 +484,25 @@ class Conversation(_UserStatus):
         .. note:: only available with ``chat-read-marker`` capability.
         """
         return self._raw_data["lastReadMessage"]
+
+    @property
+    def last_common_read_message(self) -> int:
+        """``ID`` of the last message read by every user that has read privacy set to public in a room.
+
+        When the user himself has it set to ``private`` the value is ``0``.
+
+        .. note:: Only available with ``chat-read-status`` capability.
+        """
+        return self._raw_data["lastCommonReadMessage"]
+
+    @property
+    def last_message(self) -> typing.Optional[TalkMessage]:
+        """Last message in a conversation if available, otherwise ``empty``.
+
+        .. note:: Even when given, the message will not contain the ``parent`` or ``reactionsSelf``
+            attribute due to performance reasons
+        """
+        return TalkMessage(self._raw_data["lastMessage"]) if self._raw_data["lastMessage"] else None
 
     @property
     def breakout_room_mode(self) -> BreakoutRoomMode:

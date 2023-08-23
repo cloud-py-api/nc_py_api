@@ -5,7 +5,7 @@ from typing import Optional, Union
 from fastapi import Request
 from httpx import Headers as HttpxHeaders
 
-from ._misc import check_capabilities
+from ._misc import check_capabilities, require_capabilities
 from ._preferences import PreferencesAPI
 from ._preferences_ex import AppConfigExAPI, PreferencesExAPI
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
@@ -189,6 +189,26 @@ class NextcloudApp(_NextcloudBasic):
     def app_cfg(self) -> AppConfig:
         """Returns deploy config, with AppEcosystem version, Application version and name."""
         return self._session.cfg
+
+    def register_talk_bot(self, callback_url: str, display_name: str, description: str = "") -> tuple[str, str]:
+        """Registers Talk BOT.
+
+        .. note:: AppEcosystem will add a record in a case of successful registration to the ``appconfig_ex`` table.
+
+        :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
+        :param display_name: The name under which the messages will be posted.
+        :param description: Optional description shown in the admin settings.
+        :return: The secret used for signing requests.
+        """
+        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        # require_capabilities("spreed.features.bots-v1", self._session.capabilities)
+        params = {
+            "name": display_name,
+            "route": callback_url,
+            "description": description,
+        }
+        result = self._session.ocs(method="POST", path=f"{self._session.ae_url}/talk_bot", json=params)
+        return result["id"], result["secret"]
 
     def request_sign_check(self, request: Request) -> bool:
         """Verifies the signature and validity of an incoming request from the Nextcloud.
