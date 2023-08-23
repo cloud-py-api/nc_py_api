@@ -9,16 +9,6 @@ from ._session import NcSessionBasic
 from .user_status import _UserStatus
 
 
-class AttendeeTypes(enum.StrEnum):
-    """Talk attendee types."""
-
-    USERS = "users"
-    GROUPS = "groups"
-    CIRCLES = "circles"
-    GUESTS = "guests"
-    EMAILS = "emails"
-
-
 class ConversationType(enum.IntEnum):
     """Talk conversation types."""
 

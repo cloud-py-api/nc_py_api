@@ -52,7 +52,3 @@ Talk API
 .. autoclass:: nc_py_api.talk.BreakoutRoomStatus
     :members:
     :undoc-members:
-
-.. autoclass:: nc_py_api.talk.AttendeeTypes
-    :members:
-    :undoc-members:
