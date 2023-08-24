@@ -2,6 +2,7 @@
 import dataclasses
 import hashlib
 import hmac
+import json
 import os
 import typing
 
@@ -11,6 +12,13 @@ from . import options
 from ._misc import random_string
 from ._session import BasicConfig
 from .nextcloud import NextcloudApp
+
+
+class ObjectContent(typing.TypedDict):
+    """Object content of :py:class:`~nc_py_api.talk_bot.TalkBotMessage`."""
+
+    message: str
+    parameters: dict
 
 
 @dataclasses.dataclass
@@ -29,7 +37,7 @@ class TalkBotMessage:
         return self._raw_data["actor"]["id"]
 
     @property
-    def actor_name(self) -> str:
+    def actor_display_name(self) -> str:
         """The display name of the attendee sending the message."""
         return self._raw_data["actor"]["name"]
 
@@ -47,9 +55,9 @@ class TalkBotMessage:
         return self._raw_data["object"]["name"]
 
     @property
-    def object_content(self) -> dict:
-        """``Temporary``: A JSON encoded dictionary with a message and parameters key."""
-        return self._raw_data["object"]["content"]
+    def object_content(self) -> ObjectContent:
+        """Dictionary with a ``message`` and ``parameters`` keys."""
+        return json.loads(self._raw_data["object"]["content"])
 
     @property
     def object_media_type(self) -> str:
@@ -57,7 +65,7 @@ class TalkBotMessage:
         return self._raw_data["object"]["mediaType"]
 
     @property
-    def target_id(self) -> str:
+    def conversation_token(self) -> str:
         """The token of the conversation in which the message was posted.
 
         It can be used to react or reply to the given message.
@@ -65,7 +73,7 @@ class TalkBotMessage:
         return self._raw_data["target"]["id"]
 
     @property
-    def target_name(self) -> str:
+    def conversation_name(self) -> str:
         """The name of the conversation in which the message was posted."""
         return self._raw_data["target"]["name"]
 
@@ -80,17 +88,14 @@ class TalkBot:
         self.display_name = display_name
         self.description = description
 
-    @staticmethod
-    def enabled_handler(enabled: bool, nc: NextcloudApp):
+    def enabled_handler(self, enabled: bool, nc: NextcloudApp):
         """Handles the app ``on``/``off`` event in the context of the bot.
 
         :param enabled: Value that was passed to ``/enabled`` handler.
         :param nc: **NextcloudApp** class that was passed ``/enabled`` handler.
         """
         if enabled:
-            bot_id, bot_secret = nc.register_talk_bot(
-                "/frequency_talk_conversation", "Frequency Count", "Calculates the frequency of words."
-            )
+            bot_id, bot_secret = nc.register_talk_bot(self.callback_url, self.display_name, self.description)
             os.environ[bot_id] = bot_secret
         else:
             pass  # to-do: unregistering bot
@@ -114,7 +119,7 @@ class TalkBot:
         """
         if not token and not isinstance(reply_to_message, TalkBotMessage):
             raise ValueError("Either specify 'token' value or provide 'TalkBotMessage'.")
-        token = reply_to_message.target_id if isinstance(reply_to_message, TalkBotMessage) else token
+        token = reply_to_message.conversation_token if isinstance(reply_to_message, TalkBotMessage) else token
         reference_id = hashlib.sha256(random_string(32).encode("UTF-8")).hexdigest()
         params = {
             "message": message,
@@ -139,7 +144,7 @@ class TalkBot:
         if not token and not isinstance(message, TalkBotMessage):
             raise ValueError("Either specify 'token' value or provide 'TalkBotMessage'.")
         message_id = message.object_id if isinstance(message, TalkBotMessage) else message
-        token = message.target_id if isinstance(message, TalkBotMessage) else token
+        token = message.conversation_token if isinstance(message, TalkBotMessage) else token
         params = {
             "reaction": reaction,
         }
@@ -160,7 +165,7 @@ class TalkBot:
         if not token and not isinstance(message, TalkBotMessage):
             raise ValueError("Either specify 'token' value or provide 'TalkBotMessage'.")
         message_id = message.object_id if isinstance(message, TalkBotMessage) else message
-        token = message.target_id if isinstance(message, TalkBotMessage) else token
+        token = message.conversation_token if isinstance(message, TalkBotMessage) else token
         params = {
             "reaction": reaction,
         }
@@ -172,7 +177,6 @@ class TalkBot:
             raise RuntimeError("Can't find the 'secret' of the bot. Has the bot been installed?")
         talk_bot_random = random_string(32)
         hmac_sign = hmac.new(secret, talk_bot_random.encode("UTF-8"), digestmod=hashlib.sha256)
-        print(talk_bot_random)
         hmac_sign.update(data_to_sign.encode("UTF-8"))
         headers = {
             "X-Nextcloud-Talk-Bot-Random": talk_bot_random,

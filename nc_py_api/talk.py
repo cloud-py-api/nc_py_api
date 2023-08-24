@@ -206,7 +206,7 @@ class TalkMessage:
 
     @property
     def reference_id(self) -> str:
-        """A reference string that was given while posting the message to be able to identify sent message again.
+        """A reference string that was given while posting the message to be able to identify the sent message again.
 
         .. note:: Only available with ``chat-reference-id`` capability.
         """

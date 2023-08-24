@@ -41,7 +41,7 @@ Python library that provides a robust and well-documented API that allows develo
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
-The **Nextcloud** class functions as a standard NextCloud client,
+The **Nextcloud** class functions as a standard Nextcloud client,
 enabling you to make API requests using a username and password.
 
 On the other hand, the **NextcloudApp** class is designed for creating applications for Nextcloud.<br>
