@@ -37,19 +37,19 @@ Python library that provides a robust and well-documented API that allows develo
 &ast;missing `Trash bin` and `File version` support.<br>
 &ast;&ast;available only for NextcloudApp
 
-### Differences between the NextCloud and NextCloudApp classes
+### Differences between the Nextcloud and NextcloudApp classes
 
-The **NextCloud** class functions as a standard NextCloud client,
+The **Nextcloud** class functions as a standard NextCloud client,
 enabling you to make API requests using a username and password.
 
-On the other hand, the **NextCloudApp** class is designed for creating applications for NextCloud.<br>
+On the other hand, the **NextcloudApp** class is designed for creating applications for Nextcloud.<br>
 It uses the [AppEcosystem](https://github.com/cloud-py-api/app_ecosystem_v2) to allow
 applications to impersonate users through a separate authentication mechanism.
 
 Both classes offer most of the same APIs,
-but NextCloudApp has a broader selection since applications typically require access to more APIs.
+but NextcloudApp has a broader selection since applications typically require access to more APIs.
 
-Any code written for the NextCloud class can easily be adapted for use with the NextCloudApp class,
+Any code written for the Nextcloud class can easily be adapted for use with the NextcloudApp class,
 as long as it doesn't involve calls that require user password verification.
 
 ### Support
