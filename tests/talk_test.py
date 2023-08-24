@@ -6,7 +6,10 @@ from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import Nextcloud, NextcloudException, talk
 
-if NC_TO_TEST and NC_TO_TEST[0].talk.available is False:
+if NC is None or NC_APP is None:
+    pytest.skip("Requires both Nextcloud Client and App modes.", allow_module_level=True)
+
+if NC_TO_TEST[0].talk.available is False:
     pytest.skip("Nextcloud Talk is not installed.", allow_module_level=True)
 
 
@@ -100,7 +103,6 @@ def test_get_conversations_include_status(nc):
         NC.users.delete(TEST_USER_NAME)
 
 
-@pytest.mark.skipif(NC_APP is None, reason="Not available without NextcloudApp.")
 @pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
 @pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
 def test_register_talk_bot():
