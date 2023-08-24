@@ -10,7 +10,7 @@ from nc_py_api import NextcloudApp, talk_bot
 from nc_py_api.ex_app import run_app, set_handlers, talk_bot_app
 
 APP = FastAPI()
-CURRENCY_BOT = talk_bot.TalkBot("/currency_talk_bot", "Currency convertor", "Usage: `Bot, convert 100 EUR to USD`")
+CURRENCY_BOT = talk_bot.TalkBot("/currency_talk_bot", "Currency convertor", "Usage: `@currency convert 100 EUR to USD`")
 
 
 def convert_currency(amount, from_currency, to_currency):
@@ -39,12 +39,14 @@ def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
     try:
         if message.object_name != "message":
             return
-        r = re.search(r"Bot.*convert\s(\d*)\s(\w*)\sto\s(\w*)", message.object_content["message"], re.IGNORECASE)
+        r = re.search(
+            r"@currency\s(convert\s)?(\d*)\s(\w*)\sto\s(\w*)", message.object_content["message"], re.IGNORECASE
+        )
         if r is None:
             return
-        converted_amount = convert_currency(int(r.group(1)), r.group(2), r.group(3))
+        converted_amount = convert_currency(int(r.group(2)), r.group(3), r.group(4))
         converted_amount = round(converted_amount, 2)
-        CURRENCY_BOT.send_message(f"{r.group(1)} {r.group(2)} is equal to {converted_amount} {r.group(3)}", message)
+        CURRENCY_BOT.send_message(f"{r.group(2)} {r.group(3)} is equal to {converted_amount} {r.group(4)}", message)
     except Exception as e:
         CURRENCY_BOT.send_message(f"Exception: {str(e)}", message)
 
@@ -73,7 +75,4 @@ def initialization():
 
 
 if __name__ == "__main__":
-    run_app(
-        "main:APP",
-        log_level="trace",
-    )
+    run_app("main:APP", log_level="trace")

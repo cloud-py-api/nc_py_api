@@ -39,7 +39,11 @@ def __check_sub_capability(split_capabilities: list[str], srv_capabilities: dict
     capabilities_nesting = srv_capabilities
     for i, v in enumerate(split_capabilities):
         if i != 0 and i == n_split_capabilities - 1:
-            return bool(capabilities_nesting.get(v, False))
+            return (
+                bool(capabilities_nesting.get(v, False))
+                if isinstance(capabilities_nesting, dict)
+                else bool(v in capabilities_nesting)
+            )
         if v not in capabilities_nesting:
             return False
         capabilities_nesting = capabilities_nesting[v]

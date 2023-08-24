@@ -201,7 +201,7 @@ class NextcloudApp(_NextcloudBasic):
         :return: The secret used for signing requests.
         """
         require_capabilities("app_ecosystem_v2", self._session.capabilities)
-        # require_capabilities("spreed.features.bots-v1", self._session.capabilities)
+        require_capabilities("spreed.features.bots-v1", self._session.capabilities)
         params = {
             "name": display_name,
             "route": callback_url,

@@ -160,7 +160,13 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -314,7 +320,13 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -571,7 +583,13 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -818,7 +836,13 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage combine && coverage xml && coverage html
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None
