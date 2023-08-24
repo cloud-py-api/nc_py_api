@@ -34,4 +34,4 @@ def initialization():
 
 
 if __name__ == "__main__":
-    run_app("main:APP", log_level="trace")
+    run_app("_talk_bot:APP", log_level="trace")
