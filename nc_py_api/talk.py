@@ -236,7 +236,7 @@ class TalkMessage:
     @property
     def parent(self) -> list:
         """To be refactored: `Description here <https://nextcloud-talk.readthedocs.io/en/latest/chat/#parent-data>`_."""
-        return self._raw_data["parent"]
+        return self._raw_data.get("parent", [])
 
     @property
     def reactions(self) -> dict:

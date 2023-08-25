@@ -73,6 +73,19 @@ def test_conversation_create_delete(nc):
     assert isinstance(talk_msg.token, str)
     assert talk_msg.actor_type in ("users", "guests", "bots", "bridged")
     assert isinstance(talk_msg.actor_id, str)
+    assert isinstance(talk_msg.actor_display_name, str)
+    assert isinstance(talk_msg.timestamp, int)
+    assert isinstance(talk_msg.system_message, str)
+    assert talk_msg.message_type in ("comment", "comment_deleted", "system", "command")
+    assert talk_msg.is_replyable is False
+    assert isinstance(talk_msg.reference_id, str)
+    assert isinstance(talk_msg.message, str)
+    assert isinstance(talk_msg.message_parameters, dict)
+    assert isinstance(talk_msg.expiration_timestamp, int)
+    assert isinstance(talk_msg.parent, list)
+    assert isinstance(talk_msg.reactions, dict)
+    assert isinstance(talk_msg.reactions_self, list)
+    assert isinstance(talk_msg.markdown, bool)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
