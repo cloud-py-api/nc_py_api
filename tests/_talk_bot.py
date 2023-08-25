@@ -4,6 +4,7 @@ import gfixture_set_env  # noqa
 import pytest
 import requests
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request
+from starlette.datastructures import URL
 
 from nc_py_api import talk_bot
 from nc_py_api.ex_app import run_app, talk_bot_app
@@ -36,6 +37,10 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
         del request._headers  # noqa
         talk_bot_app(request)
     assert e.value.status_code == 401
+    with pytest.raises(HTTPException) as e:
+        request._url = URL("sample_url")
+        talk_bot_app(request)
+    assert e.value.status_code == 500
 
 
 @APP.post("/talk_bot_coverage")
