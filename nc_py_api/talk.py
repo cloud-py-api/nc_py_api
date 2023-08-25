@@ -732,7 +732,7 @@ class _TalkAPI:
 
         :param message: The message the user wants to say.
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-            Need only if **reply_to_message** is not :py:class:`~nc_py_api.talk_bot.TalkMessage`
+            Need only if **reply_to_message** is not :py:class:`~nc_py_api.talk.TalkMessage`
         :param reply_to_message: The message ID this message is a reply to.
 
             .. note:: Only allowed when the message type is not ``system`` or ``command``.
