@@ -3,8 +3,8 @@ from typing import Annotated
 import requests
 from fastapi import BackgroundTasks, Depends, FastAPI
 
-from nc_py_api import NextcloudApp, talk_bot
-from nc_py_api.ex_app import run_app, set_handlers, talk_bot_app
+from nc_py_api import talk_bot
+from nc_py_api.ex_app import run_app, talk_bot_app
 
 APP = FastAPI()
 COVERAGE_BOT = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
@@ -21,16 +21,6 @@ async def currency_talk_bot(
 ):
     background_tasks.add_task(coverage_talk_bot_process_request, message)
     return requests.Response()
-
-
-def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
-    COVERAGE_BOT.enabled_handler(enabled, nc)
-    return ""
-
-
-@APP.on_event("startup")
-def initialization():
-    set_handlers(APP, enabled_handler)
 
 
 if __name__ == "__main__":

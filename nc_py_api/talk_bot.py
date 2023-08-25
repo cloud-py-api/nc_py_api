@@ -88,7 +88,7 @@ class TalkBot:
         self.display_name = display_name
         self.description = description
 
-    def enabled_handler(self, enabled: bool, nc: NextcloudApp):
+    def enabled_handler(self, enabled: bool, nc: NextcloudApp) -> None:
         """Handles the app ``on``/``off`` event in the context of the bot.
 
         :param enabled: Value that was passed to ``/enabled`` handler.

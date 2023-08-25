@@ -164,7 +164,7 @@ class TalkMessage:
     @property
     def token(self) -> str:
         """Token identifier of the conversation which is used for further interaction."""
-        return self._raw_data["id"]
+        return self._raw_data["token"]
 
     @property
     def actor_type(self) -> str:

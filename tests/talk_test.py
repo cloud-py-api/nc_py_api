@@ -4,7 +4,7 @@ import pytest
 from gfixture import NC, NC_APP, NC_TO_TEST, NC_VERSION
 from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
-from nc_py_api import Nextcloud, NextcloudException, talk
+from nc_py_api import Nextcloud, NextcloudException, talk, talk_bot
 
 if NC is None or NC_APP is None:
     pytest.skip("Requires both Nextcloud Client and App modes.", allow_module_level=True)
@@ -24,8 +24,8 @@ def test_conversation_create_delete(nc):
     nc.talk.delete_conversation(conversation)
     assert isinstance(conversation.conversation_id, int)
     assert isinstance(conversation.token, str) and conversation.token
-    assert isinstance(conversation.conversation_type, talk.ConversationType)
     assert isinstance(conversation.name, str)
+    assert isinstance(conversation.conversation_type, talk.ConversationType)
     assert isinstance(conversation.display_name, str)
     assert isinstance(conversation.description, str)
     assert isinstance(conversation.participant_type, talk.ParticipantType)
@@ -58,12 +58,21 @@ def test_conversation_create_delete(nc):
     assert isinstance(conversation.unread_mention, bool)
     assert isinstance(conversation.unread_mention_direct, bool)
     assert isinstance(conversation.last_read_message, int)
+    assert isinstance(conversation.last_message, talk.TalkMessage) or conversation.last_message is None
+    assert isinstance(conversation.last_common_read_message, int)
     assert isinstance(conversation.breakout_room_mode, talk.BreakoutRoomMode)
     assert isinstance(conversation.breakout_room_status, talk.BreakoutRoomStatus)
     assert isinstance(conversation.avatar_version, str)
     assert isinstance(conversation.is_custom_avatar, bool)
     assert isinstance(conversation.call_start_time, int)
     assert isinstance(conversation.recording_status, talk.CallRecordingStatus)
+    if conversation.last_message is None:
+        return
+    talk_msg = conversation.last_message
+    assert isinstance(talk_msg.message_id, int)
+    assert isinstance(talk_msg.token, str)
+    assert talk_msg.actor_type in ("users", "guests", "bots", "bridged")
+    assert isinstance(talk_msg.actor_id, str)
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
@@ -110,3 +119,10 @@ def test_register_talk_bot():
     # test second `register_talk_bot`
     # test `unregister_talk_bot`
     # test second `unregister_talk_bot`
+
+
+@pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
+@pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
+def test_chat_bot_receive_message():
+    talk_bot_inst = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
+    talk_bot_inst.enabled_handler(True, NC_APP)

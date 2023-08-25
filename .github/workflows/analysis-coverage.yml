@@ -166,7 +166,7 @@ jobs:
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
-          coverage run --data-file=.coverage.separate_special -m pytest tests/_separate_run_special.py
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -327,7 +327,7 @@ jobs:
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
-          coverage run --data-file=.coverage.separate_special -m pytest tests/_separate_run_special.py
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -452,7 +452,7 @@ jobs:
         working-directory: nc_py_api
         run: |
           coverage run --data-file=.coverage.ci -m pytest
-          coverage run --data-file=.coverage.separate_special -m pytest tests/_separate_run_special.py
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
           SKIP_NC_CLIENT_TESTS: 1
@@ -594,7 +594,7 @@ jobs:
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
-          coverage run --data-file=.coverage.separate_special -m pytest tests/_separate_run_special.py
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -711,7 +711,7 @@ jobs:
         working-directory: nc_py_api
         run: |
           coverage run -m pytest
-          coverage run --data-file=.coverage.separate_special -m pytest tests/_separate_run_special.py
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
           SKIP_AE_TESTS: 1
@@ -851,7 +851,7 @@ jobs:
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
-          coverage run --data-file=.coverage.separate_special -m pytest tests/_separate_run_special.py
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
           NPA_TIMEOUT: None
