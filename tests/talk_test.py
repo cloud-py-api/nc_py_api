@@ -178,6 +178,8 @@ def test_chat_bot_receive_message():
         NC_APP.talk.enable_bot(conversation, coverage_bot)
         c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
         assert c_bot_info.state == 1
+        with pytest.raises(ValueError):
+            NC_APP.talk.send_message("Here are the msg!")
         NC_APP.talk.send_message("Here are the msg!", conversation)
         msg_from_bot = None
         for _ in range(21):

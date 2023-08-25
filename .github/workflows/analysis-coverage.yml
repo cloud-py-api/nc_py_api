@@ -106,7 +106,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
-          php occ config:system:set allow_local_remote_servers --value true
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -265,7 +264,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1
           php occ config:system:set debug --value=true --type=boolean
-          php occ config:system:set allow_local_remote_servers --value true
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -413,7 +411,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
-          php occ config:system:set allow_local_remote_servers --value true
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -536,7 +533,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ config:system:set allow_local_remote_servers --value true
           ./occ app:enable notifications
           php -S localhost:8080 &
 
@@ -679,7 +675,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ config:system:set allow_local_remote_servers --value true
           ./occ app:enable notifications
           php -S localhost:8080 &
 
@@ -788,7 +783,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ config:system:set allow_local_remote_servers --value true
           ./occ app:enable notifications
           php -S localhost:8080 &
 
