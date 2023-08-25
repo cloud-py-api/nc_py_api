@@ -1,9 +1,7 @@
 import contextlib
 
 import pytest
-from gfixture import NC, NC_APP, NC_TO_TEST
-
-#  , NC_VERSION)
+from gfixture import NC, NC_APP, NC_TO_TEST, NC_VERSION
 from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import Nextcloud, NextcloudException, talk
@@ -105,10 +103,10 @@ def test_get_conversations_include_status(nc):
         NC.users.delete(TEST_USER_NAME)
 
 
-# @pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
-# @pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
-# def test_register_talk_bot():
-#     NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
-#     # test second `register_talk_bot`
-#     # test `unregister_talk_bot`
-#     # test second `unregister_talk_bot`
+@pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
+@pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
+def test_register_talk_bot():
+    NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
+    # test second `register_talk_bot`
+    # test `unregister_talk_bot`
+    # test second `unregister_talk_bot`
