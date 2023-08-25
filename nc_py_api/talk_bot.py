@@ -84,6 +84,12 @@ class TalkBot:
     _ep_base: str = "/ocs/v2.php/apps/spreed/api/v1/bot"
 
     def __init__(self, callback_url: str, display_name: str, description: str = ""):
+        """Class implementing Nextcloud Talk Bot functionality.
+
+        :param callback_url: FastAPI endpoint which will be assigned to bot.
+        :param display_name: The display name of the bot that is shown as author when it posts a message or reaction.
+        :param description: Description of the bot helping moderators to decide if they want to enable this bot.
+        """
         self.callback_url = callback_url
         self.display_name = display_name
         self.description = description
@@ -109,7 +115,6 @@ class TalkBot:
         :param reply_to_message: The message ID this message is a reply to.
 
             .. note:: Only allowed when the message type is not ``system`` or ``command``.
-                The message you are replying to should be from the same conversation.
         :param silent: Flag controlling if the message should create a chat notifications for the users.
         :param token: Token of the conversation.
             Can be empty if ``reply_to_message`` is :py:class:`~nc_py_api.talk_bot.TalkBotMessage`.

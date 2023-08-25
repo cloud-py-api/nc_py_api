@@ -1,5 +1,6 @@
 from typing import Annotated
 
+import gfixture_set_env  # noqa
 import requests
 from fastapi import BackgroundTasks, Depends, FastAPI
 
@@ -11,7 +12,10 @@ COVERAGE_BOT = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
 
 
 def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage):
-    _ = message
+    COVERAGE_BOT.react_to_message(message, "🥳")
+    COVERAGE_BOT.react_to_message(message, "🫡")
+    COVERAGE_BOT.delete_reaction(message, "🫡")
+    COVERAGE_BOT.send_message("Hello from bot!", message)
 
 
 @APP.post("/talk_bot_coverage")

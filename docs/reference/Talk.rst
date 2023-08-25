@@ -52,3 +52,10 @@ Talk API
 .. autoclass:: nc_py_api.talk.BreakoutRoomStatus
     :members:
     :undoc-members:
+
+.. autoclass:: nc_py_api.talk.BotInfo
+    :members:
+    :inherited-members:
+
+.. autoclass:: nc_py_api.talk.BotInfoBasic
+    :members:

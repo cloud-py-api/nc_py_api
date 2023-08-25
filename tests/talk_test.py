@@ -19,6 +19,11 @@ def test_available(nc):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_bots_available(nc):
+    assert isinstance(nc.talk.bots_available, bool)
+
+
+@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_conversation_create_delete(nc):
     conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     nc.talk.delete_conversation(conversation)
@@ -127,11 +132,37 @@ def test_get_conversations_include_status(nc):
 
 @pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
 @pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
-def test_register_talk_bot():
+def test_register_unregister_talk_bot():
+    # assert len(list_of_bots) == NC_APP.talk.list_bots()
     NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
+    # assert len(list_of_bots) + 1 == NC_APP.talk.list_bots()
     # test second `register_talk_bot`
+    # assert len(list_of_bots) + 1 == NC_APP.talk.list_bots()
     # test `unregister_talk_bot`
+    # assert len(list_of_bots) == NC_APP.talk.list_bots()
     # test second `unregister_talk_bot`
+    # assert len(list_of_bots) == NC_APP.talk.list_bots()
+
+
+@pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
+@pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
+@pytest.mark.parametrize("nc", NC_TO_TEST)
+def test_list_bots(nc):
+    NC_APP.register_talk_bot("/some_url", "some bot name", "some desc")
+    registered_bot = [i for i in nc.talk.list_bots() if i.bot_name == "some bot name"][0]
+    assert isinstance(registered_bot.bot_id, int)
+    assert registered_bot.url.find("/some_url") != -1
+    assert registered_bot.description == "some desc"
+    assert registered_bot.state == 1
+    assert not registered_bot.error_count
+    assert registered_bot.last_error_date == 0
+    assert registered_bot.last_error_message is None
+    assert isinstance(registered_bot.url_hash, str)
+    conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        assert nc.talk.conversation_list_bots(conversation)
+    finally:
+        nc.talk.delete_conversation(conversation.token)
 
 
 @pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
@@ -139,3 +170,26 @@ def test_register_talk_bot():
 def test_chat_bot_receive_message():
     talk_bot_inst = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
     talk_bot_inst.enabled_handler(True, NC_APP)
+    conversation = NC_APP.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        coverage_bot = [i for i in NC_APP.talk.list_bots() if i.url.endswith("/talk_bot_coverage")][0]
+        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        assert c_bot_info.state == 0
+        NC_APP.talk.enable_bot(conversation, coverage_bot)
+        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        assert c_bot_info.state == 1
+        NC_APP.talk.send_message("Here are the msg!", conversation)
+        msg_from_bot = None
+        for _ in range(21):
+            messages = NC_APP.talk.receive_messages(conversation, look_in_future=True, timeout=1)
+            if messages[-1].message == "Hello from bot!":
+                msg_from_bot = messages[-1]
+                break
+        assert msg_from_bot
+        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        assert c_bot_info.state == 1
+        NC_APP.talk.disable_bot(conversation, coverage_bot)
+        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        assert c_bot_info.state == 0
+    finally:
+        NC_APP.talk.delete_conversation(conversation.token)
