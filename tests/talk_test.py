@@ -109,7 +109,6 @@ def test_get_conversations_modified_since(nc):
 
 
 @pytest.mark.parametrize("nc", NC_TO_TEST)
-@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
 def test_get_conversations_include_status(nc):
     with contextlib.suppress(NextcloudException):
         NC.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
@@ -182,7 +181,7 @@ def test_chat_bot_receive_message():
             NC_APP.talk.send_message("Here are the msg!")
         NC_APP.talk.send_message("Here are the msg!", conversation)
         msg_from_bot = None
-        for _ in range(21):
+        for _ in range(40):
             messages = NC_APP.talk.receive_messages(conversation, look_in_future=True, timeout=1)
             if messages[-1].message == "Hello from bot!":
                 msg_from_bot = messages[-1]
@@ -195,3 +194,7 @@ def test_chat_bot_receive_message():
         assert c_bot_info.state == 0
     finally:
         NC_APP.talk.delete_conversation(conversation.token)
+        talk_bot_inst.enabled_handler(False, NC_APP)
+    talk_bot_inst.callback_url = "invalid_url"
+    with pytest.raises(RuntimeError):
+        talk_bot_inst.send_message("message", 999999, token="sometoken")
