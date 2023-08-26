@@ -106,7 +106,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
-          php occ config:system:set allow_local_remote_servers --value true
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -136,7 +135,7 @@ jobs:
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
@@ -160,7 +159,14 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -258,7 +264,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1
           php occ config:system:set debug --value=true --type=boolean
-          php occ config:system:set allow_local_remote_servers --value true
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -290,7 +295,7 @@ jobs:
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
@@ -314,7 +319,14 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -399,7 +411,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
-          php occ config:system:set allow_local_remote_servers --value true
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -429,14 +440,17 @@ jobs:
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.ci -m pytest
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+          coverage combine && coverage xml && coverage html
         env:
           SKIP_NC_CLIENT_TESTS: 1
 
@@ -519,7 +533,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ config:system:set allow_local_remote_servers --value true
           ./occ app:enable notifications
           php -S localhost:8080 &
 
@@ -549,7 +562,7 @@ jobs:
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
@@ -571,7 +584,14 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -655,7 +675,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ config:system:set allow_local_remote_servers --value true
           ./occ app:enable notifications
           php -S localhost:8080 &
 
@@ -685,7 +704,10 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run -m pytest && coverage xml && coverage html
+        run: |
+          coverage run -m pytest
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+          coverage combine && coverage xml && coverage html
         env:
           SKIP_AE_TESTS: 1
           NPA_NC_CERT: ''
@@ -761,7 +783,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ config:system:set allow_local_remote_servers --value true
           ./occ app:enable notifications
           php -S localhost:8080 &
 
@@ -795,7 +816,7 @@ jobs:
           cd ..
           php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
           php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\"]},\"protocol\":\"http\",\"port\":$APP_PORT,\"system_app\":1}" \
+            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"protocol\":\"http\",\"port\":$APP_PORT,\"system_app\":1}" \
             -e --force-scopes
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
@@ -818,7 +839,14 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: coverage run --data-file=.coverage.ci -m pytest && coverage combine && coverage xml && coverage html
+        run: |
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+          coverage combine && coverage xml && coverage html
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None

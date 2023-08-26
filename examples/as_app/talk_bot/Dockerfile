@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.11-alpine
 
 COPY requirements.txt /
 ADD /src/ /app/

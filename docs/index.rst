@@ -31,6 +31,7 @@ Have a great time with Python and Nextcloud!
    FirstSteps
    MoreAPIs
    NextcloudApp
+   NextcloudTalkBot
    NextcloudSysApp
    Options
    reference/index.rst

@@ -11,4 +11,5 @@ Reference
    ExApp
    Exceptions
    Talk
+   TalkBot
    Session

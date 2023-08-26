@@ -51,6 +51,7 @@ html_logo = "resources/logo.svg"
 
 html_theme_options = {
     "display_version": True,
+    "logo_only": True,
 }
 
 # If true, `todos` produce output. Else they produce nothing.

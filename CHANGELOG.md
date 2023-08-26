@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.41 - 2023-08-25]
+
+### Added
+
+- Nextcloud Talk API for bots + example
+
 ## [0.0.40 - 2023-08-22]
 
 ### Added
