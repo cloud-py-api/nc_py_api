@@ -5,6 +5,7 @@ from typing import Optional, Union
 from fastapi import Request
 from httpx import Headers as HttpxHeaders
 
+from ._exceptions import NextcloudExceptionNotFound
 from ._misc import check_capabilities, require_capabilities
 from ._preferences import PreferencesAPI
 from ._preferences_ex import AppConfigExAPI, PreferencesExAPI
@@ -209,6 +210,23 @@ class NextcloudApp(_NextcloudBasic):
         }
         result = self._session.ocs(method="POST", path=f"{self._session.ae_url}/talk_bot", json=params)
         return result["id"], result["secret"]
+
+    def unregister_talk_bot(self, callback_url: str) -> bool:
+        """Unregisters Talk BOT.
+
+        :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
+        :return: The secret used for signing requests.
+        """
+        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("spreed.features.bots-v1", self._session.capabilities)
+        params = {
+            "route": callback_url,
+        }
+        try:
+            self._session.ocs(method="DELETE", path=f"{self._session.ae_url}/talk_bot", json=params)
+        except NextcloudExceptionNotFound:
+            return False
+        return True
 
     def request_sign_check(self, request: Request) -> bool:
         """Verifies the signature and validity of an incoming request from the Nextcloud.

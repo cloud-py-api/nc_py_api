@@ -1,4 +1,4 @@
-FROM python:3.11.4-bookworm
+FROM python:3.11-bookworm
 
 COPY requirements.txt /
 ADD /src/ /app/

@@ -132,15 +132,16 @@ def test_get_conversations_include_status(nc):
 @pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
 @pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
 def test_register_unregister_talk_bot():
-    # assert len(list_of_bots) == NC_APP.talk.list_bots()
+    NC_APP.unregister_talk_bot("/talk_bot_coverage")
+    list_of_bots = NC_APP.talk.list_bots()
     NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
-    # assert len(list_of_bots) + 1 == NC_APP.talk.list_bots()
-    # test second `register_talk_bot`
-    # assert len(list_of_bots) + 1 == NC_APP.talk.list_bots()
-    # test `unregister_talk_bot`
-    # assert len(list_of_bots) == NC_APP.talk.list_bots()
-    # test second `unregister_talk_bot`
-    # assert len(list_of_bots) == NC_APP.talk.list_bots()
+    assert len(list_of_bots) + 1 == len(NC_APP.talk.list_bots())
+    NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
+    assert len(list_of_bots) + 1 == len(NC_APP.talk.list_bots())
+    assert NC_APP.unregister_talk_bot("/talk_bot_coverage") is True
+    assert len(list_of_bots) == len(NC_APP.talk.list_bots())
+    assert NC_APP.unregister_talk_bot("/talk_bot_coverage") is False
+    assert len(list_of_bots) == len(NC_APP.talk.list_bots())
 
 
 @pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")

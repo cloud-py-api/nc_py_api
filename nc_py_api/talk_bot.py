@@ -104,7 +104,7 @@ class TalkBot:
             bot_id, bot_secret = nc.register_talk_bot(self.callback_url, self.display_name, self.description)
             os.environ[bot_id] = bot_secret
         else:
-            pass  # to-do: unregistering bot
+            nc.unregister_talk_bot(self.callback_url)
 
     def send_message(
         self, message: str, reply_to_message: typing.Union[int, TalkBotMessage], silent: bool = False, token: str = ""
