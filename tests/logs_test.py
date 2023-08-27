@@ -55,8 +55,8 @@ def test_log_without_app_ecosystem_v2(nc_app):
     srv_capabilities.pop("app_ecosystem_v2")
     patched_capabilities = {"capabilities": srv_capabilities, "version": srv_version}
     with (
-        mock.patch.dict("gfixture.NC_APP._session._capabilities", patched_capabilities, clear=True),
-        mock.patch("gfixture.NC_APP._session._ocs") as _ocs,
+        mock.patch.dict("conftest.NC_APP._session._capabilities", patched_capabilities, clear=True),
+        mock.patch("conftest.NC_APP._session._ocs") as _ocs,
     ):
         nc_app.log(log_lvl, "will not be sent")
         _ocs.assert_not_called()
