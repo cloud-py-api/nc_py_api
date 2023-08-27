@@ -7,7 +7,12 @@ import pytest
 from nc_py_api import Nextcloud, NextcloudApp, _session  # noqa
 
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
-NC_APP = None if environ.get("SKIP_AE_TESTS", False) else NextcloudApp(user="admin")
+if environ.get("SKIP_AE_TESTS", False):
+    NC_APP = None
+else:
+    NC_APP = NextcloudApp(user="admin")
+    if "app_ecosystem_v2" not in NC_APP.capabilities:
+        NC_APP = None
 if NC_CLIENT is None and NC_APP is None:
     raise EnvironmentError("Tests require at least Nextcloud or NextcloudApp.")
 

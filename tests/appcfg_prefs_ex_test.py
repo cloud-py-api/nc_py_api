@@ -4,7 +4,7 @@ from conftest import NC_APP
 from nc_py_api import NextcloudExceptionNotFound
 
 if NC_APP is None:
-    pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)
+    pytest.skip("Need App mode", allow_module_level=True)
 
 
 @pytest.mark.parametrize("class_to_test", (NC_APP.appconfig_ex, NC_APP.preferences_ex))
