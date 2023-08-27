@@ -2,9 +2,6 @@ import os
 import sys
 from subprocess import PIPE, run
 
-import pytest
-from gfixture import NC_TO_TEST
-
 import nc_py_api
 
 
@@ -50,8 +47,7 @@ def test_timeouts():
             os.rename(env_backup_file, env_file)
 
 
-@pytest.mark.skipif(not NC_TO_TEST, reason="Need Nextcloud or NextcloudApp.")
-def test_xdebug_session():
+def test_xdebug_session(nc_any):
     nc_py_api.options.XDEBUG_SESSION = "12345"
-    new_nc = nc_py_api.Nextcloud() if isinstance(NC_TO_TEST[0], nc_py_api.Nextcloud) else nc_py_api.NextcloudApp()
+    new_nc = nc_py_api.Nextcloud() if isinstance(nc_any, nc_py_api.Nextcloud) else nc_py_api.NextcloudApp()
     assert new_nc._session.adapter.cookies["XDEBUG_SESSION"] == "12345"

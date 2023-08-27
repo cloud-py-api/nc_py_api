@@ -1,30 +1,14 @@
 import contextlib
 
 import pytest
-from gfixture import NC, NC_APP, NC_TO_TEST, NC_VERSION
 from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import Nextcloud, NextcloudException, talk, talk_bot
 
-if NC is None or NC_APP is None:
-    pytest.skip("Requires both Nextcloud Client and App modes.", allow_module_level=True)
 
-if NC_TO_TEST[0].talk.available is False:
-    pytest.skip("Nextcloud Talk is not installed.", allow_module_level=True)
-
-
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_available(nc):
-    assert nc.talk.available
-
-
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_bots_available(nc):
-    assert isinstance(nc.talk.bots_available, bool)
-
-
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_conversation_create_delete(nc):
+    if nc.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
     conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     nc.talk.delete_conversation(conversation)
     assert isinstance(conversation.conversation_id, int)
@@ -93,8 +77,9 @@ def test_conversation_create_delete(nc):
     assert isinstance(talk_msg.markdown, bool)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_conversations_modified_since(nc):
+    if nc.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
     conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
         conversations = nc.talk.get_user_conversations()
@@ -108,10 +93,11 @@ def test_get_conversations_modified_since(nc):
         nc.talk.delete_conversation(conversation.token)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_get_conversations_include_status(nc):
+def test_get_conversations_include_status(nc, nc_client):
+    if nc.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
     with contextlib.suppress(NextcloudException):
-        NC.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
+        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
     nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
     nc_second_user.user_status.set_status_type("away")
     conversation = nc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, TEST_USER_NAME)
@@ -126,29 +112,30 @@ def test_get_conversations_include_status(nc):
         assert first_conv.status_type == "away"
     finally:
         nc.talk.leave_conversation(conversation.token)
-        NC.users.delete(TEST_USER_NAME)
+        nc_client.users.delete(TEST_USER_NAME)
 
 
-@pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
-@pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
-def test_register_unregister_talk_bot():
-    NC_APP.unregister_talk_bot("/talk_bot_coverage")
-    list_of_bots = NC_APP.talk.list_bots()
-    NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
-    assert len(list_of_bots) + 1 == len(NC_APP.talk.list_bots())
-    NC_APP.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
-    assert len(list_of_bots) + 1 == len(NC_APP.talk.list_bots())
-    assert NC_APP.unregister_talk_bot("/talk_bot_coverage") is True
-    assert len(list_of_bots) == len(NC_APP.talk.list_bots())
-    assert NC_APP.unregister_talk_bot("/talk_bot_coverage") is False
-    assert len(list_of_bots) == len(NC_APP.talk.list_bots())
+@pytest.mark.require_nc(major=27, minor=1)
+def test_register_unregister_talk_bot(nc_app):
+    if nc_app.talk.bots_available is False:
+        pytest.skip("Need Talk bots support")
+    nc_app.unregister_talk_bot("/talk_bot_coverage")
+    list_of_bots = nc_app.talk.list_bots()
+    nc_app.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
+    assert len(list_of_bots) + 1 == len(nc_app.talk.list_bots())
+    nc_app.register_talk_bot("/talk_bot_coverage", "Coverage bot", "Desc")
+    assert len(list_of_bots) + 1 == len(nc_app.talk.list_bots())
+    assert nc_app.unregister_talk_bot("/talk_bot_coverage") is True
+    assert len(list_of_bots) == len(nc_app.talk.list_bots())
+    assert nc_app.unregister_talk_bot("/talk_bot_coverage") is False
+    assert len(list_of_bots) == len(nc_app.talk.list_bots())
 
 
-@pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
-@pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_list_bots(nc):
-    NC_APP.register_talk_bot("/some_url", "some bot name", "some desc")
+@pytest.mark.require_nc(major=27, minor=1)
+def test_list_bots(nc, nc_app):
+    if nc_app.talk.bots_available is False:
+        pytest.skip("Need Talk bots support")
+    nc_app.register_talk_bot("/some_url", "some bot name", "some desc")
     registered_bot = [i for i in nc.talk.list_bots() if i.bot_name == "some bot name"][0]
     assert isinstance(registered_bot.bot_id, int)
     assert registered_bot.url.find("/some_url") != -1
@@ -165,37 +152,38 @@ def test_list_bots(nc):
         nc.talk.delete_conversation(conversation.token)
 
 
-@pytest.mark.skipif(NC_VERSION["major"] < 27 and NC_VERSION["minor"] >= 1, reason="Run only on NC27.1+")
-@pytest.mark.skipif(NC_APP.check_capabilities("spreed.features.bots-v1"), reason="Need Talk bots support.")
-def test_chat_bot_receive_message():
+@pytest.mark.require_nc(major=27, minor=1)
+def test_chat_bot_receive_message(nc_app):
+    if nc_app.talk.bots_available is False:
+        pytest.skip("Need Talk bots support")
     talk_bot_inst = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
-    talk_bot_inst.enabled_handler(True, NC_APP)
-    conversation = NC_APP.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    talk_bot_inst.enabled_handler(True, nc_app)
+    conversation = nc_app.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
-        coverage_bot = [i for i in NC_APP.talk.list_bots() if i.url.endswith("/talk_bot_coverage")][0]
-        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        coverage_bot = [i for i in nc_app.talk.list_bots() if i.url.endswith("/talk_bot_coverage")][0]
+        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
         assert c_bot_info.state == 0
-        NC_APP.talk.enable_bot(conversation, coverage_bot)
-        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        nc_app.talk.enable_bot(conversation, coverage_bot)
+        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
         assert c_bot_info.state == 1
         with pytest.raises(ValueError):
-            NC_APP.talk.send_message("Here are the msg!")
-        NC_APP.talk.send_message("Here are the msg!", conversation)
+            nc_app.talk.send_message("Here are the msg!")
+        nc_app.talk.send_message("Here are the msg!", conversation)
         msg_from_bot = None
         for _ in range(40):
-            messages = NC_APP.talk.receive_messages(conversation, look_in_future=True, timeout=1)
+            messages = nc_app.talk.receive_messages(conversation, look_in_future=True, timeout=1)
             if messages[-1].message == "Hello from bot!":
                 msg_from_bot = messages[-1]
                 break
         assert msg_from_bot
-        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
         assert c_bot_info.state == 1
-        NC_APP.talk.disable_bot(conversation, coverage_bot)
-        c_bot_info = [i for i in NC_APP.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        nc_app.talk.disable_bot(conversation, coverage_bot)
+        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
         assert c_bot_info.state == 0
     finally:
-        NC_APP.talk.delete_conversation(conversation.token)
-        talk_bot_inst.enabled_handler(False, NC_APP)
+        nc_app.talk.delete_conversation(conversation.token)
+        talk_bot_inst.enabled_handler(False, nc_app)
     talk_bot_inst.callback_url = "invalid_url"
     with pytest.raises(RuntimeError):
         talk_bot_inst.send_message("message", 999999, token="sometoken")

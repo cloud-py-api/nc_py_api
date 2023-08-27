@@ -2,7 +2,6 @@ import contextlib
 import datetime
 
 import pytest
-from gfixture import NC, NC_TO_TEST
 from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import (
@@ -15,12 +14,10 @@ from nc_py_api import (
 from nc_py_api.files.sharing import Share
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_available(nc):
     assert nc.files.sharing.available
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_delete(nc):
     nc.files.upload("share_test.txt", content="content of file")
     try:
@@ -32,7 +29,6 @@ def test_create_delete(nc):
         nc.files.delete("share_test.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_share_fields(nc):
     shared_file = nc.files.upload("share_test.txt", content="content of file")
     try:
@@ -60,38 +56,36 @@ def test_share_fields(nc):
         nc.files.delete("share_test.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_create_permissions(nc):
-    nc.files.makedirs("share_test", exist_ok=True)
+def test_create_permissions(nc_any):
+    nc_any.files.makedirs("share_test", exist_ok=True)
     try:
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_CREATE)
-        nc.files.sharing.delete(new_share)
+        new_share = nc_any.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_CREATE)
+        nc_any.files.sharing.delete(new_share)
         assert (
             new_share.permissions
             == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
         )
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE)
-        nc.files.sharing.delete(new_share)
+        new_share = nc_any.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE)
+        nc_any.files.sharing.delete(new_share)
         assert (
             new_share.permissions
             == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_DELETE | FilePermissions.PERMISSION_SHARE
         )
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE)
-        nc.files.sharing.delete(new_share)
+        new_share = nc_any.files.sharing.create("share_test", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE)
+        nc_any.files.sharing.delete(new_share)
         assert (
             new_share.permissions
             == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_UPDATE | FilePermissions.PERMISSION_SHARE
         )
     finally:
-        nc.files.delete("share_test")
+        nc_any.files.delete("share_test")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_create_public_upload(nc):
-    nc.files.makedirs("share_test", exist_ok=True)
+def test_create_public_upload(nc_any):
+    nc_any.files.makedirs("share_test", exist_ok=True)
     try:
-        new_share = nc.files.sharing.create("share_test", ShareType.TYPE_LINK, public_upload=True)
-        nc.files.sharing.delete(new_share)
+        new_share = nc_any.files.sharing.create("share_test", ShareType.TYPE_LINK, public_upload=True)
+        nc_any.files.sharing.delete(new_share)
         assert (
             new_share.permissions
             == FilePermissions.PERMISSION_READ
@@ -101,10 +95,9 @@ def test_create_public_upload(nc):
             | FilePermissions.PERMISSION_CREATE
         )
     finally:
-        nc.files.delete("share_test")
+        nc_any.files.delete("share_test")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_password(nc):
     if nc.check_capabilities("spreed"):
         pytest.skip(reason="Talk is not installed.")
@@ -124,7 +117,6 @@ def test_create_password(nc):
         nc.files.delete("share_test.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_note_label(nc):
     nc.files.upload("share_test.txt", content="content of file")
     try:
@@ -136,7 +128,6 @@ def test_create_note_label(nc):
         nc.files.delete("share_test.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_expire_time(nc):
     nc.files.upload("share_test.txt", content="content of file")
     try:
@@ -156,7 +147,6 @@ def test_create_expire_time(nc):
         nc.files.delete("share_test.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_list(nc):
     shared_file = nc.files.upload("share_test.txt", content="content of file")
     try:
@@ -179,7 +169,6 @@ def test_get_list(nc):
         nc.files.delete("share_test.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_create_update(nc):
     if nc.check_capabilities("spreed"):
         pytest.skip(reason="Talk is not installed.")
@@ -216,7 +205,6 @@ def test_create_update(nc):
         nc.files.delete("share_test")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_inherited(nc):
     nc.files.makedirs("test_folder1/test_subfolder", exist_ok=True)
     nc.files.upload("test_folder1/test_subfolder/share_test.txt", content="content of file")
@@ -233,11 +221,9 @@ def test_get_inherited(nc):
         nc.files.delete("test_folder1")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
-def test_share_with(nc):
+def test_share_with(nc, nc_client):
     with contextlib.suppress(NextcloudException):
-        NC.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
+        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
     nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
     assert not nc_second_user.files.sharing.get_list()
     nc.files.makedirs("test_folder1/test_subfolder", exist_ok=True)
@@ -259,10 +245,9 @@ def test_share_with(nc):
     finally:
         nc.files.delete("share_test.txt", not_fail=True)
         nc.files.delete("test_folder1", not_fail=True)
-        NC.users.delete(TEST_USER_NAME)
+        nc_client.users.delete(TEST_USER_NAME)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_pending(nc):
     assert isinstance(nc.files.sharing.get_pending(), list)
     with pytest.raises(NextcloudExceptionNotFound):
@@ -271,7 +256,6 @@ def test_pending(nc):
         nc.files.sharing.decline_share(99999999)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_deleted(nc):
     assert isinstance(nc.files.sharing.get_deleted(), list)
     with pytest.raises(NextcloudExceptionNotFound):

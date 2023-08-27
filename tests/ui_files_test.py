@@ -3,7 +3,6 @@ from os import environ
 from time import sleep
 
 import pytest
-from gfixture import NC_APP
 from PIL import Image
 
 from nc_py_api import FilePermissions, FsNode, NextcloudExceptionNotFound, ex_app
@@ -17,25 +16,22 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as exp_cond
 from selenium.webdriver.support.wait import WebDriverWait
 
-if NC_APP is None or "app_ecosystem_v2" not in NC_APP.capabilities:
-    pytest.skip("app_ecosystem_v2 is not installed.", allow_module_level=True)
-
 
 @pytest.mark.skipif(environ.get("CI", None) is not None, reason="do not work on GitHub")
 @pytest.mark.skipif(
     not environ.get("NC_AUTH_USER", None) or not environ.get("NC_AUTH_PASS", None),
     reason="needs username & password for tests.",
 )
-def test_register_ui_file_actions():
+def test_register_ui_file_actions(nc_app):
     im = BytesIO()
     Image.linear_gradient("L").resize((768, 768)).save(im, format="PNG")
     try:
-        NC_APP.files.makedirs("test_ui_action", exist_ok=True)
-        NC_APP.files.upload("test_ui_action/tmp.png", bytes(im.getbuffer()))
-        tmp_png = NC_APP.files.by_path("test_ui_action/tmp.png")
-        NC_APP.ui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
-        NC_APP.ui.files_dropdown_menu.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
-        NC_APP.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
+        nc_app.files.makedirs("test_ui_action", exist_ok=True)
+        nc_app.files.upload("test_ui_action/tmp.png", bytes(im.getbuffer()))
+        tmp_png = nc_app.files.by_path("test_ui_action/tmp.png")
+        nc_app.ui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
+        nc_app.ui.files_dropdown_menu.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
+        nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
         opts = webdriver.FirefoxOptions()
         opts.add_argument("--headless")
         driver = webdriver.Firefox(opts)
@@ -64,22 +60,22 @@ def test_register_ui_file_actions():
                 driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_txt")]')
         finally:
             driver.quit()
-        NC_APP.ui.files_dropdown_menu.unregister("test_ui_action_im")
-        NC_APP.ui.files_dropdown_menu.unregister("test_ui_action_txt")
-        NC_APP.ui.files_dropdown_menu.unregister("test_ui_action_any")
+        nc_app.ui.files_dropdown_menu.unregister("test_ui_action_im")
+        nc_app.ui.files_dropdown_menu.unregister("test_ui_action_txt")
+        nc_app.ui.files_dropdown_menu.unregister("test_ui_action_any")
     finally:
-        NC_APP.files.delete("test_ui_action", not_fail=True)
+        nc_app.files.delete("test_ui_action", not_fail=True)
 
 
-def test_unregister_ui_file_actions():
-    NC_APP.ui.files_dropdown_menu.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
-    NC_APP.ui.files_dropdown_menu.unregister("test_ui_action")
-    NC_APP.ui.files_dropdown_menu.unregister("test_ui_action")
+def test_unregister_ui_file_actions(nc_app):
+    nc_app.ui.files_dropdown_menu.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
+    nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
+    nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
     with pytest.raises(NextcloudExceptionNotFound):
-        NC_APP.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)
+        nc_app.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)
 
 
-def test_ui_file_to_fs_node():
+def test_ui_file_to_fs_node(nc_app):
     def ui_action_check(directory: str, fs_object: FsNode):
         permissions = 0
         if fs_object.is_readable:
@@ -123,15 +119,15 @@ def test_ui_file_to_fs_node():
         assert fs_node.info.size == fs_object.info.size
         assert fs_node.info.fileid == fs_object.info.fileid
 
-    NC_APP.files.makedirs("some folder", exist_ok=True)
-    NC_APP.files.upload("some folder/zero", content="")
-    NC_APP.files.upload("some folder/test_root.txt", content="content!")
+    nc_app.files.makedirs("some folder", exist_ok=True)
+    nc_app.files.upload("some folder/zero", content="")
+    nc_app.files.upload("some folder/test_root.txt", content="content!")
     try:
-        for each_file in NC_APP.files.listdir():
+        for each_file in nc_app.files.listdir():
             ui_action_check(directory="/", fs_object=each_file)
-        sub_dir = NC_APP.files.listdir("some folder")
+        sub_dir = nc_app.files.listdir("some folder")
         assert sub_dir
         for each_file in sub_dir:
             ui_action_check(directory="/some folder", fs_object=each_file)
     finally:
-        NC_APP.files.delete("some folder")
+        nc_app.files.delete("some folder")

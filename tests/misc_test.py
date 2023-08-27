@@ -1,5 +1,4 @@
 import pytest
-from gfixture import NC_APP, NC_TO_TEST
 
 from nc_py_api import NextcloudException
 from nc_py_api._deffered_error import DeferredError  # noqa
@@ -26,18 +25,17 @@ def test_nc_exception_to_str():
         assert str(e) == f"[666] {reason} <{info}>"
 
 
-@pytest.mark.skipif(NC_APP is None, reason="Test assumes the AppEcosystem is installed")
-def test_require_capabilities():
-    require_capabilities("app_ecosystem_v2", NC_APP.capabilities)
-    require_capabilities(["app_ecosystem_v2", "theming"], NC_APP.capabilities)
+def test_require_capabilities(nc_app):
+    require_capabilities("app_ecosystem_v2", nc_app.capabilities)
+    require_capabilities(["app_ecosystem_v2", "theming"], nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities("non_exist_capability", NC_APP.capabilities)
+        require_capabilities("non_exist_capability", nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities(["non_exist_capability", "app_ecosystem_v2"], NC_APP.capabilities)
+        require_capabilities(["non_exist_capability", "app_ecosystem_v2"], nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities(["non_exist_capability", "non_exist_capability2", "app_ecosystem_v2"], NC_APP.capabilities)
+        require_capabilities(["non_exist_capability", "non_exist_capability2", "app_ecosystem_v2"], nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities("app_ecosystem_v2.non_exist_capability", NC_APP.capabilities)
+        require_capabilities("app_ecosystem_v2.non_exist_capability", nc_app.capabilities)
 
 
 def test_config_get_value():
@@ -57,7 +55,6 @@ def test_deffered_error():
         unknown_non_exist_module.some_class_or_func()
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_ocs_response_headers(nc):
     old_headers = nc.response_headers
     nc.users.get_details()
