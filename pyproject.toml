@@ -134,6 +134,9 @@ filterwarnings = [
 ]
 log_cli = true
 addopts = "-rs --color=yes"
+markers = [
+    "require_nc: marks a test that requires a minimum version of Nextcloud.",
+]
 
 [tool.coverage.run]
 cover_pylib = true

@@ -1,71 +1,59 @@
 import pytest
-from gfixture import NC_TO_TEST
-
-from nc_py_api import Nextcloud
 
 APP_NAME = "files_trashbin"
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_apps_types(nc):
     assert isinstance(nc.apps.get_list(), list)
     assert isinstance(nc.apps.get_list(enabled=True), list)
     assert isinstance(nc.apps.get_list(enabled=False), list)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_apps(nc):
     apps = nc.apps.get_list()
     assert apps
     assert APP_NAME in apps
 
 
-@pytest.mark.skipif(not isinstance(NC_TO_TEST[:1][0], Nextcloud), reason="Not available for NextcloudApp.")
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_app_enable_disable(nc):
-    assert nc.apps.is_installed(APP_NAME) is True
-    if nc.apps.is_enabled(APP_NAME):
-        nc.apps.disable(APP_NAME)
-    assert nc.apps.is_disabled(APP_NAME) is True
-    assert nc.apps.is_enabled(APP_NAME) is False
-    assert nc.apps.is_installed(APP_NAME) is True
-    nc.apps.enable(APP_NAME)
-    assert nc.apps.is_enabled(APP_NAME) is True
-    assert nc.apps.is_installed(APP_NAME) is True
+def test_app_enable_disable(nc_client):
+    assert nc_client.apps.is_installed(APP_NAME) is True
+    if nc_client.apps.is_enabled(APP_NAME):
+        nc_client.apps.disable(APP_NAME)
+    assert nc_client.apps.is_disabled(APP_NAME) is True
+    assert nc_client.apps.is_enabled(APP_NAME) is False
+    assert nc_client.apps.is_installed(APP_NAME) is True
+    nc_client.apps.enable(APP_NAME)
+    assert nc_client.apps.is_enabled(APP_NAME) is True
+    assert nc_client.apps.is_installed(APP_NAME) is True
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_is_installed_enabled(nc):
     assert nc.apps.is_enabled(APP_NAME) != nc.apps.is_disabled(APP_NAME)
     assert nc.apps.is_installed(APP_NAME)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_invalid_param(nc):
+def test_invalid_param(nc_any):
     with pytest.raises(ValueError):
-        nc.apps.is_enabled("")
+        nc_any.apps.is_enabled("")
     with pytest.raises(ValueError):
-        nc.apps.is_installed("")
+        nc_any.apps.is_installed("")
     with pytest.raises(ValueError):
-        nc.apps.is_disabled("")
+        nc_any.apps.is_disabled("")
     with pytest.raises(ValueError):
-        nc.apps.enable("")
+        nc_any.apps.enable("")
     with pytest.raises(ValueError):
-        nc.apps.disable("")
+        nc_any.apps.disable("")
     with pytest.raises(ValueError):
-        nc.apps.ex_app_is_enabled("")
+        nc_any.apps.ex_app_is_enabled("")
     with pytest.raises(ValueError):
-        nc.apps.ex_app_is_disabled("")
+        nc_any.apps.ex_app_is_disabled("")
     with pytest.raises(ValueError):
-        nc.apps.ex_app_disable("")
+        nc_any.apps.ex_app_disable("")
     with pytest.raises(ValueError):
-        nc.apps.ex_app_enable("")
+        nc_any.apps.ex_app_enable("")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
-def test_ex_app_get_list(nc):
-    if "app_ecosystem_v2" not in nc.capabilities:
-        pytest.skip("app_ecosystem_v2 is not installed.")
+def test_ex_app_get_list(nc, nc_app):
     enabled_ex_apps = nc.apps.ex_app_get_list(enabled=True)
     assert isinstance(enabled_ex_apps, list)
     for i in enabled_ex_apps:

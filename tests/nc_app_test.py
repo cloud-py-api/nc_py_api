@@ -1,54 +1,48 @@
 from os import environ
 
-import pytest
-from gfixture import NC, NC_APP
-
 from nc_py_api.ex_app import ApiScope
 
-if NC_APP is None:
-    pytest.skip("Only for Nextcloud App mode", allow_module_level=True)
 
-
-def test_get_users_list():
-    users = NC_APP.users_list()
+def test_get_users_list(nc_app):
+    users = nc_app.users_list()
     assert users
-    assert NC_APP.user in users
+    assert nc_app.user in users
 
 
-def test_scope_allowed():
+def test_scope_allowed(nc_app):
     for i in ApiScope:
-        assert NC_APP.scope_allowed(i)
-    assert not NC_APP.scope_allowed(0)
-    assert not NC_APP.scope_allowed(999999999)
+        assert nc_app.scope_allowed(i)
+    assert not nc_app.scope_allowed(0)  # noqa
+    assert not nc_app.scope_allowed(999999999)  # noqa
 
 
-def test_app_cfg():
-    app_cfg = NC_APP.app_cfg
+def test_app_cfg(nc_app):
+    app_cfg = nc_app.app_cfg
     assert app_cfg.app_name == environ["APP_ID"]
     assert app_cfg.app_version == environ["APP_VERSION"]
     assert app_cfg.app_secret == environ["APP_SECRET"].encode("UTF-8")
 
 
-@pytest.mark.skipif(NC is None, reason="Usual Nextcloud mode required for the test")
-def test_scope_allow_app_ecosystem_disabled():
-    NC.apps.disable("app_ecosystem_v2")
+def test_scope_allow_app_ecosystem_disabled(nc_client, nc_app):
+    assert nc_app.scope_allowed(ApiScope.FILES)
+    nc_client.apps.disable("app_ecosystem_v2")
     try:
-        assert NC_APP.scope_allowed(ApiScope.FILES)
-        NC_APP.update_server_info()
-        assert not NC_APP.scope_allowed(ApiScope.FILES)
+        assert nc_app.scope_allowed(ApiScope.FILES)
+        nc_app.update_server_info()
+        assert not nc_app.scope_allowed(ApiScope.FILES)
     finally:
-        NC.apps.enable("app_ecosystem_v2")
-        NC_APP.update_server_info()
+        nc_client.apps.enable("app_ecosystem_v2")
+        nc_app.update_server_info()
 
 
-def test_change_user():
-    orig_user = NC_APP.user
+def test_change_user(nc_app):
+    orig_user = nc_app.user
     try:
-        orig_capabilities = NC_APP.capabilities
-        assert NC_APP.user_status.available
-        NC_APP.user = ""
-        assert not NC_APP.user_status.available
-        assert orig_capabilities != NC_APP.capabilities
+        orig_capabilities = nc_app.capabilities
+        assert nc_app.user_status.available
+        nc_app.user = ""
+        assert not nc_app.user_status.available
+        assert orig_capabilities != nc_app.capabilities
     finally:
-        NC_APP.user = orig_user
-    assert orig_capabilities == NC_APP.capabilities
+        nc_app.user = orig_user
+    assert orig_capabilities == nc_app.capabilities

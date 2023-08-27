@@ -1,12 +1,8 @@
 from copy import deepcopy
 
-import pytest
-from gfixture import NC_TO_TEST
-
 from nc_py_api._theming import convert_str_color  # noqa
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_get_theme(nc):
     theme = nc.theme
     assert isinstance(theme["name"], str)
@@ -33,9 +29,8 @@ def test_get_theme(nc):
     assert isinstance(theme["background_default"], bool)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_convert_str_color_values_in(nc):
-    theme = deepcopy(nc.theme)
+def test_convert_str_color_values_in(nc_any):
+    theme = deepcopy(nc_any.theme)
     for i in ("#", ""):
         theme["color"] = i
         assert convert_str_color(theme, "color") == (0, 0, 0)

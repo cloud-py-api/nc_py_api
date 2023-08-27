@@ -9,7 +9,6 @@ from tempfile import NamedTemporaryFile
 from zlib import adler32
 
 import pytest
-from gfixture import NC_TO_TEST
 from PIL import Image
 
 from nc_py_api import FsNode, NextcloudException
@@ -30,7 +29,6 @@ class MyBytesIO(BytesIO):
         return super().write(*args, **kwargs)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_user_root(nc):
     user_root = nc.files.listdir()
     assert user_root
@@ -46,7 +44,6 @@ def test_list_user_root(nc):
     assert user_root == user_root2
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_user_root_self_exclude(nc):
     user_root = nc.files.listdir()
     user_root_with_self = nc.files.listdir(exclude_self=False)
@@ -62,7 +59,6 @@ def test_list_user_root_self_exclude(nc):
     assert self_res.full_path == f"files/{nc.user}/"
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_list_empty_child_dir(nc):
     nc.files.makedirs("empty_child_folder")
     try:
@@ -79,26 +75,23 @@ def test_list_empty_child_dir(nc):
         nc.files.delete("empty_child_folder")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_list_dir_wrong_args(nc):
+def test_list_dir_wrong_args(nc_any):
     with pytest.raises(ValueError):
-        nc.files.listdir(depth=0, exclude_self=True)
+        nc_any.files.listdir(depth=0, exclude_self=True)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_by_path(nc):
-    result = nc.files.by_path("")
-    result2 = nc.files.by_path("/")
+def test_by_path(nc_any):
+    result = nc_any.files.by_path("")
+    result2 = nc_any.files.by_path("/")
     assert isinstance(result, FsNode)
     assert isinstance(result2, FsNode)
     assert result == result2
     assert result.is_dir == result2.is_dir
     assert result.is_dir
     assert result.user == result2.user
-    assert result.user == nc.user
+    assert result.user == nc_any.user
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download(nc):
     content = randbytes(64)
     new_file = nc.files.upload("test_file.txt", content=content)
@@ -108,7 +101,6 @@ def test_file_download(nc):
     assert srv_admin_manual1 == content
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("data_type", ("str", "bytes"))
 @pytest.mark.parametrize("chunk_size", (15, 32, 64, None))
 def test_file_download2stream(nc, data_type, chunk_size):
@@ -128,7 +120,6 @@ def test_file_download2stream(nc, data_type, chunk_size):
         assert srv_admin_manual_buf.n_write_calls == math.ceil(64 / chunk_size)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download2file(nc):
     content = randbytes(64)
     nc.files.upload("tmp.bin", content)
@@ -137,27 +128,24 @@ def test_file_download2file(nc):
         assert tmp_file.read() == content
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_file_download2stream_invalid_type(nc):
+def test_file_download2stream_invalid_type(nc_any):
     for test_type in (
         b"13",
         int(55),
     ):
         with pytest.raises(TypeError):
-            nc.files.download2stream("xxx", test_type)
+            nc_any.files.download2stream("xxx", test_type)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_file_upload_stream_invalid_type(nc):
+def test_file_upload_stream_invalid_type(nc_any):
     for test_type in (
         b"13",
         int(55),
     ):
         with pytest.raises(TypeError):
-            nc.files.upload_stream("xxx", test_type)
+            nc_any.files.upload_stream("xxx", test_type)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download_not_found(nc):
     with pytest.raises(NextcloudException):
         nc.files.download("file that does not exist on the server")
@@ -165,7 +153,6 @@ def test_file_download_not_found(nc):
         nc.files.listdir("non existing path")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_download2stream_not_found(nc):
     buf = BytesIO()
     with pytest.raises(NextcloudException):
@@ -174,7 +161,6 @@ def test_file_download2stream_not_found(nc):
         nc.files.download2stream("non existing path", buf)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_upload(nc):
     file_name = "12345.txt"
     result = nc.files.upload(file_name, content=b"\x31\x32")
@@ -191,7 +177,6 @@ def test_file_upload(nc):
     assert nc.files.download(file_name).decode("utf-8") == "life is good"
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("chunk_size", (63, 64, 65, None))
 def test_file_upload_chunked(nc, chunk_size):
     file_name = "chunked.bin"
@@ -217,7 +202,6 @@ def test_file_upload_chunked(nc, chunk_size):
     assert upload_crc == download_crc
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_file_upload_file(nc):
     content = randbytes(64)
     with NamedTemporaryFile() as tmp_file:
@@ -227,43 +211,39 @@ def test_file_upload_file(nc):
     assert nc.files.download("tmp.bin") == content
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 @pytest.mark.parametrize(
     "path", ("chunked_zero.bin", "chunked_zero.bin/", "chunked_zero.bin//", "/chunked_zero.bin", "/chunked_zero.bin/")
 )
-def test_file_upload_chunked_zero_size(nc, path):
+def test_file_upload_chunked_zero_size(nc_any, path):
     buf_upload = MyBytesIO()
-    nc.files.delete("chunked_zero.bin", not_fail=True)
-    result = nc.files.upload_stream(path, fp=buf_upload)
-    assert nc.files.download("chunked_zero.bin") == b""
-    assert not nc.files.by_path(result.user_path).info.size
+    nc_any.files.delete("chunked_zero.bin", not_fail=True)
+    result = nc_any.files.upload_stream(path, fp=buf_upload)
+    assert nc_any.files.download("chunked_zero.bin") == b""
+    assert not nc_any.files.by_path(result.user_path).info.size
     assert not result.is_dir
     assert result.full_path.startswith("files/")
     assert result.name == "chunked_zero.bin"
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 @pytest.mark.parametrize("path", ("12345.txt", "12345.txt/", "12345.txt//", "/12345.txt", "/12345.txt/"))
-def test_file_upload_empty(nc, path):
-    nc.files.delete("12345.txt", not_fail=True)
-    result = nc.files.upload(path, content="")
-    assert nc.files.download("12345.txt") == b""
+def test_file_upload_empty(nc_any, path):
+    nc_any.files.delete("12345.txt", not_fail=True)
+    result = nc_any.files.upload(path, content="")
+    assert nc_any.files.download("12345.txt") == b""
     assert not result.is_dir
     assert result.name == "12345.txt"
     assert result.full_path.startswith("files/")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_file_delete(nc):
+def test_file_delete(nc_any):
     file_name = "12345.txt"
-    nc.files.upload(file_name, content="")
-    nc.files.delete(file_name)
+    nc_any.files.upload(file_name, content="")
+    nc_any.files.delete(file_name)
     with pytest.raises(NextcloudException):
-        nc.files.delete(file_name)
-    nc.files.delete(file_name, not_fail=True)
+        nc_any.files.delete(file_name)
+    nc_any.files.delete(file_name, not_fail=True)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 @pytest.mark.parametrize("dir_name", ("1 2", "Яё", "відео та картинки", "复杂 目录 Í", "Björn", "João"))
 def test_mkdir(nc, dir_name):
     nc.files.delete(dir_name, not_fail=True)
@@ -277,74 +257,68 @@ def test_mkdir(nc, dir_name):
         nc.files.delete(dir_name)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_mkdir_invalid_args(nc):
     with pytest.raises(NextcloudException) as exc_info:
         nc.files.makedirs("zzzzz/    /zzzzzzzz", exist_ok=True)
     assert exc_info.value.status_code != 405
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_mkdir_delete_with_end_slash(nc):
-    nc.files.delete("dir_with_slash", not_fail=True)
-    result = nc.files.mkdir("dir_with_slash/")
+def test_mkdir_delete_with_end_slash(nc_any):
+    nc_any.files.delete("dir_with_slash", not_fail=True)
+    result = nc_any.files.mkdir("dir_with_slash/")
     assert result.is_dir
     assert result.name == "dir_with_slash"
     assert result.full_path.startswith("files/")
-    nc.files.delete("dir_with_slash/")
+    nc_any.files.delete("dir_with_slash/")
     with pytest.raises(NextcloudException):
-        nc.files.delete("dir_with_slash")
+        nc_any.files.delete("dir_with_slash")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_no_favorites(nc):
-    favorites = nc.files.listfav()
+def test_no_favorites(nc_any):
+    favorites = nc_any.files.listfav()
     for favorite in favorites:
-        nc.files.setfav(favorite.user_path, False)
-    assert not nc.files.listfav()
+        nc_any.files.setfav(favorite.user_path, False)
+    assert not nc_any.files.listfav()
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_favorites(nc):
-    favorites = nc.files.listfav()
+def test_favorites(nc_any):
+    favorites = nc_any.files.listfav()
     for favorite in favorites:
-        nc.files.setfav(favorite.user_path, False)
+        nc_any.files.setfav(favorite.user_path, False)
     files = ("fav1.txt", "fav2.txt", "fav3.txt")
     for n in files:
-        nc.files.upload(n, content=n)
-        nc.files.setfav(n, True)
-    favorites = nc.files.listfav()
+        nc_any.files.upload(n, content=n)
+        nc_any.files.setfav(n, True)
+    favorites = nc_any.files.listfav()
     assert len(favorites) == 3
     for favorite in favorites:
         assert isinstance(favorite, FsNode)
-        nc.files.setfav(favorite, False)
-    assert len(nc.files.listfav()) == 0
+        nc_any.files.setfav(favorite, False)
+    assert len(nc_any.files.listfav()) == 0
     for n in files:
-        nc.files.delete(n)
+        nc_any.files.delete(n)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_copy_file(nc):
+def test_copy_file(nc_any):
     src = "test_file.txt"
     dest = "nc_admin_man_999.pdf"
-    uploaded_file = nc.files.upload(src, content=randbytes(64))
+    uploaded_file = nc_any.files.upload(src, content=randbytes(64))
     assert uploaded_file.file_id
-    nc.files.delete(dest, not_fail=True)
-    copied_file = nc.files.copy(src, dest)
+    nc_any.files.delete(dest, not_fail=True)
+    copied_file = nc_any.files.copy(src, dest)
     assert copied_file.file_id
     assert not copied_file.is_dir
     try:
-        assert nc.files.download(src) == nc.files.download(dest)
+        assert nc_any.files.download(src) == nc_any.files.download(dest)
         with pytest.raises(NextcloudException):
-            nc.files.copy(src, dest)
-        copied_file = nc.files.copy(src, dest, overwrite=True)
+            nc_any.files.copy(src, dest)
+        copied_file = nc_any.files.copy(src, dest, overwrite=True)
         assert copied_file.file_id
         assert not copied_file.is_dir
     finally:
-        nc.files.delete(dest)
+        nc_any.files.delete(dest)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_move_file(nc):
     src = "src move test file"
     dest = "dest move test file"
@@ -372,33 +346,33 @@ def test_move_file(nc):
     nc.files.delete(dest)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
 @pytest.mark.parametrize("op_type", ("move", "copy"))
-def test_move_copy_dir(nc, op_type):
+def test_move_copy_dir(nc_any, op_type):
     dir_name = "test_dir"
     dest_dir_name = f"{dir_name} dest"
-    nc.files.delete(dir_name, not_fail=True)
-    nc.files.delete(dest_dir_name, not_fail=True)
-    nc.files.mkdir(dir_name)
+    nc_any.files.delete(dir_name, not_fail=True)
+    nc_any.files.delete(dest_dir_name, not_fail=True)
+    nc_any.files.mkdir(dir_name)
     files = ("file1.txt", "file2.txt", "file3.txt")
     for n in files:
-        nc.files.upload(f"{dir_name}/{n}", content=n)
-    result = nc.files.move(dir_name, dest_dir_name) if op_type == "move" else nc.files.copy(dir_name, dest_dir_name)
+        nc_any.files.upload(f"{dir_name}/{n}", content=n)
+    result = (
+        nc_any.files.move(dir_name, dest_dir_name) if op_type == "move" else nc_any.files.copy(dir_name, dest_dir_name)
+    )
     assert result.file_id
     assert result.is_dir
-    assert nc.files.by_path(result).is_dir
-    assert len(nc.files.listdir(dest_dir_name)) == 3
+    assert nc_any.files.by_path(result).is_dir
+    assert len(nc_any.files.listdir(dest_dir_name)) == 3
     if op_type == "move":
         with pytest.raises(NextcloudException):
-            nc.files.delete(dir_name)
+            nc_any.files.delete(dir_name)
     else:
-        nc.files.delete(dir_name)
-    nc.files.delete(dest_dir_name)
+        nc_any.files.delete(dir_name)
+    nc_any.files.delete(dest_dir_name)
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_find_files_listdir_depth(nc):
-    nc.files.delete("test_root_folder", not_fail=True)
+def test_find_files_listdir_depth(nc_any):
+    nc_any.files.delete("test_root_folder", not_fail=True)
     im1 = BytesIO()
     im2 = BytesIO()
     im3 = BytesIO()
@@ -407,62 +381,63 @@ def test_find_files_listdir_depth(nc):
     Image.linear_gradient("L").resize((8192, 8192)).save(im3, format="JPEG")
     for i in (im1, im2, im3):
         i.seek(0)
-    nc.files.mkdir("test_root_folder")
-    nc.files.mkdir("test_root_folder/child_folder")
-    nc.files.upload("test_root_folder/image1.png", content=im1.read())
-    nc.files.upload("test_root_folder/test_root_very_unique_name768.txt", content="content!")
-    nc.files.upload("test_root_folder/child_folder/image2.gif", content=im2.read())
-    nc.files.upload("test_root_folder/child_folder/image3.jpg", content=im3.read())
-    nc.files.upload("test_root_folder/child_folder/test.txt", content="content!")
-    result = nc.files.find(["and", "gt", "size", 1 * 1024, "like", "mime", "image/%"], path="test_root_folder")
+    nc_any.files.mkdir("test_root_folder")
+    nc_any.files.mkdir("test_root_folder/child_folder")
+    nc_any.files.upload("test_root_folder/image1.png", content=im1.read())
+    nc_any.files.upload("test_root_folder/test_root_very_unique_name768.txt", content="content!")
+    nc_any.files.upload("test_root_folder/child_folder/image2.gif", content=im2.read())
+    nc_any.files.upload("test_root_folder/child_folder/image3.jpg", content=im3.read())
+    nc_any.files.upload("test_root_folder/child_folder/test.txt", content="content!")
+    result = nc_any.files.find(["and", "gt", "size", 1 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 3
-    result2 = nc.files.find(["and", "gt", "size", 1 * 1024, "like", "mime", "image/%"], path="/test_root_folder")
+    result2 = nc_any.files.find(["and", "gt", "size", 1 * 1024, "like", "mime", "image/%"], path="/test_root_folder")
     assert len(result2) == 3
     assert result == result2
-    result = nc.files.find(["and", "gt", "size", 40 * 1024, "like", "mime", "image/%"], path="test_root_folder")
+    result = nc_any.files.find(["and", "gt", "size", 40 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 2
-    result = nc.files.find(["and", "gt", "size", 100 * 1024, "like", "mime", "image/%"], path="test_root_folder")
+    result = nc_any.files.find(["and", "gt", "size", 100 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 1
-    result = nc.files.find(["and", "gt", "size", 1024 * 1024, "like", "mime", "image/%"], path="test_root_folder")
+    result = nc_any.files.find(["and", "gt", "size", 1024 * 1024, "like", "mime", "image/%"], path="test_root_folder")
     assert len(result) == 0
-    result = nc.files.find(
+    result = nc_any.files.find(
         ["or", "and", "gt", "size", 0, "like", "mime", "image/%", "like", "mime", "text/%"], path="test_root_folder"
     )
     assert len(result) == 5
-    result = nc.files.find(["eq", "name", "test_root_very_unique_name768.txt"])
+    result = nc_any.files.find(["eq", "name", "test_root_very_unique_name768.txt"])
     assert len(result) == 1
-    result = nc.files.find(["like", "name", "test_root_very_unique_name76%"])
+    result = nc_any.files.find(["like", "name", "test_root_very_unique_name76%"])
     assert len(result) == 1
-    result = nc.files.find(["eq", "name", "test_root_very_unique_name768.txt"], path="test_root_folder/child_folder")
+    result = nc_any.files.find(
+        ["eq", "name", "test_root_very_unique_name768.txt"], path="test_root_folder/child_folder"
+    )
     assert not result
-    result = nc.files.find(["like", "name", "test_root_very_unique_name76%"], path="test_root_folder/child_folder")
+    result = nc_any.files.find(["like", "name", "test_root_very_unique_name76%"], path="test_root_folder/child_folder")
     assert not result
-    result = nc.files.find(["gte", "size", 0], path="test_root_folder")
+    result = nc_any.files.find(["gte", "size", 0], path="test_root_folder")
     assert len(result) == 6  # 1 sub dir + 3 images + 2 text files
-    result = nc.files.find(["like", "mime", "text/%"], path="test_root_folder")
+    result = nc_any.files.find(["like", "mime", "text/%"], path="test_root_folder")
     assert len(result) == 2
-    result = nc.files.listdir("test_root_folder/", depth=1)
-    result2 = nc.files.listdir("test_root_folder/")
+    result = nc_any.files.listdir("test_root_folder/", depth=1)
+    result2 = nc_any.files.listdir("test_root_folder/")
     assert result == result2
     assert len(result) == 3
-    result = nc.files.listdir("test_root_folder/", depth=2)
-    result2 = nc.files.listdir("test_root_folder/", depth=-1)
+    result = nc_any.files.listdir("test_root_folder/", depth=2)
+    result2 = nc_any.files.listdir("test_root_folder/", depth=-1)
     assert result == result2
     assert len(result) == 6
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_fs_node_fields(nc):
-    nc.files.delete("test_root_folder", not_fail=True)
-    nc.files.mkdir("test_root_folder")
-    nc.files.upload("test_root_folder/5_bytes.txt", content="12345")
-    nc.files.setfav("test_root_folder/5_bytes.txt", True)
-    nc.files.upload("test_root_folder/0_bytes.bin", content="")
-    nc.files.mkdir("test_root_folder/empty_child_folder")
-    nc.files.mkdir("test_root_folder/child_folder")
+def test_fs_node_fields(nc_any):
+    nc_any.files.delete("test_root_folder", not_fail=True)
+    nc_any.files.mkdir("test_root_folder")
+    nc_any.files.upload("test_root_folder/5_bytes.txt", content="12345")
+    nc_any.files.setfav("test_root_folder/5_bytes.txt", True)
+    nc_any.files.upload("test_root_folder/0_bytes.bin", content="")
+    nc_any.files.mkdir("test_root_folder/empty_child_folder")
+    nc_any.files.mkdir("test_root_folder/child_folder")
     for i in range(10):
-        nc.files.upload(f"test_root_folder/child_folder/{i}.txt", content=f"{i}")
-    results = nc.files.listdir("test_root_folder")
+        nc_any.files.upload(f"test_root_folder/child_folder/{i}.txt", content=f"{i}")
+    results = nc_any.files.listdir("test_root_folder")
     assert len(results) == 4
     for _, result in enumerate(results):
         assert result.user == "admin"
@@ -500,9 +475,9 @@ def test_fs_node_fields(nc):
             assert not result.info.favorite
         else:
             raise ValueError(f"Unknown value:{result.name}")
-        res_by_id = nc.files.by_id(result.file_id)
+        res_by_id = nc_any.files.by_id(result.file_id)
         assert res_by_id
-        res_by_path = nc.files.by_path(result.user_path)
+        res_by_path = nc_any.files.by_path(result.user_path)
         assert res_by_path
         assert res_by_id.info == res_by_path.info == result.info
         assert res_by_id.full_path == res_by_path.full_path == result.full_path
@@ -511,26 +486,24 @@ def test_fs_node_fields(nc):
         assert res_by_id.info.last_modified == res_by_path.info.last_modified == result.info.last_modified
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_makedirs(nc):
-    nc.files.delete("abc", not_fail=True)
-    result = nc.files.makedirs("abc/def")
+def test_makedirs(nc_any):
+    nc_any.files.delete("abc", not_fail=True)
+    result = nc_any.files.makedirs("abc/def")
     assert result.is_dir
     with pytest.raises(NextcloudException) as exc_info:
-        nc.files.makedirs("abc/def")
+        nc_any.files.makedirs("abc/def")
     assert exc_info.value.status_code == 405
-    result = nc.files.makedirs("abc/def", exist_ok=True)
+    result = nc_any.files.makedirs("abc/def", exist_ok=True)
     assert result is None
-    nc.files.delete("abc")
+    nc_any.files.delete("abc")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_fs_node_str(nc):
-    nc.files.makedirs("test_root_folder", exist_ok=True)
-    nc.files.upload("test_file_name.txt", content=b"123")
+def test_fs_node_str(nc_any):
+    nc_any.files.makedirs("test_root_folder", exist_ok=True)
+    nc_any.files.upload("test_file_name.txt", content=b"123")
     try:
-        fs_node1 = nc.files.by_path("test_root_folder")
-        fs_node2 = nc.files.by_path("test_file_name.txt")
+        fs_node1 = nc_any.files.by_path("test_root_folder")
+        fs_node2 = nc_any.files.by_path("test_file_name.txt")
         str_fs_node1 = str(fs_node1)
         assert str_fs_node1.find("Dir") != -1
         assert str_fs_node1.find("test_root_folder") != -1
@@ -540,11 +513,10 @@ def test_fs_node_str(nc):
         assert str_fs_node2.find("test_file_name.txt") != -1
         assert str_fs_node2.find(f"id={fs_node2.file_id}") != -1
     finally:
-        nc.files.delete("test_root_folder")
-        nc.files.delete("test_file_name.txt")
+        nc_any.files.delete("test_root_folder")
+        nc_any.files.delete("test_file_name.txt")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST)
 def test_download_as_zip(nc):
     nc.files.makedirs("test_root_folder/test_subfolder", exist_ok=True)
     try:
@@ -598,12 +570,11 @@ def test_download_as_zip(nc):
         nc.files.delete("test_root_folder")
 
 
-@pytest.mark.parametrize("nc", NC_TO_TEST[:1])
-def test_fs_node_is_xx(nc):
-    nc.files.delete("test_root_folder", not_fail=True)
-    nc.files.makedirs("test_root_folder", exist_ok=True)
+def test_fs_node_is_xx(nc_any):
+    nc_any.files.delete("test_root_folder", not_fail=True)
+    nc_any.files.makedirs("test_root_folder", exist_ok=True)
     try:
-        folder = nc.files.listdir("test_root_folder", exclude_self=False)[0]
+        folder = nc_any.files.listdir("test_root_folder", exclude_self=False)[0]
         assert folder.is_dir
         assert folder.is_creatable
         assert folder.is_readable
@@ -613,7 +584,7 @@ def test_fs_node_is_xx(nc):
         assert not folder.is_mounted
         assert not folder.is_shared
     finally:
-        nc.files.delete("test_root_folder")
+        nc_any.files.delete("test_root_folder")
 
 
 def test_fs_node_last_modified_time():
