@@ -75,6 +75,7 @@ It's advisable to write these steps as commands in a Makefile for quick use.
 
 Examples for such Makefiles can be found in this repository:
 `Skeleton <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/skeleton/Makefile>`_ ,
+`TalkBot <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/Makefile>`_
 `ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ ,
 `nc_py_api <https://github.com/cloud-py-api/nc_py_api/blob/main/scripts/dev_register.sh>`_
 
