@@ -45,7 +45,7 @@ def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
             return
         # We use a wildcard search to only respond to messages sent to us.
         r = re.search(
-            r"@currency\s(convert\s)?(\d*)\s(\w*)\sto\s(\w*)", message.object_content["message"], re.IGNORECASE
+            r"@currency\s(convert\s)?(\d*)\s(\w*)\sto\s(\w*)\s?", message.object_content["message"], re.IGNORECASE
         )
         if r is None:
             return
