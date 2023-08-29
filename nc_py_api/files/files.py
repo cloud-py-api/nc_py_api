@@ -333,7 +333,10 @@ class FilesAPI:
         return self._listdir(self._session.user, "", properties=properties, depth=1, exclude_self=False, trashbin=True)
 
     def trashbin_restore(self, path: Union[str, FsNode]) -> None:
-        """Restore a file/directory from the TrashBin."""
+        """Restore a file/directory from the TrashBin.
+
+        :param path: path to delete, e.g., the ``user_path`` field from ``FsNode`` or the **FsNode** class itself.
+        """
         restore_name = path.name if isinstance(path, FsNode) else path.split("/", maxsplit=1)[-1]
         path = path.user_path if isinstance(path, FsNode) else path
 
@@ -349,7 +352,7 @@ class FilesAPI:
     def trashbin_delete(self, path: Union[str, FsNode], not_fail=False) -> None:
         """Deletes a file/directory permanently from the TrashBin.
 
-        :param path: path to delete.
+        :param path: path to delete, e.g., the ``user_path`` field from ``FsNode`` or the **FsNode** class itself.
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
