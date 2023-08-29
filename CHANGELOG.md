@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.42 - 2023-08-30]
+
+### Fixed
+
+- Created `FsNode` from `UiActionFileInfo` now have the `file_id` with the NC instance ID as from the DAV requests.
+
 ## [0.0.41 - 2023-08-26]
 
 ### Added
