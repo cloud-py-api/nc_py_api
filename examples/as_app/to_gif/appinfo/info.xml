@@ -27,9 +27,9 @@
 		<scopes>
 			<required>
 				<value>FILES</value>
+				<value>NOTIFICATIONS</value>
 			</required>
 			<optional>
-				<value>NOTIFICATIONS</value>
 			</optional>
 		</scopes>
 		<protocol>http</protocol>
