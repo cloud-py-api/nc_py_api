@@ -88,6 +88,8 @@ def test_ui_file_to_fs_node(nc_app):
             permissions += FilePermissions.PERMISSION_DELETE
         if fs_object.is_shareable:
             permissions += FilePermissions.PERMISSION_SHARE
+        fileid_str = str(fs_object.info.fileid)
+        i = fs_object.file_id.find(fileid_str)
         file_info = ex_app.UiActionFileInfo(
             fileId=fs_object.info.fileid,
             name=fs_object.name,
@@ -102,6 +104,7 @@ def test_ui_file_to_fs_node(nc_app):
             userId=fs_object.user,
             shareOwner="some_user" if fs_object.is_shared else None,
             shareOwnerId="some_user_id" if fs_object.is_shared else None,
+            instanceId=fs_object.file_id[i + len(fileid_str) :],
         )
         fs_node = file_info.to_fs_node()
         assert isinstance(fs_node, FsNode)
@@ -109,7 +112,7 @@ def test_ui_file_to_fs_node(nc_app):
         assert fs_node.name == fs_object.name
         assert fs_node.user_path == fs_object.user_path
         assert fs_node.full_path == fs_object.full_path
-        assert fs_node.file_id == fs_object.info.fileid
+        assert fs_node.file_id == fs_object.file_id
         assert fs_node.is_dir == fs_object.is_dir
         # assert fs_node.mime == fs_object.mime
         assert fs_node.info.permissions == fs_object.info.permissions
