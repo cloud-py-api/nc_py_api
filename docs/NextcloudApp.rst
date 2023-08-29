@@ -91,9 +91,117 @@ Before reading this chapter, please review the basic information about deploymen
 and the currently supported types of
 `deployments configurations <https://cloud-py-api.github.io/app_ecosystem_v2/DeployConfigurations.html>`_ in the AppEcosystem documentation.
 
-to-do
+Docker Deploy Daemon
+""""""""""""""""""""
+
+Docker images with the application can be deployed both on Docker Hub or on GitHub.
+All examples in this repository use GitHub for deployment.
+
+To build the application locally, if you do not have a Mac with Apple Silicon, you will need to install QEMU, to be able
+to build image for both **aarch64** and **x64** architectures. Of course it is always your choice and you can support only one type
+of CPU and not both, but it is **highly recommended to support both** of them.
+
+First login to preferred docker registry:
+
+.. code-block:: shell
+
+    docker login ghcr.io
+
+After that build and push images to it:
+
+.. code-block:: shell
+
+    docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag ghcr.io/REPOSITORY_OWNER/APP_ID:N_VERSION .
+
+Where APP_ID can be repository name, and it is up to you to decide.
+
+.. note:: It is not recommended to use only the ``latest`` tag for the application's image, as increasing the version
+    of your application will overwrite the previous version, in this case, use several tags to leave the possibility
+    of installing previous versions of your application.
 
 From skeleton to ToGif
 ----------------------
 
-to-do
+Now it's time to move on to something more complex than just the application skeleton.
+
+Let's consider an example of an application that performs an action with a file when
+you click on the drop-down context menu and reports on the work done using notification.
+
+First of all, we modernize info.ixml, add the API groups we need for this to work with **Files** and **Notifications**:
+
+.. code-block:: xml
+
+    <scopes>
+        <required>
+            <value>FILES</value>
+            <value>NOTIFICATIONS</value>
+        </required>
+        <optional>
+        </optional>
+    </scopes>
+
+.. note:: Full list of avalaible API scopes can be found `here <https://cloud-py-api.github.io/app_ecosystem_v2/tech_details/ApiScopes.html>`_.
+
+After that we extend the **enabled** handler and include there registration of the drop-down list element:
+
+.. code-block:: python
+
+    def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+        try:
+            if enabled:
+                nc.ui.files_dropdown_menu.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
+            else:
+                nc.ui.files_dropdown_menu.unregister("to_gif")
+        except Exception as e:
+            return str(e)
+        return ""
+
+After that, let's define the **"/video_to_gif"** endpoint that we had registered in previous step:
+
+.. code-block:: python
+
+    @APP.post("/video_to_gif")
+    async def video_to_gif(
+        file: UiFileActionHandlerInfo,
+        nc: Annotated[NextcloudApp, Depends(nc_app)],
+        background_tasks: BackgroundTasks,
+    ):
+        background_tasks.add_task(convert_video_to_gif, file.actionFile.to_fs_node(), nc)
+        return Response()
+
+And this step should be discussed in more detail, since it demonstrates most of the process of working External applications.
+
+Here we see: **nc: Annotated[NextcloudApp, Depends(nc_app)]**
+
+For those who already know how FastAPI works, everything should be clear by now,
+and for those who have not, it is very important to understand that:
+
+    It is a declaration of FastAPI `dependency <https://fastapi.tiangolo.com/tutorial/dependencies/#dependencies>`_ to be executed
+    before the code of **video_to_gif** starts execution.
+
+And this required dependency handles authentication and returns an instance of the :py:class:`~nc_py_api.nextcloud.NextcloudApp`
+class that allows you to make requests to Nextcloud.
+
+.. note:: Every endpoint in your application should be protected with such method, this will ensure that only Nextcloud instance
+    will be able to perform requests to the application.
+
+Finally, we are left with two much less interesting parameters, let's start with the last one, with **BackgroundTasks**:
+
+FastAPI `BackgroundTasks <https://fastapi.tiangolo.com/tutorial/background-tasks/?h=backgroundtasks#background-tasks>`_ documentation.
+
+Since in most cases, the tasks that the application will perform will depend either on additional network calls or
+heavy calculations and we cannot guarantee a fast completion time, it is recommended to always try to return
+an empty response (which will be a status of 200) and in the background already slowly perform operations.
+
+The last parameter is a structure describing the action and the file on which it needs to be performed,
+which is passed by the Appecosystem when clicking on the drop-down context menu of the file.
+
+We use the built method :py:meth:`~nc_py_api.ex_app.ui.files.UiActionFileInfo.to_fs_node` into the structure to convert it
+into a standard :py:class:`~nc_py_api.files.FsNode` class that describes the file and pass the FsNode class instance to the background task.
+
+In the **convert_video_to_gif** function, a standard conversion using ``OpenCV`` from a video file to a GIF image occurs,
+and since this is not directly related to working with NextCloud, we will skip this for now.
+
+**ToGif** example `full source <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/src/main.py>`_ code.
+
+This chapter ends here, but the next topics are even more intriguing.

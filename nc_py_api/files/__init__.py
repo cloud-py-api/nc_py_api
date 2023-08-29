@@ -12,9 +12,9 @@ class FsNodeInfo:
     """Extra FS object attributes from Nextcloud."""
 
     size: int
-    """Length of file in bytes, zero for directories.."""
-    content_length: int
     """For directories it is size of all content in it, for files it is equal to ``size``."""
+    content_length: int
+    """Length of file in bytes, zero for directories."""
     permissions: str
     """Permissions for the object."""
     favorite: bool
