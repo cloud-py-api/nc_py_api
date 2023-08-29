@@ -326,7 +326,46 @@ class FilesAPI:
         )
         check_error(webdav_response.status_code, f"setfav: path={path}, value={value}")
 
-    def _listdir(self, user: str, path: str, properties: list[str], depth: int, exclude_self: bool) -> list[FsNode]:
+    def trashbin_list(self) -> list[FsNode]:
+        """Returns a list of all entries in the TrashBin."""
+        properties = PROPFIND_PROPERTIES
+        properties += ["nc:trashbin-filename", "nc:trashbin-original-location", "nc:trashbin-deletion-time"]
+        return self._listdir(self._session.user, "", properties=properties, depth=1, exclude_self=False, trashbin=True)
+
+    def trashbin_restore(self, path: Union[str, FsNode]) -> None:
+        """Restore a file/directory from the TrashBin."""
+        restore_name = path.name if isinstance(path, FsNode) else path.split("/", maxsplit=1)[-1]
+        path = path.user_path if isinstance(path, FsNode) else path
+
+        dest = self._session.cfg.dav_endpoint + f"/trashbin/{self._session.user}/restore/{restore_name}"
+        headers = {"Destination": dest}
+        response = self._session.dav(
+            "MOVE",
+            path=f"/trashbin/{self._session.user}/{path}",
+            headers=headers,
+        )
+        check_error(response.status_code, f"trashbin_restore: user={self._session.user}, src={path}, dest={dest}")
+
+    def trashbin_delete(self, path: Union[str, FsNode], not_fail=False) -> None:
+        """Deletes a file/directory permanently from the TrashBin.
+
+        :param path: path to delete.
+        :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
+        """
+        path = path.user_path if isinstance(path, FsNode) else path
+        response = self._session.dav(method="DELETE", path=f"/trashbin/{self._session.user}/{path}")
+        if response.status_code == 404 and not_fail:
+            return
+        check_error(response.status_code, f"delete_from_trashbin: user={self._session.user}, path={path}")
+
+    def trashbin_cleanup(self) -> None:
+        """Empties the TrashBin."""
+        response = self._session.dav(method="DELETE", path=f"/trashbin/{self._session.user}/trash")
+        check_error(response.status_code, f"trashbin_cleanup: user={self._session.user}")
+
+    def _listdir(
+        self, user: str, path: str, properties: list[str], depth: int, exclude_self: bool, trashbin: bool = False
+    ) -> list[FsNode]:
         root = ElementTree.Element(
             "d:propfind",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
@@ -334,9 +373,15 @@ class FilesAPI:
         prop = ElementTree.SubElement(root, "d:prop")
         for i in properties:
             ElementTree.SubElement(prop, i)
-        headers = {"Depth": "infinity" if depth == -1 else str(depth)}
+        if trashbin:
+            dav_path = self._dav_get_obj_path(f"trashbin/{user}/trash", path, root_path="")
+        else:
+            dav_path = self._dav_get_obj_path(user, path)
         webdav_response = self._session.dav(
-            "PROPFIND", self._dav_get_obj_path(user, path), data=self._element_tree_as_str(root), headers=headers
+            "PROPFIND",
+            dav_path,
+            self._element_tree_as_str(root),
+            headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
         request_info = f"list: {user}, {path}, {properties}"
         result = self._lf_parse_webdav_records(webdav_response, request_info)
@@ -387,6 +432,12 @@ class FilesAPI:
                 fs_node_args["permissions"] = prop["oc:permissions"]
             if "oc:favorite" in prop_keys:
                 fs_node_args["favorite"] = bool(int(prop["oc:favorite"]))
+            if "nc:trashbin-filename" in prop_keys:
+                fs_node_args["trashbin_filename"] = prop["nc:trashbin-filename"]
+            if "nc:trashbin-original-location" in prop_keys:
+                fs_node_args["trashbin_original_location"] = prop["nc:trashbin-original-location"]
+            if "nc:trashbin-deletion-time" in prop_keys:
+                fs_node_args["trashbin_deletion_time"] = prop["nc:trashbin-deletion-time"]
             # xz = prop.get("oc:dDC", "")
         return FsNode(full_path, **fs_node_args)
 
