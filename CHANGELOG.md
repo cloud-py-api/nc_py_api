@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.42 - 2023-08-30]
+## [0.0.42 - 2023-08-3x]
+
+### Added
+
+- TrashBin API:
+  * `trashbin_list`
+  * `trashbin_restore`
+  * `trashbin_delete`
+  * `trashbin_cleanup`
 
 ### Fixed
 

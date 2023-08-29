@@ -594,3 +594,49 @@ def test_fs_node_last_modified_time():
     assert fs_node.info.last_modified == datetime(2023, 7, 29, 11, 56, 31)
     fs_node = FsNode("", last_modified=datetime(2022, 4, 5, 1, 2, 3))
     assert fs_node.info.last_modified == datetime(2022, 4, 5, 1, 2, 3)
+
+
+def test_trashbin(nc):
+    r = nc.files.trashbin_list()
+    assert isinstance(r, list)
+    new_file = nc.files.upload("nc_py_api_temp.txt", content=b"")
+    nc.files.delete(new_file)
+    # minimum one object now in a trashbin
+    r = nc.files.trashbin_list()
+    assert r
+    # clean up trashbin
+    nc.files.trashbin_cleanup()
+    # no objects should be in trashbin
+    r = nc.files.trashbin_list()
+    assert not r
+    new_file = nc.files.upload("nc_py_api_temp.txt", content=b"")
+    nc.files.delete(new_file)
+    # one object now in a trashbin
+    r = nc.files.trashbin_list()
+    assert len(r) == 1
+    # check properties types of FsNode
+    i: FsNode = r[0]
+    assert i.info.in_trash is True
+    assert i.info.trashbin_filename.find("nc_py_api_temp.txt") != -1
+    assert i.info.trashbin_original_location == "nc_py_api_temp.txt"
+    assert isinstance(i.info.trashbin_deletion_time, int)
+    # restore that object
+    nc.files.trashbin_restore(r[0])
+    # no files in trashbin
+    r = nc.files.trashbin_list()
+    assert not r
+    # move a restored object to trashbin again
+    nc.files.delete(new_file)
+    # one object now in a trashbin
+    r = nc.files.trashbin_list()
+    assert len(r) == 1
+    # remove one object from a trashbin
+    nc.files.trashbin_delete(r[0])
+    # NextcloudException with status_code 404
+    with pytest.raises(NextcloudException) as e:
+        nc.files.trashbin_delete(r[0])
+    assert e.value.status_code == 404
+    nc.files.trashbin_delete(r[0], not_fail=True)
+    # no files in trashbin
+    r = nc.files.trashbin_list()
+    assert not r

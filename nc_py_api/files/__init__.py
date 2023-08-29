@@ -22,6 +22,7 @@ class FsNodeInfo:
     fileid: int
     """Clear file ID without Nextcloud instance ID."""
     _last_modified: datetime.datetime
+    _trashbin: dict
 
     def __init__(self, **kwargs):
         self.size = kwargs.get("size", 0)
@@ -33,6 +34,10 @@ class FsNodeInfo:
             self.last_modified = kwargs.get("last_modified", datetime.datetime(1970, 1, 1))
         except (ValueError, TypeError):
             self.last_modified = datetime.datetime(1970, 1, 1)
+        self._trashbin: dict[str, typing.Union[str, int]] = {}
+        for i in ("trashbin_filename", "trashbin_original_location", "trashbin_deletion_time"):
+            if i in kwargs:
+                self._trashbin[i] = kwargs[i]
 
     @property
     def last_modified(self) -> datetime.datetime:
@@ -48,6 +53,26 @@ class FsNodeInfo:
             self._last_modified = email.utils.parsedate_to_datetime(value)
         else:
             self._last_modified = value
+
+    @property
+    def in_trash(self) -> bool:
+        """Returns ``True`` if the object is in trash."""
+        return bool(self._trashbin)
+
+    @property
+    def trashbin_filename(self) -> str:
+        """Returns the name of the object in the trashbin."""
+        return self._trashbin.get("trashbin_filename", "")
+
+    @property
+    def trashbin_original_location(self) -> str:
+        """Returns the original path of the object."""
+        return self._trashbin.get("trashbin_original_location", "")
+
+    @property
+    def trashbin_deletion_time(self) -> int:
+        """Returns deletion time of the object."""
+        return int(self._trashbin.get("trashbin_deletion_time", 0))
 
 
 @dataclasses.dataclass

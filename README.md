@@ -36,7 +36,7 @@ Python library that provides a robust and well-documented API that allows develo
 | Text Processing** |     N/A      |      ❌       |      ❌       |
 | SpeechToText**    |     N/A      |      ❌       |      ❌       |
 
-&ast;missing `Trash bin` and `File version` support.<br>
+&ast;missing `File version` support.<br>
 &ast;&ast;available only for NextcloudApp
 
 ### Differences between the Nextcloud and NextcloudApp classes
