@@ -38,7 +38,7 @@ run28:
 .PHONY: run27
 run27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister skeleton --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register skeleton docker_dev -e --force-scopes \
+	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:register skeleton docker_dev -e --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/skeleton/appinfo/info.xml
 
 .PHONY: manual_register

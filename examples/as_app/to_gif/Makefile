@@ -17,7 +17,8 @@ help:
 	@echo "  For development of this example use PyCharm run configurations. Development is always set for last Nextcloud."
 	@echo "  First run 'ToGif' and then 'make manual_register', after that you can use/debug/develop it and easy test."
 	@echo "  "
-	@echo "  manual_register   perform registration of running 'to_gif' into the 'manual_install' deploy daemon."
+	@echo "  manual_register28 perform registration of running 'to_gif' into the 'manual_install' deploy daemon."
+	@echo "  manual_register27 perform registration of running 'to_gif' into the 'manual_install' deploy daemon."
 
 .PHONY: build-push
 build-push:
@@ -35,15 +36,22 @@ run28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
+.PHONY: manual_register28
+manual_register28:
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister to_gif --silent || true
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif manual_install --json-info \
+  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9031,\"scopes\":{\"required\":[\"FILES\", \"NOTIFICATIONS\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
+  -e --force-scopes
+
 .PHONY: run27
 run27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister to_gif --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes \
+	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif docker_dev -e --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
-.PHONY: manual_register
-manual_register:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister to_gif --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif manual_install --json-info \
-  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9031,\"scopes\":{\"required\":[\"FILES\"],\"optional\":[\"NOTIFICATIONS\"]},\"protocol\":\"http\",\"system_app\":0}" \
+.PHONY: manual_register27
+manual_register27:
+	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister to_gif --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:register to_gif manual_install --json-info \
+  "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9031,\"scopes\":{\"required\":[\"FILES\", \"NOTIFICATIONS\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
   -e --force-scopes
