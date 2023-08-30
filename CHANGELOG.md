@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
   * `trashbin_restore`
   * `trashbin_delete`
   * `trashbin_cleanup`
+- File Versions API: `get_versions` and `restore_version`.
 
 ### Fixed
 

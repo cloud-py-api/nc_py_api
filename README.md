@@ -23,21 +23,20 @@ Python library that provides a robust and well-documented API that allows develo
  * **Easy**: Designed to be easy to use with excellent documentation.
 
 ### Capabilities
-| **_Capability_**  | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
-|-------------------|:------------:|:------------:|:------------:|
-| Filesystem*       |      ✅       |      ✅       |      ✅       |
-| Shares            |      ✅       |      ✅       |      ✅       |
-| Users & Groups    |      ✅       |      ✅       |      ✅       |
-| User status       |      ✅       |      ✅       |      ✅       |
-| Weather status    |      ✅       |      ✅       |      ✅       |
-| Notifications     |      ✅       |      ✅       |      ✅       |
-| Nextcloud Talk    |      ❌       |      ❌       |      ❌       |
-| Talk Bot API**    |     N/A      |      ✅       |      ✅       |
-| Text Processing** |     N/A      |      ❌       |      ❌       |
-| SpeechToText**    |     N/A      |      ❌       |      ❌       |
+| **_Capability_** | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
+|------------------|:------------:|:------------:|:------------:|
+| File System      |      ✅       |      ✅       |      ✅       |
+| Shares           |      ✅       |      ✅       |      ✅       |
+| Users & Groups   |      ✅       |      ✅       |      ✅       |
+| User status      |      ✅       |      ✅       |      ✅       |
+| Weather status   |      ✅       |      ✅       |      ✅       |
+| Notifications    |      ✅       |      ✅       |      ✅       |
+| Nextcloud Talk   |      ❌       |      ❌       |      ❌       |
+| Talk Bot API*    |     N/A      |      ✅       |      ✅       |
+| Text Processing* |     N/A      |      ❌       |      ❌       |
+| SpeechToText*    |     N/A      |      ❌       |      ❌       |
 
-&ast;missing `File version` support.<br>
-&ast;&ast;available only for NextcloudApp
+&ast;_available only for NextcloudApp_
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
