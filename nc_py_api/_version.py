@@ -1,3 +1,3 @@
 """Version of nc_py_api."""
 
-__version__ = "0.0.42.dev0"
+__version__ = "0.0.42"
