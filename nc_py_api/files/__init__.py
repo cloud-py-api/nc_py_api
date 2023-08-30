@@ -11,24 +11,23 @@ import typing
 class FsNodeInfo:
     """Extra FS object attributes from Nextcloud."""
 
-    size: int
-    """For directories it is size of all content in it, for files it is equal to ``size``."""
-    content_length: int
-    """Length of file in bytes, zero for directories."""
-    permissions: str
-    """Permissions for the object."""
-    favorite: bool
-    """Flag indicating if the object is marked as favorite."""
     fileid: int
     """Clear file ID without Nextcloud instance ID."""
+    favorite: bool
+    """Flag indicating if the object is marked as favorite."""
+    is_version: bool
+    """Flag indicating if the object is File Version representation"""
     _last_modified: datetime.datetime
     _trashbin: dict
 
     def __init__(self, **kwargs):
-        self.size = kwargs.get("size", 0)
-        self.content_length = kwargs.get("content_length", 0)
-        self.permissions = kwargs.get("permissions", "")
+        self._raw_data = {
+            "content_length": kwargs.get("content_length", 0),
+            "size": kwargs.get("size", 0),
+            "permissions": kwargs.get("permissions", ""),
+        }
         self.favorite = kwargs.get("favorite", False)
+        self.is_version = False
         self.fileid = kwargs.get("fileid", 0)
         try:
             self.last_modified = kwargs.get("last_modified", datetime.datetime(1970, 1, 1))
@@ -38,6 +37,21 @@ class FsNodeInfo:
         for i in ("trashbin_filename", "trashbin_original_location", "trashbin_deletion_time"):
             if i in kwargs:
                 self._trashbin[i] = kwargs[i]
+
+    @property
+    def content_length(self) -> int:
+        """Length of file in bytes, zero for directories."""
+        return self._raw_data["content_length"]
+
+    @property
+    def size(self) -> int:
+        """In the case of directories it is the size of all content, for files it is equal to ``content_length``."""
+        return self._raw_data["size"]
+
+    @property
+    def permissions(self) -> str:
+        """Permissions for the object."""
+        return self._raw_data["permissions"]
 
     @property
     def last_modified(self) -> datetime.datetime:
@@ -106,6 +120,11 @@ class FsNode:
         return self.full_path.endswith("/")
 
     def __str__(self):
+        if self.info.is_version:
+            return (
+                f"File version: `{self.name}` for FileID={self.file_id}"
+                f" last modified at {str(self.info.last_modified)} with {self.info.content_length} bytes size."
+            )
         return (
             f"{'Dir' if self.is_dir else 'File'}: `{self.name}` with id={self.file_id}"
             f" last modified at {str(self.info.last_modified)} and {self.info.permissions} permissions."

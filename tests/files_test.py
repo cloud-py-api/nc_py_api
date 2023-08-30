@@ -614,7 +614,7 @@ def test_trashbin(nc):
     # one object now in a trashbin
     r = nc.files.trashbin_list()
     assert len(r) == 1
-    # check properties types of FsNode
+    # check types of FsNode properties
     i: FsNode = r[0]
     assert i.info.in_trash is True
     assert i.info.trashbin_filename.find("nc_py_api_temp.txt") != -1
@@ -640,3 +640,22 @@ def test_trashbin(nc):
     # no files in trashbin
     r = nc.files.trashbin_list()
     assert not r
+
+
+def test_file_versions(nc):
+    if nc.check_capabilities("files.versioning"):
+        pytest.skip("Need 'Versions' App to be enabled.")
+    for i in (0, 1):
+        nc.files.delete("nc_py_api_file_versions_test.txt", not_fail=True)
+        nc.files.upload("nc_py_api_file_versions_test.txt", content=b"22")
+        new_file = nc.files.upload("nc_py_api_file_versions_test.txt", content=b"333")
+        if i:
+            new_file = nc.files.by_id(new_file)
+        versions = nc.files.get_versions(new_file)
+        assert versions
+        version_str = str(versions[0])
+        assert version_str.find("File version") != -1
+        assert version_str.find("bytes size") != -1
+        nc.files.restore_version(versions[0])
+        assert nc.files.download(new_file) == b"22"
+        nc.files.delete(new_file)

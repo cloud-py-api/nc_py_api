@@ -1,6 +1,7 @@
 """Nextcloud API for working with the file system."""
 
 import builtins
+import enum
 import os
 from io import BytesIO
 from json import dumps, loads
@@ -15,6 +16,7 @@ import xmltodict
 from httpx import Response
 
 from .._exceptions import NextcloudException, check_error
+from .._misc import require_capabilities
 from .._session import NcSessionBasic
 from . import FsNode
 from .sharing import _FilesSharingAPI
@@ -51,6 +53,16 @@ SEARCH_PROPERTIES_MAP = {
     "favorite": "oc:favorite",  # eq
     "fileid": "oc:fileid",  # eq
 }
+
+
+class PropFindType(enum.IntEnum):
+    """Internal enum types for ``_listdir`` and ``_lf_parse_webdav_records`` methods."""
+
+    DEFAULT = 0
+    TRASHBIN = 1
+    FAVORITE = 2
+    VERSIONS_FILEID = 3
+    VERSIONS_FILE_ID = 4
 
 
 class FilesAPI:
@@ -305,7 +317,7 @@ class FilesAPI:
         )
         request_info = f"listfav: {self._session.user}"
         check_error(webdav_response.status_code, request_info)
-        return self._lf_parse_webdav_records(webdav_response, request_info, favorite=True)
+        return self._lf_parse_webdav_records(webdav_response, request_info, PropFindType.FAVORITE)
 
     def setfav(self, path: Union[str, FsNode], value: Union[int, bool]) -> None:
         """Sets or unsets favourite flag for specific file.
@@ -330,7 +342,9 @@ class FilesAPI:
         """Returns a list of all entries in the TrashBin."""
         properties = PROPFIND_PROPERTIES
         properties += ["nc:trashbin-filename", "nc:trashbin-original-location", "nc:trashbin-deletion-time"]
-        return self._listdir(self._session.user, "", properties=properties, depth=1, exclude_self=False, trashbin=True)
+        return self._listdir(
+            self._session.user, "", properties=properties, depth=1, exclude_self=False, prop_type=PropFindType.TRASHBIN
+        )
 
     def trashbin_restore(self, path: Union[str, FsNode]) -> None:
         """Restore a file/directory from the TrashBin.
@@ -366,8 +380,41 @@ class FilesAPI:
         response = self._session.dav(method="DELETE", path=f"/trashbin/{self._session.user}/trash")
         check_error(response.status_code, f"trashbin_cleanup: user={self._session.user}")
 
+    def get_versions(self, file_object: FsNode) -> list[FsNode]:
+        """Returns a list of all file versions if any."""
+        require_capabilities("files.versioning", self._session.capabilities)
+        return self._listdir(
+            self._session.user,
+            str(file_object.info.fileid) if file_object.info.fileid else file_object.file_id,
+            properties=PROPFIND_PROPERTIES,
+            depth=1,
+            exclude_self=False,
+            prop_type=PropFindType.VERSIONS_FILEID if file_object.info.fileid else PropFindType.VERSIONS_FILE_ID,
+        )
+
+    def restore_version(self, file_object: FsNode) -> None:
+        """Restore a file with specified version.
+
+        :param file_object: The **FsNode** class from :py:meth:`~nc_py_api.files.files.FilesAPI.get_versions`.
+        """
+        require_capabilities("files.versioning", self._session.capabilities)
+        dest = self._session.cfg.dav_endpoint + f"/versions/{self._session.user}/restore/{file_object.name}"
+        headers = {"Destination": dest}
+        response = self._session.dav(
+            "MOVE",
+            path=f"/versions/{self._session.user}/{file_object.user_path}",
+            headers=headers,
+        )
+        check_error(response.status_code, f"restore_version: user={self._session.user}, src={file_object.user_path}")
+
     def _listdir(
-        self, user: str, path: str, properties: list[str], depth: int, exclude_self: bool, trashbin: bool = False
+        self,
+        user: str,
+        path: str,
+        properties: list[str],
+        depth: int,
+        exclude_self: bool,
+        prop_type: PropFindType = PropFindType.DEFAULT,
     ) -> list[FsNode]:
         root = ElementTree.Element(
             "d:propfind",
@@ -376,7 +423,9 @@ class FilesAPI:
         prop = ElementTree.SubElement(root, "d:prop")
         for i in properties:
             ElementTree.SubElement(prop, i)
-        if trashbin:
+        if prop_type in (PropFindType.VERSIONS_FILEID, PropFindType.VERSIONS_FILE_ID):
+            dav_path = self._dav_get_obj_path(f"versions/{user}/versions", path, root_path="")
+        elif prop_type == PropFindType.TRASHBIN:
             dav_path = self._dav_get_obj_path(f"trashbin/{user}/trash", path, root_path="")
         else:
             dav_path = self._dav_get_obj_path(user, path)
@@ -386,8 +435,12 @@ class FilesAPI:
             self._element_tree_as_str(root),
             headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
-        request_info = f"list: {user}, {path}, {properties}"
-        result = self._lf_parse_webdav_records(webdav_response, request_info)
+
+        result = self._lf_parse_webdav_records(
+            webdav_response,
+            f"list: {user}, {path}, {properties}",
+            prop_type,
+        )
         if exclude_self:
             for index, v in enumerate(result):
                 if v.user_path.rstrip("/") == path.rstrip("/"):
@@ -395,14 +448,25 @@ class FilesAPI:
                     break
         return result
 
-    def _parse_records(self, fs_records: list[dict], favorite: bool):
+    def _parse_records(self, fs_records: list[dict], response_type: PropFindType) -> list[FsNode]:
         result: list[FsNode] = []
         for record in fs_records:
             obj_full_path = unquote(record.get("d:href", ""))
             obj_full_path = obj_full_path.replace(self._session.cfg.dav_url_suffix, "").lstrip("/")
             propstat = record["d:propstat"]
             fs_node = self._parse_record(obj_full_path, propstat if isinstance(propstat, list) else [propstat])
-            if favorite and not fs_node.file_id:
+            if fs_node.etag and response_type in (
+                PropFindType.VERSIONS_FILE_ID,
+                PropFindType.VERSIONS_FILEID,
+            ):
+                fs_node.full_path = fs_node.full_path.rstrip("/")
+                fs_node.info.is_version = True
+                if response_type == PropFindType.VERSIONS_FILEID:
+                    fs_node.info.fileid = int(fs_node.full_path.rsplit("/", 2)[-2])
+                    fs_node.file_id = str(fs_node.info.fileid)
+                else:
+                    fs_node.file_id = fs_node.full_path.rsplit("/", 2)[-2]
+            if response_type == PropFindType.FAVORITE and not fs_node.file_id:
                 _fs_node = self.by_path(fs_node.user_path)
                 if _fs_node:
                     _fs_node.info.favorite = True
@@ -444,7 +508,9 @@ class FilesAPI:
             # xz = prop.get("oc:dDC", "")
         return FsNode(full_path, **fs_node_args)
 
-    def _lf_parse_webdav_records(self, webdav_res: Response, info: str, favorite=False) -> list[FsNode]:
+    def _lf_parse_webdav_records(
+        self, webdav_res: Response, info: str, response_type: PropFindType = PropFindType.DEFAULT
+    ) -> list[FsNode]:
         check_error(webdav_res.status_code, info=info)
         if webdav_res.status_code != 207:  # multistatus
             raise NextcloudException(webdav_res.status_code, "Response is not a multistatus.", info=info)
@@ -453,7 +519,7 @@ class FilesAPI:
             err = response_data["d:error"]
             raise NextcloudException(reason=f'{err["s:exception"]}: {err["s:message"]}'.replace("\n", ""), info=info)
         response = response_data["d:multistatus"].get("d:response", [])
-        return self._parse_records([response] if isinstance(response, dict) else response, favorite)
+        return self._parse_records([response] if isinstance(response, dict) else response, response_type)
 
     @staticmethod
     def _dav_get_obj_path(user: str, path: str = "", root_path="/files") -> str:
