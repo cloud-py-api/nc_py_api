@@ -653,6 +653,9 @@ def test_file_versions(nc):
             new_file = nc.files.by_id(new_file)
         versions = nc.files.get_versions(new_file)
         assert versions
+        version_str = str(versions[0])
+        assert version_str.find("File version") != -1
+        assert version_str.find("bytes size") != -1
         nc.files.restore_version(versions[0])
         assert nc.files.download(new_file) == b"22"
         nc.files.delete(new_file)
