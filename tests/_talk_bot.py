@@ -1,5 +1,6 @@
 from typing import Annotated
 
+import gfixture_set_env  # noqa
 import pytest
 import requests
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request
@@ -7,8 +8,6 @@ from starlette.datastructures import URL
 
 from nc_py_api import talk_bot
 from nc_py_api.ex_app import run_app, talk_bot_app
-
-from . import gfixture_set_env  # noqa
 
 APP = FastAPI()
 COVERAGE_BOT = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
