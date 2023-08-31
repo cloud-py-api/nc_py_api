@@ -14,8 +14,8 @@ from nc_py_api import NextcloudException
 @pytest.mark.skipif(environ.get("CI", None) is None, reason="run only on GitHub")
 def test_password_confirmation(nc_client):
     # patch "PasswordConfirmationMiddleware.php" decreasing asking before Password Confirmation from 30 min to 15 secs
-    patch_path = path.join(path.dirname(path.abspath(__file__)), "data/nc_pass_confirm.patch")
-    cwd_path = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
+    patch_path = path.join(path.dirname(path.dirname(path.abspath(__file__))), "data/nc_pass_confirm.patch")
+    cwd_path = path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
     run(["patch", "-p", "1", "-i", patch_path], cwd=cwd_path, check=True)
     sleep(6)
     nc_client.update_server_info()

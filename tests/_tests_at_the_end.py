@@ -2,7 +2,7 @@ import os
 import sys
 from subprocess import Popen
 
-from _install_wait import check_heartbeat
+from ._install_wait import check_heartbeat
 
 # These tests will be run separate, and at the end of all other tests.
 

@@ -231,7 +231,7 @@ def test_mkdir(nc_any, dir_name):
 
 def test_mkdir_invalid_args(nc_any):
     with pytest.raises(NextcloudException) as exc_info:
-        nc_any.files.makedirs("zzzzz/    /zzzzzzzz", exist_ok=True)
+        nc_any.files.makedirs("test_dir_tmp/    /zzzzzzzz", exist_ok=True)
     assert exc_info.value.status_code != 405
 
 
