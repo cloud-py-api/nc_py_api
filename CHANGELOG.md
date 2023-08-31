@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.43 - 2023-09-0x]
+
+### Fixed
+
+- `makedirs` correctly work with paths started with `/`
+- `listdir` correctly handles `exclude_self=True` when input `path` starts with `/`
+
 ## [0.0.42 - 2023-08-30]
 
 ### Added

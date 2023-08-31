@@ -1,9 +1,12 @@
 import contextlib
-from os import environ
+from io import BytesIO
+from os import environ, path
+from random import randbytes
 from typing import Optional, Union
 
 import gfixture_set_env  # noqa
 import pytest
+from PIL import Image
 
 from nc_py_api import Nextcloud, NextcloudApp, NextcloudException, _session  # noqa
 
@@ -101,8 +104,71 @@ def pytest_runtest_setup(item):
                 pytest.xfail("previous test failed ({})".format(test_name))
 
 
+@pytest.fixture(scope="session")
+def rand_bytes() -> bytes:
+    """Returns 64 bytes from `test_64_bytes.bin` file."""
+    return randbytes(64)
+
+
+def init_filesystem_for_user(nc_any, rand_bytes):
+    """
+    /test_empty_dir
+    /test_empty_dir_in_dir/test_empty_child_dir
+    /test_dir
+    /test_dir/subdir/
+    /test_dir/subdir/test_empty_text.txt
+    /test_dir/subdir/test_64_bytes.bin
+    /test_dir/subdir/test_12345_text.txt
+    /test_dir/subdir/test_generated_image.png
+    /test_dir/test_empty_child_dir/
+    /test_dir/test_empty_text.txt
+    /test_dir/test_64_bytes.bin
+    /test_dir/test_12345_text.txt
+    /test_dir/test_generated_image.png
+    /test_empty_text.txt
+    /test_64_bytes.bin
+    /test_12345_text.txt
+    /test_generated_image.png
+    /test_dir_tmp
+    """
+    clean_filesystem_for_user(nc_any)
+    im = BytesIO()
+    Image.linear_gradient("L").resize((768, 768)).save(im, format="PNG")
+    nc_any.files.mkdir("/test_empty_dir")
+    nc_any.files.makedirs("/test_empty_dir_in_dir/test_empty_child_dir")
+    nc_any.files.makedirs("/test_dir/subdir")
+    nc_any.files.mkdir("/test_dir/test_empty_child_dir/")
+    nc_any.files.mkdir("/test_dir_tmp")
+
+    def init_folder(folder: str = ""):
+        nc_any.files.upload(path.join(folder, "test_empty_text.txt"), content=b"")
+        nc_any.files.upload(path.join(folder, "test_64_bytes.bin"), content=rand_bytes)
+        nc_any.files.upload(path.join(folder, "test_12345_text.txt"), content="12345")
+        im.seek(0)
+        nc_any.files.upload(path.join(folder, "test_generated_image.png"), content=im.read())
+
+    init_folder()
+    init_folder("test_dir")
+    init_folder("test_dir/subdir")
+
+
+def clean_filesystem_for_user(nc_any):
+    clean_up_list = [
+        "test_empty_dir",
+        "test_empty_dir_in_dir",
+        "test_dir",
+        "test_dir_tmp",
+        "test_empty_text.txt",
+        "test_64_bytes.bin",
+        "test_12345_text.txt",
+        "test_generated_image.png",
+    ]
+    for i in clean_up_list:
+        nc_any.files.delete(i, not_fail=True)
+
+
 @pytest.fixture(autouse=True, scope="session")
-def tear_up_down():
+def tear_up_down(nc_any, rand_bytes):
     if NC_CLIENT:
         # create two additional groups
         environ["TEST_GROUP_BOTH"] = "test_nc_py_api_group_both"
@@ -130,9 +196,11 @@ def tear_up_down():
             password=environ["TEST_USER_PASS"],
             groups=[environ["TEST_GROUP_BOTH"], environ["TEST_GROUP_USER"]],
         )
+    init_filesystem_for_user(nc_any, rand_bytes)  # currently we initialize filesystem only for admin
 
     yield
 
+    clean_filesystem_for_user(nc_any)
     if NC_CLIENT:
         NC_CLIENT.users.delete(environ["TEST_ADMIN_ID"])
         NC_CLIENT.users.delete(environ["TEST_USER_ID"])
