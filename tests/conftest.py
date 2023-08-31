@@ -1,10 +1,13 @@
+import contextlib
 from os import environ
 from typing import Optional, Union
 
 import gfixture_set_env  # noqa
 import pytest
 
-from nc_py_api import Nextcloud, NextcloudApp, _session  # noqa
+from nc_py_api import Nextcloud, NextcloudApp, NextcloudException, _session  # noqa
+
+_TEST_FAILED_INCREMENTAL: dict[str, dict[tuple[int, ...], str]] = {}
 
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
 if environ.get("SKIP_AE_TESTS", False):
@@ -72,3 +75,66 @@ def pytest_collection_modifyitems(items):
                 item.add_marker(pytest.mark.skip(reason=f"Need NC>={min_major}"))
             elif srv_ver["major"] == min_major and srv_ver["minor"] < min_minor:
                 item.add_marker(pytest.mark.skip(reason=f"Need NC>={min_major}.{min_minor}"))
+
+
+def pytest_runtest_makereport(item, call):
+    if "incremental" in item.keywords and call.excinfo is not None:
+        # the test has failed
+        cls_name = str(item.cls)  # retrieve the class name of the test
+        # Retrieve the index of the test (if parametrize is used in combination with incremental)
+        parametrize_index = tuple(item.callspec.indices.values()) if hasattr(item, "callspec") else ()
+        test_name = item.originalname or item.name  # retrieve the name of the test function
+        # store in _test_failed_incremental the original name of the failed test
+        _TEST_FAILED_INCREMENTAL.setdefault(cls_name, {}).setdefault(parametrize_index, test_name)
+
+
+def pytest_runtest_setup(item):
+    if "incremental" in item.keywords:
+        cls_name = str(item.cls)
+        if cls_name in _TEST_FAILED_INCREMENTAL:  # check if a previous test has failed for this class
+            # retrieve the index of the test (if parametrize is used in combination with incremental)
+            parametrize_index = tuple(item.callspec.indices.values()) if hasattr(item, "callspec") else ()
+            # retrieve the name of the first test function to fail for this class name and index
+            test_name = _TEST_FAILED_INCREMENTAL[cls_name].get(parametrize_index, None)
+            # if name found, test has failed for the combination of class name & test name
+            if test_name is not None:
+                pytest.xfail("previous test failed ({})".format(test_name))
+
+
+@pytest.fixture(autouse=True, scope="session")
+def tear_up_down():
+    if NC_CLIENT:
+        # create two additional groups
+        environ["TEST_GROUP_BOTH"] = "test_nc_py_api_group_both"
+        environ["TEST_GROUP_USER"] = "test_nc_py_api_group_user"
+        with contextlib.suppress(NextcloudException):
+            NC_CLIENT.users_groups.delete(environ["TEST_GROUP_BOTH"])
+        with contextlib.suppress(NextcloudException):
+            NC_CLIENT.users_groups.delete(environ["TEST_GROUP_USER"])
+        NC_CLIENT.users_groups.create(group_id=environ["TEST_GROUP_BOTH"])
+        NC_CLIENT.users_groups.create(group_id=environ["TEST_GROUP_USER"])
+        # create two additional users
+        environ["TEST_ADMIN_ID"] = "test_nc_py_api_admin"
+        environ["TEST_ADMIN_PASS"] = "az1dcaNG4c42"
+        environ["TEST_USER_ID"] = "test_nc_py_api_user"
+        environ["TEST_USER_PASS"] = "DC89GvaR42lk"
+        with contextlib.suppress(NextcloudException):
+            NC_CLIENT.users.delete(environ["TEST_ADMIN_ID"])
+        with contextlib.suppress(NextcloudException):
+            NC_CLIENT.users.delete(environ["TEST_USER_ID"])
+        NC_CLIENT.users.create(
+            environ["TEST_ADMIN_ID"], password=environ["TEST_ADMIN_PASS"], groups=["admin", environ["TEST_GROUP_BOTH"]]
+        )
+        NC_CLIENT.users.create(
+            environ["TEST_USER_ID"],
+            password=environ["TEST_USER_PASS"],
+            groups=[environ["TEST_GROUP_BOTH"], environ["TEST_GROUP_USER"]],
+        )
+
+    yield
+
+    if NC_CLIENT:
+        NC_CLIENT.users.delete(environ["TEST_ADMIN_ID"])
+        NC_CLIENT.users.delete(environ["TEST_USER_ID"])
+        NC_CLIENT.users_groups.delete(environ["TEST_GROUP_BOTH"])
+        NC_CLIENT.users_groups.delete(environ["TEST_GROUP_USER"])

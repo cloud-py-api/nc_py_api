@@ -1,8 +1,7 @@
-import contextlib
 import datetime
+from os import environ
 
 import pytest
-from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
 from nc_py_api import (
     FilePermissions,
@@ -222,15 +221,13 @@ def test_get_inherited(nc):
 
 
 def test_share_with(nc, nc_client):
-    with contextlib.suppress(NextcloudException):
-        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
+    nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
     assert not nc_second_user.files.sharing.get_list()
     nc.files.makedirs("test_folder1/test_subfolder", exist_ok=True)
     shared_file = nc.files.upload("share_test.txt", content="content of file")
     try:
-        folder_share = nc.files.sharing.create("test_folder1", ShareType.TYPE_USER, share_with=TEST_USER_NAME)
-        file_share = nc.files.sharing.create(shared_file, ShareType.TYPE_USER, share_with=TEST_USER_NAME)
+        folder_share = nc.files.sharing.create("test_folder1", ShareType.TYPE_USER, share_with=environ["TEST_USER_ID"])
+        file_share = nc.files.sharing.create(shared_file, ShareType.TYPE_USER, share_with=environ["TEST_USER_ID"])
         shares_list1 = nc.files.sharing.get_list(path="test_folder1/")
         shares_list2 = nc.files.sharing.get_list(path="share_test.txt")
         second_user_shares_list = nc_second_user.files.sharing.get_list()
@@ -245,7 +242,6 @@ def test_share_with(nc, nc_client):
     finally:
         nc.files.delete("share_test.txt", not_fail=True)
         nc.files.delete("test_folder1", not_fail=True)
-        nc_client.users.delete(TEST_USER_NAME)
 
 
 def test_pending(nc):
