@@ -133,7 +133,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost"
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -290,7 +290,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost"
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -432,7 +432,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost"
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -551,7 +551,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost"
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -802,7 +802,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost"
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
