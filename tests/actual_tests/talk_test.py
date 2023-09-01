@@ -113,6 +113,8 @@ def test_get_conversations_include_status(nc, nc_client):
 
 @pytest.mark.require_nc(major=27)
 def test_message_send_delete_reactions(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
     conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
         msg = nc_any.talk.send_message("yo yo yo!", conversation)
@@ -130,7 +132,8 @@ def test_message_send_delete_reactions(nc_any):
         assert nc_any.talk.delete_reaction(msg, "❤️")
         assert not nc_any.talk.delete_reaction(msg, "☝️️")
         assert not nc_any.talk.get_message_reactions(msg)
-        nc_any.talk.delete_message(msg)
+        result = nc_any.talk.delete_message(msg)
+        assert result.system_message == "message_deleted"
         messages = nc_any.talk.receive_messages(conversation)
         deleted = [i for i in messages if i.system_message == "message_deleted"]
         assert deleted

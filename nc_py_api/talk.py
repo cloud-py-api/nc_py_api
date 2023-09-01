@@ -810,7 +810,7 @@ class _TalkAPI:
 
     def delete_message(
         self, message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str] = ""
-    ) -> None:
+    ) -> TalkMessage:
         """Delete a chat message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk.TalkMessage` to delete.
@@ -820,7 +820,8 @@ class _TalkAPI:
         """
         token = self._get_token(message, conversation)
         message_id = message.message_id if isinstance(message, TalkMessage) else message
-        self._session.ocs("DELETE", self._ep_base + f"/api/v1/chat/{token}/{message_id}")
+        result = self._session.ocs("DELETE", self._ep_base + f"/api/v1/chat/{token}/{message_id}")
+        return TalkMessage(result)
 
     def react_to_message(
         self,
@@ -835,6 +836,7 @@ class _TalkAPI:
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
 
         .. note:: **Conversation** needed only if **message** is not :py:class:`~nc_py_api.talk.TalkMessage`
+
         :returns: list of reactions to the message.
         """
         token = self._get_token(message, conversation)
