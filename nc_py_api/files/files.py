@@ -235,6 +235,7 @@ class FilesAPI:
         """
         _path = ""
         path = path.user_path if isinstance(path, FsNode) else path
+        path = path.lstrip("/")
         result = None
         for i in Path(path).parts:
             _path = os.path.join(_path, i)
@@ -443,7 +444,7 @@ class FilesAPI:
         )
         if exclude_self:
             for index, v in enumerate(result):
-                if v.user_path.rstrip("/") == path.rstrip("/"):
+                if v.user_path.rstrip("/") == path.strip("/"):
                     del result[index]
                     break
         return result

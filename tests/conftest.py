@@ -1,10 +1,13 @@
 from os import environ
 from typing import Optional, Union
 
-import gfixture_set_env  # noqa
 import pytest
 
 from nc_py_api import Nextcloud, NextcloudApp, _session  # noqa
+
+from . import gfixture_set_env  # noqa
+
+_TEST_FAILED_INCREMENTAL: dict[str, dict[tuple[int, ...], str]] = {}
 
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
 if environ.get("SKIP_AE_TESTS", False):
@@ -72,3 +75,27 @@ def pytest_collection_modifyitems(items):
                 item.add_marker(pytest.mark.skip(reason=f"Need NC>={min_major}"))
             elif srv_ver["major"] == min_major and srv_ver["minor"] < min_minor:
                 item.add_marker(pytest.mark.skip(reason=f"Need NC>={min_major}.{min_minor}"))
+
+
+def pytest_runtest_makereport(item, call):
+    if "incremental" in item.keywords and call.excinfo is not None:
+        # the test has failed
+        cls_name = str(item.cls)  # retrieve the class name of the test
+        # Retrieve the index of the test (if parametrize is used in combination with incremental)
+        parametrize_index = tuple(item.callspec.indices.values()) if hasattr(item, "callspec") else ()
+        test_name = item.originalname or item.name  # retrieve the name of the test function
+        # store in _test_failed_incremental the original name of the failed test
+        _TEST_FAILED_INCREMENTAL.setdefault(cls_name, {}).setdefault(parametrize_index, test_name)
+
+
+def pytest_runtest_setup(item):
+    if "incremental" in item.keywords:
+        cls_name = str(item.cls)
+        if cls_name in _TEST_FAILED_INCREMENTAL:  # check if a previous test has failed for this class
+            # retrieve the index of the test (if parametrize is used in combination with incremental)
+            parametrize_index = tuple(item.callspec.indices.values()) if hasattr(item, "callspec") else ()
+            # retrieve the name of the first test function to fail for this class name and index
+            test_name = _TEST_FAILED_INCREMENTAL[cls_name].get(parametrize_index, None)
+            # if name found, test has failed for the combination of class name & test name
+            if test_name is not None:
+                pytest.xfail("previous test failed ({})".format(test_name))

@@ -15,9 +15,9 @@ concurrency:
 env:
   NEXTCLOUD_URL: "http://localhost:8080"
   APP_ID: "nc_py_api"
-  APP_PORT: 9009
   APP_VERSION: "1.0.0"
   APP_SECRET: "tC6vkwPhcppjMykD1r0n9NlI95uJMBYjs5blpIcA1PAdoPDmc5qoAjaBAkyocZ6E"
+  APP_PORT: 9009
   NC_AUTH_USER: "admin"
   NC_AUTH_PASS: "adminpassword"
 
@@ -133,10 +133,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-            -e --force-scopes
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -293,10 +290,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-            -e --force-scopes
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -438,10 +432,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-            -e --force-scopes
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -560,10 +551,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"port\":$APP_PORT,\"protocol\":\"http\",\"system_app\":1}" \
-            -e --force-scopes
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
@@ -814,10 +802,7 @@ jobs:
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
           cd ..
-          php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
-          php occ app_ecosystem_v2:app:register $APP_ID manual_install --json-info \
-            "{\"appid\":\"$APP_ID\",\"name\":\"$APP_ID\",\"daemon_config_name\":\"manual_install\",\"version\":\"$APP_VERSION\",\"secret\":\"$APP_SECRET\",\"host\":\"localhost\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\"]},\"protocol\":\"http\",\"port\":$APP_PORT,\"system_app\":1}" \
-            -e --force-scopes
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 

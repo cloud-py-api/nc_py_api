@@ -6,7 +6,7 @@ import nc_py_api
 
 
 def test_timeouts():
-    project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    project_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     env_file = os.path.join(project_dir, ".env")
     env_backup_file = os.path.join(project_dir, ".env.backup")
     if os.path.exists(env_file):

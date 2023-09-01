@@ -1,9 +1,8 @@
-import contextlib
+from os import environ
 
 import pytest
-from users_test import TEST_USER_NAME, TEST_USER_PASSWORD
 
-from nc_py_api import Nextcloud, NextcloudException, talk, talk_bot
+from nc_py_api import Nextcloud, talk, talk_bot
 
 
 def test_conversation_create_delete(nc):
@@ -96,11 +95,9 @@ def test_get_conversations_modified_since(nc):
 def test_get_conversations_include_status(nc, nc_client):
     if nc.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
-    with contextlib.suppress(NextcloudException):
-        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    nc_second_user = Nextcloud(nc_auth_user=TEST_USER_NAME, nc_auth_pass=TEST_USER_PASSWORD)
+    nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
     nc_second_user.user_status.set_status_type("away")
-    conversation = nc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, TEST_USER_NAME)
+    conversation = nc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, environ["TEST_USER_ID"])
     try:
         conversations = nc.talk.get_user_conversations(include_status=False)
         assert conversations
@@ -112,7 +109,6 @@ def test_get_conversations_include_status(nc, nc_client):
         assert first_conv.status_type == "away"
     finally:
         nc.talk.leave_conversation(conversation.token)
-        nc_client.users.delete(TEST_USER_NAME)
 
 
 @pytest.mark.require_nc(major=27, minor=1)

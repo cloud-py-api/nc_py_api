@@ -1,9 +1,7 @@
-from io import BytesIO
 from os import environ
 from time import sleep
 
 import pytest
-from PIL import Image
 
 from nc_py_api import FilePermissions, FsNode, NextcloudExceptionNotFound, ex_app
 
@@ -23,48 +21,41 @@ from selenium.webdriver.support.wait import WebDriverWait
     reason="needs username & password for tests.",
 )
 def test_register_ui_file_actions(nc_app):
-    im = BytesIO()
-    Image.linear_gradient("L").resize((768, 768)).save(im, format="PNG")
+    tmp_png = nc_app.files.by_path("test_dir/test_generated_image.png")
+    nc_app.ui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
+    nc_app.ui.files_dropdown_menu.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
+    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
+    opts = webdriver.FirefoxOptions()
+    opts.add_argument("--headless")
+    driver = webdriver.Firefox(opts)
     try:
-        nc_app.files.makedirs("test_ui_action", exist_ok=True)
-        nc_app.files.upload("test_ui_action/tmp.png", bytes(im.getbuffer()))
-        tmp_png = nc_app.files.by_path("test_ui_action/tmp.png")
-        nc_app.ui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
-        nc_app.ui.files_dropdown_menu.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
-        nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
-        opts = webdriver.FirefoxOptions()
-        opts.add_argument("--headless")
-        driver = webdriver.Firefox(opts)
-        try:
-            driver.get(environ["NEXTCLOUD_URL"])
-            driver.find_element(By.ID, "user").send_keys(environ["NC_AUTH_USER"])
-            driver.find_element(By.ID, "password").send_keys(environ["NC_AUTH_PASS"])
-            driver.find_element(By.ID, "password").send_keys(Keys.RETURN)
-            WebDriverWait(driver, 15.0).until(exp_cond.url_contains("dashboard"))
-            nc_url = environ["NEXTCLOUD_URL"]
-            nc_url = nc_url.replace("index.php/", "")
-            nc_url = nc_url.removesuffix("/")
-            driver.get(nc_url + "/index.php/apps/files/?dir=/test_ui_action")
-            WebDriverWait(driver, 15.0).until(exp_cond.url_contains("apps/files"))
-            sleep(2.5)
-            tmp_png_s = driver.find_element(By.XPATH, f'//a[contains(@href,"openfile={tmp_png.info.fileid}")]')
-            items = tmp_png_s.find_elements(By.TAG_NAME, "a")
-            for i in items:
-                if i.accessible_name == "Actions":
-                    driver.execute_script("arguments[0].click();", i)
-                    break
-            sleep(1)
-            driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_any")]')
-            driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_im")]')
-            with pytest.raises(NoSuchElementException):
-                driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_txt")]')
-        finally:
-            driver.quit()
-        nc_app.ui.files_dropdown_menu.unregister("test_ui_action_im")
-        nc_app.ui.files_dropdown_menu.unregister("test_ui_action_txt")
-        nc_app.ui.files_dropdown_menu.unregister("test_ui_action_any")
+        driver.get(environ["NEXTCLOUD_URL"])
+        driver.find_element(By.ID, "user").send_keys(environ["NC_AUTH_USER"])
+        driver.find_element(By.ID, "password").send_keys(environ["NC_AUTH_PASS"])
+        driver.find_element(By.ID, "password").send_keys(Keys.RETURN)
+        WebDriverWait(driver, 15.0).until(exp_cond.url_contains("dashboard"))
+        nc_url = environ["NEXTCLOUD_URL"]
+        nc_url = nc_url.replace("index.php/", "")
+        nc_url = nc_url.removesuffix("/")
+        driver.get(nc_url + "/index.php/apps/files/?dir=/test_dir")
+        WebDriverWait(driver, 15.0).until(exp_cond.url_contains("apps/files"))
+        sleep(2.5)
+        tmp_png_s = driver.find_element(By.XPATH, f'//a[contains(@href,"openfile={tmp_png.info.fileid}")]')
+        items = tmp_png_s.find_elements(By.TAG_NAME, "a")
+        for i in items:
+            if i.accessible_name == "Actions":
+                driver.execute_script("arguments[0].click();", i)
+                break
+        sleep(1)
+        driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_any")]')
+        driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_im")]')
+        with pytest.raises(NoSuchElementException):
+            driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_txt")]')
     finally:
-        nc_app.files.delete("test_ui_action", not_fail=True)
+        driver.quit()
+    nc_app.ui.files_dropdown_menu.unregister("test_ui_action_im")
+    nc_app.ui.files_dropdown_menu.unregister("test_ui_action_txt")
+    nc_app.ui.files_dropdown_menu.unregister("test_ui_action_any")
 
 
 def test_unregister_ui_file_actions(nc_app):
@@ -122,15 +113,7 @@ def test_ui_file_to_fs_node(nc_app):
         assert fs_node.info.size == fs_object.info.size
         assert fs_node.info.fileid == fs_object.info.fileid
 
-    nc_app.files.makedirs("some folder", exist_ok=True)
-    nc_app.files.upload("some folder/zero", content="")
-    nc_app.files.upload("some folder/test_root.txt", content="content!")
-    try:
-        for each_file in nc_app.files.listdir():
-            ui_action_check(directory="/", fs_object=each_file)
-        sub_dir = nc_app.files.listdir("some folder")
-        assert sub_dir
-        for each_file in sub_dir:
-            ui_action_check(directory="/some folder", fs_object=each_file)
-    finally:
-        nc_app.files.delete("some folder")
+    for each_file in nc_app.files.listdir():
+        ui_action_check(directory="/", fs_object=each_file)
+    for each_file in nc_app.files.listdir("test_dir"):
+        ui_action_check(directory="/test_dir", fs_object=each_file)

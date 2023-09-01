@@ -1,11 +1,9 @@
 import contextlib
+from os import environ
 
 import pytest
 
 from nc_py_api import NextcloudException, NextcloudExceptionNotFound
-
-TEST_USER_NAME = "test_cover_user"
-TEST_USER_PASSWORD = "az1dcaNG4c42"
 
 
 def test_get_user_details(nc):
@@ -33,67 +31,55 @@ def test_get_user_404(nc):
         nc.users.get_details("non existing user")
 
 
-def test_create_user(nc_client):
-    with contextlib.suppress(NextcloudException):
-        nc_client.users.delete(TEST_USER_NAME)
-    nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    with pytest.raises(NextcloudException):
-        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    nc_client.users.delete(TEST_USER_NAME)
-
-
 def test_create_user_with_groups(nc_client):
-    with contextlib.suppress(NextcloudException):
-        nc_client.users.delete(TEST_USER_NAME)
-    nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD, groups=["admin"])
     admin_group = nc_client.users_groups.get_members("admin")
-    assert TEST_USER_NAME in admin_group
-    nc_client.users.delete(TEST_USER_NAME)
+    assert environ["TEST_ADMIN_ID"] in admin_group
+    assert environ["TEST_USER_ID"] not in admin_group
 
 
 def test_create_user_no_name_mail(nc_client):
+    test_user_name = "test_create_user_no_name_mail"
     with contextlib.suppress(NextcloudException):
-        nc_client.users.delete(TEST_USER_NAME)
+        nc_client.users.delete(test_user_name)
     with pytest.raises(ValueError):
-        nc_client.users.create(TEST_USER_NAME)
+        nc_client.users.create(test_user_name)
     with pytest.raises(ValueError):
-        nc_client.users.create(TEST_USER_NAME, password="")
+        nc_client.users.create(test_user_name, password="")
     with pytest.raises(ValueError):
-        nc_client.users.create(TEST_USER_NAME, email="")
+        nc_client.users.create(test_user_name, email="")
 
 
 def test_delete_user(nc_client):
+    test_user_name = "test_delete_user"
     with contextlib.suppress(NextcloudException):
-        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    nc_client.users.delete(TEST_USER_NAME)
+        nc_client.users.create(test_user_name, password="az1dcaNG4c42")
+    nc_client.users.delete(test_user_name)
     with pytest.raises(NextcloudExceptionNotFound):
-        nc_client.users.delete(TEST_USER_NAME)
+        nc_client.users.delete(test_user_name)
 
 
 def test_users_get_list(nc_client):
-    with contextlib.suppress(NextcloudException):
-        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
     users = nc_client.users.get_list()
     assert isinstance(users, list)
-    assert "admin" in users
+    assert nc_client.user in users
+    assert environ["TEST_ADMIN_ID"] in users
+    assert environ["TEST_USER_ID"] in users
     users = nc_client.users.get_list(limit=1)
     assert len(users) == 1
     assert users[0] != nc_client.users.get_list(limit=1, offset=1)[0]
-    users = nc_client.users.get_list(mask="test_cover_")
+    users = nc_client.users.get_list(mask=environ["TEST_ADMIN_ID"])
     assert len(users) == 1
-    nc_client.users.delete(TEST_USER_NAME)
 
 
 def test_enable_disable_user(nc_client):
+    test_user_name = "test_enable_disable_user"
     with contextlib.suppress(NextcloudException):
-        nc_client.users.create(TEST_USER_NAME, password=TEST_USER_PASSWORD)
-    nc_client.users.disable(TEST_USER_NAME)
-    user = nc_client.users.get_details(TEST_USER_NAME)
-    assert not user["enabled"]
-    nc_client.users.enable(TEST_USER_NAME)
-    user = nc_client.users.get_details(TEST_USER_NAME)
-    assert user["enabled"]
-    nc_client.users.delete(TEST_USER_NAME)
+        nc_client.users.create(test_user_name, password="az1dcaNG4c42")
+    nc_client.users.disable(test_user_name)
+    assert not nc_client.users.get_details(test_user_name)["enabled"]
+    nc_client.users.enable(test_user_name)
+    assert nc_client.users.get_details(test_user_name)["enabled"]
+    nc_client.users.delete(test_user_name)
 
 
 def test_user_editable_fields(nc_client):
@@ -103,9 +89,10 @@ def test_user_editable_fields(nc_client):
 
 
 def test_edit_user(nc_client):
-    nc_client.users.edit(nc_client.user, address="Le Pame")
+    nc_client.users.edit(nc_client.user, address="Le Pame", email="admino@gmx.net")
     current_user = nc_client.users.get_details()
     assert current_user["address"] == "Le Pame"
+    assert current_user["email"] == "admino@gmx.net"
     nc_client.users.edit(nc_client.user, address="", email="admin@gmx.net")
     current_user = nc_client.users.get_details()
     assert current_user["address"] == ""

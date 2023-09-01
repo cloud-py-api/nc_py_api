@@ -41,7 +41,7 @@ def test_loglvl_less(nc_app):
     current_log_lvl = nc_app.capabilities["app_ecosystem_v2"].get("loglevel", LogLvl.FATAL)
     if current_log_lvl == LogLvl.DEBUG:
         pytest.skip("Log lvl to low")
-    with mock.patch("conftest.NC_APP._session._ocs") as _ocs:
+    with mock.patch("tests.conftest.NC_APP._session._ocs") as _ocs:
         nc_app.log(int(current_log_lvl) - 1, "will not be sent")  # noqa
         _ocs.assert_not_called()
         nc_app.log(current_log_lvl, "will be sent")
@@ -55,8 +55,8 @@ def test_log_without_app_ecosystem_v2(nc_app):
     srv_capabilities.pop("app_ecosystem_v2")
     patched_capabilities = {"capabilities": srv_capabilities, "version": srv_version}
     with (
-        mock.patch.dict("conftest.NC_APP._session._capabilities", patched_capabilities, clear=True),
-        mock.patch("conftest.NC_APP._session._ocs") as _ocs,
+        mock.patch.dict("tests.conftest.NC_APP._session._capabilities", patched_capabilities, clear=True),
+        mock.patch("tests.conftest.NC_APP._session._ocs") as _ocs,
     ):
         nc_app.log(log_lvl, "will not be sent")
         _ocs.assert_not_called()

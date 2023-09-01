@@ -1,7 +1,8 @@
 import pytest
-from conftest import NC_APP
 
 from nc_py_api import NextcloudExceptionNotFound
+
+from ..conftest import NC_APP
 
 if NC_APP is None:
     pytest.skip("Need App mode", allow_module_level=True)
