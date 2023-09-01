@@ -748,7 +748,7 @@ class _TalkAPI:
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
         """
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}")
+        self._session.ocs("DELETE", self._ep_base + f"/api/v4/room/{token}")
 
     def leave_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
         """Removes yourself from the conversation.
