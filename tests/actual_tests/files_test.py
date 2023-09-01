@@ -191,6 +191,15 @@ def test_file_upload_chunked(nc, chunk_size):
     assert upload_crc == download_crc
 
 
+def test_file_upload_file(nc_any):
+    content = randbytes(113)
+    with NamedTemporaryFile() as tmp_file:
+        tmp_file.write(content)
+        tmp_file.flush()
+        nc_any.files.upload_stream("test_dir_tmp/test_file_upload_file", tmp_file.name)
+    assert nc_any.files.download("test_dir_tmp/test_file_upload_file") == content
+
+
 @pytest.mark.parametrize("file_name", ("chunked_zero", "chunked_zero/", "chunked_zero//"))
 def test_file_upload_chunked_zero_size(nc_any, file_name):
     nc_any.files.delete("/test_dir_tmp/test_file_upload_del", not_fail=True)
