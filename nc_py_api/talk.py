@@ -684,10 +684,7 @@ class _TalkAPI:
 
         result = self._session.ocs("GET", self._ep_base + "/api/v4/room", params=params)
         self.modified_since = int(self._session.response_headers["X-Nextcloud-Talk-Modified-Before"])
-        config_sha = self._session.response_headers["X-Nextcloud-Talk-Hash"]
-        if self.config_sha != config_sha:
-            self._session.update_server_info()
-            self.config_sha = config_sha
+        self._update_config_sha()
         return [Conversation(i) for i in result]
 
     def create_conversation(
@@ -725,6 +722,22 @@ class _TalkAPI:
         clear_from_params_empty(["invite", "source", "roomName", "objectType", "objectId"], params)
         return Conversation(self._session.ocs("POST", self._ep_base + "/api/v4/room", json=params))
 
+    def rename_conversation(self, conversation: typing.Union[Conversation, str], new_name: str) -> None:
+        """Renames a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param new_name: new name for the conversation.
+        """
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}", params={"roomName": new_name})
+
+    def get_conversation_by_token(self, conversation: typing.Union[Conversation, str]) -> Conversation:
+        """Gets conversation by token."""
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        result = self._session.ocs("GET", self._ep_base + f"/api/v4/room/{token}")
+        self._update_config_sha()
+        return Conversation(result)
+
     def delete_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
         """Deletes a conversation.
 
@@ -735,7 +748,7 @@ class _TalkAPI:
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
         """
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("DELETE", self._ep_base + f"/api/v4/room/{token}")
+        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}")
 
     def leave_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
         """Removes yourself from the conversation.
@@ -935,3 +948,9 @@ class _TalkAPI:
             if isinstance(message, TalkMessage)
             else conversation.token if isinstance(conversation, Conversation) else conversation
         )
+
+    def _update_config_sha(self):
+        config_sha = self._session.response_headers["X-Nextcloud-Talk-Hash"]
+        if self.config_sha != config_sha:
+            self._session.update_server_info()
+            self.config_sha = config_sha

@@ -111,6 +111,18 @@ def test_get_conversations_include_status(nc, nc_client):
         nc.talk.leave_conversation(conversation.token)
 
 
+def test_rename_get_conversation(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        nc_any.talk.rename_conversation(conversation, "new era")
+        conversation = nc_any.talk.get_conversation_by_token(conversation)
+        assert conversation.display_name == "new era"
+    finally:
+        nc_any.talk.delete_conversation(conversation)
+
+
 @pytest.mark.require_nc(major=27)
 def test_message_send_delete_reactions(nc_any):
     if nc_any.talk.available is False:
