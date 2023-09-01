@@ -53,6 +53,10 @@ Talk API
     :members:
     :undoc-members:
 
+.. autoclass:: nc_py_api.talk.MessageReactions
+    :members:
+    :undoc-members:
+
 .. autoclass:: nc_py_api.talk.BotInfo
     :members:
     :inherited-members:

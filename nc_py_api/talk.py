@@ -156,6 +156,34 @@ class BreakoutRoomStatus(enum.IntEnum):
 
 
 @dataclasses.dataclass
+class MessageReactions:
+    """One reaction for a message, retrieved with :py:meth:`~nc_py_api.talk._TalkAPI.get_message_reactions`."""
+
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def actor_type(self) -> str:
+        """Actor types of the chat message: **users**, **guests**."""
+        return self._raw_data["actorType"]
+
+    @property
+    def actor_id(self) -> str:
+        """Actor id of the message author."""
+        return self._raw_data["actorId"]
+
+    @property
+    def actor_display_name(self) -> str:
+        """A display name of the message author."""
+        return self._raw_data["actorDisplayName"]
+
+    @property
+    def timestamp(self) -> int:
+        """Timestamp in seconds and UTC time zone."""
+        return self._raw_data["timestamp"]
+
+
+@dataclasses.dataclass
 class TalkMessage:
     """Talk message."""
 
@@ -727,7 +755,7 @@ class _TalkAPI:
         reply_to_message: typing.Union[int, TalkMessage] = 0,
         silent: bool = False,
         actor_display_name: str = "",
-    ) -> str:
+    ) -> TalkMessage:
         """Send a message and returns a "reference string" to identify the message again in a "get messages" request.
 
         :param message: The message the user wants to say.
@@ -739,17 +767,10 @@ class _TalkAPI:
                 The message you are replying to should be from the same conversation.
         :param silent: Flag controlling if the message should create a chat notifications for the users.
         :param actor_display_name: Guest display name (**ignored for the logged-in users**).
-        :returns: A reference string to be able to identify the message again in a "get messages" request.
+        :returns: :py:class:`~nc_py_api.talk.TalkMessage` that describes the sent message.
         :raises ValueError: in case of an invalid usage.
         """
-        if not conversation and not isinstance(reply_to_message, TalkMessage):
-            raise ValueError("Either specify 'conversation' or provide 'TalkMessage'.")
-
-        token = (
-            reply_to_message.token
-            if isinstance(reply_to_message, TalkMessage)
-            else conversation.token if isinstance(conversation, Conversation) else conversation
-        )
+        token = self._get_token(message, conversation)
         reference_id = hashlib.sha256(random_string(32).encode("UTF-8")).hexdigest()
         params = {
             "message": message,
@@ -758,8 +779,8 @@ class _TalkAPI:
             "referenceId": reference_id,
             "silent": silent,
         }
-        self._session.ocs("POST", self._ep_base + f"/api/v1/chat/{token}", json=params)
-        return reference_id
+        r = self._session.ocs("POST", self._ep_base + f"/api/v1/chat/{token}", json=params)
+        return TalkMessage(r)
 
     def receive_messages(
         self,
@@ -786,6 +807,85 @@ class _TalkAPI:
         }
         result = self._session.ocs("GET", self._ep_base + f"/api/v1/chat/{token}", params=params)
         return [TalkMessage(i) for i in result]
+
+    def delete_message(
+        self, message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str] = ""
+    ) -> None:
+        """Delete a chat message.
+
+        :param message: Message ID or :py:class:`~nc_py_api.talk.TalkMessage` to delete.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: **Conversation** needed only if **message** is not :py:class:`~nc_py_api.talk.TalkMessage`
+        """
+        token = self._get_token(message, conversation)
+        message_id = message.message_id if isinstance(message, TalkMessage) else message
+        self._session.ocs("DELETE", self._ep_base + f"/api/v1/chat/{token}/{message_id}")
+
+    def react_to_message(
+        self,
+        message: typing.Union[TalkMessage, str],
+        reaction: str,
+        conversation: typing.Union[Conversation, str] = "",
+    ) -> dict[str, list[MessageReactions]]:
+        """React to a chat message.
+
+        :param message: Message ID or :py:class:`~nc_py_api.talk.TalkMessage` to react to.
+        :param reaction: A single emoji.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: **Conversation** needed only if **message** is not :py:class:`~nc_py_api.talk.TalkMessage`
+        :returns: list of reactions to the message.
+        """
+        token = self._get_token(message, conversation)
+        message_id = message.message_id if isinstance(message, TalkMessage) else message
+        params = {
+            "reaction": reaction,
+        }
+        r = self._session.ocs("POST", self._ep_base + f"/api/v1/reaction/{token}/{message_id}", params=params)
+        return {k: [MessageReactions(i) for i in v] for k, v in r.items()} if r else {}
+
+    def delete_reaction(
+        self,
+        message: typing.Union[TalkMessage, str],
+        reaction: str,
+        conversation: typing.Union[Conversation, str] = "",
+    ) -> dict[str, list[MessageReactions]]:
+        """Remove reaction from a chat message.
+
+        :param message: Message ID or :py:class:`~nc_py_api.talk.TalkMessage` to remove reaction from.
+        :param reaction: A single emoji.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: **Conversation** needed only if **message** is not :py:class:`~nc_py_api.talk.TalkMessage`
+        """
+        token = self._get_token(message, conversation)
+        message_id = message.message_id if isinstance(message, TalkMessage) else message
+        params = {
+            "reaction": reaction,
+        }
+        r = self._session.ocs("DELETE", self._ep_base + f"/api/v1/reaction/{token}/{message_id}", params=params)
+        return {k: [MessageReactions(i) for i in v] for k, v in r.items()} if r else {}
+
+    def get_message_reactions(
+        self,
+        message: typing.Union[TalkMessage, str],
+        reaction_filter: str = "",
+        conversation: typing.Union[Conversation, str] = "",
+    ) -> dict[str, list[MessageReactions]]:
+        """Get reactions information for a chat message.
+
+        :param message: Message ID or :py:class:`~nc_py_api.talk.TalkMessage` to get reactions from.
+        :param reaction_filter: A single emoji to get reaction information only for it.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: **Conversation** needed only if **message** is not :py:class:`~nc_py_api.talk.TalkMessage`
+        """
+        token = self._get_token(message, conversation)
+        message_id = message.message_id if isinstance(message, TalkMessage) else message
+        params = {"reaction": reaction_filter} if reaction_filter else {}
+        r = self._session.ocs("GET", self._ep_base + f"/api/v1/reaction/{token}/{message_id}", params=params)
+        return {k: [MessageReactions(i) for i in v] for k, v in r.items()} if r else {}
 
     def list_bots(self) -> list[BotInfo]:
         """Lists the bots that are installed on the server."""
@@ -822,3 +922,14 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         bot_id = bot.bot_id if isinstance(bot, BotInfoBasic) else bot
         self._session.ocs("DELETE", self._ep_base + f"/api/v1/bot/{token}/{bot_id}")
+
+    @staticmethod
+    def _get_token(message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str]) -> str:
+        if not conversation and not isinstance(message, TalkMessage):
+            raise ValueError("Either specify 'conversation' or provide 'TalkMessage'.")
+
+        return (
+            message.token
+            if isinstance(message, TalkMessage)
+            else conversation.token if isinstance(conversation, Conversation) else conversation
+        )

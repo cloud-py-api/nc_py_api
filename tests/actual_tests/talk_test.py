@@ -111,6 +111,33 @@ def test_get_conversations_include_status(nc, nc_client):
         nc.talk.leave_conversation(conversation.token)
 
 
+@pytest.mark.require_nc(major=27)
+def test_message_send_delete_reactions(nc_any):
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        msg = nc_any.talk.send_message("yo yo yo!", conversation)
+        reactions = nc_any.talk.react_to_message(msg, "❤️")
+        assert "❤️" in reactions
+        assert len(reactions["❤️"]) == 1
+        reaction = reactions["❤️"][0]
+        assert reaction.actor_id == nc_any.user
+        assert reaction.actor_type == "users"
+        assert reaction.actor_display_name
+        assert isinstance(reaction.timestamp, int)
+        reactions2 = nc_any.talk.get_message_reactions(msg)
+        assert reactions == reactions2
+        nc_any.talk.react_to_message(msg, "☝️️")
+        assert nc_any.talk.delete_reaction(msg, "❤️")
+        assert not nc_any.talk.delete_reaction(msg, "☝️️")
+        assert not nc_any.talk.get_message_reactions(msg)
+        nc_any.talk.delete_message(msg)
+        messages = nc_any.talk.receive_messages(conversation)
+        deleted = [i for i in messages if i.system_message == "message_deleted"]
+        assert deleted
+    finally:
+        nc_any.talk.delete_conversation(conversation)
+
+
 @pytest.mark.require_nc(major=27, minor=1)
 def test_register_unregister_talk_bot(nc_app):
     if nc_app.talk.bots_available is False:

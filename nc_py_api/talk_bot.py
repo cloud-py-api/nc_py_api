@@ -160,7 +160,7 @@ class TalkBot:
     ) -> httpx.Response:
         """Removes reaction from a message.
 
-        :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to react to.
+        :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to remove reaction from.
         :param reaction: A single emoji.
         :param token: Token of the conversation.
             Can be empty if ``message`` is :py:class:`~nc_py_api.talk_bot.TalkBotMessage`.
