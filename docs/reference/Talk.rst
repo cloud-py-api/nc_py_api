@@ -9,7 +9,7 @@ Talk API
     :members:
     :inherited-members:
 
-.. autoclass:: nc_py_api.talk._TalkAPI
+.. autoclass:: nc_py_api._talk_api._TalkAPI
     :members:
 
 .. autoclass:: nc_py_api.talk.ConversationType
