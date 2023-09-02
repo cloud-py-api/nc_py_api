@@ -40,3 +40,6 @@ def test_get_activities(nc_any):
     assert r2[0].activity_id not in old_activities_id
     assert r2[-1].activity_id not in old_activities_id
     assert len(nc_any.activity.get_activities(since=0, limit=1)) == 1
+    while True:
+        if not nc_any.activity.get_activities(since=True):
+            break

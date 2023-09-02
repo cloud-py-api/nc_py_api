@@ -20,6 +20,13 @@ class NextcloudException(Exception):
         return f"[{self.status_code}]{reason}{info}"
 
 
+class NextcloudExceptionNotModified(NextcloudException):
+    """The exception indicates that there is no need to retransmit the requested resources."""
+
+    def __init__(self, reason="Not modified", info: str = ""):
+        super().__init__(304, reason=reason, info=info)
+
+
 class NextcloudExceptionNotFound(NextcloudException):
     """The exception that is thrown during operations when the object is not found."""
 

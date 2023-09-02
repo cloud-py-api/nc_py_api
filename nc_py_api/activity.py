@@ -4,6 +4,7 @@ import dataclasses
 import datetime
 import typing
 
+from ._exceptions import NextcloudExceptionNotModified
 from ._misc import check_capabilities, nc_iso_time_to_datetime
 from ._session import NcSessionBasic
 
@@ -180,7 +181,10 @@ class _ActivityAPI:
             if filter_id
             else "/api/v2/activity/filter" if object_id else "/api/v2/activity"
         )
-        result = self._session.ocs("GET", self._ep_base + url, params=params)
+        try:
+            result = self._session.ocs("GET", self._ep_base + url, params=params)
+        except NextcloudExceptionNotModified:
+            return []
         self.last_given = int(self._session.response_headers["X-Activity-Last-Given"])
         return [Activity(i) for i in result]
 

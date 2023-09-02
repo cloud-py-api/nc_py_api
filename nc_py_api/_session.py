@@ -27,7 +27,12 @@ except ImportError as ex:
 
 
 from . import options
-from ._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
+from ._exceptions import (
+    NextcloudException,
+    NextcloudExceptionNotFound,
+    NextcloudExceptionNotModified,
+    check_error,
+)
 
 
 class OCSRespond(IntEnum):
@@ -219,6 +224,8 @@ class NcSessionBasic(ABC):
                 return self._ocs(method, path_params, headers, data, **kwargs, nested_req=True)
             if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
                 raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
+            if ocs_meta["statuscode"] == 304:
+                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info)
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
 
