@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from nc_py_api.notifications import Notification, NotificationInfo
@@ -21,6 +23,7 @@ def test_create(nc_app):
     assert new_notification.info.message == "message456"
     assert new_notification.info.icon
     assert not new_notification.info.link
+    assert new_notification.info.time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
 
 def test_create_link_icon(nc_app):

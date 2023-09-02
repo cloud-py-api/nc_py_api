@@ -2,10 +2,14 @@
 
 import dataclasses
 import datetime
-import email.utils
 import typing
 
-from ._misc import check_capabilities, random_string, require_capabilities
+from ._misc import (
+    check_capabilities,
+    nc_iso_time_to_datetime,
+    random_string,
+    require_capabilities,
+)
 from ._session import NcSessionApp, NcSessionBasic
 
 
@@ -31,10 +35,7 @@ class NotificationInfo:
     def __init__(self, raw_info: dict):
         self.app_name = raw_info["app"]
         self.user_id = raw_info["user"]
-        try:
-            self.time = email.utils.parsedate_to_datetime(raw_info["datetime"])
-        except (ValueError, TypeError):
-            self.time = datetime.datetime(1970, 1, 1)
+        self.time = nc_iso_time_to_datetime(raw_info["datetime"])
         self.subject = raw_info["subject"]
         self.message = raw_info["message"]
         self.link = raw_info.get("link", "")

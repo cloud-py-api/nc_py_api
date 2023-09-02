@@ -2,7 +2,7 @@
 
 For internal use, prototypes can change between versions.
 """
-
+import datetime
 from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Callable, Union
@@ -66,3 +66,11 @@ def random_string(size: int) -> str:
     """Generates a random ASCII string of the given size."""
     letters = ascii_lowercase + ascii_uppercase + digits
     return "".join(choice(letters) for _ in range(size))
+
+
+def nc_iso_time_to_datetime(iso8601_time: str) -> datetime.datetime:
+    """Returns parsed ``datetime`` or datetime(1970, 1, 1) in case of error."""
+    try:
+        return datetime.datetime.fromisoformat(iso8601_time)
+    except (ValueError, TypeError):
+        return datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)

@@ -108,10 +108,7 @@ class Share:
     @property
     def expire_date(self) -> datetime.datetime:
         """Share expiration time."""
-        try:
-            return datetime.datetime.fromisoformat(self.raw_data["expiration"])
-        except (ValueError, TypeError, KeyError):
-            return datetime.datetime(1970, 1, 1)
+        return _misc.nc_iso_time_to_datetime(self.raw_data.get("expiration", ""))
 
     def __str__(self):
         return (

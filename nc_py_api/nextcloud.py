@@ -12,6 +12,7 @@ from ._preferences_ex import AppConfigExAPI, PreferencesExAPI
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
 from ._talk_api import _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
+from .activity import _ActivityAPI
 from .apps import _AppsAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
@@ -26,6 +27,8 @@ from .weather_status import _WeatherStatusAPI
 class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     apps: _AppsAPI
     """Nextcloud API for App management"""
+    activity: _ActivityAPI
+    """Activity Application API"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
     preferences: PreferencesAPI
@@ -46,6 +49,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
 
     def _init_api(self, session: NcSessionBasic):
         self.apps = _AppsAPI(session)
+        self.activity = _ActivityAPI(session)
         self.files = FilesAPI(session)
         self.preferences = PreferencesAPI(session)
         self.notifications = _NotificationsAPI(session)
@@ -184,6 +188,7 @@ class NextcloudApp(_NextcloudBasic):
             self._session.user = value
             self.talk.config_sha = ""
             self.talk.modified_since = 0
+            self.activity.last_given = 0
             self._session.update_server_info()
 
     @property

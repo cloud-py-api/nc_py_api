@@ -118,7 +118,7 @@ def test_create_expire_time(nc):
         )
     new_share.raw_data["expiration"] = "invalid time"
     new_share2 = Share(new_share.raw_data)
-    assert new_share2.expire_date == datetime.datetime(1970, 1, 1)
+    assert new_share2.expire_date == datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
 
 def test_get_list(nc):
