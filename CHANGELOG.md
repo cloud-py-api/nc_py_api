@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.43 - 2023-09-0x]
+## [0.0.43 - 2023-09-02]
 
 ### Added
 
-- Basic APIs for Nextcloud Talk(Part 2)
+- Basic APIs for Nextcloud Talk(Part 2) #111
 
 ### Fixed
 
