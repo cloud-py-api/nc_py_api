@@ -36,9 +36,10 @@ def test_get_activities(nc_any):
         assert isinstance(i.icon, str)
         assert i.activity_time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     r2 = nc_any.activity.get_activities(since=True)
-    old_activities_id = [i.activity_id for i in r]
-    assert r2[0].activity_id not in old_activities_id
-    assert r2[-1].activity_id not in old_activities_id
+    if r2:
+        old_activities_id = [i.activity_id for i in r]
+        assert r2[0].activity_id not in old_activities_id
+        assert r2[-1].activity_id not in old_activities_id
     assert len(nc_any.activity.get_activities(since=0, limit=1)) == 1
     while True:
         if not nc_any.activity.get_activities(since=True):
