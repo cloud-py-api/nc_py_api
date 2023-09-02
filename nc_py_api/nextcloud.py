@@ -10,13 +10,13 @@ from ._misc import check_capabilities, require_capabilities
 from ._preferences import PreferencesAPI
 from ._preferences_ex import AppConfigExAPI, PreferencesExAPI
 from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
+from ._talk_api import _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .apps import _AppsAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
 from .notifications import _NotificationsAPI
-from .talk import _TalkAPI
 from .user_status import _UserStatusAPI
 from .users import _UsersAPI
 from .users_groups import _UsersGroupsAPI

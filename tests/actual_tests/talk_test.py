@@ -111,6 +111,68 @@ def test_get_conversations_include_status(nc, nc_client):
         nc.talk.leave_conversation(conversation.token)
 
 
+def test_rename_description_favorite_get_conversation(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        nc_any.talk.rename_conversation(conversation, "new era")
+        assert conversation.is_favorite is False
+        nc_any.talk.set_conversation_description(conversation, "the description")
+        nc_any.talk.set_conversation_fav(conversation, True)
+        nc_any.talk.set_conversation_readonly(conversation, True)
+        nc_any.talk.set_conversation_public(conversation, True)
+        nc_any.talk.set_conversation_notify_lvl(conversation, talk.NotificationLevel.NEVER_NOTIFY)
+        nc_any.talk.set_conversation_password(conversation, "zJf4aLafv8941nvs")
+        conversation = nc_any.talk.get_conversation_by_token(conversation)
+        assert conversation.display_name == "new era"
+        assert conversation.description == "the description"
+        assert conversation.is_favorite is True
+        assert conversation.read_only is True
+        assert conversation.notification_level == talk.NotificationLevel.NEVER_NOTIFY
+        assert conversation.has_password is True
+        nc_any.talk.set_conversation_fav(conversation, False)
+        nc_any.talk.set_conversation_readonly(conversation, False)
+        nc_any.talk.set_conversation_password(conversation, "")
+        nc_any.talk.set_conversation_public(conversation, False)
+        conversation = nc_any.talk.get_conversation_by_token(conversation)
+        assert conversation.is_favorite is False
+        assert conversation.read_only is False
+        assert conversation.has_password is False
+    finally:
+        nc_any.talk.delete_conversation(conversation)
+
+
+@pytest.mark.require_nc(major=27)
+def test_message_send_delete_reactions(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        msg = nc_any.talk.send_message("yo yo yo!", conversation)
+        reactions = nc_any.talk.react_to_message(msg, "❤️")
+        assert "❤️" in reactions
+        assert len(reactions["❤️"]) == 1
+        reaction = reactions["❤️"][0]
+        assert reaction.actor_id == nc_any.user
+        assert reaction.actor_type == "users"
+        assert reaction.actor_display_name
+        assert isinstance(reaction.timestamp, int)
+        reactions2 = nc_any.talk.get_message_reactions(msg)
+        assert reactions == reactions2
+        nc_any.talk.react_to_message(msg, "☝️️")
+        assert nc_any.talk.delete_reaction(msg, "❤️")
+        assert not nc_any.talk.delete_reaction(msg, "☝️️")
+        assert not nc_any.talk.get_message_reactions(msg)
+        result = nc_any.talk.delete_message(msg)
+        assert result.system_message == "message_deleted"
+        messages = nc_any.talk.receive_messages(conversation)
+        deleted = [i for i in messages if i.system_message == "message_deleted"]
+        assert deleted
+    finally:
+        nc_any.talk.delete_conversation(conversation)
+
+
 @pytest.mark.require_nc(major=27, minor=1)
 def test_register_unregister_talk_bot(nc_app):
     if nc_app.talk.bots_available is False:

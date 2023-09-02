@@ -1,17 +1,9 @@
-"""Nextcloud Talk API."""
+"""Nextcloud Talk API definitions."""
 
 import dataclasses
 import enum
-import hashlib
 import typing
 
-from ._misc import (
-    check_capabilities,
-    clear_from_params_empty,
-    random_string,
-    require_capabilities,
-)
-from ._session import NcSessionBasic
 from .user_status import _UserStatus
 
 
@@ -153,6 +145,34 @@ class BreakoutRoomStatus(enum.IntEnum):
     """Breakout rooms lobbies are disabled."""
     STARTED = 1
     """Breakout rooms lobbies are enabled."""
+
+
+@dataclasses.dataclass
+class MessageReactions:
+    """One reaction for a message, retrieved with :py:meth:`~nc_py_api._talk_api._TalkAPI.get_message_reactions`."""
+
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def actor_type(self) -> str:
+        """Actor types of the chat message: **users**, **guests**."""
+        return self._raw_data["actorType"]
+
+    @property
+    def actor_id(self) -> str:
+        """Actor id of the message author."""
+        return self._raw_data["actorId"]
+
+    @property
+    def actor_display_name(self) -> str:
+        """A display name of the message author."""
+        return self._raw_data["actorDisplayName"]
+
+    @property
+    def timestamp(self) -> int:
+        """Timestamp in seconds and UTC time zone."""
+        return self._raw_data["timestamp"]
 
 
 @dataclasses.dataclass
@@ -605,220 +625,3 @@ class BotInfo(BotInfoBasic):
     def last_error_message(self) -> typing.Optional[str]:
         """The last exception message or error response information when trying to reach the bot."""
         return self._raw_data["last_error_message"]
-
-
-class _TalkAPI:
-    """Class that implements work with Nextcloud Talk."""
-
-    _ep_base: str = "/ocs/v2.php/apps/spreed"
-    config_sha: str
-    """Sha1 value over Talk config. After receiving a different value on subsequent requests, settings got refreshed."""
-    modified_since: int
-    """Used by ``get_user_conversations``, when **modified_since** param is ``True``."""
-
-    def __init__(self, session: NcSessionBasic):
-        self._session = session
-        self.config_sha = ""
-        self.modified_since = 0
-
-    @property
-    def available(self) -> bool:
-        """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-        return not check_capabilities("spreed", self._session.capabilities)
-
-    @property
-    def bots_available(self) -> bool:
-        """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-        return not check_capabilities("spreed.features.bots-v1", self._session.capabilities)
-
-    def get_user_conversations(
-        self, no_status_update: bool = True, include_status: bool = False, modified_since: typing.Union[int, bool] = 0
-    ) -> list[Conversation]:
-        """Returns the list of the user's conversations.
-
-        :param no_status_update: When the user status should not be automatically set to the online.
-        :param include_status: Whether the user status information of all one-to-one conversations should be loaded.
-        :param modified_since: When provided only conversations with a newer **lastActivity**
-            (and one-to-one conversations when includeStatus is provided) are returned.
-            Can be set to ``True`` to automatically use last ``modified_since`` from previous calls. Default = **0**.
-
-            .. note:: In rare cases, when a request arrives between seconds, it is possible that return data
-                will contain part of the conversations from the last call that was not modified(
-                their `last_activity` will be the same as ``talk.modified_since``).
-        """
-        params: dict = {}
-        if no_status_update:
-            params["noStatusUpdate"] = 1
-        if include_status:
-            params["includeStatus"] = True
-        if modified_since:
-            params["modifiedSince"] = self.modified_since if modified_since is True else modified_since
-
-        result = self._session.ocs("GET", self._ep_base + "/api/v4/room", params=params)
-        self.modified_since = int(self._session.response_headers["X-Nextcloud-Talk-Modified-Before"])
-        config_sha = self._session.response_headers["X-Nextcloud-Talk-Hash"]
-        if self.config_sha != config_sha:
-            self._session.update_server_info()
-            self.config_sha = config_sha
-        return [Conversation(i) for i in result]
-
-    def create_conversation(
-        self,
-        conversation_type: ConversationType,
-        invite: str = "",
-        source: str = "",
-        room_name: str = "",
-        object_type: str = "",
-        object_id: str = "",
-    ) -> Conversation:
-        """Creates a new conversation.
-
-        .. note:: Creating a conversation as a child breakout room will automatically set the lobby when breakout
-            rooms are not started and will always overwrite the room type with the parent room type.
-            Also, moderators of the parent conversation will be automatically added as moderators.
-
-        :param conversation_type: type of the conversation to create.
-        :param invite: User ID(roomType=ONE_TO_ONE), Group ID(roomType=GROUP - optional),
-            Circle ID(roomType=GROUP, source='circles', only available with the ``circles-support`` capability).
-        :param source: The source for the invite, only supported on roomType = GROUP for groups and circles.
-        :param room_name: Conversation name up to 255 characters(``not available for roomType=ONE_TO_ONE``).
-        :param object_type: Type of object this room references, currently only allowed
-            value is **"room"** to indicate the parent of a breakout room.
-        :param object_id: ID of an object this room references, room token is used for the parent of a breakout room.
-        """
-        params: dict = {
-            "roomType": int(conversation_type),
-            "invite": invite,
-            "source": source,
-            "roomName": room_name,
-            "objectType": object_type,
-            "objectId": object_id,
-        }
-        clear_from_params_empty(["invite", "source", "roomName", "objectType", "objectId"], params)
-        return Conversation(self._session.ocs("POST", self._ep_base + "/api/v4/room", json=params))
-
-    def delete_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
-        """Deletes a conversation.
-
-        .. note:: Deleting a conversation that is the parent of breakout rooms, will also delete them.
-            ``ONE_TO_ONE`` conversations can not be deleted for them
-            :py:class:`~nc_py_api.talk._TalkAPI.leave_conversation` should be used.
-
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-        """
-        token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("DELETE", self._ep_base + f"/api/v4/room/{token}")
-
-    def leave_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
-        """Removes yourself from the conversation.
-
-        .. note:: When the participant is a moderator or owner and there are no other moderators or owners left,
-            participant can not leave conversation.
-
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-        """
-        token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("DELETE", self._ep_base + f"/api/v4/room/{token}/participants/self")
-
-    def send_message(
-        self,
-        message: str,
-        conversation: typing.Union[Conversation, str] = "",
-        reply_to_message: typing.Union[int, TalkMessage] = 0,
-        silent: bool = False,
-        actor_display_name: str = "",
-    ) -> str:
-        """Send a message and returns a "reference string" to identify the message again in a "get messages" request.
-
-        :param message: The message the user wants to say.
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-            Need only if **reply_to_message** is not :py:class:`~nc_py_api.talk.TalkMessage`
-        :param reply_to_message: The message ID this message is a reply to.
-
-            .. note:: Only allowed when the message type is not ``system`` or ``command``.
-                The message you are replying to should be from the same conversation.
-        :param silent: Flag controlling if the message should create a chat notifications for the users.
-        :param actor_display_name: Guest display name (**ignored for the logged-in users**).
-        :returns: A reference string to be able to identify the message again in a "get messages" request.
-        :raises ValueError: in case of an invalid usage.
-        """
-        if not conversation and not isinstance(reply_to_message, TalkMessage):
-            raise ValueError("Either specify 'conversation' or provide 'TalkMessage'.")
-
-        token = (
-            reply_to_message.token
-            if isinstance(reply_to_message, TalkMessage)
-            else conversation.token if isinstance(conversation, Conversation) else conversation
-        )
-        reference_id = hashlib.sha256(random_string(32).encode("UTF-8")).hexdigest()
-        params = {
-            "message": message,
-            "actorDisplayName": actor_display_name,
-            "replyTo": reply_to_message.message_id if isinstance(reply_to_message, TalkMessage) else reply_to_message,
-            "referenceId": reference_id,
-            "silent": silent,
-        }
-        self._session.ocs("POST", self._ep_base + f"/api/v1/chat/{token}", json=params)
-        return reference_id
-
-    def receive_messages(
-        self,
-        conversation: typing.Union[Conversation, str],
-        look_in_future: bool = False,
-        limit: int = 100,
-        timeout: int = 30,
-        no_status_update: bool = True,
-    ) -> list[TalkMessage]:
-        """Receive chat messages of a conversation.
-
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-        :param look_in_future: ``True`` to poll and wait for the new message or ``False`` to get history.
-        :param limit: Number of chat messages to receive (``100`` by default, ``200`` at most).
-        :param timeout: ``look_in_future=1`` only: seconds to wait for the new messages (60 secs at most).
-        :param no_status_update: When the user status should not be automatically set to the online.
-        """
-        token = conversation.token if isinstance(conversation, Conversation) else conversation
-        params = {
-            "lookIntoFuture": int(look_in_future),
-            "limit": limit,
-            "timeout": timeout,
-            "noStatusUpdate": int(no_status_update),
-        }
-        result = self._session.ocs("GET", self._ep_base + f"/api/v1/chat/{token}", params=params)
-        return [TalkMessage(i) for i in result]
-
-    def list_bots(self) -> list[BotInfo]:
-        """Lists the bots that are installed on the server."""
-        require_capabilities("spreed.features.bots-v1", self._session.capabilities)
-        return [BotInfo(i) for i in self._session.ocs("GET", self._ep_base + "/api/v1/bot/admin")]
-
-    def conversation_list_bots(self, conversation: typing.Union[Conversation, str]) -> list[BotInfoBasic]:
-        """Lists the bots that are enabled and can be enabled for the conversation.
-
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-        """
-        require_capabilities("spreed.features.bots-v1", self._session.capabilities)
-        token = conversation.token if isinstance(conversation, Conversation) else conversation
-        return [BotInfoBasic(i) for i in self._session.ocs("GET", self._ep_base + f"/api/v1/bot/{token}")]
-
-    def enable_bot(self, conversation: typing.Union[Conversation, str], bot: typing.Union[BotInfoBasic, int]) -> None:
-        """Enable a bot for a conversation as a moderator.
-
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-        :param bot: bot ID or :py:class:`~nc_py_api.talk.BotInfoBasic`.
-        """
-        require_capabilities("spreed.features.bots-v1", self._session.capabilities)
-        token = conversation.token if isinstance(conversation, Conversation) else conversation
-        bot_id = bot.bot_id if isinstance(bot, BotInfoBasic) else bot
-        self._session.ocs("POST", self._ep_base + f"/api/v1/bot/{token}/{bot_id}")
-
-    def disable_bot(self, conversation: typing.Union[Conversation, str], bot: typing.Union[BotInfoBasic, int]) -> None:
-        """Disable a bot for a conversation as a moderator.
-
-        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
-        :param bot: bot ID or :py:class:`~nc_py_api.talk.BotInfoBasic`.
-        """
-        require_capabilities("spreed.features.bots-v1", self._session.capabilities)
-        token = conversation.token if isinstance(conversation, Conversation) else conversation
-        bot_id = bot.bot_id if isinstance(bot, BotInfoBasic) else bot
-        self._session.ocs("DELETE", self._ep_base + f"/api/v1/bot/{token}/{bot_id}")

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.43 - 2023-09-0x]
 
+### Added
+
+- Basic APIs for Nextcloud Talk(Part 2)
+
 ### Fixed
 
 - `makedirs` correctly work with paths started with `/`
