@@ -8,6 +8,9 @@ Avalaible as `nc_py_api.{exception_name}`
 .. autoclass:: NextcloudException
     :members:
 
+.. autoclass:: NextcloudExceptionNotModified
+    :members:
+
 .. autoclass:: NextcloudExceptionNotFound
     :members:
 

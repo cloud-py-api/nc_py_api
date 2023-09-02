@@ -6,6 +6,7 @@ Reference
 
    Nextcloud
    Apps
+   ActivityApp
    Files/index.rst
    Users/index.rst
    ExApp

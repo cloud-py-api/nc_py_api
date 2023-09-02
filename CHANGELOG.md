@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.44 - 2023-09-0x]
+
+### Added
+
+- Activity API: `get_filters` and `get_activities`.
+
+### Fixed
+
+- `NotificationInfo.time` - was always incorrectly parsed and equal to `datetime(1970,1,1)`
+
 ## [0.0.43 - 2023-09-02]
 
 ### Added

@@ -1,9 +1,11 @@
+import datetime
+
 import pytest
 
 from nc_py_api import NextcloudException
 from nc_py_api._deffered_error import DeferredError  # noqa
 from nc_py_api._exceptions import check_error  # noqa
-from nc_py_api._misc import require_capabilities  # noqa
+from nc_py_api._misc import nc_iso_time_to_datetime, require_capabilities  # noqa
 from nc_py_api._session import BasicConfig  # noqa
 
 
@@ -59,3 +61,8 @@ def test_ocs_response_headers(nc):
     old_headers = nc.response_headers
     nc.users.get_details()
     assert old_headers != nc.response_headers
+
+
+def test_nc_iso_time_to_datetime():
+    parsed_time = nc_iso_time_to_datetime("invalid")
+    assert parsed_time == datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)

@@ -653,6 +653,13 @@ jobs:
           ref: "master"
           path: apps/notifications
 
+      - name: Checkout Activity
+        uses: actions/checkout@v3
+        with:
+          repository: nextcloud/activity
+          ref: "master"
+          path: apps/activity
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -664,6 +671,7 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
+          ./occ app:enable activity
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -761,6 +769,13 @@ jobs:
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
+      - name: Checkout Activity
+        uses: actions/checkout@v3
+        with:
+          repository: nextcloud/activity
+          ref: ${{ matrix.nextcloud }}
+          path: apps/activity
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -772,6 +787,7 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
+          ./occ app:enable activity
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
