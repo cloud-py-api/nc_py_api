@@ -27,7 +27,7 @@ jobs:
     name: Analysis
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
       - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
@@ -109,7 +109,7 @@ jobs:
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: nc_py_api
 
@@ -118,7 +118,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppEcosystemV2
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
@@ -138,7 +138,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -264,7 +264,7 @@ jobs:
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: nc_py_api
 
@@ -273,7 +273,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppEcosystemV2
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         with:
           path: apps/app_ecosystem_v2
@@ -295,7 +295,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -408,7 +408,7 @@ jobs:
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: nc_py_api
 
@@ -417,7 +417,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppEcosystemV2
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
@@ -501,14 +501,14 @@ jobs:
           python-version: 3.11
 
       - name: Checkout server
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           submodules: true
           repository: nextcloud/server
           ref: "master"
 
       - name: Checkout Notifications
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           repository: nextcloud/notifications
           ref: "master"
@@ -528,7 +528,7 @@ jobs:
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: nc_py_api
 
@@ -537,7 +537,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppEcosystemV2
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
@@ -556,7 +556,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -640,21 +640,21 @@ jobs:
           python-version: '3.12-dev'
 
       - name: Checkout server
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           submodules: true
           repository: nextcloud/server
           ref: "master"
 
       - name: Checkout Notifications
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           repository: nextcloud/notifications
           ref: "master"
           path: apps/notifications
 
       - name: Checkout Activity
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           repository: nextcloud/activity
           ref: "master"
@@ -675,7 +675,7 @@ jobs:
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: nc_py_api
 
@@ -684,7 +684,7 @@ jobs:
         run: python3 -m pip -v install . pytest coverage pillow
 
       - name: Checkout Talk
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -756,21 +756,21 @@ jobs:
           python-version: 3.11
 
       - name: Checkout server
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
       - name: Checkout Activity
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
@@ -791,7 +791,7 @@ jobs:
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: nc_py_api
 
@@ -800,7 +800,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppEcosystemV2
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/app_ecosystem_v2
           repository: cloud-py-api/app_ecosystem_v2
@@ -823,7 +823,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v3
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
