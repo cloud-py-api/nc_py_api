@@ -6,12 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Activity API: `get_filters` and `get_activities`.
-- FilesAPI: added `tags` support.
+- Activity API: `get_filters` and `get_activities`. #112
+- FilesAPI: added `tags` support. #115
 
 ### Changed
 
-- FilesAPI: removed `listfav` method, use new more powerful `list_by_criteria` method.
+- FilesAPI: removed `listfav` method, use new more powerful `list_by_criteria` method. #115
 
 ### Fixed
 

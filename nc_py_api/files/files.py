@@ -480,8 +480,8 @@ class FilesAPI:
         )
         properties = {
             "oc:display-name": name,
-            "oc:user-visible": "true" if user_visible else None,
-            "oc:user-assignable": "true" if user_assignable else None,
+            "oc:user-visible": "true" if user_visible is True else "false" if user_visible is False else None,
+            "oc:user-assignable": "true" if user_assignable is True else "false" if user_assignable is False else None,
         }
         clear_from_params_empty(list(properties.keys()), properties)
         if not properties:

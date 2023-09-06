@@ -1,3 +1,4 @@
+import contextlib
 import math
 import os
 import zipfile
@@ -10,7 +11,7 @@ from zlib import adler32
 
 import pytest
 
-from nc_py_api import FsNode, NextcloudException
+from nc_py_api import FsNode, NextcloudException, NextcloudExceptionNotFound
 
 
 class MyBytesIO(BytesIO):
@@ -563,3 +564,24 @@ def test_file_versions(nc_any):
         assert version_str.find("bytes size") != -1
         nc_any.files.restore_version(versions[0])
         assert nc_any.files.download(new_file) == b"22"
+
+
+def test_create_update_delete_tag(nc_any):
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api"))
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api2"))
+    nc_any.files.create_tag("test_nc_py_api", True, True)
+    tag = nc_any.files.tag_by_name("test_nc_py_api")
+    assert isinstance(tag.tag_id, int)
+    assert tag.display_name == "test_nc_py_api"
+    assert tag.user_visible is True
+    assert tag.user_assignable is True
+    nc_any.files.update_tag(tag, "test_nc_py_api2", False, False)
+    with pytest.raises(NextcloudExceptionNotFound):
+        nc_any.files.tag_by_name("test_nc_py_api")
+    tag = nc_any.files.tag_by_name("test_nc_py_api2")
+    assert tag.display_name == "test_nc_py_api2"
+    assert tag.user_visible is False
+    assert tag.user_assignable is False
+    nc_any.files.delete_tag(tag)
