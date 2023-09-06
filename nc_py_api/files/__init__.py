@@ -208,3 +208,31 @@ class FilePermissions(enum.IntFlag):
     """Access to remove object(s)"""
     PERMISSION_SHARE = 16
     """Access to re-share object(s)"""
+
+
+@dataclasses.dataclass
+class SystemTag:
+    """Nextcloud System Tag."""
+
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def tag_id(self) -> int:
+        """Unique numeric identifier of the Tag."""
+        return int(self._raw_data["oc:id"])
+
+    @property
+    def display_name(self) -> str:
+        """The visible Tag name."""
+        return self._raw_data.get("oc:display-name", str(self.tag_id))
+
+    @property
+    def user_visible(self) -> bool:
+        """Flag indicating if the Tag is visible in the UI."""
+        return bool(self._raw_data.get("oc:user-visible", "false").lower() == "true")
+
+    @property
+    def user_assignable(self) -> bool:
+        """Flag indicating if User can assign this Tag."""
+        return bool(self._raw_data.get("oc:user-assignable", "false").lower() == "true")

@@ -28,16 +28,16 @@ def init_filesystem_for_user(nc_any, rand_bytes):
     /test_dir/subdir/test_empty_text.txt
     /test_dir/subdir/test_64_bytes.bin
     /test_dir/subdir/test_12345_text.txt
-    /test_dir/subdir/test_generated_image.png
+    /test_dir/subdir/test_generated_image.png       **Favorite**
     /test_dir/test_empty_child_dir/
     /test_dir/test_empty_text.txt
     /test_dir/test_64_bytes.bin
     /test_dir/test_12345_text.txt
-    /test_dir/test_generated_image.png
+    /test_dir/test_generated_image.png              **Favorite**
     /test_empty_text.txt
     /test_64_bytes.bin
     /test_12345_text.txt
-    /test_generated_image.png
+    /test_generated_image.png                       **Favorite**
     /test_dir_tmp
     """
     clean_filesystem_for_user(nc_any)
@@ -55,6 +55,7 @@ def init_filesystem_for_user(nc_any, rand_bytes):
         nc_any.files.upload(path.join(folder, "test_12345_text.txt"), content="12345")
         im.seek(0)
         nc_any.files.upload(path.join(folder, "test_generated_image.png"), content=im.read())
+        nc_any.files.setfav(path.join(folder, "test_generated_image.png"), True)
 
     init_folder()
     init_folder("test_dir")

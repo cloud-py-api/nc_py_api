@@ -17,3 +17,6 @@ All File APIs are designed to work relative to the current user.
 
 .. autoclass:: nc_py_api.files.FilePermissions
     :members:
+
+.. autoclass:: nc_py_api.files.SystemTag
+    :members:
