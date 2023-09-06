@@ -585,3 +585,34 @@ def test_create_update_delete_tag(nc_any):
     assert tag.user_visible is False
     assert tag.user_assignable is False
     nc_any.files.delete_tag(tag)
+    with pytest.raises(ValueError):
+        nc_any.files.update_tag(tag)
+
+
+def test_assign_unassign_tag(nc_any):
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api"))
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api2"))
+    nc_any.files.create_tag("test_nc_py_api", True, False)
+    nc_any.files.create_tag("test_nc_py_api2", False, False)
+    tag1 = nc_any.files.tag_by_name("test_nc_py_api")
+    assert tag1.user_visible is True
+    assert tag1.user_assignable is False
+    tag2 = nc_any.files.tag_by_name("test_nc_py_api2")
+    assert tag2.user_visible is False
+    assert tag2.user_assignable is False
+    new_file = nc_any.files.upload("/test_dir_tmp/tag_test.txt", content=b"")
+    new_file = nc_any.files.by_id(new_file)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 0
+    nc_any.files.assign_tag(new_file, tag1)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 1
+    assert len(nc_any.files.list_by_criteria(["favorite"], tags=[tag1])) == 0
+    assert len(nc_any.files.list_by_criteria(tags=[tag1, tag2.tag_id])) == 0
+    nc_any.files.assign_tag(new_file, tag2.tag_id)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1, tag2.tag_id])) == 1
+    nc_any.files.unassign_tag(new_file, tag1)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 0
+    nc_any.files.assign_tag(new_file, tag1)
+    with pytest.raises(ValueError):
+        nc_any.files.list_by_criteria()
