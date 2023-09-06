@@ -257,19 +257,25 @@ def test_mkdir_delete_with_end_slash(nc_any):
 
 def test_favorites(nc_any):
     favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
     for favorite in favorites:
         nc_any.files.setfav(favorite.user_path, False)
-    assert not nc_any.files.list_by_criteria(["favorite"])
+    favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
+    assert not favorites
     files = ("test_dir_tmp/fav1.txt", "test_dir_tmp/fav2.txt", "test_dir_tmp/fav3.txt")
     for n in files:
         nc_any.files.upload(n, content=n)
         nc_any.files.setfav(n, True)
     favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
     assert len(favorites) == 3
     for favorite in favorites:
         assert isinstance(favorite, FsNode)
         nc_any.files.setfav(favorite, False)
-    assert len(nc_any.files.list_by_criteria(["favorite"])) == 0
+    favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
+    assert not favorites
 
 
 def test_copy_file(nc_any, rand_bytes):
@@ -373,7 +379,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size == 2364
             assert result.info.content_length == 0
             assert result.info.permissions == "RGDNVCK"
-            assert not result.info.favorite
+            assert result.info.favorite is False
         elif result.name == "test_empty_child_dir":
             assert result.user_path == "test_dir/test_empty_child_dir/"
             assert result.is_dir
@@ -381,7 +387,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size == 0
             assert result.info.content_length == 0
             assert result.info.permissions == "RGDNVCK"
-            assert not result.info.favorite
+            assert result.info.favorite is False
         elif result.name == "test_generated_image.png":
             assert result.user_path == "test_dir/test_generated_image.png"
             assert not result.is_dir
@@ -389,7 +395,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size > 900
             assert result.info.size == result.info.content_length
             assert result.info.permissions == "RGDNVW"
-            assert result.info.favorite
+            assert result.info.favorite is True
         elif result.name == "test_empty_text.txt":
             assert result.user_path == "test_dir/test_empty_text.txt"
             assert not result.is_dir
@@ -397,7 +403,7 @@ def test_fs_node_fields(nc_any):
             assert not result.info.size
             assert not result.info.content_length
             assert result.info.permissions == "RGDNVW"
-            assert not result.info.favorite
+            assert result.info.favorite is False
 
         res_by_id = nc_any.files.by_id(result.file_id)
         assert res_by_id

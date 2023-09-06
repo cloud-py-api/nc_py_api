@@ -587,8 +587,6 @@ class FilesAPI:
                     fs_node.file_id = fs_node.full_path.rsplit("/", 2)[-2]
             if fs_node.file_id:
                 result.append(fs_node)
-            else:
-                raise RuntimeError("WAH!")
         return result
 
     @staticmethod
