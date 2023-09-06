@@ -15,10 +15,10 @@ from xml.etree import ElementTree
 import xmltodict
 from httpx import Response
 
-from .._exceptions import NextcloudException, check_error
-from .._misc import require_capabilities
+from .._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
+from .._misc import clear_from_params_empty, require_capabilities
 from .._session import NcSessionBasic
-from . import FsNode
+from . import FsNode, SystemTag
 from .sharing import _FilesSharingAPI
 
 PROPFIND_PROPERTIES = [
@@ -60,9 +60,8 @@ class PropFindType(enum.IntEnum):
 
     DEFAULT = 0
     TRASHBIN = 1
-    FAVORITE = 2
-    VERSIONS_FILEID = 3
-    VERSIONS_FILE_ID = 4
+    VERSIONS_FILEID = 2
+    VERSIONS_FILE_ID = 3
 
 
 class FilesAPI:
@@ -130,7 +129,7 @@ class FilesAPI:
         headers = {"Content-Type": "text/xml"}
         webdav_response = self._session.dav("SEARCH", "", data=self._element_tree_as_str(root), headers=headers)
         request_info = f"find: {self._session.user}, {req}, {path}"
-        return self._lf_parse_webdav_records(webdav_response, request_info)
+        return self._lf_parse_webdav_response(webdav_response, request_info)
 
     def download(self, path: Union[str, FsNode]) -> bytes:
         """Downloads and returns the content of a file.
@@ -305,20 +304,37 @@ class FilesAPI:
         check_error(response.status_code, f"copy: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
         return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
-    def listfav(self) -> list[FsNode]:
-        """Returns a list of the current user's favorite files."""
+    def list_by_criteria(
+        self, properties: Optional[list[str]] = None, tags: Optional[list[Union[int, SystemTag]]] = None
+    ) -> list[FsNode]:
+        """Returns a list of all files/directories for the current user filtered by the specified values.
+
+        :param properties: List of ``properties`` that should have been set for the file.
+            Supported values: **favorite**
+        :param tags: List of ``tags ids`` or ``SystemTag`` that should have been set for the file.
+        """
+        if not properties and not tags:
+            raise ValueError("Either specify 'properties' or 'tags' to filter results.")
         root = ElementTree.Element(
             "oc:filter-files",
             attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
         )
+        prop = ElementTree.SubElement(root, "d:prop")
+        for i in PROPFIND_PROPERTIES:
+            ElementTree.SubElement(prop, i)
         xml_filter_rules = ElementTree.SubElement(root, "oc:filter-rules")
-        ElementTree.SubElement(xml_filter_rules, "oc:favorite").text = "1"
+        if properties and "favorite" in properties:
+            ElementTree.SubElement(xml_filter_rules, "oc:favorite").text = "1"
+        if tags:
+            for v in tags:
+                tag_id = v.tag_id if isinstance(v, SystemTag) else v
+                ElementTree.SubElement(xml_filter_rules, "oc:systemtag").text = str(tag_id)
         webdav_response = self._session.dav(
             "REPORT", self._dav_get_obj_path(self._session.user), data=self._element_tree_as_str(root)
         )
-        request_info = f"listfav: {self._session.user}"
+        request_info = f"list_files_by_criteria: {self._session.user}"
         check_error(webdav_response.status_code, request_info)
-        return self._lf_parse_webdav_records(webdav_response, request_info, PropFindType.FAVORITE)
+        return self._lf_parse_webdav_response(webdav_response, request_info)
 
     def setfav(self, path: Union[str, FsNode], value: Union[int, bool]) -> None:
         """Sets or unsets favourite flag for specific file.
@@ -408,6 +424,108 @@ class FilesAPI:
         )
         check_error(response.status_code, f"restore_version: user={self._session.user}, src={file_object.user_path}")
 
+    def list_tags(self) -> list[SystemTag]:
+        """Returns list of the avalaible Tags."""
+        root = ElementTree.Element(
+            "d:propfind",
+            attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns"},
+        )
+        properties = ["oc:id", "oc:display-name", "oc:user-visible", "oc:user-assignable"]
+        prop_element = ElementTree.SubElement(root, "d:prop")
+        for i in properties:
+            ElementTree.SubElement(prop_element, i)
+        response = self._session.dav("PROPFIND", "/systemtags", self._element_tree_as_str(root))
+        result = []
+        records = self._webdav_response_to_records(response, "list_tags")
+        for record in records:
+            prop_stat = record["d:propstat"]
+            if str(prop_stat.get("d:status", "")).find("200 OK") == -1:
+                continue
+            result.append(SystemTag(prop_stat["d:prop"]))
+        return result
+
+    def create_tag(self, name: str, user_visible: bool = True, user_assignable: bool = True) -> None:
+        """Creates a new Tag.
+
+        :param name: Name of the tag.
+        :param user_visible: Should be Tag visible in the UI.
+        :param user_assignable: Can Tag be assigned from the UI.
+        """
+        response = self._session.dav(
+            "POST",
+            path="/systemtags",
+            json={
+                "name": name,
+                "userVisible": user_visible,
+                "userAssignable": user_assignable,
+            },
+        )
+        check_error(response.status_code, info=f"create_tag({name})")
+
+    def update_tag(
+        self,
+        tag_id: Union[int, SystemTag],
+        name: Optional[str] = None,
+        user_visible: Optional[bool] = None,
+        user_assignable: Optional[bool] = None,
+    ) -> None:
+        """Updates the Tag information."""
+        tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
+        root = ElementTree.Element(
+            "d:propertyupdate",
+            attrib={
+                "xmlns:d": "DAV:",
+                "xmlns:oc": "http://owncloud.org/ns",
+            },
+        )
+        properties = {
+            "oc:display-name": name,
+            "oc:user-visible": "true" if user_visible is True else "false" if user_visible is False else None,
+            "oc:user-assignable": "true" if user_assignable is True else "false" if user_assignable is False else None,
+        }
+        clear_from_params_empty(list(properties.keys()), properties)
+        if not properties:
+            raise ValueError("No property specified to change.")
+        xml_set = ElementTree.SubElement(root, "d:set")
+        prop_element = ElementTree.SubElement(xml_set, "d:prop")
+        for k, v in properties.items():
+            ElementTree.SubElement(prop_element, k).text = v
+        response = self._session.dav("PROPPATCH", f"/systemtags/{tag_id}", self._element_tree_as_str(root))
+        check_error(response.status_code, info=f"update_tag({tag_id})")
+
+    def delete_tag(self, tag_id: Union[int, SystemTag]) -> None:
+        """Deletes the tag."""
+        tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
+        response = self._session.dav("DELETE", f"/systemtags/{tag_id}")
+        check_error(response.status_code, info=f"delete_tag({tag_id})")
+
+    def tag_by_name(self, tag_name: str) -> SystemTag:
+        """Returns Tag info by its name if found or ``None`` otherwise."""
+        r = [i for i in self.list_tags() if i.display_name == tag_name]
+        if not r:
+            raise NextcloudExceptionNotFound(f"Tag with name='{tag_name}' not found.")
+        return r[0]
+
+    def assign_tag(self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int]) -> None:
+        """Assigns Tag to a file/directory."""
+        self._file_change_tag_state(file_id, tag_id, True)
+
+    def unassign_tag(self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int]) -> None:
+        """Removes Tag from a file/directory."""
+        self._file_change_tag_state(file_id, tag_id, False)
+
+    def _file_change_tag_state(
+        self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int], tag_state: bool
+    ) -> None:
+        request = "PUT" if tag_state else "DELETE"
+        fs_object = file_id.info.fileid if isinstance(file_id, FsNode) else file_id
+        tag = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
+        response = self._session.dav(request, f"/systemtags-relations/files/{fs_object}/{tag}")
+        check_error(
+            response.status_code,
+            info=f"({'Adding' if tag_state else 'Removing'} `{tag}` {'to' if tag_state else 'from'} {fs_object})",
+        )
+
     def _listdir(
         self,
         user: str,
@@ -437,7 +555,7 @@ class FilesAPI:
             headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
 
-        result = self._lf_parse_webdav_records(
+        result = self._lf_parse_webdav_response(
             webdav_response,
             f"list: {user}, {path}, {properties}",
             prop_type,
@@ -467,12 +585,7 @@ class FilesAPI:
                     fs_node.file_id = str(fs_node.info.fileid)
                 else:
                     fs_node.file_id = fs_node.full_path.rsplit("/", 2)[-2]
-            if response_type == PropFindType.FAVORITE and not fs_node.file_id:
-                _fs_node = self.by_path(fs_node.user_path)
-                if _fs_node:
-                    _fs_node.info.favorite = True
-                    result.append(_fs_node)
-            elif fs_node.file_id:
+            if fs_node.file_id:
                 result.append(fs_node)
         return result
 
@@ -509,9 +622,13 @@ class FilesAPI:
             # xz = prop.get("oc:dDC", "")
         return FsNode(full_path, **fs_node_args)
 
-    def _lf_parse_webdav_records(
+    def _lf_parse_webdav_response(
         self, webdav_res: Response, info: str, response_type: PropFindType = PropFindType.DEFAULT
     ) -> list[FsNode]:
+        return self._parse_records(self._webdav_response_to_records(webdav_res, info), response_type)
+
+    @staticmethod
+    def _webdav_response_to_records(webdav_res: Response, info: str) -> list[dict]:
         check_error(webdav_res.status_code, info=info)
         if webdav_res.status_code != 207:  # multistatus
             raise NextcloudException(webdav_res.status_code, "Response is not a multistatus.", info=info)
@@ -520,7 +637,7 @@ class FilesAPI:
             err = response_data["d:error"]
             raise NextcloudException(reason=f'{err["s:exception"]}: {err["s:message"]}'.replace("\n", ""), info=info)
         response = response_data["d:multistatus"].get("d:response", [])
-        return self._parse_records([response] if isinstance(response, dict) else response, response_type)
+        return [response] if isinstance(response, dict) else response
 
     @staticmethod
     def _dav_get_obj_path(user: str, path: str = "", root_path="/files") -> str:

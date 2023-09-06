@@ -229,11 +229,21 @@ class NcSessionBasic(ABC):
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
 
-    def dav(self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs) -> Response:
+    def dav(
+        self,
+        method: str,
+        path: str,
+        data: Optional[Union[str, bytes]] = None,
+        json: Optional[Union[dict, list]] = None,
+        **kwargs,
+    ) -> Response:
         headers = kwargs.pop("headers", {})
         data_bytes = None
         if data is not None:
             data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
+        elif json is not None:
+            headers.update({"Content-Type": "application/json"})
+            data_bytes = dumps(json).encode("utf-8")
         return self._dav(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
 
     def dav_stream(

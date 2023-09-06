@@ -2,7 +2,7 @@
     <img src="https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/docs/resources/nc_py_api_logo.png" width="250" alt="NcPyApi logo">
 </p>
 
-# Official Nextcloud Python Framework
+# Nextcloud Python Framework
 
 [![Analysis & Coverage](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml/badge.svg)](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml)
 [![Docs](https://github.com/cloud-py-api/nc_py_api/actions/workflows/docs.yml/badge.svg)](https://cloud-py-api.github.io/nc_py_api/)
@@ -23,18 +23,18 @@ Python library that provides a robust and well-documented API that allows develo
  * **Easy**: Designed to be easy to use with excellent documentation.
 
 ### Capabilities
-| **_Capability_** | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
-|------------------|:------------:|:------------:|:------------:|
-| File System      |      ✅       |      ✅       |      ✅       |
-| Shares           |      ✅       |      ✅       |      ✅       |
-| Users & Groups   |      ✅       |      ✅       |      ✅       |
-| User status      |      ✅       |      ✅       |      ✅       |
-| Weather status   |      ✅       |      ✅       |      ✅       |
-| Notifications    |      ✅       |      ✅       |      ✅       |
-| Nextcloud Talk** |      ✅       |      ✅       |      ✅       |
-| Talk Bot API*    |     N/A      |      ✅       |      ✅       |
-| Text Processing* |     N/A      |      ❌       |      ❌       |
-| SpeechToText*    |     N/A      |      ❌       |      ❌       |
+| **_Capability_**      | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
+|-----------------------|:------------:|:------------:|:------------:|
+| File System & Tags    |      ✅       |      ✅       |      ✅       |
+| Nextcloud Talk**      |      ✅       |      ✅       |      ✅       |
+| Notifications         |      ✅       |      ✅       |      ✅       |
+| Shares                |      ✅       |      ✅       |      ✅       |
+| Users & Groups        |      ✅       |      ✅       |      ✅       |
+| User & Weather status |      ✅       |      ✅       |      ✅       |
+| Weather status        |      ✅       |      ✅       |      ✅       |
+| Talk Bot API*         |     N/A      |      ✅       |      ✅       |
+| Text Processing*      |     N/A      |      ❌       |      ❌       |
+| SpeechToText*         |     N/A      |      ❌       |      ❌       |
 
 &ast;_available only for NextcloudApp_<br>
 &ast;&ast; _work is in progress, not all API's is described, yet._

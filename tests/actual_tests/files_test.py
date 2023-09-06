@@ -1,3 +1,4 @@
+import contextlib
 import math
 import os
 import zipfile
@@ -10,7 +11,7 @@ from zlib import adler32
 
 import pytest
 
-from nc_py_api import FsNode, NextcloudException
+from nc_py_api import FsNode, NextcloudException, NextcloudExceptionNotFound
 
 
 class MyBytesIO(BytesIO):
@@ -256,20 +257,26 @@ def test_mkdir_delete_with_end_slash(nc_any):
 
 
 def test_favorites(nc_any):
-    favorites = nc_any.files.listfav()
+    favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
     for favorite in favorites:
         nc_any.files.setfav(favorite.user_path, False)
-    assert not nc_any.files.listfav()
+    favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
+    assert not favorites
     files = ("test_dir_tmp/fav1.txt", "test_dir_tmp/fav2.txt", "test_dir_tmp/fav3.txt")
     for n in files:
         nc_any.files.upload(n, content=n)
         nc_any.files.setfav(n, True)
-    favorites = nc_any.files.listfav()
+    favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
     assert len(favorites) == 3
     for favorite in favorites:
         assert isinstance(favorite, FsNode)
         nc_any.files.setfav(favorite, False)
-    assert len(nc_any.files.listfav()) == 0
+    favorites = nc_any.files.list_by_criteria(["favorite"])
+    favorites = [i for i in favorites if i.name != "test_generated_image.png"]
+    assert not favorites
 
 
 def test_copy_file(nc_any, rand_bytes):
@@ -366,7 +373,6 @@ def test_fs_node_fields(nc_any):
     assert len(results) == 6
     for _, result in enumerate(results):
         assert result.user == "admin"
-        assert not result.info.favorite
         if result.name == "subdir":
             assert result.user_path == "test_dir/subdir/"
             assert result.is_dir
@@ -374,6 +380,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size == 2364
             assert result.info.content_length == 0
             assert result.info.permissions == "RGDNVCK"
+            assert result.info.favorite is False
         elif result.name == "test_empty_child_dir":
             assert result.user_path == "test_dir/test_empty_child_dir/"
             assert result.is_dir
@@ -381,6 +388,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size == 0
             assert result.info.content_length == 0
             assert result.info.permissions == "RGDNVCK"
+            assert result.info.favorite is False
         elif result.name == "test_generated_image.png":
             assert result.user_path == "test_dir/test_generated_image.png"
             assert not result.is_dir
@@ -388,6 +396,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size > 900
             assert result.info.size == result.info.content_length
             assert result.info.permissions == "RGDNVW"
+            assert result.info.favorite is True
         elif result.name == "test_empty_text.txt":
             assert result.user_path == "test_dir/test_empty_text.txt"
             assert not result.is_dir
@@ -395,6 +404,7 @@ def test_fs_node_fields(nc_any):
             assert not result.info.size
             assert not result.info.content_length
             assert result.info.permissions == "RGDNVW"
+            assert result.info.favorite is False
 
         res_by_id = nc_any.files.by_id(result.file_id)
         assert res_by_id
@@ -554,3 +564,55 @@ def test_file_versions(nc_any):
         assert version_str.find("bytes size") != -1
         nc_any.files.restore_version(versions[0])
         assert nc_any.files.download(new_file) == b"22"
+
+
+def test_create_update_delete_tag(nc_any):
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api"))
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api2"))
+    nc_any.files.create_tag("test_nc_py_api", True, True)
+    tag = nc_any.files.tag_by_name("test_nc_py_api")
+    assert isinstance(tag.tag_id, int)
+    assert tag.display_name == "test_nc_py_api"
+    assert tag.user_visible is True
+    assert tag.user_assignable is True
+    nc_any.files.update_tag(tag, "test_nc_py_api2", False, False)
+    with pytest.raises(NextcloudExceptionNotFound):
+        nc_any.files.tag_by_name("test_nc_py_api")
+    tag = nc_any.files.tag_by_name("test_nc_py_api2")
+    assert tag.display_name == "test_nc_py_api2"
+    assert tag.user_visible is False
+    assert tag.user_assignable is False
+    nc_any.files.delete_tag(tag)
+    with pytest.raises(ValueError):
+        nc_any.files.update_tag(tag)
+
+
+def test_assign_unassign_tag(nc_any):
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api"))
+    with contextlib.suppress(NextcloudExceptionNotFound):
+        nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api2"))
+    nc_any.files.create_tag("test_nc_py_api", True, False)
+    nc_any.files.create_tag("test_nc_py_api2", False, False)
+    tag1 = nc_any.files.tag_by_name("test_nc_py_api")
+    assert tag1.user_visible is True
+    assert tag1.user_assignable is False
+    tag2 = nc_any.files.tag_by_name("test_nc_py_api2")
+    assert tag2.user_visible is False
+    assert tag2.user_assignable is False
+    new_file = nc_any.files.upload("/test_dir_tmp/tag_test.txt", content=b"")
+    new_file = nc_any.files.by_id(new_file)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 0
+    nc_any.files.assign_tag(new_file, tag1)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 1
+    assert len(nc_any.files.list_by_criteria(["favorite"], tags=[tag1])) == 0
+    assert len(nc_any.files.list_by_criteria(tags=[tag1, tag2.tag_id])) == 0
+    nc_any.files.assign_tag(new_file, tag2.tag_id)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1, tag2.tag_id])) == 1
+    nc_any.files.unassign_tag(new_file, tag1)
+    assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 0
+    nc_any.files.assign_tag(new_file, tag1)
+    with pytest.raises(ValueError):
+        nc_any.files.list_by_criteria()
