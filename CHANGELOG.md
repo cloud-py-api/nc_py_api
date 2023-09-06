@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Activity API: `get_filters` and `get_activities`. #112
+- ActivityAPI: `get_filters` and `get_activities`. #112
 - FilesAPI: added `tags` support. #115
 
 ### Changed
