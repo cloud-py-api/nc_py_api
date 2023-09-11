@@ -10,7 +10,7 @@ Suggested IDE: **PyCharm**, but of course you can use any IDE you like for this 
 Steps to setup up the development environment:
 
 #. Setup Nextcloud locally or remotely.
-#. Install `AppEcosystem <https://github.com/cloud-py-api/app_ecosystem_v2>`_, follow it's steps to register ``deploy daemon`` if needed.
+#. Install `AppAPI <https://github.com/cloud-py-api/app_api>`_, follow it's steps to register ``deploy daemon`` if needed.
 #. Clone the `nc_py_api <https://github.com/cloud-py-api/nc_py_api>`_ with :command:`shell`::
 
     git clone https://github.com/cloud-py-api/nc_py_api.git
@@ -39,7 +39,7 @@ Steps to setup up the development environment:
 
     pre-commit install
 
-#. If ``deploy daemon`` is registered for AppEcosystem, register **nc_py_api** as an application with :command:`shell`::
+#. If ``deploy daemon`` is registered for AppAPI, register **nc_py_api** as an application with :command:`shell`::
 
     make register28
 

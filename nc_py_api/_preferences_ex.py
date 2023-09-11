@@ -29,7 +29,7 @@ class _BasicAppCfgPref:
         """Returns the value of the key, if found, or the specified default value."""
         if not key:
             raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         r = self.get_values([key])
         if r:
             return r[0].value
@@ -41,7 +41,7 @@ class _BasicAppCfgPref:
             return []
         if not all(keys):
             raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         data = {"configKeys": keys}
         results = self._session.ocs(
             method="POST", path=f"{self._session.ae_url}/{self._url_suffix}/get-values", json=data
@@ -56,7 +56,7 @@ class _BasicAppCfgPref:
             return
         if not all(keys):
             raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         try:
             self._session.ocs(
                 method="DELETE", path=f"{self._session.ae_url}/{self._url_suffix}", json={"configKeys": keys}
@@ -75,7 +75,7 @@ class PreferencesExAPI(_BasicAppCfgPref):
         """Sets a value for a key."""
         if not key:
             raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         params = {"configKey": key, "configValue": value}
         self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._url_suffix}", json=params)
 
@@ -94,7 +94,7 @@ class AppConfigExAPI(_BasicAppCfgPref):
         """
         if not key:
             raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         params: dict = {"configKey": key, "configValue": value}
         if sensitive is not None:
             params["sensitive"] = sensitive

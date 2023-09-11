@@ -1,13 +1,10 @@
 """Session represents one connection to Nextcloud. All related stuff for these live here."""
 
-import asyncio
-import hmac
 from abc import ABC, abstractmethod
+from base64 import b64encode
 from collections.abc import Iterator
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from enum import IntEnum
-from hashlib import sha256
 from json import dumps, loads
 from os import environ
 from typing import Optional, TypedDict, Union
@@ -18,14 +15,6 @@ from httpx import Client
 from httpx import Headers as HttpxHeaders
 from httpx import Limits, ReadTimeout, Response
 
-try:
-    from xxhash import xxh64
-except ImportError as ex:
-    from ._deffered_error import DeferredError
-
-    xxh64 = DeferredError(ex)
-
-
 from . import options
 from ._exceptions import (
     NextcloudException,
@@ -33,6 +22,7 @@ from ._exceptions import (
     NextcloudExceptionNotModified,
     check_error,
 )
+from ._misc import get_username_secret_from_headers
 
 
 class OCSRespond(IntEnum):
@@ -125,7 +115,7 @@ class AppConfig(BasicConfig):
     """Application ID"""
     app_version: str
     """Application version"""
-    app_secret: bytes
+    app_secret: str
     """Application authentication secret"""
 
     def __init__(self, **kwargs):
@@ -135,7 +125,7 @@ class AppConfig(BasicConfig):
             self.ae_version = "1.0.0"
         self.app_name = self._get_config_value("app_id", **kwargs)
         self.app_version = self._get_config_value("app_version", **kwargs)
-        self.app_secret = self._get_config_value("app_secret", **kwargs).encode("UTF-8")
+        self.app_secret = self._get_config_value("app_secret", **kwargs)
 
 
 class NcSessionBasic(ABC):
@@ -312,7 +302,7 @@ class NcSessionBasic(ABC):
     @property
     def ae_url(self) -> str:
         """Return base url for the App Ecosystem endpoints."""
-        return "/ocs/v1.php/apps/app_ecosystem_v2/api/v1"
+        return "/ocs/v1.php/apps/app_api/api/v1"
 
 
 class NcSession(NcSessionBasic):
@@ -334,76 +324,42 @@ class NcSessionApp(NcSessionBasic):
         super().__init__(**kwargs)
 
     def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
-        self.sign_request("GET", path_params, headers, None)
+        self.sign_request(headers)
         return super()._get_stream(path_params, headers, **kwargs)
 
     def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
-        self.sign_request(method, path_params, headers, data)
+        self.sign_request(headers)
         return super()._ocs(method, path_params, headers, data, **kwargs)
 
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
-        self.sign_request(method, path, headers, data)
+        self.sign_request(headers)
         return super()._dav(method, path, headers, data, **kwargs)
 
     def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
-        self.sign_request(method, path, headers, data)
+        self.sign_request(headers)
         return super()._dav_stream(method, path, headers, data, **kwargs)
 
     def _create_adapter(self) -> Client:
         adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
         adapter.headers.update(
             {
-                "AE-VERSION": self.cfg.ae_version,
+                "AA-VERSION": self.cfg.ae_version,
                 "EX-APP-ID": self.cfg.app_name,
                 "EX-APP-VERSION": self.cfg.app_version,
             }
         )
         return adapter
 
-    def sign_request(self, method: str, url_params: str, headers: dict, data: Optional[bytes]) -> None:
-        data_hash = xxh64()
-        if data and method != "GET":
-            data_hash.update(data)
-
-        sign_headers = {
-            "AE-VERSION": self.adapter.headers.get("AE-VERSION"),
-            "EX-APP-ID": self.adapter.headers.get("EX-APP-ID"),
-            "EX-APP-VERSION": self.adapter.headers.get("EX-APP-VERSION"),
-            "NC-USER-ID": self.user,
-            "AE-DATA-HASH": data_hash.hexdigest(),
-            "AE-SIGN-TIME": str(int(datetime.now(timezone.utc).timestamp())),
-        }
-        if not sign_headers["NC-USER-ID"]:
-            sign_headers.pop("NC-USER-ID")
-
-        request_to_sign = (
-            method.encode("UTF-8")
-            + url_params.encode("UTF-8")
-            + dumps(sign_headers, separators=(",", ":")).encode("UTF-8")
-        )
-        hmac_sign = hmac.new(self.cfg.app_secret, request_to_sign, digestmod=sha256)
-        headers.update(
-            {
-                "AE-SIGNATURE": hmac_sign.hexdigest(),
-                "AE-DATA-HASH": sign_headers["AE-DATA-HASH"],
-                "AE-SIGN-TIME": sign_headers["AE-SIGN-TIME"],
-            }
-        )
-        if "NC-USER-ID" in sign_headers:
-            headers["NC-USER-ID"] = sign_headers["NC-USER-ID"]
+    def sign_request(self, headers: dict) -> None:
+        headers["AUTHORIZATION-APP-API"] = b64encode(f"{self.user}:{self.cfg.app_secret}".encode("UTF=8"))
 
     def sign_check(self, request: Request) -> None:
-        current_time = int(datetime.now(timezone.utc).timestamp())
         headers = {
-            "AE-VERSION": request.headers.get("AE-VERSION", ""),
+            "AA-VERSION": request.headers.get("AA-VERSION", ""),
             "EX-APP-ID": request.headers.get("EX-APP-ID", ""),
             "EX-APP-VERSION": request.headers.get("EX-APP-VERSION", ""),
-            "NC-USER-ID": request.headers.get("NC-USER-ID", ""),
-            "AE-DATA-HASH": request.headers.get("AE-DATA-HASH", ""),
-            "AE-SIGN-TIME": request.headers.get("AE-SIGN-TIME", ""),
+            "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", ""),
         }
-        if not headers["NC-USER-ID"]:
-            headers.pop("NC-USER-ID")
 
         empty_headers = [k for k, v in headers.items() if not v]
         if empty_headers:
@@ -413,25 +369,9 @@ class NcSessionApp(NcSessionBasic):
         if headers["EX-APP-VERSION"] != our_version:
             raise ValueError(f"Invalid EX-APP-VERSION:{headers['EX-APP-VERSION']} <=> {our_version}")
 
-        request_time = int(headers["AE-SIGN-TIME"])
-        if request_time < current_time - 5 * 60 or request_time > current_time + 5 * 60:
-            raise ValueError(f"Invalid AE-SIGN-TIME:{request_time} <=> {current_time}")
-
-        query_params = f"?{request.url.components.query}" if request.url.components.query else ""
-        request_to_sign = (
-            request.method.upper() + request.url.components.path + query_params + dumps(headers, separators=(",", ":"))
-        )
-        hmac_sign = hmac.new(self.cfg.app_secret, request_to_sign.encode("UTF-8"), digestmod=sha256).hexdigest()
-        request_ae_sign = request.headers.get("AE-SIGNATURE", "")
-        if hmac_sign != request_ae_sign:
-            raise ValueError(f"Invalid AE-SIGNATURE:{hmac_sign} != {request_ae_sign}")
-
-        data_hash = xxh64()
-        data = asyncio.run(request.body())
-        if data:
-            data_hash.update(data)
-        ae_data_hash = data_hash.hexdigest()
-        if ae_data_hash != headers["AE-DATA-HASH"]:
-            raise ValueError(f"Invalid AE-DATA-HASH:{ae_data_hash} !={headers['AE-DATA-HASH']}")
         if headers["EX-APP-ID"] != self.cfg.app_name:
             raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
+
+        app_secret = get_username_secret_from_headers(headers)[1]
+        if app_secret != self.cfg.app_secret:
+            raise ValueError(f"Invalid App secret:{app_secret} != {self.cfg.app_secret}")

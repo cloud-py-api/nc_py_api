@@ -1,7 +1,7 @@
 Nextcloud Talk Bot API in Applications
 ======================================
 
-The AppEcosystem is an excellent choice for developing and deploying bots for Nextcloud Talk.
+The AppAPI is an excellent choice for developing and deploying bots for Nextcloud Talk.
 
 Bots for Nextcloud Talk, in essence, don't differ significantly from regular external applications.
 The functionality of an external application can include just the bot or provide additional functionalities as well.

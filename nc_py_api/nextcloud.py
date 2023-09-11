@@ -153,9 +153,9 @@ class NextcloudApp(_NextcloudBasic):
         :param log_lvl: level of the log, content belongs to.
         :param content: string to write into the log.
         """
-        if self.check_capabilities("app_ecosystem_v2"):
+        if self.check_capabilities("app_api"):
             return
-        if int(log_lvl) < self.capabilities["app_ecosystem_v2"].get("loglevel", 0):
+        if int(log_lvl) < self.capabilities["app_api"].get("loglevel", 0):
             return
         self._session.ocs(
             method="POST", path=f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content}
@@ -170,9 +170,9 @@ class NextcloudApp(_NextcloudBasic):
 
         Useful for applications that declare optional scopes to check if they are allowed.
         """
-        if self.check_capabilities("app_ecosystem_v2"):
+        if self.check_capabilities("app_api"):
             return False
-        return scope in self.capabilities["app_ecosystem_v2"]["scopes"]
+        return scope in self.capabilities["app_api"]["scopes"]
 
     @property
     def user(self) -> str:
@@ -206,7 +206,7 @@ class NextcloudApp(_NextcloudBasic):
         :param description: Optional description shown in the admin settings.
         :return: The secret used for signing requests.
         """
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         require_capabilities("spreed.features.bots-v1", self._session.capabilities)
         params = {
             "name": display_name,
@@ -222,7 +222,7 @@ class NextcloudApp(_NextcloudBasic):
         :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
         :return: The secret used for signing requests.
         """
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         require_capabilities("spreed.features.bots-v1", self._session.capabilities)
         params = {
             "route": callback_url,
