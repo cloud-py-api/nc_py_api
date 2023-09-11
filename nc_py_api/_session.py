@@ -109,8 +109,8 @@ class Config(BasicConfig):
 class AppConfig(BasicConfig):
     """Application configuration."""
 
-    ae_version: str
-    """AppEcosystem version"""
+    aa_version: str
+    """AppAPI version"""
     app_name: str
     """Application ID"""
     app_version: str
@@ -120,9 +120,9 @@ class AppConfig(BasicConfig):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ae_version = self._get_config_value("ae_version", raise_not_found=False, **kwargs)
-        if not self.ae_version:
-            self.ae_version = "1.0.0"
+        self.aa_version = self._get_config_value("aa_version", raise_not_found=False, **kwargs)
+        if not self.aa_version:
+            self.aa_version = "1.0.0"
         self.app_name = self._get_config_value("app_id", **kwargs)
         self.app_version = self._get_config_value("app_version", **kwargs)
         self.app_secret = self._get_config_value("app_secret", **kwargs)
@@ -343,7 +343,7 @@ class NcSessionApp(NcSessionBasic):
         adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
         adapter.headers.update(
             {
-                "AA-VERSION": self.cfg.ae_version,
+                "AA-VERSION": self.cfg.aa_version,
                 "EX-APP-ID": self.cfg.app_name,
                 "EX-APP-VERSION": self.cfg.app_version,
             }

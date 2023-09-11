@@ -193,13 +193,13 @@ class NextcloudApp(_NextcloudBasic):
 
     @property
     def app_cfg(self) -> AppConfig:
-        """Returns deploy config, with AppEcosystem version, Application version and name."""
+        """Returns deploy config, with AppAPI version, Application version and name."""
         return self._session.cfg
 
     def register_talk_bot(self, callback_url: str, display_name: str, description: str = "") -> tuple[str, str]:
         """Registers Talk BOT.
 
-        .. note:: AppEcosystem will add a record in a case of successful registration to the ``appconfig_ex`` table.
+        .. note:: AppAPI will add a record in a case of successful registration to the ``appconfig_ex`` table.
 
         :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
         :param display_name: The name under which the messages will be posted.

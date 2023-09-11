@@ -10,7 +10,7 @@ from . import gfixture_set_env  # noqa
 _TEST_FAILED_INCREMENTAL: dict[str, dict[tuple[int, ...], str]] = {}
 
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
-if environ.get("SKIP_AE_TESTS", False):
+if environ.get("SKIP_AA_TESTS", False):
     NC_APP = None
 else:
     NC_APP = NextcloudApp(user="admin")

@@ -705,7 +705,7 @@ jobs:
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
-          SKIP_AE_TESTS: 1
+          SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
 
       - name: HTML coverage to artifacts
