@@ -112,7 +112,7 @@ class _AppsAPI:
         :param enabled: Flag indicating whether to return only enabled applications or all applications.
             Default = **False**.
         """
-        require_capabilities("app_ecosystem_v2", self._session.capabilities)
+        require_capabilities("app_api", self._session.capabilities)
         url_param = "enabled" if enabled else "all"
         r = self._session.ocs(method="GET", path=f"{self._session.ae_url}/ex-app/{url_param}")
         return [ExAppInfo(i) for i in r]

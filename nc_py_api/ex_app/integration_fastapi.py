@@ -8,15 +8,18 @@ import typing
 
 from fastapi import Depends, FastAPI, HTTPException, Request, responses, status
 
+from .._misc import get_username_secret_from_headers
 from ..nextcloud import NextcloudApp
 from ..talk_bot import TalkBotMessage, get_bot_secret
 
 
 def nc_app(request: Request) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    user = request.headers.get("NC-USER-ID", "")
-    request_id = request.headers.get("AE-REQUEST-ID", None)
-    headers = {"AE-REQUEST-ID": request_id} if request_id else {}
+    user = get_username_secret_from_headers(
+        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
+    )[0]
+    request_id = request.headers.get("AA-REQUEST-ID", None)
+    headers = {"AA-REQUEST-ID": request_id} if request_id else {}
     nextcloud_app = NextcloudApp(user=user, headers=headers)
     if not nextcloud_app.request_sign_check(request):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
