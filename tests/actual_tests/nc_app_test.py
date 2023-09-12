@@ -20,7 +20,7 @@ def test_app_cfg(nc_app):
     app_cfg = nc_app.app_cfg
     assert app_cfg.app_name == environ["APP_ID"]
     assert app_cfg.app_version == environ["APP_VERSION"]
-    assert app_cfg.app_secret == environ["APP_SECRET"].encode("UTF-8")
+    assert app_cfg.app_secret == environ["APP_SECRET"]
 
 
 def test_scope_allow_app_ecosystem_disabled(nc_client, nc_app):

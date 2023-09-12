@@ -39,3 +39,5 @@ class ApiScope(enum.IntEnum):
     """Allows access to Talk API endpoints."""
     TALK_BOT = 60
     """Allows to register Talk Bots."""
+    ACTIVITIES = 110
+    """Activity App endpoints."""
