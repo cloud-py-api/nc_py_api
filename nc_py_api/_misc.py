@@ -80,5 +80,8 @@ def nc_iso_time_to_datetime(iso8601_time: str) -> datetime:
 def get_username_secret_from_headers(headers: dict) -> tuple[str, str]:
     """Returns tuple with ``username`` and ``app_secret`` from headers."""
     auth_aa = b64decode(headers.get("AUTHORIZATION-APP-API", "")).decode("UTF-8")
-    username, app_secret = auth_aa.split(":", maxsplit=1)
+    try:
+        username, app_secret = auth_aa.split(":", maxsplit=1)
+    except ValueError:
+        return "", ""
     return username, app_secret
