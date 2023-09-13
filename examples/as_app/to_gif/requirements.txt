@@ -1,4 +1,4 @@
-nc_py_api[app]>=0.0.40
+nc_py_api[app]>=0.2.0
 pygifsicle
 imageio
 opencv-python
