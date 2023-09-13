@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.0 - 2023-09-11]
+## [0.2.0 - 2023-09-13]
+
+### Added
+
+- FilesAPI: `FsNode.info` added `mimetype` property.
 
 ### Changed
 

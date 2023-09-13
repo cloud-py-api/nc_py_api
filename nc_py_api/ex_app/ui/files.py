@@ -71,6 +71,7 @@ class UiActionFileInfo(BaseModel):
             file_id=file_id + self.instanceId if self.instanceId else file_id,
             fileid=self.fileId,
             last_modified=datetime.utcfromtimestamp(self.mtime).replace(tzinfo=timezone.utc),
+            mimetype=self.mime,
         )
 
 

@@ -25,6 +25,7 @@ class FsNodeInfo:
             "content_length": kwargs.get("content_length", 0),
             "size": kwargs.get("size", 0),
             "permissions": kwargs.get("permissions", ""),
+            "mimetype": kwargs.get("mimetype", ""),
         }
         self.favorite = kwargs.get("favorite", False)
         self.is_version = False
@@ -47,6 +48,11 @@ class FsNodeInfo:
     def size(self) -> int:
         """In the case of directories it is the size of all content, for files it is equal to ``content_length``."""
         return self._raw_data["size"]
+
+    @property
+    def mimetype(self) -> str:
+        """Mimetype of a file. Empty for the directories."""
+        return self._raw_data["mimetype"]
 
     @property
     def permissions(self) -> str:

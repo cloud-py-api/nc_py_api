@@ -86,7 +86,7 @@ def test_ui_file_to_fs_node(nc_app):
             name=fs_object.name,
             directory=directory,
             etag=fs_object.etag,
-            mime="",
+            mime=fs_object.info.mimetype,
             fileType="dir" if fs_object.is_dir else "file",
             mtime=int(fs_object.info.last_modified.timestamp()),
             size=fs_object.info.size,
@@ -105,7 +105,7 @@ def test_ui_file_to_fs_node(nc_app):
         assert fs_node.full_path == fs_object.full_path
         assert fs_node.file_id == fs_object.file_id
         assert fs_node.is_dir == fs_object.is_dir
-        # assert fs_node.mime == fs_object.mime
+        assert fs_node.info.mimetype == fs_object.info.mimetype
         assert fs_node.info.permissions == fs_object.info.permissions
         assert fs_node.info.last_modified == fs_object.info.last_modified
         assert fs_node.info.favorite == fs_object.info.favorite

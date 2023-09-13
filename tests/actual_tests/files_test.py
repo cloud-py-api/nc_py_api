@@ -381,6 +381,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.content_length == 0
             assert result.info.permissions == "RGDNVCK"
             assert result.info.favorite is False
+            assert not result.info.mimetype
         elif result.name == "test_empty_child_dir":
             assert result.user_path == "test_dir/test_empty_child_dir/"
             assert result.is_dir
@@ -389,6 +390,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.content_length == 0
             assert result.info.permissions == "RGDNVCK"
             assert result.info.favorite is False
+            assert not result.info.mimetype
         elif result.name == "test_generated_image.png":
             assert result.user_path == "test_dir/test_generated_image.png"
             assert not result.is_dir
@@ -397,6 +399,7 @@ def test_fs_node_fields(nc_any):
             assert result.info.size == result.info.content_length
             assert result.info.permissions == "RGDNVW"
             assert result.info.favorite is True
+            assert result.info.mimetype == "image/png"
         elif result.name == "test_empty_text.txt":
             assert result.user_path == "test_dir/test_empty_text.txt"
             assert not result.is_dir
@@ -405,6 +408,7 @@ def test_fs_node_fields(nc_any):
             assert not result.info.content_length
             assert result.info.permissions == "RGDNVW"
             assert result.info.favorite is False
+            assert result.info.mimetype == "text/plain"
 
         res_by_id = nc_any.files.by_id(result.file_id)
         assert res_by_id

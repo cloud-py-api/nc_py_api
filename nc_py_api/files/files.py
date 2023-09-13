@@ -25,6 +25,7 @@ PROPFIND_PROPERTIES = [
     "d:resourcetype",
     "d:getlastmodified",
     "d:getcontentlength",
+    "d:getcontenttype",
     "d:getetag",
     "oc:size",
     "oc:id",
@@ -609,6 +610,8 @@ class FilesAPI:
                 fs_node_args["etag"] = prop["d:getetag"]
             if "d:getlastmodified" in prop_keys:
                 fs_node_args["last_modified"] = prop["d:getlastmodified"]
+            if "d:getcontenttype" in prop_keys:
+                fs_node_args["mimetype"] = prop["d:getcontenttype"]
             if "oc:permissions" in prop_keys:
                 fs_node_args["permissions"] = prop["oc:permissions"]
             if "oc:favorite" in prop_keys:
