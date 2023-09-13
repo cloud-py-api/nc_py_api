@@ -10,7 +10,7 @@ from aa_overhead_common import measure_overhead, os_id
 from nc_py_api import Nextcloud, NextcloudApp
 
 ITERS = 10
-CACHE_SESS = True
+CACHE_SESS = False
 
 
 def measure_upload_100mb(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]:

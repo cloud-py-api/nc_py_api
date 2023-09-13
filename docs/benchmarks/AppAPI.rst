@@ -8,23 +8,7 @@ It is important to note that the AppAPI authentication type is currently the fas
 Compared to traditional username/password authentication and app password authentication,
 both of which are considerably slower, the AppAPI provides a significant advantage in terms of speed.
 
-When considering data transfer speed, it is worth mentioning
-that the AppAPI's upload speed may be slightly lower, around 6-8 percent, for large data transfers.
-This decrease in speed is due to the authentication process, which involves hashing all data.
-However, for loading any data, there is no slowdown compared to standard methods.
-
-In cases of loading any data, there is no slowdown relative to standard methods.
-
-While the transfer speed can be affected by the network speed between the application and the cloud,
-this aspect is beyond the scope of the discussed issue.
-
-Conclusion
-----------
-
-In summary, the AppAPI authentication offers fast and secure access to user data.
-With the potential addition of a session cache in the future, the authentication process can become even more efficient
-and seamless for users. The slight decrease in upload speed for large data transfers
-is a trade-off for the enhanced security provided by the authentication process.
+In summary, the AppAPI authentication offers fast and robust access to user data.
 
 Overall, the AppAPI authentication proves to be a reliable and effective method for application authentication.
 
@@ -47,32 +31,22 @@ nc-py-api version = **0.2.0**
 
 .. image:: ../../benchmarks/results/ocs_user_get_details__cache0_iters100__shurik.png
 
-.. image:: ../../benchmarks/results/ocs_user_get_details__cache1_iters100__shurik.png
-
 Downloading a 1 MB file
 -----------------------
 
 .. image:: ../../benchmarks/results/dav_download_1mb__cache0_iters30__shurik.png
-
-.. image:: ../../benchmarks/results/dav_download_1mb__cache1_iters30__shurik.png
 
 Uploading a 1 Mb file
 ---------------------
 
 .. image:: ../../benchmarks/results/dav_upload_1mb__cache0_iters30__shurik.png
 
-.. image:: ../../benchmarks/results/dav_upload_1mb__cache1_iters30__shurik.png
-
 Downloading of a 100 Mb file to the memory BytesIO python object
 ----------------------------------------------------------------
 
 .. image:: ../../benchmarks/results/dav_download_stream_100mb__cache0_iters10__shurik.png
 
-.. image:: ../../benchmarks/results/dav_download_stream_100mb__cache1_iters10__shurik.png
-
 Chunked uploading of a 100 Mb file from the BytesIO python object
 -----------------------------------------------------------------
 
 .. image:: ../../benchmarks/results/dav_upload_stream_100mb__cache0_iters10__shurik.png
-
-.. image:: ../../benchmarks/results/dav_upload_stream_100mb__cache1_iters10__shurik.png
