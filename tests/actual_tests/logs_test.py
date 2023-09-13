@@ -33,12 +33,12 @@ def test_empty_log(nc_app):
 
 
 def test_loglvl_equal(nc_app):
-    current_log_lvl = nc_app.capabilities["app_ecosystem_v2"].get("loglevel", LogLvl.FATAL)
+    current_log_lvl = nc_app.capabilities["app_api"].get("loglevel", LogLvl.FATAL)
     nc_app.log(current_log_lvl, "log should be written")
 
 
 def test_loglvl_less(nc_app):
-    current_log_lvl = nc_app.capabilities["app_ecosystem_v2"].get("loglevel", LogLvl.FATAL)
+    current_log_lvl = nc_app.capabilities["app_api"].get("loglevel", LogLvl.FATAL)
     if current_log_lvl == LogLvl.DEBUG:
         pytest.skip("Log lvl to low")
     with mock.patch("tests.conftest.NC_APP._session._ocs") as _ocs:
@@ -48,11 +48,11 @@ def test_loglvl_less(nc_app):
         assert _ocs.call_count > 0
 
 
-def test_log_without_app_ecosystem_v2(nc_app):
+def test_log_without_app_api(nc_app):
     srv_capabilities = deepcopy(nc_app.capabilities)
     srv_version = deepcopy(nc_app.srv_version)
-    log_lvl = srv_capabilities["app_ecosystem_v2"].pop("loglevel")
-    srv_capabilities.pop("app_ecosystem_v2")
+    log_lvl = srv_capabilities["app_api"].pop("loglevel")
+    srv_capabilities.pop("app_api")
     patched_capabilities = {"capabilities": srv_capabilities, "version": srv_version}
     with (
         mock.patch.dict("tests.conftest.NC_APP._session._capabilities", patched_capabilities, clear=True),

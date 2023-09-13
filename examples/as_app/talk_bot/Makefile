@@ -26,24 +26,24 @@ build-push:
 
 .PHONY: deploy
 deploy:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:deploy talk_bot docker_dev \
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:deploy talk_bot docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
 
 .PHONY: run28
 run28:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister talk_bot --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register talk_bot docker_dev -e --force-scopes \
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister talk_bot --silent || true
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register talk_bot docker_dev -e --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
 
 .PHONY: run27
 run27:
-	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister talk_bot --silent || true
-	docker exec master-stable27-1 sudo -u www-data php occ app_ecosystem_v2:app:register talk_bot docker_dev -e --force-scopes \
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister talk_bot --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register talk_bot docker_dev -e --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
 
 .PHONY: manual_register
 manual_register:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:unregister talk_bot --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_ecosystem_v2:app:register talk_bot manual_install --json-info \
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister talk_bot --silent || true
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register talk_bot manual_install --json-info \
   "{\"appid\":\"talk_bot\",\"name\":\"TalkBot\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9032,\"scopes\":{\"required\":[\"TALK\", \"TALK_BOT\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
   -e --force-scopes

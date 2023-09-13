@@ -2,7 +2,8 @@
 
 For internal use, prototypes can change between versions.
 """
-import datetime
+from base64 import b64decode
+from datetime import datetime, timezone
 from random import choice
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Callable, Union
@@ -68,9 +69,19 @@ def random_string(size: int) -> str:
     return "".join(choice(letters) for _ in range(size))
 
 
-def nc_iso_time_to_datetime(iso8601_time: str) -> datetime.datetime:
+def nc_iso_time_to_datetime(iso8601_time: str) -> datetime:
     """Returns parsed ``datetime`` or datetime(1970, 1, 1) in case of error."""
     try:
-        return datetime.datetime.fromisoformat(iso8601_time)
+        return datetime.fromisoformat(iso8601_time)
     except (ValueError, TypeError):
-        return datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        return datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+
+def get_username_secret_from_headers(headers: dict) -> tuple[str, str]:
+    """Returns tuple with ``username`` and ``app_secret`` from headers."""
+    auth_aa = b64decode(headers.get("AUTHORIZATION-APP-API", "")).decode("UTF-8")
+    try:
+        username, app_secret = auth_aa.split(":", maxsplit=1)
+    except ValueError:
+        return "", ""
+    return username, app_secret

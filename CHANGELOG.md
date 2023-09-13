@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0 - 2023-09-11]
+
+### Changed
+
+- AppEcosystem_V2 Project was renamed to App_API, adjust all routes, examples, and docs for this.
+- The Application Authentication mechanism was changed to a much simple one.
+
 ## [0.1.0 - 2023-09-06]
 
 ### Added

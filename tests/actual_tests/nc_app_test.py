@@ -20,18 +20,18 @@ def test_app_cfg(nc_app):
     app_cfg = nc_app.app_cfg
     assert app_cfg.app_name == environ["APP_ID"]
     assert app_cfg.app_version == environ["APP_VERSION"]
-    assert app_cfg.app_secret == environ["APP_SECRET"].encode("UTF-8")
+    assert app_cfg.app_secret == environ["APP_SECRET"]
 
 
 def test_scope_allow_app_ecosystem_disabled(nc_client, nc_app):
     assert nc_app.scope_allowed(ApiScope.FILES)
-    nc_client.apps.disable("app_ecosystem_v2")
+    nc_client.apps.disable("app_api")
     try:
         assert nc_app.scope_allowed(ApiScope.FILES)
         nc_app.update_server_info()
         assert not nc_app.scope_allowed(ApiScope.FILES)
     finally:
-        nc_client.apps.enable("app_ecosystem_v2")
+        nc_client.apps.enable("app_api")
         nc_app.update_server_info()
 
 

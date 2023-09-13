@@ -1,7 +1,7 @@
 Writing a Nextcloud Application
 ===============================
 
-This chapter assumes that you are already familiar with the `concepts <https://cloud-py-api.github.io/app_ecosystem_v2/Concepts.html>`_ of the AppEcosystem.
+This chapter assumes that you are already familiar with the `concepts <https://cloud-py-api.github.io/app_api/Concepts.html>`_ of the AppAPI.
 
 As a first step, let's take a look at the structure of a basic Python application.
 
@@ -47,7 +47,7 @@ First register ``manual_install`` daemon:
 
 .. code-block:: shell
 
-    php occ app_ecosystem_v2:daemon:register manual_install "Manual Install" manual-install 0 0 0
+    php occ app_api:daemon:register manual_install "Manual Install" manual-install 0 0 0
 
 Then, launch your application. Since this is a manual deployment, it's your responsibility to set minimum of the environment variables.
 Here they are:
@@ -56,7 +56,7 @@ Here they are:
 * APP_PORT - Port on which application listen for the requests from the Nextcloud.
 * APP_SECRET - Secret for ``hmac`` signature generation.
 * APP_VERSION - Version of the application.
-* AE_VERSION - Version of the AppEcosystem.
+* AA_VERSION - Version of the AppAPI.
 * NEXTCLOUD_URL - URL at which the application can access the Nextcloud API.
 
 You can find values for these environment variables in the **Skeleton** or **ToGif** run configurations.
@@ -65,7 +65,7 @@ After launching your application, execute the following command in the Nextcloud
 
 .. code-block:: shell
 
-    php occ app_ecosystem_v2:app:register YOUR_APP_ID manual_install --json-info \
+    php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
         "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"host\":\"host.docker.internal\",\"scopes\":{\"required\":[2, 10, 11],\"optional\":[30, 31, 32, 33]},\"port\":SELECTED_PORT,\"protocol\":\"http\",\"system_app\":0}" \
         -e --force-scopes
 
@@ -79,7 +79,7 @@ Examples for such Makefiles can be found in this repository:
 `ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ ,
 `nc_py_api <https://github.com/cloud-py-api/nc_py_api/blob/main/scripts/dev_register.sh>`_
 
-During the execution of `php occ app_ecosystem_v2:app:register`, the **enabled_handler** will be called,
+During the execution of `php occ app_api:app:register`, the **enabled_handler** will be called,
 as we pass the flag ``-e``, meaning ``enable after registration``.
 
 This is likely all you need to start debugging and developing an application for Nextcloud.
@@ -89,7 +89,7 @@ Pack & Deploy
 
 Before reading this chapter, please review the basic information about deployment
 and the currently supported types of
-`deployments configurations <https://cloud-py-api.github.io/app_ecosystem_v2/DeployConfigurations.html>`_ in the AppEcosystem documentation.
+`deployments configurations <https://cloud-py-api.github.io/app_api/DeployConfigurations.html>`_ in the AppAPI documentation.
 
 Docker Deploy Daemon
 """"""""""""""""""""
@@ -140,7 +140,7 @@ First of all, we modernize info.ixml, add the API groups we need for this to wor
         </optional>
     </scopes>
 
-.. note:: Full list of avalaible API scopes can be found `here <https://cloud-py-api.github.io/app_ecosystem_v2/tech_details/ApiScopes.html>`_.
+.. note:: Full list of avalaible API scopes can be found `here <https://cloud-py-api.github.io/app_api/tech_details/ApiScopes.html>`_.
 
 After that we extend the **enabled** handler and include there registration of the drop-down list element:
 
@@ -194,7 +194,7 @@ heavy calculations and we cannot guarantee a fast completion time, it is recomme
 an empty response (which will be a status of 200) and in the background already slowly perform operations.
 
 The last parameter is a structure describing the action and the file on which it needs to be performed,
-which is passed by the Appecosystem when clicking on the drop-down context menu of the file.
+which is passed by the AppAPI when clicking on the drop-down context menu of the file.
 
 We use the built method :py:meth:`~nc_py_api.ex_app.ui.files.UiActionFileInfo.to_fs_node` into the structure to convert it
 into a standard :py:class:`~nc_py_api.files.FsNode` class that describes the file and pass the FsNode class instance to the background task.

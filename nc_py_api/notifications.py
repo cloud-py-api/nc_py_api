@@ -91,16 +91,16 @@ class _NotificationsAPI:
             raise NotImplementedError("Sending notifications is only supported for `App` mode.")
         if not subject:
             raise ValueError("`subject` cannot be empty string.")
-        require_capabilities(["app_ecosystem_v2", "notifications"], self._session.capabilities)
+        require_capabilities(["app_api", "notifications"], self._session.capabilities)
         if subject_params is None:
             subject_params = {}
         if message_params is None:
             message_params = {}
         params: dict = {
             "params": {
-                "object": "app_ecosystem_v2",
+                "object": "app_api",
                 "object_id": random_string(56),
-                "subject_type": "app_ecosystem_v2_ex_app",
+                "subject_type": "app_api_ex_app",
                 "subject_params": {
                     "rich_subject": subject,
                     "rich_subject_params": subject_params,

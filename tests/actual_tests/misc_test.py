@@ -28,16 +28,16 @@ def test_nc_exception_to_str():
 
 
 def test_require_capabilities(nc_app):
-    require_capabilities("app_ecosystem_v2", nc_app.capabilities)
-    require_capabilities(["app_ecosystem_v2", "theming"], nc_app.capabilities)
+    require_capabilities("app_api", nc_app.capabilities)
+    require_capabilities(["app_api", "theming"], nc_app.capabilities)
     with pytest.raises(NextcloudException):
         require_capabilities("non_exist_capability", nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities(["non_exist_capability", "app_ecosystem_v2"], nc_app.capabilities)
+        require_capabilities(["non_exist_capability", "app_api"], nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities(["non_exist_capability", "non_exist_capability2", "app_ecosystem_v2"], nc_app.capabilities)
+        require_capabilities(["non_exist_capability", "non_exist_capability2", "app_api"], nc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities("app_ecosystem_v2.non_exist_capability", nc_app.capabilities)
+        require_capabilities("app_api.non_exist_capability", nc_app.capabilities)
 
 
 def test_config_get_value():
