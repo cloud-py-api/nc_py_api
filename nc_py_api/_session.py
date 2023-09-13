@@ -365,12 +365,12 @@ class NcSessionApp(NcSessionBasic):
         if empty_headers:
             raise ValueError(f"Missing required headers:{empty_headers}")
 
+        if headers["EX-APP-ID"] != self.cfg.app_name:
+            raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
+
         our_version = self.adapter.headers.get("EX-APP-VERSION", "")
         if headers["EX-APP-VERSION"] != our_version:
             raise ValueError(f"Invalid EX-APP-VERSION:{headers['EX-APP-VERSION']} <=> {our_version}")
-
-        if headers["EX-APP-ID"] != self.cfg.app_name:
-            raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
 
         app_secret = get_username_secret_from_headers(headers)[1]
         if app_secret != self.cfg.app_secret:
