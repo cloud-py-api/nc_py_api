@@ -4,11 +4,6 @@ AppAPI Benchmarks
 In the current implementation, applications written and using the AppAPI
 so far in most cases will be authenticated at the beginning of each action.
 
-*A future enhancement that can be implemented is the addition of a session cache.
-This feature would eliminate the need for re-authorization for subsequent actions performed
-by the same user within a certain time frame.
-The implementation of this session cache would be seamless for developers and require no additional actions.*
-
 It is important to note that the AppAPI authentication type is currently the fastest among available options.
 Compared to traditional username/password authentication and app password authentication,
 both of which are considerably slower, the AppAPI provides a significant advantage in terms of speed.
@@ -45,7 +40,7 @@ Tests are run with session cache enabled and disabled to see the difference in a
 | All benchmarks are run one after the other in the single thread.
 | Size of chunk for file stream operations = **4MB**
 
-nc-py-api version = **0.0.24**
+nc-py-api version = **0.2.0**
 
 'ocs/v1.php/cloud/USERID' endpoint
 ----------------------------------
