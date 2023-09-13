@@ -56,7 +56,7 @@ Here they are:
 * APP_PORT - Port on which application listen for the requests from the Nextcloud.
 * APP_SECRET - Secret for ``hmac`` signature generation.
 * APP_VERSION - Version of the application.
-* AE_VERSION - Version of the AppAPI.
+* AA_VERSION - Version of the AppAPI.
 * NEXTCLOUD_URL - URL at which the application can access the Nextcloud API.
 
 You can find values for these environment variables in the **Skeleton** or **ToGif** run configurations.

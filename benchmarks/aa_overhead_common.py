@@ -11,7 +11,7 @@ def measure_overhead(measure, title: str):
     penguin_means = {
         "Password": [],
         "AppPassword": [],
-        "AppEcosystem": [],
+        "AppAPI": [],
     }
 
     for k, v in NC_CFGS.items():
@@ -34,7 +34,7 @@ def measure_overhead(measure, title: str):
 
         nc_ae = init_nc_app(k, v)
         result_nc_ae, time_nc_ae = measure(nc_ae)
-        penguin_means["AppEcosystem"].append(time_nc_ae)
+        penguin_means["AppAPI"].append(time_nc_ae)
 
         # Uncomment only for functions that return predictable values.
         # if result_nc is not None:
