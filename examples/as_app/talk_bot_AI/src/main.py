@@ -23,7 +23,7 @@ def ai_talk_bot_process_request(message: talk_bot.TalkBotMessage):
     r = re.search(r"@ai\s(.*)", message.object_content["message"], re.IGNORECASE)
     if r is None:
         return
-    model = pipeline("text2text-generation", model="MBZUAI/LaMini-Flan-T5-77M")
+    model = pipeline("text2text-generation", model=MODEL_NAME)
     response_text = model(r.group(1), max_length=64, do_sample=True)[0]["generated_text"]
     AI_BOT.send_message(response_text, message)
 
