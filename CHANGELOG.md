@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1 - 2023-09-14]
+
+### Added
+
+- NextcloudApp: `ex_app.persistent_storage` function that returns path for the Application persistent storage.
+- NextcloudApp: `from nc_py_api.ex_app import persist_transformers_cache` - automatic use of persistent app directory for the AI models caching.
+
 ## [0.2.0 - 2023-09-13]
 
 ### Added
