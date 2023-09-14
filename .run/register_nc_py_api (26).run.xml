@@ -1,12 +1,15 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="_app_security_checks" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+  <configuration default="false" name="register_nc_py_api (26)" type="PythonConfigurationType" factoryName="Python">
     <module name="nc_py_api" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
-      <env name="APP_ID" value="nc_py_api" />
-      <env name="APP_SECRET" value="12345" />
       <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="APP_ID" value="nc_py_api" />
+      <env name="APP_PORT" value="9009" />
+      <env name="APP_SECRET" value="12345" />
+      <env name="APP_VERSION" value="1.0.0" />
+      <env name="NEXTCLOUD_URL" value="http://stable26.local/index.php" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
@@ -14,8 +17,8 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/_app_security_checks.py" />
-    <option name="PARAMETERS" value="http://127.0.0.1:9009" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/_install.py" />
+    <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

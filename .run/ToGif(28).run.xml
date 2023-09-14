@@ -8,7 +8,7 @@
       <env name="APP_PORT" value="9031" />
       <env name="APP_SECRET" value="12345" />
       <env name="APP_VERSION" value="1.0.0" />
-      <env name="NEXTCLOUD_URL" value="http://nextcloud.local/index.php" />
+      <env name="NEXTCLOUD_URL" value="http://nextcloud.local" />
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
