@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import pytest
 
@@ -66,3 +67,10 @@ def test_ocs_response_headers(nc):
 def test_nc_iso_time_to_datetime():
     parsed_time = nc_iso_time_to_datetime("invalid")
     assert parsed_time == datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+
+
+def test_persist_transformers_cache(nc_app):
+    assert "TRANSFORMERS_CACHE" not in os.environ
+    from nc_py_api.ex_app import persist_transformers_cache  # noqa
+
+    assert os.environ["TRANSFORMERS_CACHE"]

@@ -1,0 +1,5 @@
+nc_py_api[app]>=0.2.1
+transformers>=4.33
+torch
+torchvision
+torchaudio
