@@ -70,6 +70,7 @@ You can support us in several ways:
   - [More APIs](https://cloud-py-api.github.io/nc_py_api/MoreAPIs.html)
   - [Writing a simple Nextcloud Application](https://cloud-py-api.github.io/nc_py_api/NextcloudApp.html)
   - [Using Nextcloud Talk Bot API in Application](https://cloud-py-api.github.io/nc_py_api/NextcloudTalkBot.html)
+  - [Using Language Models In Application](https://cloud-py-api.github.io/nc_py_api/NextcloudTalkBotTransformers.html)
   - [Writing a Nextcloud System Application](https://cloud-py-api.github.io/nc_py_api/NextcloudSysApp.html)
 - [Examples](https://github.com/cloud-py-api/nc_py_api/tree/main/examples)
 - [Contribute](https://github.com/cloud-py-api/nc_py_api/blob/main/.github/CONTRIBUTING.md)

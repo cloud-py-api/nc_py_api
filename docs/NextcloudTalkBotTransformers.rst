@@ -8,7 +8,7 @@ of the `Transformers <https://github.com/huggingface/transformers>`_ library in 
 
 Specifically, we'll cover:
 
-* Setting the cache path for the Transformers library
+* Setting the models cache path for the Transformers library
 * Downloading AI models during the application initialization step
 * Receiving messages from Nextcloud Talk Chat and sending them to a language model
 * Sending the language model's reply back to the Nextcloud Talk Chat
@@ -112,12 +112,12 @@ Finally, we arrive at the core aspect of the application, where we interact with
 .. code-block::
 
     def ai_talk_bot_process_request(message: talk_bot.TalkBotMessage):
-        # Process only messages started with **@ai**
+        # Process only messages started with "@ai"
         r = re.search(r"@ai\s(.*)", message.object_content["message"], re.IGNORECASE)
         if r is None:
             return
         model = pipeline("text2text-generation", model=MODEL_NAME)
-        # Pass all text after **@ai** we to the Language model.
+        # Pass all text after "@ai" we to the Language model.
         response_text = model(r.group(1), max_length=64, do_sample=True)[0]["generated_text"]
         AI_BOT.send_message(response_text, message)
 
@@ -125,5 +125,7 @@ Finally, we arrive at the core aspect of the application, where we interact with
 Simply put, the AI logic is just two lines of code when using Transformers, which is incredibly efficient and cool.
 
 Messages from the AI model are then sent back to Talk Chat as you would expect from a typical chatbot.
+
+`Full source code is here <https://github.com/cloud-py-api/nc_py_api/tree/main/examples/as_app/talk_bot_ai>`_
 
 That's it for now! Stay tuned—this is merely the start of an exciting journey into the integration of AI and chat functionality in Nextcloud.
