@@ -41,8 +41,14 @@ Because the example was developed on a Mac, we ended up using Torchvision.
 
 Next, we integrate the latest version of `nc_py_api` to minimize code redundancy and focus on the application's logic.
 
-Model Downloading
-"""""""""""""""""
+Prepare of Language Model
+"""""""""""""""""""""""""
+
+.. code-block::
+
+    MODEL_NAME = "MBZUAI/LaMini-Flan-T5-77M"
+
+We specify the model name globally so that we can easily change the model name if necessary.
 
 **When Should We Download the Language Model?**
 
@@ -92,7 +98,7 @@ Model Storage
 """""""""""""
 
 By default, models will be downloaded to a directory that's removed when updating the app.
-o persistently store the models even after updates, add the following line to your code:
+To persistently store the models even after updates, add the following line to your code:
 
 .. code-block::
 
