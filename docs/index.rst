@@ -32,6 +32,7 @@ Have a great time with Python and Nextcloud!
    MoreAPIs
    NextcloudApp
    NextcloudTalkBot
+   NextcloudTalkBotTransformers
    NextcloudSysApp
    Options
    reference/index.rst

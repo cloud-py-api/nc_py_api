@@ -12,6 +12,11 @@ Constants
 .. autoclass:: LogLvl
     :members:
 
+Special functions
+-----------------
+
+.. autofunction:: persistent_storage
+
 User Interface(UI)
 ------------------
 
