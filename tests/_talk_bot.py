@@ -33,7 +33,7 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
     with pytest.raises(HTTPException) as e:
         headers = dict(request.scope["headers"])
         headers[b"x-nextcloud-talk-signature"] = b"122112442412"
-        request.scope["headers"] = [(k, v) for k, v in headers.items()]
+        request.scope["headers"] = list(headers.items())
         del request._headers  # noqa
         talk_bot_app(request)
     assert e.value.status_code == 401
