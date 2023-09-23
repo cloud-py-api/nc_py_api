@@ -124,7 +124,7 @@ jobs:
           repository: cloud-py-api/app_api
 
       - name: Patch base.php
-        if: ${{ startsWith(matrix.nextcloud, 'stable26') }}
+        if: ${{ startsWith(matrix.nextcloud, '26') }}
         run: patch -p 1 -i apps/app_api/base_php.patch
 
       - name: Install AppAPI
