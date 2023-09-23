@@ -123,9 +123,12 @@ jobs:
           path: apps/app_api
           repository: cloud-py-api/app_api
 
+      - name: Patch base.php
+        if: ${{ startsWith(matrix.nextcloud, 'stable26') }}
+        run: patch -p 1 -i apps/app_api/base_php.patch
+
       - name: Install AppAPI
         run: |
-          patch -p 1 -i apps/app_api/base_php.patch
           php occ app:enable app_api
           cd nc_py_api
           coverage run --data-file=.coverage.ci_install tests/_install.py &
@@ -282,7 +285,6 @@ jobs:
       - name: Install AppAPI
         if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         run: |
-          patch -p 1 -i apps/app_api/base_php.patch
           php occ app:enable app_api
           cd nc_py_api
           coverage run --data-file=.coverage.ci_install tests/_install.py &
@@ -424,7 +426,6 @@ jobs:
 
       - name: Install AppAPI
         run: |
-          patch -p 1 -i apps/app_api/base_php.patch
           php occ app:enable app_api
           cd nc_py_api
           coverage run --data-file=.coverage.ci_install tests/_install.py &
