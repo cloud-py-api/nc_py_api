@@ -67,8 +67,8 @@ class _WeatherStatusAPI:
     ) -> bool:
         """Sets the user's location on the Nextcloud server.
 
-        :param latitude: north–south position of a point on the surface of the Earth.
-        :param longitude: east–west position of a point on the surface of the Earth.
+        :param latitude: north-south position of a point on the surface of the Earth.
+        :param longitude: east-west position of a point on the surface of the Earth.
         :param address: city, index(*optional*) and country, e.g. "Paris, 75007, France"
         """
         require_capabilities("weather_status.enabled", self._session.capabilities)

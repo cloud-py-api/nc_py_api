@@ -202,7 +202,7 @@ class TalkBot:
 
 def get_bot_secret(callback_url: str) -> typing.Union[bytes, None]:
     """Returns the bot's secret from an environment variable or from the application's configuration on the server."""
-    sha_1 = hashlib.sha1()
+    sha_1 = hashlib.sha1(usedforsecurity=False)
     string_to_hash = os.environ["APP_ID"] + "_" + callback_url
     sha_1.update(string_to_hash.encode("UTF-8"))
     secret_key = sha_1.hexdigest()

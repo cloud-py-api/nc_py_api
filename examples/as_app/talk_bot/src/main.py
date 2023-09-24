@@ -20,7 +20,7 @@ def convert_currency(amount, from_currency, to_currency):
     base_url = "https://api.exchangerate-api.com/v4/latest/"
 
     # Fetch latest exchange rates
-    response = requests.get(base_url + from_currency)
+    response = requests.get(base_url + from_currency, timeout=60)
     data = response.json()
 
     if "rates" in data:
@@ -30,12 +30,9 @@ def convert_currency(amount, from_currency, to_currency):
 
         if from_currency in rates and to_currency in rates:
             conversion_rate = rates[to_currency] / rates[from_currency]
-            converted_amount = amount * conversion_rate
-            return converted_amount
-        else:
-            raise ValueError("Invalid currency!")
-    else:
-        raise ValueError("Unable to fetch exchange rates!")
+            return amount * conversion_rate
+        raise ValueError("Invalid currency!")
+    raise ValueError("Unable to fetch exchange rates!")
 
 
 def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
@@ -55,7 +52,7 @@ def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
         CURRENCY_BOT.send_message(f"{r.group(2)} {r.group(3)} is equal to {converted_amount} {r.group(4)}", message)
     except Exception as e:
         # In production, it is better to write to log, than in the chat ;)
-        CURRENCY_BOT.send_message(f"Exception: {str(e)}", message)
+        CURRENCY_BOT.send_message(f"Exception: {e}", message)
 
 
 @APP.post("/currency_talk_bot")

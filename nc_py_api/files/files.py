@@ -6,8 +6,6 @@ import os
 from io import BytesIO
 from json import dumps, loads
 from pathlib import Path
-from random import choice
-from string import ascii_lowercase, digits
 from typing import Optional, Union
 from urllib.parse import unquote
 from xml.etree import ElementTree
@@ -16,7 +14,7 @@ import xmltodict
 from httpx import Response
 
 from .._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
-from .._misc import clear_from_params_empty, require_capabilities
+from .._misc import clear_from_params_empty, random_string, require_capabilities
 from .._session import NcSessionBasic
 from . import FsNode, SystemTag
 from .sharing import _FilesSharingAPI
@@ -694,8 +692,7 @@ class FilesAPI:
                 fp.write(data_chunk)
 
     def __upload_stream(self, path: str, fp, **kwargs) -> FsNode:
-        _rnd_folder = "".join(choice(digits + ascii_lowercase) for _ in range(64))
-        _dav_path = self._dav_get_obj_path(self._session.user, _rnd_folder, root_path="/uploads")
+        _dav_path = self._dav_get_obj_path(self._session.user, random_string(64), root_path="/uploads")
         response = self._session.dav("MKCOL", _dav_path)
         check_error(response.status_code)
         try:
