@@ -2,10 +2,10 @@
 
 For internal use, prototypes can change between versions.
 """
+import secrets
 from base64 import b64decode
 from datetime import datetime, timezone
-from random import choice
-from string import ascii_lowercase, ascii_uppercase, digits
+from string import ascii_letters, digits
 from typing import Callable, Union
 
 from ._exceptions import NextcloudMissingCapabilities
@@ -65,8 +65,8 @@ def check_capabilities(capabilities: Union[str, list[str]], srv_capabilities: di
 
 def random_string(size: int) -> str:
     """Generates a random ASCII string of the given size."""
-    letters = ascii_lowercase + ascii_uppercase + digits
-    return "".join(choice(letters) for _ in range(size))
+    char_string = ascii_letters + digits
+    return "".join(secrets.choice(char_string) for _ in range(size))
 
 
 def nc_iso_time_to_datetime(iso8601_time: str) -> datetime:

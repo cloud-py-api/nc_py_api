@@ -129,11 +129,11 @@ class FsNode:
         if self.info.is_version:
             return (
                 f"File version: `{self.name}` for FileID={self.file_id}"
-                f" last modified at {str(self.info.last_modified)} with {self.info.content_length} bytes size."
+                f" last modified at {self.info.last_modified} with {self.info.content_length} bytes size."
             )
         return (
             f"{'Dir' if self.is_dir else 'File'}: `{self.name}` with id={self.file_id}"
-            f" last modified at {str(self.info.last_modified)} and {self.info.permissions} permissions."
+            f" last modified at {self.info.last_modified} and {self.info.permissions} permissions."
         )
 
     def __eq__(self, other):

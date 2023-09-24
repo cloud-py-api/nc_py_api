@@ -69,6 +69,6 @@ def measure_overhead(measure, title: str):
 def os_id():
     if sys.platform.lower() == "darwin":
         return "macOS"
-    elif sys.platform.lower() == "win32":
+    if sys.platform.lower() == "win32":
         return "Windows"
     return "Linux"

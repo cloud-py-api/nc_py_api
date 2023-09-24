@@ -20,10 +20,10 @@ BOT2 = talk_bot.TalkBot("/bot2", "Test bot number Two", "Usage: `@bot two | @bot
 @APP.post("/bot1")
 async def bot1(message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)]):
     if message.object_name != "message":
-        return
+        return None
     r = re.search(r"@bot\sone.*", message.object_content["message"], re.IGNORECASE)
     if r is None and re.search(r"@bots!", message.object_content["message"], re.IGNORECASE) is None:
-        return
+        return None
     BOT1.send_message("I am here, my Lord!", message)
     return requests.Response()
 
@@ -31,10 +31,10 @@ async def bot1(message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)
 @APP.post("/bot2")
 async def bot2(message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)]):
     if message.object_name != "message":
-        return
+        return None
     r = re.search(r"@bot\stwo.*", message.object_content["message"], re.IGNORECASE)
     if r is None and re.search(r"@bots!", message.object_content["message"], re.IGNORECASE) is None:
-        return
+        return None
     BOT2.send_message("I am here, my Lord!", message)
     return requests.Response()
 

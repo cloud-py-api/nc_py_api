@@ -101,11 +101,11 @@ def test_get_conversations_include_status(nc, nc_client):
     try:
         conversations = nc.talk.get_user_conversations(include_status=False)
         assert conversations
-        first_conv = [i for i in conversations if i.conversation_id == conversation.conversation_id][0]
+        first_conv = next(i for i in conversations if i.conversation_id == conversation.conversation_id)
         assert not first_conv.status_type
         conversations = nc.talk.get_user_conversations(include_status=True)
         assert conversations
-        first_conv = [i for i in conversations if i.conversation_id == conversation.conversation_id][0]
+        first_conv = next(i for i in conversations if i.conversation_id == conversation.conversation_id)
         assert first_conv.status_type == "away"
     finally:
         nc.talk.leave_conversation(conversation.token)
@@ -194,7 +194,7 @@ def test_list_bots(nc, nc_app):
     if nc_app.talk.bots_available is False:
         pytest.skip("Need Talk bots support")
     nc_app.register_talk_bot("/some_url", "some bot name", "some desc")
-    registered_bot = [i for i in nc.talk.list_bots() if i.bot_name == "some bot name"][0]
+    registered_bot = next(i for i in nc.talk.list_bots() if i.bot_name == "some bot name")
     assert isinstance(registered_bot.bot_id, int)
     assert registered_bot.url.find("/some_url") != -1
     assert registered_bot.description == "some desc"
@@ -218,11 +218,15 @@ def test_chat_bot_receive_message(nc_app):
     talk_bot_inst.enabled_handler(True, nc_app)
     conversation = nc_app.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
-        coverage_bot = [i for i in nc_app.talk.list_bots() if i.url.endswith("/talk_bot_coverage")][0]
-        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        coverage_bot = next(i for i in nc_app.talk.list_bots() if i.url.endswith("/talk_bot_coverage"))
+        c_bot_info = next(
+            i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id
+        )
         assert c_bot_info.state == 0
         nc_app.talk.enable_bot(conversation, coverage_bot)
-        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        c_bot_info = next(
+            i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id
+        )
         assert c_bot_info.state == 1
         with pytest.raises(ValueError):
             nc_app.talk.send_message("Here are the msg!")
@@ -234,10 +238,14 @@ def test_chat_bot_receive_message(nc_app):
                 msg_from_bot = messages[-1]
                 break
         assert msg_from_bot
-        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        c_bot_info = next(
+            i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id
+        )
         assert c_bot_info.state == 1
         nc_app.talk.disable_bot(conversation, coverage_bot)
-        c_bot_info = [i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id][0]
+        c_bot_info = next(
+            i for i in nc_app.talk.conversation_list_bots(conversation) if i.bot_id == coverage_bot.bot_id
+        )
         assert c_bot_info.state == 0
     finally:
         nc_app.talk.delete_conversation(conversation.token)

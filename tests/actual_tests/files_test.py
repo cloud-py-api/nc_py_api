@@ -48,7 +48,7 @@ def test_list_user_root_self_exclude(nc):
     user_root = nc.files.listdir()
     user_root_with_self = nc.files.listdir(exclude_self=False)
     assert len(user_root_with_self) == 1 + len(user_root)
-    self_res = [i for i in user_root_with_self if not i.user_path][0]
+    self_res = next(i for i in user_root_with_self if not i.user_path)
     for i in user_root:
         assert self_res != i
     assert self_res.has_extra
