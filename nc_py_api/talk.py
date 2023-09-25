@@ -625,3 +625,117 @@ class BotInfo(BotInfoBasic):
     def last_error_message(self) -> typing.Optional[str]:
         """The last exception message or error response information when trying to reach the bot."""
         return self._raw_data["last_error_message"]
+
+
+@dataclasses.dataclass
+class PollDetail:
+    """Detail about who voted for option."""
+
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def actor_type(self) -> str:
+        """The actor type of the participant that voted: **users**, **groups**, **circles**, **guests**, **emails**."""
+        return self._raw_data["actorType"]
+
+    @property
+    def actor_id(self) -> str:
+        """The actor id of the participant that voted."""
+        return self._raw_data["actorId"]
+
+    @property
+    def actor_display_name(self) -> str:
+        """The display name of the participant that voted."""
+        return self._raw_data["actorDisplayName"]
+
+    @property
+    def option(self) -> int:
+        """The option that was voted for."""
+        return self._raw_data["optionId"]
+
+
+@dataclasses.dataclass
+class Poll:
+    """Conversation Poll information."""
+
+    def __init__(self, raw_data: dict, conversation_token: str):
+        self._raw_data = raw_data
+        self._conversation_token = conversation_token
+
+    @property
+    def conversation_token(self) -> str:
+        """Token identifier of the conversation to which poll belongs."""
+        return self._conversation_token
+
+    @property
+    def poll_id(self) -> int:
+        """ID of the poll."""
+        return self._raw_data["id"]
+
+    @property
+    def question(self) -> str:
+        """The question of the poll."""
+        return self._raw_data["question"]
+
+    @property
+    def options(self) -> list[str]:
+        """Options participants can vote for."""
+        return self._raw_data["options"]
+
+    @property
+    def votes(self) -> dict[str, int]:
+        """Map with 'option-' + optionId => number of votes.
+
+        .. note:: Only available for when the actor voted on the public poll or the poll is closed.
+        """
+        return self._raw_data.get("votes", {})
+
+    @property
+    def actor_type(self) -> str:
+        """Actor type of the poll author: **users**, **groups**, **circles**, **guests**, **emails**."""
+        return self._raw_data["actorType"]
+
+    @property
+    def actor_id(self) -> str:
+        """Actor ID identifying the poll author."""
+        return self._raw_data["actorId"]
+
+    @property
+    def actor_display_name(self) -> str:
+        """The display name of the poll author."""
+        return self._raw_data["actorDisplayName"]
+
+    @property
+    def closed(self) -> bool:
+        """Participants can no longer cast votes and the result is displayed."""
+        return bool(self._raw_data["status"] == 1)
+
+    @property
+    def hidden_results(self) -> bool:
+        """The results are hidden until the poll is closed."""
+        return bool(self._raw_data["resultMode"] == 1)
+
+    @property
+    def max_votes(self) -> int:
+        """The maximum amount of options a user can vote for, ``0`` means unlimited."""
+        return self._raw_data["maxVotes"]
+
+    @property
+    def voted_self(self) -> list[int]:
+        """Array of option ids the participant voted for."""
+        return self._raw_data["votedSelf"]
+
+    @property
+    def num_voters(self) -> int:
+        """The number of unique voters that voted.
+
+        .. note:: only available when the actor voted on the public poll or the
+            poll is closed unless for the creator and moderators.
+        """
+        return self._raw_data.get("numVoters", 0)
+
+    @property
+    def details(self) -> list[PollDetail]:
+        """Detailed list who voted for which option (only available for public closed polls)."""
+        return [PollDetail(i) for i in self._raw_data.get("details", [])]
