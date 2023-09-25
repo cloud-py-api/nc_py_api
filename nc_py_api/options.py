@@ -38,3 +38,10 @@ if str_val.lower() in ("false", "0"):
     NPA_NC_CERT = False
 elif str_val.lower() not in ("true", "1"):
     NPA_NC_CERT = str_val
+
+CHUNKED_UPLOAD_V2 = True
+"""Option to enable/disable **version 2** chunked upload(better Object Storages support).
+
+Additional information can be found in Nextcloud documentation:
+`Chunked file upload V2
+<https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/chunking.html#chunked-upload-v2>`_"""

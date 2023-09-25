@@ -1,6 +1,7 @@
 import os
 import sys
 from subprocess import PIPE, run
+from unittest import mock
 
 import nc_py_api
 
@@ -51,3 +52,20 @@ def test_xdebug_session(nc_any):
     nc_py_api.options.XDEBUG_SESSION = "12345"
     new_nc = nc_py_api.Nextcloud() if isinstance(nc_any, nc_py_api.Nextcloud) else nc_py_api.NextcloudApp()
     assert new_nc._session.adapter.cookies["XDEBUG_SESSION"] == "12345"
+
+
+@mock.patch("nc_py_api.options.CHUNKED_UPLOAD_V2", False)
+def test_chunked_upload(nc_any):
+    new_nc = nc_py_api.Nextcloud() if isinstance(nc_any, nc_py_api.Nextcloud) else nc_py_api.NextcloudApp()
+    assert new_nc._session.cfg.options.upload_chunk_v2 is False
+
+
+def test_chunked_upload2(nc_any):
+    new_nc = (
+        nc_py_api.Nextcloud(chunked_upload_v2=False)
+        if isinstance(nc_any, nc_py_api.Nextcloud)
+        else nc_py_api.NextcloudApp(chunked_upload_v2=False)
+    )
+    assert new_nc._session.cfg.options.upload_chunk_v2 is False
+    new_nc = nc_py_api.Nextcloud() if isinstance(nc_any, nc_py_api.Nextcloud) else nc_py_api.NextcloudApp()
+    assert new_nc._session.cfg.options.upload_chunk_v2 is True

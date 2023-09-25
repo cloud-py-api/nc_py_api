@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2 - 2023-09-2x]
+
+### Added
+
+- FilesAPI: [Chunked v2 upload](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/chunking.html#chunked-upload-v2) support, enabled by default.
+- New option to disable `chunked v2 upload` if there is need for that: `CHUNKED_UPLOAD_V2`
+
+### Changed
+
+- Default `chunk_size` argument is now 5Mb instead of 4Mb.
+
 ## [0.2.1 - 2023-09-14]
 
 ### Added
