@@ -7,7 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - FilesAPI: [Chunked v2 upload](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/chunking.html#chunked-upload-v2) support, enabled by default.
-- New option to disable `chunked v2 upload` if there is need for that: `CHUNKED_UPLOAD_V2`
+- New option to disable `chunked v2 upload` if there is a need for that: `CHUNKED_UPLOAD_V2`
+- TalkAPI: Poll API support(create_poll, get_poll, vote_poll, close_poll).
 
 ### Changed
 

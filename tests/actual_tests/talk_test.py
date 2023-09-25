@@ -253,3 +253,72 @@ def test_chat_bot_receive_message(nc_app):
     talk_bot_inst.callback_url = "invalid_url"
     with pytest.raises(RuntimeError):
         talk_bot_inst.send_message("message", 999999, token="sometoken")
+
+
+def test_create_close_poll(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        poll = nc_any.talk.create_poll(conversation, "When was this test written?", ["2000", "2023", "2030"])
+
+        def check_poll(closed: bool):
+            assert isinstance(poll.poll_id, int)
+            assert poll.question == "When was this test written?"
+            assert poll.options == ["2000", "2023", "2030"]
+            assert poll.max_votes == 1
+            assert poll.num_voters == 0
+            assert poll.hidden_results is True
+            assert poll.details == []
+            assert poll.closed is closed
+            assert poll.conversation_token == conversation.token
+            assert poll.actor_type == "users"
+            assert poll.actor_id == nc_any.user
+            assert isinstance(poll.actor_display_name, str)
+            assert poll.voted_self == []
+            assert poll.votes == []
+
+        check_poll(False)
+        poll = nc_any.talk.get_poll(poll)
+        check_poll(False)
+        poll = nc_any.talk.get_poll(poll.poll_id, conversation.token)
+        check_poll(False)
+        poll = nc_any.talk.close_poll(poll.poll_id, conversation.token)
+        check_poll(True)
+    finally:
+        nc_any.talk.delete_conversation(conversation)
+
+
+def test_vote_poll(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        poll = nc_any.talk.create_poll(
+            conversation, "what color is the grass", ["red", "green", "blue"], hidden_results=False, max_votes=3
+        )
+        assert poll.hidden_results is False
+        assert not poll.voted_self
+        poll = nc_any.talk.vote_poll([0, 2], poll)
+        assert poll.voted_self == [0, 2]
+        assert poll.votes == {
+            "option-0": 1,
+            "option-2": 1,
+        }
+        assert poll.num_voters == 1
+        poll = nc_any.talk.vote_poll([1], poll.poll_id, conversation)
+        assert poll.voted_self == [1]
+        assert poll.votes == {
+            "option-1": 1,
+        }
+        poll = nc_any.talk.close_poll(poll)
+        assert poll.closed is True
+        assert len(poll.details) == 1
+        assert poll.details[0].actor_id == nc_any.user
+        assert poll.details[0].actor_type == "users"
+        assert poll.details[0].option == 1
+        assert isinstance(poll.details[0].actor_display_name, str)
+    finally:
+        nc_any.talk.delete_conversation(conversation)
