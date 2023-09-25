@@ -17,6 +17,7 @@ from .talk import (
     ConversationType,
     MessageReactions,
     NotificationLevel,
+    Poll,
     TalkMessage,
 )
 
@@ -385,6 +386,82 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         bot_id = bot.bot_id if isinstance(bot, BotInfoBasic) else bot
         self._session.ocs("DELETE", self._ep_base + f"/api/v1/bot/{token}/{bot_id}")
+
+    def create_poll(
+        self,
+        conversation: typing.Union[Conversation, str],
+        question: str,
+        options: list[str],
+        hidden_results: bool = True,
+        max_votes: int = 1,
+    ) -> Poll:
+        """Creates a poll in a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param question: The question of the poll.
+        :param options: Array of strings with the voting options.
+        :param hidden_results: Are the results hidden until the poll is closed and then only the summary is published.
+        :param max_votes: The maximum amount of options a participant can vote for.
+        """
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        params = {
+            "question": question,
+            "options": options,
+            "resultMode": int(hidden_results),
+            "maxVotes": max_votes,
+        }
+        return Poll(self._session.ocs("POST", self._ep_base + f"/api/v1/poll/{token}", json=params), token)
+
+    def get_poll(self, poll: typing.Union[Poll, int], conversation: typing.Union[Conversation, str] = "") -> Poll:
+        """Get state or result of a poll.
+
+        :param poll: Poll ID or :py:class:`~nc_py_api.talk.Poll`.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        """
+        if isinstance(poll, Poll):
+            poll_id = poll.poll_id
+            token = poll.conversation_token
+        else:
+            poll_id = poll
+            token = conversation.token if isinstance(conversation, Conversation) else conversation
+        return Poll(self._session.ocs("GET", self._ep_base + f"/api/v1/poll/{token}/{poll_id}"), token)
+
+    def vote_poll(
+        self,
+        options_ids: list[int],
+        poll: typing.Union[Poll, int],
+        conversation: typing.Union[Conversation, str] = "",
+    ) -> Poll:
+        """Vote on a poll.
+
+        :param options_ids: The option IDs the participant wants to vote for.
+        :param poll: Poll ID or :py:class:`~nc_py_api.talk.Poll`.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        """
+        if isinstance(poll, Poll):
+            poll_id = poll.poll_id
+            token = poll.conversation_token
+        else:
+            poll_id = poll
+            token = conversation.token if isinstance(conversation, Conversation) else conversation
+        r = self._session.ocs(
+            "POST", self._ep_base + f"/api/v1/poll/{token}/{poll_id}", json={"optionIds": options_ids}
+        )
+        return Poll(r, token)
+
+    def close_poll(self, poll: typing.Union[Poll, int], conversation: typing.Union[Conversation, str] = "") -> Poll:
+        """Close a poll.
+
+        :param poll: Poll ID or :py:class:`~nc_py_api.talk.Poll`.
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        """
+        if isinstance(poll, Poll):
+            poll_id = poll.poll_id
+            token = poll.conversation_token
+        else:
+            poll_id = poll
+            token = conversation.token if isinstance(conversation, Conversation) else conversation
+        return Poll(self._session.ocs("DELETE", self._ep_base + f"/api/v1/poll/{token}/{poll_id}"), token)
 
     @staticmethod
     def _get_token(message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str]) -> str:

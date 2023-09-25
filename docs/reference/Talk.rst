@@ -63,3 +63,9 @@ Talk API
 
 .. autoclass:: nc_py_api.talk.BotInfoBasic
     :members:
+
+.. autoclass:: nc_py_api.talk.Poll
+    :members:
+
+.. autoclass:: nc_py_api.talk.PollDetail
+    :members:
