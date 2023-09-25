@@ -201,6 +201,15 @@ def test_file_upload_file(nc_any):
     assert nc_any.files.download("test_dir_tmp/test_file_upload_file") == content
 
 
+def test_file_upload_chunked_v2(nc_any):
+    with NamedTemporaryFile() as tmp_file:
+        tmp_file.seek(7 * 1024 * 1024)
+        tmp_file.write(b"\0")
+        tmp_file.flush()
+        nc_any.files.upload_stream("test_dir_tmp/test_file_upload_chunked_v2", tmp_file.name)
+    assert len(nc_any.files.download("test_dir_tmp/test_file_upload_chunked_v2")) == 7 * 1024 * 1024 + 1
+
+
 @pytest.mark.parametrize("file_name", ("chunked_zero", "chunked_zero/", "chunked_zero//"))
 def test_file_upload_chunked_zero_size(nc_any, file_name):
     nc_any.files.delete("/test_dir_tmp/test_file_upload_del", not_fail=True)

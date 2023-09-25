@@ -55,12 +55,14 @@ class RuntimeOptions:
     timeout: Optional[int]
     timeout_dav: Optional[int]
     _nc_cert: Union[str, bool]
+    upload_chunk_v2: bool
 
     def __init__(self, **kwargs):
         self.xdebug_session = kwargs.get("xdebug_session", options.XDEBUG_SESSION)
         self.timeout = kwargs.get("npa_timeout", options.NPA_TIMEOUT)
         self.timeout_dav = kwargs.get("npa_timeout_dav", options.NPA_TIMEOUT_DAV)
         self._nc_cert = kwargs.get("npa_nc_cert", options.NPA_NC_CERT)
+        self.upload_chunk_v2 = kwargs.get("chunked_upload_v2", options.CHUNKED_UPLOAD_V2)
 
     @property
     def nc_cert(self) -> Union[str, bool]:

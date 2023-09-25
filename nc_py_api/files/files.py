@@ -146,7 +146,7 @@ class FilesAPI:
         :param path: path to download file.
         :param fp: filename (string), pathlib.Path object or a file object.
             The object must implement the ``file.write`` method and be able to write binary data.
-        :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **4Mb**
+        :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **5Mb**
         """
         path = path.user_path if isinstance(path, FsNode) else path
         if isinstance(fp, (str, Path)):
@@ -179,7 +179,7 @@ class FilesAPI:
                 result_path,
                 "wb",
             ) as fp:
-                for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
+                for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                     fp.write(data_chunk)
         return Path(result_path)
 
@@ -201,14 +201,15 @@ class FilesAPI:
         :param path: file's upload path.
         :param fp: filename (string), pathlib.Path object or a file object.
             The object must implement the ``file.read`` method providing data with str or bytes type.
-        :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **4Mb**
+        :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **5Mb**
         """
         path = path.user_path if isinstance(path, FsNode) else path
+        chunk_size = kwargs.get("chunk_size", 5 * 1024 * 1024)
         if isinstance(fp, (str, Path)):
             with builtins.open(fp, "rb") as f:
-                return self.__upload_stream(path, f, **kwargs)
+                return self.__upload_stream(path, f, chunk_size)
         elif hasattr(fp, "read"):
-            return self.__upload_stream(path, fp, **kwargs)
+            return self.__upload_stream(path, fp, chunk_size)
         else:
             raise TypeError("`fp` must be a path to file or an object with `read` method.")
 
@@ -688,36 +689,48 @@ class FilesAPI:
         ) as response:  # type: ignore
             self._session.response_headers = response.headers
             check_error(response.status_code, f"download_stream: user={self._session.user}, path={path}")
-            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 4 * 1024 * 1024)):
+            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
 
-    def __upload_stream(self, path: str, fp, **kwargs) -> FsNode:
-        _dav_path = self._dav_get_obj_path(self._session.user, random_string(64), root_path="/uploads")
-        response = self._session.dav("MKCOL", _dav_path)
+    def __upload_stream(self, path: str, fp, chunk_size: int) -> FsNode:
+        _dav_path = self._dav_get_obj_path(self._session.user, "nc-py-api-" + random_string(56), root_path="/uploads")
+        _v2 = bool(self._session.cfg.options.upload_chunk_v2 and chunk_size >= 5 * 1024 * 1024)
+        full_path = self._dav_get_obj_path(self._session.user, path)
+        headers = {"Destination": self._session.cfg.dav_endpoint + full_path}
+        if _v2:
+            response = self._session.dav("MKCOL", _dav_path, headers=headers)
+        else:
+            response = self._session.dav("MKCOL", _dav_path)
         check_error(response.status_code)
         try:
-            chunk_size = kwargs.get("chunk_size", 4 * 1024 * 1024)
-            start_bytes = end_bytes = 0
+            start_bytes = end_bytes = chunk_number = 0
             while True:
                 piece = fp.read(chunk_size)
                 if not piece:
                     break
                 end_bytes = start_bytes + len(piece)
-                _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
-                response = self._session.dav("PUT", _dav_path + "/" + _filename, data=piece)
+                if _v2:
+                    response = self._session.dav(
+                        "PUT", _dav_path + "/" + str(chunk_number), data=piece, headers=headers
+                    )
+                else:
+                    _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
+                    response = self._session.dav("PUT", _dav_path + "/" + _filename, data=piece)
                 check_error(
-                    response.status_code, f"upload_stream: user={self._session.user}, path={path}, cur_size={end_bytes}"
+                    response.status_code,
+                    f"upload_stream(v={_v2}): user={self._session.user}, path={path}, cur_size={end_bytes}",
                 )
                 start_bytes = end_bytes
-            full_path = self._dav_get_obj_path(self._session.user, path)
-            headers = {"Destination": self._session.cfg.dav_endpoint + full_path}
+                chunk_number += 1
+
             response = self._session.dav(
                 "MOVE",
                 _dav_path + "/.file",
                 headers=headers,
             )
             check_error(
-                response.status_code, f"upload_stream: user={self._session.user}, path={path}, total_size={end_bytes}"
+                response.status_code,
+                f"upload_stream(v={_v2}): user={self._session.user}, path={path}, total_size={end_bytes}",
             )
             return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
         finally:
