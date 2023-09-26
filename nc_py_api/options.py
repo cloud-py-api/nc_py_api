@@ -39,7 +39,7 @@ if str_val.lower() in ("false", "0"):
 elif str_val.lower() not in ("true", "1"):
     NPA_NC_CERT = str_val
 
-CHUNKED_UPLOAD_V2 = True
+CHUNKED_UPLOAD_V2 = environ.get("CHUNKED_UPLOAD_V2", True)
 """Option to enable/disable **version 2** chunked upload(better Object Storages support).
 
 Additional information can be found in Nextcloud documentation:

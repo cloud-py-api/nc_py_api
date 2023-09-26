@@ -1,6 +1,8 @@
+from io import BytesIO
 from os import environ
 
 import pytest
+from PIL import Image
 
 from nc_py_api import Nextcloud, talk, talk_bot
 
@@ -320,5 +322,33 @@ def test_vote_poll(nc_any):
         assert poll.details[0].actor_type == "users"
         assert poll.details[0].option == 1
         assert isinstance(poll.details[0].actor_display_name, str)
+    finally:
+        nc_any.talk.delete_conversation(conversation)
+
+
+@pytest.mark.require_nc(major=27)
+def test_conversation_avatar(nc_any):
+    if nc_any.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+
+    conversation = nc_any.talk.create_conversation(talk.ConversationType.GROUP, "admin")
+    try:
+        assert conversation.is_custom_avatar is False
+        r = nc_any.talk.get_conversation_avatar(conversation)
+        assert isinstance(r, bytes)
+        im = Image.effect_mandelbrot((512, 512), (-3, -2.5, 2, 2.5), 100)
+        buffer = BytesIO()
+        im.save(buffer, format="PNG")
+        buffer.seek(0)
+        r = nc_any.talk.set_conversation_avatar(conversation, buffer.read())
+        assert r.is_custom_avatar is True
+        r = nc_any.talk.get_conversation_avatar(conversation)
+        assert isinstance(r, bytes)
+        r = nc_any.talk.delete_conversation_avatar(conversation)
+        assert r.is_custom_avatar is False
+        r = nc_any.talk.set_conversation_avatar(conversation, ("🫡", None))
+        assert r.is_custom_avatar is True
+        r = nc_any.talk.get_conversation_avatar(conversation, dark=True)
+        assert isinstance(r, bytes)
     finally:
         nc_any.talk.delete_conversation(conversation)
