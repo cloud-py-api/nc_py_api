@@ -152,8 +152,9 @@ class NcSessionBasic(ABC):
             self.adapter.close()
 
     def get_stream(self, path: str, params: Optional[dict] = None, **kwargs) -> Iterator[Response]:
+        headers = kwargs.pop("headers", {})
         return self._get_stream(
-            f"{quote(path)}?{urlencode(params, True)}" if params else quote(path), kwargs.get("headers", {}), **kwargs
+            f"{quote(path)}?{urlencode(params, True)}" if params else quote(path), headers=headers, **kwargs
         )
 
     def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
