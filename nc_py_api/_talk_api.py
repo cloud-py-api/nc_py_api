@@ -463,6 +463,55 @@ class _TalkAPI:
             token = conversation.token if isinstance(conversation, Conversation) else conversation
         return Poll(self._session.ocs("DELETE", self._ep_base + f"/api/v1/poll/{token}/{poll_id}"), token)
 
+    def set_conversation_avatar(
+        self,
+        conversation: typing.Union[Conversation, str],
+        avatar: typing.Union[bytes, tuple[str, typing.Union[str, None]]],
+    ) -> Conversation:
+        """Set image or emoji as avatar for the conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param avatar: Squared image with mimetype equal to PNG or JPEG or a tuple with emoji and optional
+            HEX color code(6 times ``0-9A-F``) without the leading ``#`` character.
+
+            .. note:: Color omit to fallback to the default bright/dark mode icon background color.
+        """
+        require_capabilities("spreed.features.avatar", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        if isinstance(avatar, bytes):
+            r = self._session.ocs("POST", self._ep_base + f"/api/v1/room/{token}/avatar", files={"file": avatar})
+        else:
+            r = self._session.ocs(
+                "POST",
+                self._ep_base + f"/api/v1/room/{token}/avatar/emoji",
+                json={
+                    "emoji": avatar[0],
+                    "color": avatar[1],
+                },
+            )
+        return Conversation(r)
+
+    def delete_conversation_avatar(self, conversation: typing.Union[Conversation, str]) -> Conversation:
+        """Delete conversation avatar.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        """
+        require_capabilities("spreed.features.avatar", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        return Conversation(self._session.ocs("DELETE", self._ep_base + f"/api/v1/room/{token}/avatar"))
+
+    def get_conversation_avatar(self, conversation: typing.Union[Conversation, str], dark=False) -> bytes:
+        """Get conversation avatar (binary).
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param dark: boolean indicating should be or not avatar fetched for dark theme.
+        """
+        require_capabilities("spreed.features.avatar", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        ep_suffix = "/dark" if dark else ""
+        response = self._session.ocs("GET", self._ep_base + f"/api/v1/room/{token}/avatar" + ep_suffix, not_parse=True)
+        return response.content
+
     @staticmethod
     def _get_token(message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str]) -> str:
         if not conversation and not isinstance(message, TalkMessage):

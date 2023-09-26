@@ -190,6 +190,7 @@ class NcSessionBasic(ABC):
         url_params = f"{self.cfg.endpoint}{path_params}"
         info = f"request: method={method}, url={url_params}"
         nested_req = kwargs.pop("nested_req", False)
+        not_parse = kwargs.pop("not_parse", False)
         try:
             timeout = kwargs.pop("timeout", self.cfg.options.timeout)
             if method == "GET":
@@ -203,6 +204,8 @@ class NcSessionBasic(ABC):
 
         self.response_headers = response.headers
         check_error(response.status_code, info)
+        if not_parse:
+            return response
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
