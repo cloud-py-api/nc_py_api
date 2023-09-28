@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- TalkAPI:
+  * `send_file` to easy send `FsNode` to Talk chat.
+  * `receive_messages` can return the `TalkFileMessage` subclass of usual `TalkMessage` with additional functionality.
 - NextcloudApp: The `ex_app.verify_version` function to simply check whether the application has been updated.
 
 ### Changed

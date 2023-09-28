@@ -6,6 +6,8 @@ import email.utils
 import enum
 import typing
 
+from .. import _misc
+
 
 @dataclasses.dataclass
 class FsNodeInfo:
@@ -216,6 +218,26 @@ class FilePermissions(enum.IntFlag):
     """Access to re-share object(s)"""
 
 
+def permissions_to_str(permissions: int, is_dir: bool = False) -> str:
+    """Converts integer permissions to string permissions.
+
+    :param permissions: concatenation of ``FilePermissions`` integer flags.
+    :param is_dir: Flag indicating is permissions related to the directory object or not.
+    """
+    r = ""
+    if permissions & FilePermissions.PERMISSION_SHARE:
+        r += "R"
+    if permissions & FilePermissions.PERMISSION_READ:
+        r += "G"
+    if permissions & FilePermissions.PERMISSION_DELETE:
+        r += "D"
+    if permissions & FilePermissions.PERMISSION_UPDATE:
+        r += "NV" if is_dir else "NVW"
+    if is_dir and permissions & FilePermissions.PERMISSION_CREATE:
+        r += "CK"
+    return r
+
+
 @dataclasses.dataclass
 class SystemTag:
     """Nextcloud System Tag."""
@@ -242,3 +264,113 @@ class SystemTag:
     def user_assignable(self) -> bool:
         """Flag indicating if User can assign this Tag."""
         return bool(self._raw_data.get("oc:user-assignable", "false").lower() == "true")
+
+
+class ShareType(enum.IntEnum):
+    """Type of the object that will receive share."""
+
+    TYPE_USER = 0
+    """Share to the user"""
+    TYPE_GROUP = 1
+    """Share to the group"""
+    TYPE_LINK = 3
+    """Share by link"""
+    TYPE_EMAIL = 4
+    """Share by the email"""
+    TYPE_REMOTE = 6
+    """Share to the Federation"""
+    TYPE_CIRCLE = 7
+    """Share to the Nextcloud Circle"""
+    TYPE_GUEST = 8
+    """Share to `Guest`"""
+    TYPE_REMOTE_GROUP = 9
+    """Share to the Federation group"""
+    TYPE_ROOM = 10
+    """Share to the Talk room"""
+    TYPE_DECK = 11
+    """Share to the Nextcloud Deck"""
+    TYPE_SCIENCE_MESH = 15
+    """Share to the Reva instance(Science Mesh)"""
+
+
+class Share:
+    """Information about Share."""
+
+    def __init__(self, raw_data: dict):
+        self.raw_data = raw_data
+
+    @property
+    def share_id(self) -> int:
+        """Unique ID of the share."""
+        return int(self.raw_data["id"])
+
+    @property
+    def share_type(self) -> ShareType:
+        """Type of the share."""
+        return ShareType(int(self.raw_data["share_type"]))
+
+    @property
+    def share_with(self) -> str:
+        """To whom Share was created."""
+        return self.raw_data["share_with"]
+
+    @property
+    def permissions(self) -> FilePermissions:
+        """Recipient permissions."""
+        return FilePermissions(int(self.raw_data["permissions"]))
+
+    @property
+    def url(self) -> str:
+        """URL at which Share is avalaible."""
+        return self.raw_data.get("url", "")
+
+    @property
+    def path(self) -> str:
+        """Share path relative to the user's root directory."""
+        return self.raw_data.get("path", "").lstrip("/")
+
+    @property
+    def label(self) -> str:
+        """Label for the Shared object."""
+        return self.raw_data.get("label", "")
+
+    @property
+    def note(self) -> str:
+        """Note for the Shared object."""
+        return self.raw_data.get("note", "")
+
+    @property
+    def mimetype(self) -> str:
+        """Mimetype of the Shared object."""
+        return self.raw_data.get("mimetype", "")
+
+    @property
+    def share_owner(self) -> str:
+        """Share's creator ID."""
+        return self.raw_data.get("uid_owner", "")
+
+    @property
+    def file_owner(self) -> str:
+        """File/directory owner ID."""
+        return self.raw_data.get("uid_file_owner", "")
+
+    @property
+    def password(self) -> str:
+        """Password to access share."""
+        return self.raw_data.get("password", "")
+
+    @property
+    def send_password_by_talk(self) -> bool:
+        """Flag indicating was password send by Talk."""
+        return self.raw_data.get("send_password_by_talk", False)
+
+    @property
+    def expire_date(self) -> datetime.datetime:
+        """Share expiration time."""
+        return _misc.nc_iso_time_to_datetime(self.raw_data.get("expiration", ""))
+
+    def __str__(self):
+        return (
+            f"{self.share_type.name}: `{self.path}` with id={self.share_id}"
+            f" from {self.share_owner} to {self.share_with}"
+        )

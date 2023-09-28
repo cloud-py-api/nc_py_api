@@ -10,6 +10,7 @@ from ._misc import (
     require_capabilities,
 )
 from ._session import NcSessionBasic
+from .files import FsNode, Share, ShareType
 from .talk import (
     BotInfo,
     BotInfoBasic,
@@ -18,6 +19,7 @@ from .talk import (
     MessageReactions,
     NotificationLevel,
     Poll,
+    TalkFileMessage,
     TalkMessage,
 )
 
@@ -191,7 +193,7 @@ class _TalkAPI:
         """Deletes a conversation.
 
         .. note:: Deleting a conversation that is the parent of breakout rooms, will also delete them.
-            ``ONE_TO_ONE`` conversations can not be deleted for them
+            ``ONE_TO_ONE`` conversations cannot be deleted for them
             :py:class:`~nc_py_api._talk_api._TalkAPI.leave_conversation` should be used.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -244,6 +246,23 @@ class _TalkAPI:
         r = self._session.ocs("POST", self._ep_base + f"/api/v1/chat/{token}", json=params)
         return TalkMessage(r)
 
+    def send_file(
+        self,
+        path: typing.Union[str, FsNode],
+        conversation: typing.Union[Conversation, str] = "",
+    ) -> tuple[Share, str]:
+        require_capabilities("files_sharing.api_enabled", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        reference_id = hashlib.sha256(random_string(32).encode("UTF-8")).hexdigest()
+        params = {
+            "shareType": ShareType.TYPE_ROOM,
+            "shareWith": token,
+            "path": path.user_path if isinstance(path, FsNode) else path,
+            "referenceId": reference_id,
+        }
+        r = self._session.ocs("POST", "/ocs/v1.php/apps/files_sharing/api/v1/shares", json=params)
+        return Share(r), reference_id
+
     def receive_messages(
         self,
         conversation: typing.Union[Conversation, str],
@@ -268,7 +287,7 @@ class _TalkAPI:
             "noStatusUpdate": int(no_status_update),
         }
         result = self._session.ocs("GET", self._ep_base + f"/api/v1/chat/{token}", params=params)
-        return [TalkMessage(i) for i in result]
+        return [TalkFileMessage(i, self._session.user) if i["message"] == "{file}" else TalkMessage(i) for i in result]
 
     def delete_message(
         self, message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str] = ""

@@ -9,6 +9,10 @@ Talk API
     :members:
     :inherited-members:
 
+.. autoclass:: nc_py_api.talk.TalkFileMessage
+    :members:
+    :inherited-members:
+
 .. autoclass:: nc_py_api._talk_api._TalkAPI
     :members:
 

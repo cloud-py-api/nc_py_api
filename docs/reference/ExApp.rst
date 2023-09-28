@@ -1,7 +1,7 @@
 .. py:currentmodule:: nc_py_api.ex_app
 
-AppAPI Application
-==================
+External Application
+====================
 
 Constants
 ---------

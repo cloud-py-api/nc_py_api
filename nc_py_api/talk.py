@@ -2,8 +2,10 @@
 
 import dataclasses
 import enum
+import os
 import typing
 
+from . import files as _files
 from .user_status import _UserStatus
 
 
@@ -278,6 +280,33 @@ class TalkMessage:
     def markdown(self) -> bool:
         """Whether the message should be rendered as markdown or shown as plain text."""
         return self._raw_data.get("markdown", False)
+
+
+class TalkFileMessage(TalkMessage):
+    """Subclass of Talk Message representing message-containing file."""
+
+    def __init__(self, raw_data: dict, user_id: str):
+        super().__init__(raw_data)
+        self._user_id = user_id
+
+    def to_fs_node(self) -> _files.FsNode:
+        """Returns usual :py:class:`~nc_py_api.files.FsNode` created from this class."""
+        _file_params: dict = self.message_parameters["file"]
+        user_path = _file_params["path"].rstrip("/")
+        is_dir = bool(_file_params["mimetype"].lower() == "httpd/unix-directory")
+        if is_dir:
+            user_path += "/"
+        full_path = os.path.join(f"files/{self._user_id}", user_path.lstrip("/"))
+        permissions = _files.permissions_to_str(_file_params["permissions"], is_dir)
+        return _files.FsNode(
+            full_path,
+            etag=_file_params["etag"],
+            size=_file_params["size"],
+            content_length=0 if is_dir else _file_params["size"],
+            permissions=permissions,
+            fileid=_file_params["id"],
+            mimetype=_file_params["mimetype"],
+        )
 
 
 @dataclasses.dataclass(init=False)

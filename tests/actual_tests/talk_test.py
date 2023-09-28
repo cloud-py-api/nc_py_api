@@ -4,7 +4,7 @@ from os import environ
 import pytest
 from PIL import Image
 
-from nc_py_api import Nextcloud, talk, talk_bot
+from nc_py_api import Nextcloud, files, talk, talk_bot
 
 
 def test_conversation_create_delete(nc):
@@ -352,3 +352,39 @@ def test_conversation_avatar(nc_any):
         assert isinstance(r, bytes)
     finally:
         nc_any.talk.delete_conversation(conversation)
+
+
+def test_send_receive_file(nc_client):
+    if nc_client.talk.available is False:
+        pytest.skip("Nextcloud Talk is not installed")
+
+    nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
+    conversation = nc_client.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, environ["TEST_USER_ID"])
+    try:
+        r, reference_id = nc_client.talk.send_file("/test_dir/subdir/test_12345_text.txt", conversation)
+        assert isinstance(reference_id, str)
+        assert isinstance(r, files.Share)
+        for _ in range(10):
+            m = nc_second_user.talk.receive_messages(conversation, limit=1)
+            if m and isinstance(m[0], talk.TalkFileMessage):
+                break
+        m_t: talk.TalkFileMessage = m[0]  # noqa
+        fs_node = m_t.to_fs_node()
+        assert nc_second_user.files.download(fs_node) == b"12345"
+        assert m_t.reference_id == reference_id
+        assert fs_node.is_dir is False
+        # test with directory
+        directory = nc_client.files.by_path("/test_dir/subdir/")
+        r, reference_id = nc_client.talk.send_file(directory, conversation)
+        assert isinstance(reference_id, str)
+        assert isinstance(r, files.Share)
+        for _ in range(10):
+            m = nc_second_user.talk.receive_messages(conversation, limit=1)
+            if m and m[0].reference_id == reference_id:
+                break
+        m_t: talk.TalkFileMessage = m[0]  # noqa
+        assert m_t.reference_id == reference_id
+        fs_node = m_t.to_fs_node()
+        assert fs_node.is_dir is True
+    finally:
+        nc_client.talk.leave_conversation(conversation.token)

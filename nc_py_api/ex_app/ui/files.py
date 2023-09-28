@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
 from ..._session import NcSessionApp
-from ...files import FilePermissions, FsNode
+from ...files import FsNode, permissions_to_str
 
 
 class UiActionFileInfo(BaseModel):
@@ -51,16 +51,7 @@ class UiActionFileInfo(BaseModel):
         file_id = str(self.fileId).rjust(8, "0")
 
         permissions = "S" if self.shareOwnerId else ""
-        if self.permissions & FilePermissions.PERMISSION_SHARE:
-            permissions += "R"
-        if self.permissions & FilePermissions.PERMISSION_READ:
-            permissions += "G"
-        if self.permissions & FilePermissions.PERMISSION_DELETE:
-            permissions += "D"
-        if self.permissions & FilePermissions.PERMISSION_UPDATE:
-            permissions += "NV" if is_dir else "NVW"
-        if is_dir and self.permissions & FilePermissions.PERMISSION_CREATE:
-            permissions += "CK"
+        permissions += permissions_to_str(self.permissions, is_dir)
         return FsNode(
             full_path,
             etag=self.etag,
