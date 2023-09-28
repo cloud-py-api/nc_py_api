@@ -18,7 +18,7 @@
 	<dependencies>
 		<nextcloud min-version="27" max-version="28"/>
 	</dependencies>
-	<ex-app>
+	<external-app>
 		<docker-install>
 			<registry>ghcr.io</registry>
 			<image>cloud-py-api/skeleton</image>
@@ -31,6 +31,6 @@
 			</optional>
 		</scopes>
 		<protocol>http</protocol>
-		<system>0</system>
-	</ex-app>
+		<system>false</system>
+	</external-app>
 </info>

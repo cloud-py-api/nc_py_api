@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0 - 2023-09-28]
+
+### Added
+
+- NextcloudApp: The `ex_app.verify_version` function to simply check whether the application has been updated.
+
+### Changed
+
+- NextcloudApp: Updated `info.xml` in examples to reflect upcoming changes in the [AppStore](https://github.com/nextcloud/appstore/pull/1145)
+
 ## [0.2.2 - 2023-09-26]
 
 ### Added
