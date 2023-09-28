@@ -3,7 +3,7 @@
 Nextcloud
 =========
 
-Two base classes for working with NextCloud. The first for working as a client, the second as an application.
+Two base classes for working with Nextcloud. The first for working as a client, the second as an application.
 
 All required functionality is incorporated in them, they contains all other classes required to work with the Nextcloud.
 

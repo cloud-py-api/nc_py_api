@@ -1,7 +1,7 @@
 .. py:currentmodule:: nc_py_api.ex_app
 
-External Application
-====================
+AppAPI Application
+==================
 
 Constants
 ---------
@@ -17,6 +17,8 @@ Special functions
 
 .. autofunction:: persistent_storage
 
+.. autofunction:: verify_version
+
 User Interface(UI)
 ------------------
 
@@ -26,7 +28,7 @@ UI methods should be accessed with the help of :class:`~nc_py_api.nextcloud.Next
 
     # this is an example, in most cases you will get `NextcloudApp` class instance as input param.
     nc = NextcloudApp()
-    nc.ui.files_dropdown_menu.register(...)
+    nc.ex_app.ui.files_dropdown_menu.register(...)
 
 .. autoclass:: nc_py_api.ex_app.ui.ui.UiApi
     :members:

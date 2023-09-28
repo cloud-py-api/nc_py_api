@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from nc_py_api import NextcloudException
+from nc_py_api import NextcloudException, ex_app
 from nc_py_api._deffered_error import DeferredError  # noqa
 from nc_py_api._exceptions import check_error  # noqa
 from nc_py_api._misc import nc_iso_time_to_datetime, require_capabilities  # noqa
@@ -74,3 +74,20 @@ def test_persist_transformers_cache(nc_app):
     from nc_py_api.ex_app import persist_transformers_cache  # noqa
 
     assert os.environ["TRANSFORMERS_CACHE"]
+    os.environ.pop("TRANSFORMERS_CACHE")
+
+
+def test_verify_version(nc_app):
+    version_file_path = os.path.join(ex_app.persistent_storage(), "_version.info")
+    if os.path.exists(version_file_path):
+        os.remove(version_file_path)
+    r = ex_app.verify_version(False)
+    assert not os.path.getsize(version_file_path)
+    assert isinstance(r, tuple)
+    assert r[0] == ""
+    assert r[1] == os.environ["APP_VERSION"]
+    r = ex_app.verify_version(True)
+    assert os.path.getsize(version_file_path)
+    assert r[0] == ""
+    assert r[1] == os.environ["APP_VERSION"]
+    assert ex_app.verify_version() is None
