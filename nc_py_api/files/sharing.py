@@ -1,120 +1,9 @@
 """Nextcloud API for working with the files shares."""
-import datetime
-import enum
+
 import typing
 
 from .. import _misc, _session
-from . import FilePermissions, FsNode
-
-
-class ShareType(enum.IntEnum):
-    """Type of the object that will receive share."""
-
-    TYPE_USER = 0
-    """Share to the user"""
-    TYPE_GROUP = 1
-    """Share to the group"""
-    TYPE_LINK = 3
-    """Share by link"""
-    TYPE_EMAIL = 4
-    """Share by the email"""
-    TYPE_REMOTE = 6
-    """Share to the Federation"""
-    TYPE_CIRCLE = 7
-    """Share to the Nextcloud Circle"""
-    TYPE_GUEST = 8
-    """Share to `Guest`"""
-    TYPE_REMOTE_GROUP = 9
-    """Share to the Federation group"""
-    TYPE_ROOM = 10
-    """Share to the Talk room"""
-    TYPE_DECK = 11
-    """Share to the Nextcloud Deck"""
-    TYPE_SCIENCE_MESH = 15
-    """Share to the Reva instance(Science Mesh)"""
-
-
-class Share:
-    """Information about Share."""
-
-    def __init__(self, raw_data: dict):
-        self.raw_data = raw_data
-
-    @property
-    def share_id(self) -> int:
-        """Unique ID of the share."""
-        return int(self.raw_data["id"])
-
-    @property
-    def share_type(self) -> ShareType:
-        """Type of the share."""
-        return ShareType(int(self.raw_data["share_type"]))
-
-    @property
-    def share_with(self) -> str:
-        """To whom Share was created."""
-        return self.raw_data["share_with"]
-
-    @property
-    def permissions(self) -> FilePermissions:
-        """Recipient permissions."""
-        return FilePermissions(int(self.raw_data["permissions"]))
-
-    @property
-    def url(self) -> str:
-        """URL at which Share is avalaible."""
-        return self.raw_data.get("url", "")
-
-    @property
-    def path(self) -> str:
-        """Share path relative to the user's root directory."""
-        return self.raw_data.get("path", "").lstrip("/")
-
-    @property
-    def label(self) -> str:
-        """Label for the Shared object."""
-        return self.raw_data.get("label", "")
-
-    @property
-    def note(self) -> str:
-        """Note for the Shared object."""
-        return self.raw_data.get("note", "")
-
-    @property
-    def mimetype(self) -> str:
-        """Mimetype of the Shared object."""
-        return self.raw_data.get("mimetype", "")
-
-    @property
-    def share_owner(self) -> str:
-        """Share's creator ID."""
-        return self.raw_data.get("uid_owner", "")
-
-    @property
-    def file_owner(self) -> str:
-        """File/directory owner ID."""
-        return self.raw_data.get("uid_file_owner", "")
-
-    @property
-    def password(self) -> str:
-        """Password to access share."""
-        return self.raw_data.get("password", "")
-
-    @property
-    def send_password_by_talk(self) -> bool:
-        """Flag indicating was password send by Talk."""
-        return self.raw_data.get("send_password_by_talk", False)
-
-    @property
-    def expire_date(self) -> datetime.datetime:
-        """Share expiration time."""
-        return _misc.nc_iso_time_to_datetime(self.raw_data.get("expiration", ""))
-
-    def __str__(self):
-        return (
-            f"{self.share_type.name}: `{self.path}` with id={self.share_id}"
-            f" from {self.share_owner} to {self.share_with}"
-        )
+from . import FilePermissions, FsNode, Share, ShareType
 
 
 class _FilesSharingAPI:
@@ -193,9 +82,8 @@ class _FilesSharingAPI:
             * ``label`` - string with label, if any. default = ``""``
         """
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
-        path = path.user_path if isinstance(path, FsNode) else path
         params = {
-            "path": path,
+            "path": path.user_path if isinstance(path, FsNode) else path,
             "shareType": int(share_type),
         }
         if permissions is not None:
