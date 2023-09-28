@@ -205,7 +205,7 @@ class _TalkAPI:
         """Removes yourself from the conversation.
 
         .. note:: When the participant is a moderator or owner and there are no other moderators or owners left,
-            participant can not leave conversation.
+            participant cannot leave conversation.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
         """
@@ -419,7 +419,7 @@ class _TalkAPI:
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
         :param question: The question of the poll.
         :param options: Array of strings with the voting options.
-        :param hidden_results: Are the results hidden until the poll is closed and then only the summary is published.
+        :param hidden_results: Should results be hidden until the poll is closed and then only the summary is published.
         :param max_votes: The maximum amount of options a participant can vote for.
         """
         token = conversation.token if isinstance(conversation, Conversation) else conversation
@@ -493,7 +493,7 @@ class _TalkAPI:
         :param avatar: Squared image with mimetype equal to PNG or JPEG or a tuple with emoji and optional
             HEX color code(6 times ``0-9A-F``) without the leading ``#`` character.
 
-            .. note:: Color omit to fallback to the default bright/dark mode icon background color.
+            .. note:: When color omitted, fallback will be to the default bright/dark mode icon background color.
         """
         require_capabilities("spreed.features.avatar", self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
