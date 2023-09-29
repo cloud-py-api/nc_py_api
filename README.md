@@ -27,7 +27,7 @@ Python library that provides a robust and well-documented API that allows develo
 |-----------------------|:------------:|:------------:|:------------:|
 | Calendar              |      ✅       |      ✅       |      ✅       |
 | File System & Tags    |      ✅       |      ✅       |      ✅       |
-| Nextcloud Talk**      |      ✅       |      ✅       |      ✅       |
+| Nextcloud Talk        |      ✅       |      ✅       |      ✅       |
 | Notifications         |      ✅       |      ✅       |      ✅       |
 | Shares                |      ✅       |      ✅       |      ✅       |
 | Users & Groups        |      ✅       |      ✅       |      ✅       |
@@ -38,7 +38,6 @@ Python library that provides a robust and well-documented API that allows develo
 | SpeechToText*         |     N/A      |      ❌       |      ❌       |
 
 &ast;_available only for NextcloudApp_<br>
-&ast;&ast; _work is in progress, not all APIs are described yet._
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
