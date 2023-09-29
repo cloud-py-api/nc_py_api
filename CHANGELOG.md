@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1 - 2023-09-30]
+
+### Added
+
+- CalendarAPI with the help of [caldav](https://pypi.org/project/caldav/) package.
+
 ## [0.3.0 - 2023-09-28]
 
 ### Added

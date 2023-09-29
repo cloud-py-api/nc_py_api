@@ -14,6 +14,7 @@ from ._talk_api import _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI
 from .apps import _AppsAPI
+from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
@@ -29,6 +30,8 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for App management"""
     activity: _ActivityAPI
     """Activity Application API"""
+    cal: _CalendarAPI
+    """Nextcloud Calendar API"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
     preferences: PreferencesAPI
@@ -50,6 +53,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     def _init_api(self, session: NcSessionBasic):
         self.apps = _AppsAPI(session)
         self.activity = _ActivityAPI(session)
+        self.cal = _CalendarAPI(session)
         self.files = FilesAPI(session)
         self.preferences = PreferencesAPI(session)
         self.notifications = _NotificationsAPI(session)

@@ -240,7 +240,13 @@ class NcSessionBasic(ABC):
         elif json is not None:
             headers.update({"Content-Type": "application/json"})
             data_bytes = dumps(json).encode("utf-8")
-        return self._dav(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
+        return self._dav(
+            method,
+            quote(self.cfg.dav_url_suffix + path) if isinstance(path, str) else path,
+            headers,
+            data_bytes,
+            **kwargs,
+        )
 
     def dav_stream(
         self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs
@@ -255,7 +261,12 @@ class NcSessionBasic(ABC):
         self.init_adapter()
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
         result = self.adapter.request(
-            method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
+            method,
+            self.cfg.endpoint + path if isinstance(path, str) else str(path),
+            headers=headers,
+            content=data,
+            timeout=timeout,
+            **kwargs,
         )
         self.response_headers = result.headers
         return result
