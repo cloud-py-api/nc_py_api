@@ -13,4 +13,5 @@ Reference
    Exceptions
    Talk
    TalkBot
+   Calendar
    Session

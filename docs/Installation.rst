@@ -13,6 +13,10 @@ To use in the Nextcloud Application mode install it with additional ``app`` depe
 
     python -m pip install --upgrade "nc_py_api[app]"
 
+To use **Calendar API** just add **calendar** dependency, and command will look like this :command:`pip`::
+
+    python -m pip install --upgrade "nc_py_api[app,calendar]"
+
 To join the development of **nc_py_api** api install development dependencies with :command:`pip`::
 
     python -m pip install --upgrade "nc_py_api[dev]"
