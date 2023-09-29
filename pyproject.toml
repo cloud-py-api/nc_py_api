@@ -64,8 +64,10 @@ calendar = [
   "caldav==1.3.6",
 ]
 dev = [
+  "nc_py_api[bench,calendar,dev-min]",
+]
+dev-min = [
   "coverage",
-  "nc_py_api[bench,calendar]",
   "pillow",
   "pre-commit",
   "pylint",

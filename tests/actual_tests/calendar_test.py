@@ -3,11 +3,11 @@ import datetime
 import pytest
 
 
-def test_create_delete(nc_client):
-    if nc_client.cal.available is False:
+def test_create_delete(nc):
+    if nc.cal.available is False:
         pytest.skip("``caldav`` package is not installed")
 
-    principal = nc_client.cal.principal()
+    principal = nc.cal.principal()
     calendars = principal.calendars()
     assert calendars
     calendar = calendars[0]
