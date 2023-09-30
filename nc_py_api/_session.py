@@ -1,5 +1,5 @@
 """Session represents one connection to Nextcloud. All related stuff for these live here."""
-
+import typing
 from abc import ABC, abstractmethod
 from base64 import b64encode
 from collections.abc import Iterator
@@ -164,6 +164,24 @@ class NcSessionBasic(ABC):
             "GET", f"{self.cfg.endpoint}{path_params}", headers=headers, timeout=timeout, **kwargs
         )
 
+    def request_json(
+        self,
+        method: str,
+        path: str,
+        params: Optional[dict] = None,
+        data: Optional[Union[bytes, str]] = None,
+        json: Optional[Union[dict, list]] = None,
+        **kwargs,
+    ) -> dict:
+        method = method.upper()
+        if params is None:
+            params = {}
+        params.update({"format": "json"})
+        headers = kwargs.pop("headers", {})
+        data_bytes = self.__data_to_bytes(headers, data, json)
+        r = self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data_bytes, not_parse=True)
+        return loads(r.text) if r.status_code != 304 else {}
+
     def ocs(
         self,
         method: str,
@@ -178,12 +196,7 @@ class NcSessionBasic(ABC):
             params = {}
         params.update({"format": "json"})
         headers = kwargs.pop("headers", {})
-        data_bytes = None
-        if data is not None:
-            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        elif json is not None:
-            headers.update({"Content-Type": "application/json"})
-            data_bytes = dumps(json).encode("utf-8")
+        data_bytes = self.__data_to_bytes(headers, data, json)
         return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data=data_bytes, **kwargs)
 
     def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
@@ -234,12 +247,7 @@ class NcSessionBasic(ABC):
         **kwargs,
     ) -> Response:
         headers = kwargs.pop("headers", {})
-        data_bytes = None
-        if data is not None:
-            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        elif json is not None:
-            headers.update({"Content-Type": "application/json"})
-            data_bytes = dumps(json).encode("utf-8")
+        data_bytes = self.__data_to_bytes(headers, data, json)
         return self._dav(
             method,
             quote(self.cfg.dav_url_suffix + path) if isinstance(path, str) else path,
@@ -320,6 +328,17 @@ class NcSessionBasic(ABC):
     def ae_url(self) -> str:
         """Return base url for the App Ecosystem endpoints."""
         return "/ocs/v1.php/apps/app_api/api/v1"
+
+    @staticmethod
+    def __data_to_bytes(
+        headers: dict, data: Optional[Union[bytes, str]] = None, json: Optional[Union[dict, list]] = None
+    ) -> typing.Optional[bytes]:
+        if data is not None:
+            return data.encode("UTF-8") if isinstance(data, str) else data
+        if json is not None:
+            headers.update({"Content-Type": "application/json"})
+            return dumps(json).encode("utf-8")
+        return None
 
 
 class NcSession(NcSessionBasic):

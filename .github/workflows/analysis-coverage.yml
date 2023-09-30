@@ -513,6 +513,13 @@ jobs:
           ref: "master"
           path: apps/notifications
 
+      - name: Checkout Notes
+        uses: actions/checkout@v4
+        with:
+          repository: nextcloud/notes
+          ref: "main"
+          path: apps/notes
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
