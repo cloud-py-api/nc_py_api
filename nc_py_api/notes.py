@@ -133,7 +133,7 @@ class _NotesAPI:
         }
         clear_from_params_empty(list(params.keys()), params)
         headers = {"If-None-Match": self.last_etag} if self.last_etag and etag else {}
-        r = self._session.request_json("GET", self._ep_base + "/notes", json=params, headers=headers)
+        r = self._session.request_json("GET", self._ep_base + "/notes", params=params, headers=headers)
         self.last_etag = self._session.response_headers["ETag"]
         return [Note(i) for i in r]
 
@@ -141,7 +141,7 @@ class _NotesAPI:
         """Get updated information about :py:class:`~nc_py_api.notes.Note`."""
         require_capabilities("notes", self._session.capabilities)
         r = self._session.request_json(
-            "GET", self._ep_base + f"/notes/{note.note_id}", headers={"If-None-Match": note.etag}
+            "GET", self._ep_base + f"/notes/{note.note_id}", headers={"If-None-Match": f'"{note.etag}"'}
         )
         return Note(r) if r else note
 
@@ -179,7 +179,7 @@ class _NotesAPI:
         ``overwrite`` specifies should be or not the Note updated even if it was changed on server(has different ETag).
         """
         require_capabilities("notes", self._session.capabilities)
-        headers = {"If-None-Match": note.etag} if overwrite else {}
+        headers = {"If-Match": f'"{note.etag}"'} if not overwrite else {}
         params = {
             "title": title,
             "content": content,

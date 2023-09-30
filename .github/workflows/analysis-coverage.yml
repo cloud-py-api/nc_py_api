@@ -531,6 +531,7 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
+          ./occ app:enable notes
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
