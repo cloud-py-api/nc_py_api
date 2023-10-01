@@ -149,9 +149,7 @@ jobs:
 
       - name: Install Talk
         working-directory: apps/spreed
-        run: |
-          make dev-setup
-          make build-js
+        run: make dev-setup
 
       - name: Enable Talk
         run: php occ app:enable spreed
@@ -304,9 +302,7 @@ jobs:
 
       - name: Install Talk
         working-directory: apps/spreed
-        run: |
-          make dev-setup
-          make build-js
+        run: make dev-setup
 
       - name: Enable Talk
         run: php occ app:enable spreed
@@ -570,9 +566,7 @@ jobs:
 
       - name: Install Talk
         working-directory: apps/spreed
-        run: |
-          make dev-setup
-          make build-js
+        run: make dev-setup
 
       - name: Enable Talk
         run: php occ app:enable spreed
@@ -700,7 +694,6 @@ jobs:
         working-directory: apps/spreed
         run: |
           make dev-setup
-          make build-js
 
       - name: Enable Talk
         run: php occ app:enable spreed
@@ -783,6 +776,13 @@ jobs:
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
+      - name: Checkout Notes
+        uses: actions/checkout@v4
+        with:
+          repository: nextcloud/notes
+          ref: "main"
+          path: apps/notes
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -795,6 +795,7 @@ jobs:
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
           ./occ app:enable activity
+          ./occ app:enable notes
           php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -838,9 +839,7 @@ jobs:
 
       - name: Install Talk
         working-directory: apps/spreed
-        run: |
-          make dev-setup
-          make build-js
+        run: make dev-setup
 
       - name: Enable Talk
         run: php occ app:enable spreed
