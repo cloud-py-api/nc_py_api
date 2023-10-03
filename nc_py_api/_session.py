@@ -1,5 +1,5 @@
 """Session represents one connection to Nextcloud. All related stuff for these live here."""
-
+import typing
 from abc import ABC, abstractmethod
 from base64 import b64encode
 from collections.abc import Iterator
@@ -132,6 +132,7 @@ class AppConfig(BasicConfig):
 
 class NcSessionBasic(ABC):
     adapter: Client
+    adapter_dav: Client
     cfg: BasicConfig
     user: str
     custom_headers: dict
@@ -145,11 +146,14 @@ class NcSessionBasic(ABC):
         self.custom_headers = kwargs.get("headers", {})
         self.limits = Limits(max_keepalive_connections=20, max_connections=20, keepalive_expiry=60.0)
         self.init_adapter()
+        self.init_adapter_dav()
         self.response_headers = HttpxHeaders()
 
     def __del__(self):
         if hasattr(self, "adapter") and self.adapter:
             self.adapter.close()
+        if hasattr(self, "adapter_dav") and self.adapter_dav:
+            self.adapter_dav.close()
 
     def get_stream(self, path: str, params: Optional[dict] = None, **kwargs) -> Iterator[Response]:
         headers = kwargs.pop("headers", {})
@@ -163,6 +167,24 @@ class NcSessionBasic(ABC):
         return self.adapter.stream(
             "GET", f"{self.cfg.endpoint}{path_params}", headers=headers, timeout=timeout, **kwargs
         )
+
+    def request_json(
+        self,
+        method: str,
+        path: str,
+        params: Optional[dict] = None,
+        data: Optional[Union[bytes, str]] = None,
+        json: Optional[Union[dict, list]] = None,
+        **kwargs,
+    ) -> dict:
+        method = method.upper()
+        if params is None:
+            params = {}
+        params.update({"format": "json"})
+        headers = kwargs.pop("headers", {})
+        data_bytes = self.__data_to_bytes(headers, data, json)
+        r = self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data_bytes, not_parse=True)
+        return loads(r.text) if r.status_code != 304 else {}
 
     def ocs(
         self,
@@ -178,12 +200,7 @@ class NcSessionBasic(ABC):
             params = {}
         params.update({"format": "json"})
         headers = kwargs.pop("headers", {})
-        data_bytes = None
-        if data is not None:
-            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        elif json is not None:
-            headers.update({"Content-Type": "application/json"})
-            data_bytes = dumps(json).encode("utf-8")
+        data_bytes = self.__data_to_bytes(headers, data, json)
         return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data=data_bytes, **kwargs)
 
     def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
@@ -234,12 +251,7 @@ class NcSessionBasic(ABC):
         **kwargs,
     ) -> Response:
         headers = kwargs.pop("headers", {})
-        data_bytes = None
-        if data is not None:
-            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        elif json is not None:
-            headers.update({"Content-Type": "application/json"})
-            data_bytes = dumps(json).encode("utf-8")
+        data_bytes = self.__data_to_bytes(headers, data, json)
         return self._dav(
             method,
             quote(self.cfg.dav_url_suffix + path) if isinstance(path, str) else path,
@@ -258,9 +270,9 @@ class NcSessionBasic(ABC):
         return self._dav_stream(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
 
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
-        self.init_adapter()
+        self.init_adapter_dav()
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        result = self.adapter.request(
+        result = self.adapter_dav.request(
             method,
             self.cfg.endpoint + path if isinstance(path, str) else str(path),
             headers=headers,
@@ -272,9 +284,9 @@ class NcSessionBasic(ABC):
         return result
 
     def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
-        self.init_adapter()
+        self.init_adapter_dav()
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        return self.adapter.stream(
+        return self.adapter_dav.stream(
             method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
         )
 
@@ -289,6 +301,16 @@ class NcSessionBasic(ABC):
             if options.XDEBUG_SESSION:
                 self.adapter.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
             self._capabilities = {}
+
+    def init_adapter_dav(self, restart=False) -> None:
+        if getattr(self, "adapter_dav", None) is None or restart:
+            if restart and hasattr(self, "adapter"):
+                self.adapter.close()
+            self.adapter_dav = self._create_adapter()
+            if self.custom_headers:
+                self.adapter_dav.headers.update(self.custom_headers)
+            if options.XDEBUG_SESSION:
+                self.adapter_dav.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
 
     @abstractmethod
     def _create_adapter(self) -> Client:
@@ -320,6 +342,17 @@ class NcSessionBasic(ABC):
     def ae_url(self) -> str:
         """Return base url for the App Ecosystem endpoints."""
         return "/ocs/v1.php/apps/app_api/api/v1"
+
+    @staticmethod
+    def __data_to_bytes(
+        headers: dict, data: Optional[Union[bytes, str]] = None, json: Optional[Union[dict, list]] = None
+    ) -> typing.Optional[bytes]:
+        if data is not None:
+            return data.encode("UTF-8") if isinstance(data, str) else data
+        if json is not None:
+            headers.update({"Content-Type": "application/json"})
+            return dumps(json).encode("utf-8")
+        return None
 
 
 class NcSession(NcSessionBasic):

@@ -18,6 +18,7 @@ from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
+from .notes import _NotesAPI
 from .notifications import _NotificationsAPI
 from .user_status import _UserStatusAPI
 from .users import _UsersAPI
@@ -36,6 +37,8 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for File System and Files Sharing"""
     preferences: PreferencesAPI
     """Nextcloud User Preferences API"""
+    notes: _NotesAPI
+    """Nextcloud Notes API"""
     notifications: _NotificationsAPI
     """Nextcloud API for managing user notifications"""
     talk: _TalkAPI
@@ -56,6 +59,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.cal = _CalendarAPI(session)
         self.files = FilesAPI(session)
         self.preferences = PreferencesAPI(session)
+        self.notes = _NotesAPI(session)
         self.notifications = _NotificationsAPI(session)
         self.talk = _TalkAPI(session)
         self.users = _UsersAPI(session)
@@ -193,6 +197,7 @@ class NextcloudApp(_NextcloudBasic):
             self.talk.config_sha = ""
             self.talk.modified_since = 0
             self.activity.last_given = 0
+            self.notes.last_etag = ""
             self._session.update_server_info()
 
     @property

@@ -32,12 +32,13 @@ Python library that provides a robust and well-documented API that allows develo
 | Shares                |      ✅       |      ✅       |      ✅       |
 | Users & Groups        |      ✅       |      ✅       |      ✅       |
 | User & Weather status |      ✅       |      ✅       |      ✅       |
-| Weather status        |      ✅       |      ✅       |      ✅       |
+| Other APIs***         |      ✅       |      ✅       |      ✅       |
 | Talk Bot API*         |     N/A      |      ✅       |      ✅       |
 | Text Processing*      |     N/A      |      ❌       |      ❌       |
 | SpeechToText*         |     N/A      |      ❌       |      ❌       |
 
 &ast;_available only for NextcloudApp_<br>
+&ast;&ast;&ast;_Activity, Notes_
 
 ### Differences between the Nextcloud and NextcloudApp classes
 

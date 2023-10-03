@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.1 - 2023-09-30]
+## [0.3.1 - 2023-10-0x]
 
 ### Added
 
-- CalendarAPI with the help of [caldav](https://pypi.org/project/caldav/) package.
+- CalendarAPI with the help of [caldav](https://pypi.org/project/caldav/) package. #136
+- [NotesAPI](https://github.com/nextcloud/notes) #137
 
 ## [0.3.0 - 2023-09-28]
 
