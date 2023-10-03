@@ -22,6 +22,8 @@ def test_settings(nc_client):
     nc_client.notes.set_settings(file_suffix=original_settings["file_suffix"])
     modified_settings = nc_client.notes.get_settings()
     assert modified_settings["file_suffix"] == original_settings["file_suffix"]
+    with pytest.raises(ValueError):
+        nc_client.notes.set_settings()
 
 
 def test_create_delete(nc_client):
