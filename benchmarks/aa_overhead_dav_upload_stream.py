@@ -22,7 +22,7 @@ def measure_upload_100mb(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]
     for _ in range(ITERS):
         medium_file.seek(0)
         nc_obj.files.upload_stream(medium_file_name, medium_file)
-        nc_obj._session.init_adapter(restart=not CACHE_SESS)  # noqa
+        nc_obj._session.init_adapter_dav(restart=not CACHE_SESS)  # noqa
     end_time = perf_counter()
     nc_obj.files.delete(medium_file_name, not_fail=True)
     return __result, round((end_time - start_time) / ITERS, 3)
