@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from nc_py_api import NextcloudException, ex_app
+from nc_py_api import Nextcloud, NextcloudApp, NextcloudException, ex_app
 from nc_py_api._deffered_error import DeferredError  # noqa
 from nc_py_api._exceptions import check_error  # noqa
 from nc_py_api._misc import nc_iso_time_to_datetime, require_capabilities  # noqa
@@ -91,3 +91,14 @@ def test_verify_version(nc_app):
     assert r[0] == ""
     assert r[1] == os.environ["APP_VERSION"]
     assert ex_app.verify_version() is None
+
+
+def test_init_adapter_dav(nc_any):
+    new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
+    new_nc._session.init_adapter_dav()
+    old_adapter = getattr(new_nc._session, "adapter_dav", None)
+    assert old_adapter is not None
+    new_nc._session.init_adapter_dav()
+    assert old_adapter == getattr(new_nc._session, "adapter_dav", None)
+    new_nc._session.init_adapter_dav(restart=True)
+    assert old_adapter != getattr(new_nc._session, "adapter_dav", None)

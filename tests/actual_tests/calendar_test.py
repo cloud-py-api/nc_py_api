@@ -5,7 +5,7 @@ import pytest
 
 def test_create_delete(nc):
     if nc.cal.available is False:
-        pytest.skip("``caldav`` package is not installed")
+        pytest.skip("caldav package is not installed")
 
     principal = nc.cal.principal()
     calendars = principal.calendars()

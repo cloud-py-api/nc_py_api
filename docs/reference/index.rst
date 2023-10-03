@@ -7,11 +7,12 @@ Reference
    Nextcloud
    ExApp
    Apps
-   ActivityApp
    Files/index.rst
    Users/index.rst
    Exceptions
    Talk
    TalkBot
    Calendar
+   ActivityApp
+   Notes
    Session

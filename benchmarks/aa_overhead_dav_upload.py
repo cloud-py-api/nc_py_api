@@ -19,7 +19,7 @@ def measure_upload_1mb(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]:
     start_time = perf_counter()
     for _ in range(ITERS):
         nc_obj.files.upload(small_file_name, small_file)
-        nc_obj._session.init_adapter(restart=not CACHE_SESS)  # noqa
+        nc_obj._session.init_adapter_dav(restart=not CACHE_SESS)  # noqa
     end_time = perf_counter()
     nc_obj.files.delete(small_file_name, not_fail=True)
     return __result, round((end_time - start_time) / ITERS, 3)
