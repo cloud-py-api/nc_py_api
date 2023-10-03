@@ -537,7 +537,7 @@ jobs:
 
       - name: Install NcPyApi
         working-directory: nc_py_api
-        run: python3 -m pip -v install ".[dev-min,app]"
+        run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
         uses: actions/checkout@v4
