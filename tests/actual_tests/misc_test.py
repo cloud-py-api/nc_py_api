@@ -102,3 +102,10 @@ def test_init_adapter_dav(nc_any):
     assert old_adapter == getattr(new_nc._session, "adapter_dav", None)
     new_nc._session.init_adapter_dav(restart=True)
     assert old_adapter != getattr(new_nc._session, "adapter_dav", None)
+
+
+def test_no_initial_connection(nc_any):
+    new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
+    assert not new_nc._session._capabilities
+    _ = new_nc.srv_version
+    assert new_nc._session._capabilities
