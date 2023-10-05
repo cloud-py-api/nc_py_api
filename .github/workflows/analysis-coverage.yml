@@ -154,13 +154,6 @@ jobs:
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
-
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -298,13 +291,6 @@ jobs:
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
-
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -420,13 +406,6 @@ jobs:
         env:
           SKIP_NC_CLIENT_TESTS: 1
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
-
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
         with:
@@ -448,7 +427,7 @@ jobs:
   tests-latest-maria:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐘8.2 • 🐍3.11 • Maria
+    name: ${{ matrix.nextcloud }} • 🐘8.2 • 🐍3.10 • Maria
     strategy:
       fail-fast: false
       matrix:
@@ -477,7 +456,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.10
 
       - name: Checkout server
         uses: actions/checkout@v4
@@ -497,7 +476,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: nextcloud/notes
-          ref: ${{ matrix.nextcloud }}
+          ref: "main"
           path: apps/notes
 
       - name: Set up & run Nextcloud
@@ -566,13 +545,6 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
-
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_maria_latest
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -673,6 +645,25 @@ jobs:
         working-directory: nc_py_api
         run: python3 -m pip -v install ".[dev]"
 
+      - name: Checkout AppAPI
+        uses: actions/checkout@v4
+        with:
+          path: apps/app_api
+          repository: cloud-py-api/app_api
+
+      - name: Install AppAPI
+        run: |
+          php occ app:enable app_api
+          cd nc_py_api
+          coverage run --data-file=.coverage.ci_install tests/_install.py &
+          echo $! > /tmp/_install.pid
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
+          cd ..
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          kill -15 $(cat /tmp/_install.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+
       - name: Checkout Talk
         uses: actions/checkout@v4
         with:
@@ -691,20 +682,17 @@ jobs:
       - name: Generate coverage report
         working-directory: nc_py_api
         run: |
-          coverage run -m pytest
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          echo $! > /tmp/_talk_bot.pid
+          coverage run --data-file=.coverage.ci -m pytest
+          kill -15 $(cat /tmp/_talk_bot.pid)
+          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None
           NPA_NC_CERT: False
-
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_pgsql_latest
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -815,23 +803,12 @@ jobs:
       - name: Generate coverage report
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
-          echo $! > /tmp/_talk_bot.pid
-          coverage run --data-file=.coverage.ci -m pytest
-          kill -15 $(cat /tmp/_talk_bot.pid)
-          timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
+          coverage run -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
-
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_sqlite_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
