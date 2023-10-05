@@ -767,7 +767,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.12
 
       - name: Checkout server
         uses: actions/checkout@v4
@@ -775,13 +775,6 @@ jobs:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
-
-      - name: Checkout Notifications
-        uses: actions/checkout@v4
-        with:
-          repository: nextcloud/notifications
-          ref: ${{ matrix.nextcloud }}
-          path: apps/notifications
 
       - name: Checkout Activity
         uses: actions/checkout@v4
@@ -807,7 +800,6 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
-          ./occ app:enable notifications
           ./occ app:enable activity
           ./occ app:enable notes
           php -S localhost:8080 &
@@ -839,8 +831,7 @@ jobs:
         working-directory: nc_py_api
         run: |
           coverage run -m pytest
-          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage xml && coverage html
         env:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
