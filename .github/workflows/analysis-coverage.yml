@@ -810,23 +810,23 @@ jobs:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_sqlite_${{ matrix.nextcloud }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
-
-      - name: Upload NC logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: nc_log_sqlite_${{ matrix.nextcloud }}
-          path: data/nextcloud.log
-          if-no-files-found: warn
+#      - name: Upload report to Codecov
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          name: coverage_sqlite_${{ matrix.nextcloud }}
+#          file: coverage.xml
+#          fail_ci_if_error: true
+#          verbose: true
+#          working-directory: nc_py_api
+#
+#      - name: Upload NC logs
+#        if: always()
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: nc_log_sqlite_${{ matrix.nextcloud }}
+#          path: data/nextcloud.log
+#          if-no-files-found: warn
 
   tests-success:
     permissions:
