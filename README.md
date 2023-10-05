@@ -55,6 +55,8 @@ but NextcloudApp has a broader selection since applications typically require ac
 Any code written for the Nextcloud class can easily be adapted for use with the NextcloudApp class,
 as long as it doesn't involve calls that require user password verification.
 
+**NextcloudApp** avalaible only from Nextcloud 27.1.2 and greater version with installed **AppAPI**.
+
 ### Support
 
 You can support us in several ways:

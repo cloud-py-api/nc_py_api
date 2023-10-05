@@ -431,7 +431,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable26', 'stable27', 'master' ]
+        nextcloud: [ 'stable27', 'master' ]
 
     services:
       mariadb:
