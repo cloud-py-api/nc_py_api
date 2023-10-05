@@ -671,7 +671,7 @@ jobs:
 
       - name: Install NcPyApi
         working-directory: nc_py_api
-        run: python3 -m pip -v install . pytest coverage pillow
+        run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout Talk
         uses: actions/checkout@v4
@@ -695,8 +695,9 @@ jobs:
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
-          SKIP_AA_TESTS: 1
-          NPA_NC_CERT: ''
+          NPA_TIMEOUT: None
+          NPA_TIMEOUT_DAV: None
+          NPA_NC_CERT: False
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -726,7 +727,7 @@ jobs:
   tests-client-sqlite:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐘8.1 • 🐍3.12 • Client
+    name: ${{ matrix.nextcloud }} • 🐍3.12 • Client
     strategy:
       fail-fast: false
       matrix:
@@ -795,7 +796,7 @@ jobs:
 
       - name: Install NcPyApi
         working-directory: nc_py_api
-        run: python3 -m pip -v install ".[dev]"
+        run: python3 -m pip -v install . pytest coverage pillow
 
       - name: Checkout Talk
         uses: actions/checkout@v4
@@ -822,9 +823,8 @@ jobs:
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
           coverage combine && coverage xml && coverage html
         env:
-          NPA_TIMEOUT: None
-          NPA_TIMEOUT_DAV: None
-          NPA_NC_CERT: False
+          SKIP_AA_TESTS: 1
+          NPA_NC_CERT: ''
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
