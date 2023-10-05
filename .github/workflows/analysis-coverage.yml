@@ -152,7 +152,14 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml
+          coverage combine && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -289,7 +296,14 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml
+          coverage combine && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -402,9 +416,16 @@ jobs:
         run: |
           coverage run --data-file=.coverage.ci -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml
+          coverage combine && coverage xml && coverage html
         env:
           SKIP_NC_CLIENT_TESTS: 1
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -544,7 +565,14 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml
+          coverage combine && coverage xml && coverage html
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_maria_${{ matrix.nextcloud }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -688,11 +716,18 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml
+          coverage combine && coverage xml && coverage html
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None
           NPA_NC_CERT: False
+
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_pgsql_${{ matrix.nextcloud }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -805,28 +840,35 @@ jobs:
         run: |
           coverage run -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml
+          coverage combine && coverage xml && coverage html
         env:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
 
-#      - name: Upload report to Codecov
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          name: coverage_sqlite_${{ matrix.nextcloud }}
-#          file: coverage.xml
-#          fail_ci_if_error: true
-#          verbose: true
-#          working-directory: nc_py_api
-#
-#      - name: Upload NC logs
-#        if: always()
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: nc_log_sqlite_${{ matrix.nextcloud }}
-#          path: data/nextcloud.log
-#          if-no-files-found: warn
+      - name: HTML coverage to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_sqlite_${{ matrix.nextcloud }}
+          path: nc_py_api/htmlcov
+          if-no-files-found: error
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage_sqlite_${{ matrix.nextcloud }}
+          file: coverage.xml
+          fail_ci_if_error: true
+          verbose: true
+          working-directory: nc_py_api
+
+      - name: Upload NC logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc_log_sqlite_${{ matrix.nextcloud }}
+          path: data/nextcloud.log
+          if-no-files-found: warn
 
   tests-success:
     permissions:
