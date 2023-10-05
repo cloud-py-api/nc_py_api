@@ -152,7 +152,7 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -289,7 +289,7 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
@@ -402,7 +402,7 @@ jobs:
         run: |
           coverage run --data-file=.coverage.ci -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml
         env:
           SKIP_NC_CLIENT_TESTS: 1
 
@@ -544,13 +544,13 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_maria_latest
+          name: coverage_maria_${{ matrix.nextcloud }}
           file: coverage.xml
           fail_ci_if_error: true
           verbose: true
@@ -560,7 +560,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: nc_log_maria_latest
+          name: nc_log_maria_${{ matrix.nextcloud }}
           path: data/nextcloud.log
           if-no-files-found: warn
 
@@ -688,7 +688,7 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None
@@ -698,7 +698,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_pgsql_latest
+          name: coverage_pgsql_${{ matrix.nextcloud }}
           file: coverage.xml
           fail_ci_if_error: true
           verbose: true
@@ -708,7 +708,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: nc_log_pgsql_latest
+          name: nc_log_pgsql_${{ matrix.nextcloud }}
           path: data/nextcloud.log
           if-no-files-found: warn
 
@@ -805,7 +805,7 @@ jobs:
         run: |
           coverage run -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml
         env:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
