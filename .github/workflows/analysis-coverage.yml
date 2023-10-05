@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install from source
         run: python3 -m pip install ".[dev]"
@@ -45,13 +45,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ "26.0.7" ]
-        python: [ "3.9" ]
-        php-version: [ "8.1" ]
         include:
           - nextcloud: "27.1.1"
             python: "3.10"
-            php-version: "8.2"
+            php-version: "8.1"
 
     services:
       mariadb:
@@ -77,10 +74,6 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-
-      - name: Stable26
-        if: ${{ startsWith(matrix.nextcloud, '26.') }}
-        run: echo "NC_BRANCH_NAME=stable26" >> $GITHUB_ENV
 
       - name: Stable27
         if: ${{ startsWith(matrix.nextcloud, '27.') }}
@@ -122,10 +115,6 @@ jobs:
         with:
           path: apps/app_api
           repository: cloud-py-api/app_api
-
-      - name: Patch base.php
-        if: ${{ startsWith(matrix.nextcloud, '26') }}
-        run: patch -p 1 -i apps/app_api/base_php.patch
 
       - name: Install AppAPI
         run: |
@@ -197,12 +186,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ "26.0.7" ]
-        python: [ "3.11" ]
-        php-version: [ "8.1" ]
         include:
           - nextcloud: "27.1.1"
-            python: "3.10"
+            python: "3.11"
             php-version: "8.2"
     env:
       NC_dbname: nextcloud_abz
@@ -232,10 +218,6 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-
-      - name: Stable26
-        if: ${{ startsWith(matrix.nextcloud, '26.') }}
-        run: echo "NC_BRANCH_NAME=stable26" >> $GITHUB_ENV
 
       - name: Stable27
         if: ${{ startsWith(matrix.nextcloud, '27.') }}
@@ -274,13 +256,11 @@ jobs:
 
       - name: Checkout AppAPI
         uses: actions/checkout@v4
-        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         with:
           path: apps/app_api
           repository: cloud-py-api/app_api
 
       - name: Install AppAPI
-        if: ${{ !startsWith(matrix.nextcloud, '26.') }}
         run: |
           php occ app:enable app_api
           cd nc_py_api
@@ -465,10 +445,14 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  tests-latest-maria-full:
+  tests-latest-maria:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: Latest • 🐘8.2 • 🐍3.12 • Maria
+    name: ${{ matrix.nextcloud }} • 🐘8.2 • 🐍3.11 • Maria
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud: [ 'stable26', 'stable27', 'master' ]
 
     services:
       mariadb:
@@ -500,20 +484,20 @@ jobs:
         with:
           submodules: true
           repository: nextcloud/server
-          ref: "master"
+          ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
         uses: actions/checkout@v4
         with:
           repository: nextcloud/notifications
-          ref: "master"
+          ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
       - name: Checkout Notes
         uses: actions/checkout@v4
         with:
           repository: nextcloud/notes
-          ref: "main"
+          ref: ${{ matrix.nextcloud }}
           path: apps/notes
 
       - name: Set up & run Nextcloud
@@ -563,6 +547,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
+          ref: ${{ matrix.nextcloud }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -607,10 +592,14 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  test-latest-pgsql-client:
+  test-latest-pgsql:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: Latest • 🐘8.2 • 🐍3.12 • PgSQL
+    name: ${{ matrix.nextcloud }} • 🐘8.2 • 🐍3.11 • PgSQL
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud: [ 'stable26', 'stable27', 'master' ]
     env:
       NC_dbname: nextcloud_abz
 
@@ -638,27 +627,27 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.12-dev'
+          python-version: '3.11'
 
       - name: Checkout server
         uses: actions/checkout@v4
         with:
           submodules: true
           repository: nextcloud/server
-          ref: "master"
+          ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
         uses: actions/checkout@v4
         with:
           repository: nextcloud/notifications
-          ref: "master"
+          ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
       - name: Checkout Activity
         uses: actions/checkout@v4
         with:
           repository: nextcloud/activity
-          ref: "master"
+          ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
       - name: Set up & run Nextcloud
@@ -689,6 +678,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
+          ref: ${{ matrix.nextcloud }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -733,14 +723,14 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  tests-sqlite:
+  tests-client-sqlite:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐘8.1 • 🐍3.11 • SQLite
+    name: ${{ matrix.nextcloud }} • 🐘8.1 • 🐍3.12 • Client
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable26', 'stable27' ]
+        nextcloud: [ 'stable26', 'stable27', 'master' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
 
@@ -753,7 +743,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.12
 
       - name: Checkout server
         uses: actions/checkout@v4
@@ -806,29 +796,6 @@ jobs:
       - name: Install NcPyApi
         working-directory: nc_py_api
         run: python3 -m pip -v install ".[dev]"
-
-      - name: Checkout AppAPI
-        uses: actions/checkout@v4
-        with:
-          path: apps/app_api
-          repository: cloud-py-api/app_api
-
-      - name: Patch base.php
-        if: ${{ startsWith(matrix.nextcloud, 'stable26') }}
-        run: patch -p 1 -i apps/app_api/base_php.patch
-
-      - name: Install AppAPI
-        run: |
-          php occ app:enable app_api
-          cd nc_py_api
-          coverage run --data-file=.coverage.ci_install tests/_install.py &
-          echo $! > /tmp/_install.pid
-          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
-          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
-          cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
-          kill -15 $(cat /tmp/_install.pid)
-          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
         uses: actions/checkout@v4
