@@ -90,7 +90,7 @@ class ListableScope(enum.IntEnum):
 class NotificationLevel(enum.IntEnum):
     """The notification level for the user.
 
-    .. note:: Default: ``1`` for one-to-one conversations, ``2`` for other conversations.
+    .. note:: Default: ``1`` for ``one-to-one`` conversations, ``2`` for other conversations.
     """
 
     DEFAULT = 0
@@ -467,7 +467,7 @@ class Conversation(_TalkUserStatus):
     def can_delete_conversation(self) -> bool:
         """Flag if the user can delete the conversation for everyone.
 
-        .. note: Not possible without moderator permissions or in one-to-one conversations.
+        .. note: Not possible without moderator permissions or in ``one-to-one`` conversations.
         """
         return bool(self._raw_data.get("canDeleteConversation", False))
 
@@ -621,7 +621,7 @@ class Conversation(_TalkUserStatus):
     def status_clear_at(self) -> typing.Optional[int]:
         """Unix Timestamp representing the time to clear the status.
 
-        .. note:: Available only for One-to-One conversations.
+        .. note:: Available only for ``one-to-one`` conversations.
         """
         return self._raw_data.get("statusClearAt", None)
 

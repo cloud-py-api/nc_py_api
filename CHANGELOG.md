@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - CalendarAPI with the help of [caldav](https://pypi.org/project/caldav/) package. #136
 - [NotesAPI](https://github.com/nextcloud/notes) #137
-- TalkAPI: `list_participants` method to list conversation participants. #141
+- TalkAPI: `list_participants` method to list conversation participants. #142
 
 ### Fixed
 
