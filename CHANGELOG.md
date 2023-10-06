@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - TalkAPI: In One-to-One conversations the `status_message` and `status_icon` fields were always empty.
+- Missing CSS styles in the documentation. #143
 
 ## [0.3.0 - 2023-09-28]
 
