@@ -18,6 +18,7 @@ from .talk import (
     ConversationType,
     MessageReactions,
     NotificationLevel,
+    Participant,
     Poll,
     TalkFileMessage,
     TalkMessage,
@@ -67,7 +68,7 @@ class _TalkAPI:
         if no_status_update:
             params["noStatusUpdate"] = 1
         if include_status:
-            params["includeStatus"] = True
+            params["includeStatus"] = 1
         if modified_since:
             params["modifiedSince"] = self.modified_since if modified_since is True else modified_since
 
@@ -75,6 +76,20 @@ class _TalkAPI:
         self.modified_since = int(self._session.response_headers["X-Nextcloud-Talk-Modified-Before"])
         self._update_config_sha()
         return [Conversation(i) for i in result]
+
+    def list_participants(
+        self, conversation: typing.Union[Conversation, str], include_status: bool = False
+    ) -> list[Participant]:
+        """Returns a list of conversation participants.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param include_status: Whether the user status information of all one-to-one conversations should be loaded.
+        """
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        result = self._session.ocs(
+            "GET", self._ep_base + f"/api/v4/room/{token}/participants", params={"includeStatus": int(include_status)}
+        )
+        return [Participant(i) for i in result]
 
     def create_conversation(
         self,

@@ -2,12 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.1 - 2023-10-05]
+## [0.3.1 - 2023-10-07]
 
 ### Added
 
 - CalendarAPI with the help of [caldav](https://pypi.org/project/caldav/) package. #136
 - [NotesAPI](https://github.com/nextcloud/notes) #137
+- TalkAPI: `list_participants` method to list conversation participants. #142
+
+### Fixed
+
+- TalkAPI: In One-to-One conversations the `status_message` and `status_icon` fields were always empty.
 
 ## [0.3.0 - 2023-09-28]
 

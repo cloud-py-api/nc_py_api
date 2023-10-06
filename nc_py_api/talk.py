@@ -6,7 +6,6 @@ import os
 import typing
 
 from . import files as _files
-from .user_status import _UserStatus
 
 
 class ConversationType(enum.IntEnum):
@@ -91,7 +90,7 @@ class ListableScope(enum.IntEnum):
 class NotificationLevel(enum.IntEnum):
     """The notification level for the user.
 
-    .. note:: Default: ``1`` for one-to-one conversations, ``2`` for other conversations.
+    .. note:: Default: ``1`` for ``one-to-one`` conversations, ``2`` for other conversations.
     """
 
     DEFAULT = 0
@@ -309,8 +308,29 @@ class TalkFileMessage(TalkMessage):
         )
 
 
+@dataclasses.dataclass
+class _TalkUserStatus:
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def status_message(self) -> str:
+        """Message of the status."""
+        return str(self._raw_data.get("statusMessage", "") or "")
+
+    @property
+    def status_icon(self) -> str:
+        """The icon picked by the user (must be one emoji)."""
+        return str(self._raw_data.get("statusIcon", "") or "")
+
+    @property
+    def status_type(self) -> str:
+        """Status type, on of the: online, away, dnd, invisible, offline."""
+        return str(self._raw_data.get("status", "") or "")
+
+
 @dataclasses.dataclass(init=False)
-class Conversation(_UserStatus):
+class Conversation(_TalkUserStatus):
     """Talk conversation."""
 
     @property
@@ -447,7 +467,7 @@ class Conversation(_UserStatus):
     def can_delete_conversation(self) -> bool:
         """Flag if the user can delete the conversation for everyone.
 
-        .. note: Not possible without moderator permissions or in one-to-one conversations.
+        .. note: Not possible without moderator permissions or in ``one-to-one`` conversations.
         """
         return bool(self._raw_data.get("canDeleteConversation", False))
 
@@ -596,6 +616,74 @@ class Conversation(_UserStatus):
         .. note:: Only available with ``recording-v1`` capability.
         """
         return CallRecordingStatus(self._raw_data.get("callRecording", CallRecordingStatus.NO_RECORDING))
+
+    @property
+    def status_clear_at(self) -> typing.Optional[int]:
+        """Unix Timestamp representing the time to clear the status.
+
+        .. note:: Available only for ``one-to-one`` conversations.
+        """
+        return self._raw_data.get("statusClearAt", None)
+
+
+@dataclasses.dataclass(init=False)
+class Participant(_TalkUserStatus):
+    """Conversation participant information."""
+
+    @property
+    def attendee_id(self) -> int:
+        """Unique attendee id."""
+        return self._raw_data["attendeeId"]
+
+    @property
+    def actor_type(self) -> str:
+        """The actor type of the participant that voted: **users**, **groups**, **circles**, **guests**, **emails**."""
+        return self._raw_data["actorType"]
+
+    @property
+    def actor_id(self) -> str:
+        """The unique identifier for the given actor type."""
+        return self._raw_data["actorId"]
+
+    @property
+    def display_name(self) -> str:
+        """Can be empty for guests."""
+        return self._raw_data["displayName"]
+
+    @property
+    def participant_type(self) -> ParticipantType:
+        """Permissions level, see: :py:class:`~nc_py_api.talk.ParticipantType`."""
+        return ParticipantType(self._raw_data["participantType"])
+
+    @property
+    def last_ping(self) -> int:
+        """Timestamp of the last ping. Should  be used for sorting."""
+        return self._raw_data["lastPing"]
+
+    @property
+    def participant_flags(self) -> InCallFlags:
+        """Current call flags."""
+        return InCallFlags(self._raw_data.get("inCall", InCallFlags.DISCONNECTED))
+
+    @property
+    def permissions(self) -> AttendeePermissions:
+        """Final permissions, combined :py:class:`~nc_py_api.talk.AttendeePermissions` values."""
+        return AttendeePermissions(self._raw_data["permissions"])
+
+    @property
+    def attendee_permissions(self) -> AttendeePermissions:
+        """Dedicated permissions for the current participant, if not ``Custom``, they are not the resulting ones."""
+        return AttendeePermissions(self._raw_data["attendeePermissions"])
+
+    @property
+    def session_ids(self) -> list[str]:
+        """A list of session IDs, each one 512 characters long, or empty if there is no session."""
+        return self._raw_data["sessionIds"]
+
+    @property
+    def breakout_token(self) -> str:
+        """Only available with breakout-rooms-v1 capability."""
+        return self._raw_data.get("roomToken", "")
 
 
 @dataclasses.dataclass

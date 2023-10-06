@@ -56,6 +56,10 @@ def test_conversation_create_delete(nc):
     assert isinstance(conversation.is_custom_avatar, bool)
     assert isinstance(conversation.call_start_time, int)
     assert isinstance(conversation.recording_status, talk.CallRecordingStatus)
+    assert isinstance(conversation.status_type, str)
+    assert isinstance(conversation.status_message, str)
+    assert isinstance(conversation.status_icon, str)
+    assert isinstance(conversation.status_clear_at, int) or conversation.status_clear_at is None
     if conversation.last_message is None:
         return
     talk_msg = conversation.last_message
@@ -99,6 +103,7 @@ def test_get_conversations_include_status(nc, nc_client):
         pytest.skip("Nextcloud Talk is not installed")
     nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
     nc_second_user.user_status.set_status_type("away")
+    nc_second_user.user_status.set_status("my status message", status_icon="😇")
     conversation = nc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, environ["TEST_USER_ID"])
     try:
         conversations = nc.talk.get_user_conversations(include_status=False)
@@ -109,6 +114,26 @@ def test_get_conversations_include_status(nc, nc_client):
         assert conversations
         first_conv = next(i for i in conversations if i.conversation_id == conversation.conversation_id)
         assert first_conv.status_type == "away"
+        assert first_conv.status_message == "my status message"
+        assert first_conv.status_icon == "😇"
+        participants = nc.talk.list_participants(first_conv)
+        assert len(participants) == 2
+        second_participant = next(i for i in participants if i.actor_id == environ["TEST_USER_ID"])
+        assert second_participant.actor_type == "users"
+        assert isinstance(second_participant.attendee_id, int)
+        assert isinstance(second_participant.display_name, str)
+        assert isinstance(second_participant.participant_type, talk.ParticipantType)
+        assert isinstance(second_participant.last_ping, int)
+        assert second_participant.participant_flags == talk.InCallFlags.DISCONNECTED
+        assert isinstance(second_participant.permissions, talk.AttendeePermissions)
+        assert isinstance(second_participant.attendee_permissions, talk.AttendeePermissions)
+        assert isinstance(second_participant.session_ids, list)
+        assert isinstance(second_participant.breakout_token, str)
+        assert second_participant.status_message == ""
+        participants = nc.talk.list_participants(first_conv, include_status=True)
+        assert len(participants) == 2
+        second_participant = next(i for i in participants if i.actor_id == environ["TEST_USER_ID"])
+        assert second_participant.status_message == "my status message"
     finally:
         nc.talk.leave_conversation(conversation.token)
 
