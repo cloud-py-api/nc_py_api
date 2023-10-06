@@ -14,13 +14,13 @@ from nc_py_api import NextcloudApp, talk_bot
 from nc_py_api.ex_app import run_app, set_handlers, talk_bot_app
 
 APP = FastAPI()
-AI_BOT = talk_bot.TalkBot("/ai_talk_bot", "AI talk bot", "Usage: `@ai What sounds do cats make?`")
+AI_BOT = talk_bot.TalkBot("/ai_talk_bot", "AI talk bot", "Usage: `@assistant What sounds do cats make?`")
 MODEL_NAME = "MBZUAI/LaMini-Flan-T5-77M"
 MODEL_INIT_THREAD = None
 
 
 def ai_talk_bot_process_request(message: talk_bot.TalkBotMessage):
-    r = re.search(r"@ai\s(.*)", message.object_content["message"], re.IGNORECASE)
+    r = re.search(r"@assistant\s(.*)", message.object_content["message"], re.IGNORECASE)
     if r is None:
         return
     model = pipeline("text2text-generation", model=MODEL_NAME)
