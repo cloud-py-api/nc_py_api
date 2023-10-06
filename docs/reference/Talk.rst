@@ -5,6 +5,10 @@ Talk API
     :members:
     :inherited-members:
 
+.. autoclass:: nc_py_api.talk.Participant
+    :members:
+    :inherited-members:
+
 .. autoclass:: nc_py_api.talk.TalkMessage
     :members:
     :inherited-members:

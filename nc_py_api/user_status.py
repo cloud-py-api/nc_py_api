@@ -47,9 +47,15 @@ class PredefinedStatus:
 
 
 @dataclasses.dataclass
-class _UserStatus:
+class UserStatus:
+    """Information about user status."""
+
+    user_id: str
+    """The ID of the user this status is for"""
+
     def __init__(self, raw_data: dict):
         self._raw_data = raw_data
+        self.user_id = raw_data["userId"]
 
     @property
     def status_message(self) -> str:
@@ -70,18 +76,6 @@ class _UserStatus:
     def status_type(self) -> str:
         """Status type, on of the: online, away, dnd, invisible, offline."""
         return self._raw_data.get("status", "")
-
-
-@dataclasses.dataclass
-class UserStatus(_UserStatus):
-    """Information about user status."""
-
-    user_id: str
-    """The ID of the user this status is for"""
-
-    def __init__(self, raw_data: dict):
-        super().__init__(raw_data)
-        self.user_id = raw_data["userId"]
 
 
 @dataclasses.dataclass(init=False)
