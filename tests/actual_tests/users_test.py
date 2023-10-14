@@ -50,6 +50,7 @@ def test_get_user_info(nc):
     assert isinstance(admin.groups, list)
     assert isinstance(admin.backend_capabilities, dict)
     assert admin.display_name == "admin"
+    assert str(admin).find("last_login=") != -1
 
 
 def test_get_current_user_wo_user(nc):

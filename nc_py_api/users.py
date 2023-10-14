@@ -151,6 +151,9 @@ class UserInfo:
         """By default, only the ``setDisplayName`` and ``setPassword`` keys are available."""
         return self._raw_data["backendCapabilities"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.user_id}, backend={self.backend}, last_login={self.last_login}>"
+
 
 class _UsersAPI:
     """The class provides the user API on the Nextcloud server.

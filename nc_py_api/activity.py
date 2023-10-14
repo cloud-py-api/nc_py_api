@@ -36,6 +36,9 @@ class ActivityFilter:
         """Arrangement priority in ascending order. Values from 0 to 99."""
         return self._raw_data["priority"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.filter_id}, name={self.name}, priority={self.priority}>"
+
 
 @dataclasses.dataclass
 class Activity:
@@ -122,9 +125,15 @@ class Activity:
         return self._raw_data["icon"]
 
     @property
-    def activity_time(self) -> datetime.datetime:
+    def time(self) -> datetime.datetime:
         """Time when the activity occurred."""
         return nc_iso_time_to_datetime(self._raw_data["datetime"])
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} id={self.activity_id}, app={self.app}, type={self.activity_type},"
+            f" time={self.time}>"
+        )
 
 
 class _ActivityAPI:

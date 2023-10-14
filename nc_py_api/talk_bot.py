@@ -77,6 +77,9 @@ class TalkBotMessage:
         """The name of the conversation in which the message was posted."""
         return self._raw_data["target"]["name"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} conversation={self.conversation_name}, actor={self.actor_display_name}>"
+
 
 class TalkBot:
     """A class that implements the TalkBot functionality."""

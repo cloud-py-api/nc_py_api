@@ -74,3 +74,4 @@ def test_ex_app_get_list(nc, nc_app):
         assert isinstance(app.system, bool)
         if app.app_id == "nc_py_api":
             assert app.system is True
+        assert str(app).find("id=") != -1 and str(app).find("ver=") != -1

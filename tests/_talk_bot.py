@@ -41,6 +41,7 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
         request._url = URL("sample_url")
         talk_bot_app(request)
     assert e.value.status_code == 500
+    assert str(message).find("conversation=") != -1
 
 
 @APP.post("/talk_bot_coverage")

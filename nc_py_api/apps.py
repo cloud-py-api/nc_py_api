@@ -47,6 +47,9 @@ class ExAppInfo:
         """Flag indicating if the application is a system application."""
         return bool(self._raw_data["system"])
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.app_id}, ver={self.version}>"
+
 
 class _AppsAPI:
     """The class provides the application management API on the Nextcloud server."""
