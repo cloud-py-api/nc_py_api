@@ -46,7 +46,7 @@ def nc_any() -> Union[Nextcloud, NextcloudApp]:
 
 
 @pytest.fixture(scope="session")
-def nc(request):
+def nc(request) -> Union[Nextcloud, NextcloudApp]:
     """Marks a test to run for both modes if possible."""
     return request.param
 
