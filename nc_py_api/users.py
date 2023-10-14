@@ -70,7 +70,7 @@ class UserInfo:
     @property
     def display_name(self) -> str:
         """The display name of the new user."""
-        return self._raw_data["displayname"]
+        return self._raw_data.get("displayname", "")
 
     @property
     def phone(self) -> str:
