@@ -70,7 +70,7 @@ class UserInfo:
     @property
     def display_name(self) -> str:
         """The display name of the new user."""
-        return self._raw_data.get("displayname", "")
+        return self._raw_data["displayname"] if "displayname" in self._raw_data else self._raw_data["display-name"]
 
     @property
     def phone(self) -> str:
