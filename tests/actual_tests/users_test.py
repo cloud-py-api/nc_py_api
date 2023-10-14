@@ -33,6 +33,7 @@ def test_get_user_info(nc):
         "biography",
         "language",
         "locale",
+        "notify_email",
     ):
         assert getattr(current_user, i) == getattr(admin, i)
         assert isinstance(getattr(current_user, i), str)
@@ -47,7 +48,6 @@ def test_get_user_info(nc):
     assert isinstance(admin.quota, dict)
     assert isinstance(admin.additional_mail, list)
     assert isinstance(admin.groups, list)
-    assert isinstance(admin.notify_email, str) or admin.notify_email is None
     assert isinstance(admin.backend_capabilities, dict)
 
 

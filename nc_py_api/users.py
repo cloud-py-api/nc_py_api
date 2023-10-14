@@ -60,7 +60,7 @@ class UserInfo:
     @property
     def email(self) -> str:
         """Email address of the user."""
-        return self._raw_data["email"]
+        return self._raw_data["email"] if self._raw_data["email"] is not None else ""
 
     @property
     def additional_mail(self) -> list[str]:
@@ -138,13 +138,13 @@ class UserInfo:
         return self._raw_data.get("locale", "")
 
     @property
-    def notify_email(self) -> typing.Optional[str]:
+    def notify_email(self) -> str:
         """The user's preferred email address.
 
         .. note:: The primary mail address may be set be the user to specify a different
             email address where mails by Nextcloud are sent to. It is not necessarily set.
         """
-        return self._raw_data["notify_email"]
+        return self._raw_data["notify_email"] if self._raw_data["notify_email"] is not None else ""
 
     @property
     def backend_capabilities(self) -> dict:
