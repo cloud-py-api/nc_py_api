@@ -1,15 +1,161 @@
 """Nextcloud API for working with users."""
 
+import dataclasses
+import datetime
 import typing
 
 from ._misc import kwargs_to_params
 from ._session import NcSessionBasic
 
 
-class _UsersAPI:
-    """The class provides the user, user groups, user status API on the Nextcloud server.
+@dataclasses.dataclass
+class UserInfo:
+    """User information description."""
 
-    .. note:: In NextcloudApp mode, only ``get_list`` and ``get_details`` methods are available.
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def enabled(self) -> bool:
+        """Flag indicating whether the user is enabled."""
+        return self._raw_data.get("enabled", True)
+
+    @property
+    def storage_location(self) -> str:
+        """User's home folder. Can be empty for LDAP or when the caller does not have administrative rights."""
+        return self._raw_data.get("storageLocation", "")
+
+    @property
+    def user_id(self) -> str:
+        """User ID."""
+        return self._raw_data["id"]
+
+    @property
+    def last_login(self) -> datetime.datetime:
+        """Last user login time."""
+        return datetime.datetime.utcfromtimestamp(int(self._raw_data["lastLogin"] / 1000)).replace(
+            tzinfo=datetime.timezone.utc
+        )
+
+    @property
+    def backend(self) -> str:
+        """The type of backend in which user information is stored."""
+        return self._raw_data["backend"]
+
+    @property
+    def subadmin(self) -> list[str]:
+        """IDs of groups of which the user is a subadmin."""
+        return self._raw_data.get("subadmin", [])
+
+    @property
+    def quota(self) -> dict:
+        """Quota for the user, if set."""
+        return self._raw_data["quota"] if isinstance(self._raw_data["quota"], dict) else {}
+
+    @property
+    def manager(self) -> str:
+        """The user's manager UID."""
+        return self._raw_data.get("manager", "")
+
+    @property
+    def email(self) -> str:
+        """Email address of the user."""
+        return self._raw_data["email"]
+
+    @property
+    def additional_mail(self) -> list[str]:
+        """List of additional emails."""
+        return self._raw_data["additional_mail"]
+
+    @property
+    def display_name(self) -> str:
+        """The display name of the new user."""
+        return self._raw_data["displayname"]
+
+    @property
+    def phone(self) -> str:
+        """Phone of the user."""
+        return self._raw_data["phone"]
+
+    @property
+    def address(self) -> str:
+        """Address of the user."""
+        return self._raw_data["address"]
+
+    @property
+    def website(self) -> str:
+        """Link to user website."""
+        return self._raw_data["website"]
+
+    @property
+    def twitter(self) -> str:
+        """Twitter handle."""
+        return self._raw_data["twitter"]
+
+    @property
+    def fediverse(self) -> str:
+        """Fediverse(e.g. Mastodon) in the user profile."""
+        return self._raw_data["fediverse"]
+
+    @property
+    def organisation(self) -> str:
+        """Organisation in the user profile."""
+        return self._raw_data["organisation"]
+
+    @property
+    def role(self) -> str:
+        """Role in the user profile."""
+        return self._raw_data["role"]
+
+    @property
+    def headline(self) -> str:
+        """Headline in the user profile."""
+        return self._raw_data["headline"]
+
+    @property
+    def biography(self) -> str:
+        """Biography in the user profile."""
+        return self._raw_data["biography"]
+
+    @property
+    def profile_enabled(self) -> bool:
+        """Flag indicating whether the user profile is enabled."""
+        return str(self._raw_data["profile_enabled"]).lower() in ("1", "true")
+
+    @property
+    def groups(self) -> list[str]:
+        """ID of the groups the user is a member of."""
+        return self._raw_data["groups"]
+
+    @property
+    def language(self) -> str:
+        """The language to use when sending something to a user."""
+        return self._raw_data["language"]
+
+    @property
+    def locale(self) -> str:
+        """The locale set for the user."""
+        return self._raw_data.get("locale", "")
+
+    @property
+    def notify_email(self) -> typing.Optional[str]:
+        """The user's preferred email address.
+
+        .. note:: The primary mail address may be set be the user to specify a different
+            email address where mails by Nextcloud are sent to. It is not necessarily set.
+        """
+        return self._raw_data["notify_email"]
+
+    @property
+    def backend_capabilities(self) -> dict:
+        """By default, only the ``setDisplayName`` and ``setPassword`` keys are available."""
+        return self._raw_data["backendCapabilities"]
+
+
+class _UsersAPI:
+    """The class provides the user API on the Nextcloud server.
+
+    .. note:: In NextcloudApp mode, only ``get_list``, ``editable_fields`` and ``get_user`` methods are available.
     """
 
     _ep_base: str = "/ocs/v1.php/cloud/users"
@@ -30,28 +176,25 @@ class _UsersAPI:
         response_data = self._session.ocs(method="GET", path=self._ep_base, params=data)
         return response_data["users"] if response_data else {}
 
-    def get_details(self, user_id: str = "") -> dict:
+    def get_user(self, user_id: str = "") -> UserInfo:
         """Returns detailed user information.
 
         :param user_id: the identifier of the user about which information is to be returned.
         """
-        if not user_id:
-            user_id = self._session.user
-        if not user_id:
-            raise ValueError("user_id can not be empty.")
-        return self._session.ocs(method="GET", path=f"{self._ep_base}/{user_id}")
+        url_path = f"{self._ep_base}/{user_id}" if user_id else "/ocs/v1.php/cloud/user"
+        return UserInfo(self._session.ocs(method="GET", path=url_path))
 
-    def create(self, user_id: str, **kwargs) -> None:
+    def create(self, user_id: str, display_name: typing.Optional[str] = None, **kwargs) -> None:
         """Create a new user on the Nextcloud server.
 
         :param user_id: id of the user to create.
+        :param display_name: display name for a created user.
         :param kwargs: See below.
 
         Additionally supported arguments:
 
             * ``password`` - password that should be set for user.
             * ``email`` - email of the new user. If ``password`` is not provided, then this field should be filled.
-            * ``displayname`` - display name of the new user.
             * ``groups`` - list of groups IDs to which user belongs.
             * ``subadmin`` - boolean indicating is user should be the subadmin.
             * ``quota`` - quota for the user, if needed.
@@ -62,9 +205,11 @@ class _UsersAPI:
         if not password and not email:
             raise ValueError("Either password or email must be set")
         data = {"userid": user_id}
-        for k in ("password", "displayname", "email", "groups", "subadmin", "quota", "language"):
+        for k in ("password", "email", "groups", "subadmin", "quota", "language"):
             if k in kwargs:
                 data[k] = kwargs[k]
+        if display_name is not None:
+            data["displayname"] = display_name
         self._session.ocs(method="POST", path=self._ep_base, json=data)
 
     def delete(self, user_id: str) -> None:

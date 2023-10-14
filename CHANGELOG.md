@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0 - 2023-10-2x]
+
+This release contains some breaking changes in `users` API.
+
+### Changed
+
+- `users.get_details` renamed to `get_user` and returns a class instead of a dictionary.
+- Optional argument `displayname` in `users.create` renamed to `display_name`.
+
+### Fixed
+
+- `users.get_details` with empty parameter in some cases was raised exception.
+
 ## [0.3.1 - 2023-10-07]
 
 ### Added

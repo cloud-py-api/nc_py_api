@@ -105,6 +105,7 @@ def tear_up_down(nc_any, rand_bytes):
             environ["TEST_USER_ID"],
             password=environ["TEST_USER_PASS"],
             groups=[environ["TEST_GROUP_BOTH"], environ["TEST_GROUP_USER"]],
+            display_name=environ["TEST_USER_ID"],
         )
     init_filesystem_for_user(nc_any, rand_bytes)  # currently we initialize filesystem only for admin
 
