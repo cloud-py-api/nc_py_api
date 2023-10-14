@@ -74,7 +74,7 @@ class Note:
         return datetime.datetime.utcfromtimestamp(modified).replace(tzinfo=datetime.timezone.utc)
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.note_id}, title={self.title}>"
+        return f"<{self.__class__.__name__} id={self.note_id}, title={self.title}, last_modified={self.last_modified}>"
 
 
 class NotesSettings(typing.TypedDict):

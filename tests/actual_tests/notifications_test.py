@@ -24,6 +24,7 @@ def test_create(nc_app):
     assert not new_notification.link
     assert new_notification.time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     assert str(new_notification).find("app_name=") != -1
+    assert isinstance(new_notification.object_type, str)
 
 
 def test_create_link_icon(nc_app):

@@ -40,6 +40,7 @@ def test_create_delete(nc_client):
     assert new_note.readonly is False
     assert new_note.favorite is False
     assert isinstance(new_note.last_modified, datetime)
+    assert str(new_note).find("title=") != -1
 
 
 def test_get_update_note(nc_client):
