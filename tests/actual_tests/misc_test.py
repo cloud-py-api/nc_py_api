@@ -60,7 +60,7 @@ def test_deffered_error():
 
 def test_ocs_response_headers(nc):
     old_headers = nc.response_headers
-    nc.users.get_details()
+    nc.users.get_user()
     assert old_headers != nc.response_headers
 
 
