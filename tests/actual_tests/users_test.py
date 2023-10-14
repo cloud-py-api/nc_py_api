@@ -97,7 +97,7 @@ def test_delete_user(nc_client):
         nc_client.users.delete(test_user_name)
 
 
-def test_users_get_list(nc):
+def test_users_get_list(nc, nc_client):
     users = nc.users.get_list()
     assert isinstance(users, list)
     assert nc.user in users
