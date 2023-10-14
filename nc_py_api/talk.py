@@ -1,6 +1,7 @@
 """Nextcloud Talk API definitions."""
 
 import dataclasses
+import datetime
 import enum
 import os
 import typing
@@ -279,6 +280,12 @@ class TalkMessage:
     def markdown(self) -> bool:
         """Whether the message should be rendered as markdown or shown as plain text."""
         return self._raw_data.get("markdown", False)
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} id={self.message_id}, author={self.actor_display_name},"
+            f" time={datetime.datetime.utcfromtimestamp(self.timestamp).replace(tzinfo=datetime.timezone.utc)}>"
+        )
 
 
 class TalkFileMessage(TalkMessage):
@@ -625,6 +632,12 @@ class Conversation(_TalkUserStatus):
         """
         return self._raw_data.get("statusClearAt", None)
 
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} id={self.conversation_id}, name={self.display_name},"
+            f" type={self.conversation_type.name}>"
+        )
+
 
 @dataclasses.dataclass(init=False)
 class Participant(_TalkUserStatus):
@@ -657,7 +670,7 @@ class Participant(_TalkUserStatus):
 
     @property
     def last_ping(self) -> int:
-        """Timestamp of the last ping. Should  be used for sorting."""
+        """Timestamp of the last ping. Should be used for sorting."""
         return self._raw_data["lastPing"]
 
     @property
@@ -684,6 +697,11 @@ class Participant(_TalkUserStatus):
     def breakout_token(self) -> str:
         """Only available with breakout-rooms-v1 capability."""
         return self._raw_data.get("roomToken", "")
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} id={self.attendee_id}, name={self.display_name}, last_ping={self.last_ping}>"
+        )
 
 
 @dataclasses.dataclass
@@ -712,6 +730,9 @@ class BotInfoBasic:
     def state(self) -> int:
         """One of the Bot states: ``0`` - Disabled, ``1`` - enabled, ``2`` - **No setup**."""
         return self._raw_data["state"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.bot_id}, name={self.bot_name}>"
 
 
 @dataclasses.dataclass(init=False)
@@ -770,6 +791,9 @@ class PollDetail:
     def option(self) -> int:
         """The option that was voted for."""
         return self._raw_data["optionId"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} actor={self.actor_display_name}, voted_for={self.option}>"
 
 
 @dataclasses.dataclass
@@ -856,3 +880,6 @@ class Poll:
     def details(self) -> list[PollDetail]:
         """Detailed list who voted for which option (only available for public closed polls)."""
         return [PollDetail(i) for i in self._raw_data.get("details", [])]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.poll_id}, author={self.actor_display_name}>"

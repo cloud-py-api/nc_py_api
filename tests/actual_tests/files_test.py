@@ -597,6 +597,8 @@ def test_create_update_delete_tag(nc_any):
     assert tag.display_name == "test_nc_py_api2"
     assert tag.user_visible is False
     assert tag.user_assignable is False
+    for i in nc_any.files.list_tags():
+        assert str(i).find("name=") != -1
     nc_any.files.delete_tag(tag)
     with pytest.raises(ValueError):
         nc_any.files.update_tag(tag)

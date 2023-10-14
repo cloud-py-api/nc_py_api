@@ -265,6 +265,9 @@ class SystemTag:
         """Flag indicating if User can assign this Tag."""
         return bool(self._raw_data.get("oc:user-assignable", "false").lower() == "true")
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.tag_id}, name={self.display_name}>"
+
 
 class ShareType(enum.IntEnum):
     """Type of the object that will receive share."""

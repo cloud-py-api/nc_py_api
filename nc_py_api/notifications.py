@@ -14,52 +14,67 @@ from ._session import NcSessionApp, NcSessionBasic
 
 
 @dataclasses.dataclass
-class NotificationInfo:
-    """Extra Notification attributes from Nextcloud."""
-
-    app_name: str
-    """Application name that generated notification."""
-    user_id: str
-    """User name for which this notification is."""
-    time: datetime.datetime
-    """Time when the notification was created."""
-    subject: str
-    """Subject of the notification."""
-    message: str
-    """Message of the notification."""
-    link: str
-    """Link which will be opened when user clicks on notification."""
-    icon: str
-    """Relative to instance url of the icon image."""
-
-    def __init__(self, raw_info: dict):
-        self.app_name = raw_info["app"]
-        self.user_id = raw_info["user"]
-        self.time = nc_iso_time_to_datetime(raw_info["datetime"])
-        self.subject = raw_info["subject"]
-        self.message = raw_info["message"]
-        self.link = raw_info.get("link", "")
-        self.icon = raw_info.get("icon", "")
-
-
-@dataclasses.dataclass
 class Notification:
     """Class representing information about Nextcloud notification."""
 
-    notification_id: int
-    """ID of the notification."""
-    object_id: str
-    """Randomly generated unique object ID"""
-    object_type: str
-    """Currently not used."""
-    info: NotificationInfo
-    """Additional extra information for the object"""
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
 
-    def __init__(self, raw_info: dict):
-        self.notification_id = raw_info["notification_id"]
-        self.object_id = raw_info["object_id"]
-        self.object_type = raw_info["object_type"]
-        self.info = NotificationInfo(raw_info)
+    @property
+    def notification_id(self) -> int:
+        """ID of the notification."""
+        return self._raw_data["notification_id"]
+
+    @property
+    def object_id(self) -> str:
+        """Randomly generated unique object ID."""
+        return self._raw_data["object_id"]
+
+    @property
+    def object_type(self) -> str:
+        """Currently not used."""
+        return self._raw_data["object_type"]
+
+    @property
+    def app_name(self) -> str:
+        """Application name that generated notification."""
+        return self._raw_data["app"]
+
+    @property
+    def user_id(self) -> str:
+        """User ID of user for which this notification is."""
+        return self._raw_data["user"]
+
+    @property
+    def subject(self) -> str:
+        """Subject of the notification."""
+        return self._raw_data["subject"]
+
+    @property
+    def message(self) -> str:
+        """Message of the notification."""
+        return self._raw_data["message"]
+
+    @property
+    def time(self) -> datetime.datetime:
+        """Time when the notification was created."""
+        return nc_iso_time_to_datetime(self._raw_data["datetime"])
+
+    @property
+    def link(self) -> str:
+        """Link, which will be opened when user clicks on notification."""
+        return self._raw_data.get("link", "")
+
+    @property
+    def icon(self) -> str:
+        """Relative to instance url of the icon image."""
+        return self._raw_data.get("icon", "")
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} id={self.notification_id}, app_name={self.app_name}, user_id={self.user_id},"
+            f" time={self.time}>"
+        )
 
 
 class _NotificationsAPI:

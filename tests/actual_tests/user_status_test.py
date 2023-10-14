@@ -31,6 +31,7 @@ def test_get_status(nc, message):
     assert r1.status_message == message
     assert r1.status_id is None
     assert not r1.message_predefined
+    assert str(r1).find("status_id=") != -1
 
 
 def test_get_status_non_existent_user(nc):
@@ -59,6 +60,7 @@ def test_get_list(nc):
     for i in r_all:
         if i.user_id == nc.user:
             compare_user_statuses(i, r_current)
+        assert str(i).find("status_type=") != -1
 
 
 def test_set_status(nc):

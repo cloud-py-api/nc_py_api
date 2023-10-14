@@ -30,6 +30,7 @@ def test_group_get_details(nc, nc_client):
     assert isinstance(group.user_count, int)
     assert isinstance(group.can_add, bool)
     assert isinstance(group.can_remove, bool)
+    assert str(group).find("user_count=") != -1
 
 
 def test_get_non_existing_group(nc_client):

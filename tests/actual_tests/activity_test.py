@@ -13,6 +13,7 @@ def test_get_filters(nc_any):
         assert isinstance(i.icon, str)
         assert i.name
         assert isinstance(i.priority, int)
+        assert str(i).find("name=") != -1
 
 
 def test_get_activities(nc_any):
@@ -37,7 +38,8 @@ def test_get_activities(nc_any):
         assert isinstance(i.objects, dict)
         assert isinstance(i.link, str)
         assert isinstance(i.icon, str)
-        assert i.activity_time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        assert i.time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        assert str(i).find("app=") != -1
     r2 = nc_any.activity.get_activities(since=True)
     if r2:
         old_activities_id = [i.activity_id for i in r]

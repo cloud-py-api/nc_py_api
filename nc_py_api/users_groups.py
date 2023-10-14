@@ -44,6 +44,9 @@ class GroupDetails:
         """Flag indicating the caller has enough rights to remove users from this group."""
         return bool(self._raw_data["canRemove"])
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.group_id}, user_count={self.user_count}, disabled={self.disabled}>"
+
 
 class _UsersGroupsAPI:
     """Class providing an API for managing user groups on the Nextcloud server.

@@ -130,10 +130,12 @@ def test_get_conversations_include_status(nc, nc_client):
         assert isinstance(second_participant.session_ids, list)
         assert isinstance(second_participant.breakout_token, str)
         assert second_participant.status_message == ""
+        assert str(second_participant).find("last_ping=") != -1
         participants = nc.talk.list_participants(first_conv, include_status=True)
         assert len(participants) == 2
         second_participant = next(i for i in participants if i.actor_id == environ["TEST_USER_ID"])
         assert second_participant.status_message == "my status message"
+        assert str(conversation).find("type=") != -1
     finally:
         nc.talk.leave_conversation(conversation.token)
 
@@ -196,6 +198,7 @@ def test_message_send_delete_reactions(nc_any):
         messages = nc_any.talk.receive_messages(conversation)
         deleted = [i for i in messages if i.system_message == "message_deleted"]
         assert deleted
+        assert str(deleted[0]).find("time=") != -1
     finally:
         nc_any.talk.delete_conversation(conversation)
 
@@ -232,7 +235,9 @@ def test_list_bots(nc, nc_app):
     assert isinstance(registered_bot.url_hash, str)
     conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
-        assert nc.talk.conversation_list_bots(conversation)
+        conversation_bots = nc.talk.conversation_list_bots(conversation)
+        assert conversation_bots
+        assert str(conversation_bots[0]).find("name=") != -1
     finally:
         nc.talk.delete_conversation(conversation.token)
 
@@ -306,6 +311,7 @@ def test_create_close_poll(nc_any):
             assert poll.voted_self == []
             assert poll.votes == []
 
+        assert str(poll).find("author=") != -1
         check_poll(False)
         poll = nc_any.talk.get_poll(poll)
         check_poll(False)
@@ -347,6 +353,7 @@ def test_vote_poll(nc_any):
         assert poll.details[0].actor_type == "users"
         assert poll.details[0].option == 1
         assert isinstance(poll.details[0].actor_display_name, str)
+        assert str(poll.details[0]).find("actor=") != -1
     finally:
         nc_any.talk.delete_conversation(conversation)
 

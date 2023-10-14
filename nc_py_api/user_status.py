@@ -77,6 +77,9 @@ class UserStatus:
         """Status type, on of the: online, away, dnd, invisible, offline."""
         return self._raw_data.get("status", "")
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} user_id={self.user_id}, status_type={self.status_type}>"
+
 
 @dataclasses.dataclass(init=False)
 class CurrentUserStatus(UserStatus):
@@ -96,6 +99,12 @@ class CurrentUserStatus(UserStatus):
     def status_type_defined(self) -> bool:
         """*True* if :py:attr:`UserStatus.status_type` is set by user, *False* otherwise."""
         return self._raw_data["statusIsUserDefined"]
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} user_id={self.user_id}, status_type={self.status_type},"
+            f" status_id={self.status_id}>"
+        )
 
 
 class _UserStatusAPI:

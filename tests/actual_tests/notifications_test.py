@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from nc_py_api.notifications import Notification, NotificationInfo
+from nc_py_api.notifications import Notification
 
 
 def test_available(nc_app):
@@ -18,23 +18,22 @@ def test_create(nc_app):
     obj_id = nc_app.notifications.create("subject0123", "message456")
     new_notification = nc_app.notifications.by_object_id(obj_id)
     assert isinstance(new_notification, Notification)
-    assert isinstance(new_notification.info, NotificationInfo)
-    assert new_notification.info.subject == "subject0123"
-    assert new_notification.info.message == "message456"
-    assert new_notification.info.icon
-    assert not new_notification.info.link
-    assert new_notification.info.time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    assert new_notification.subject == "subject0123"
+    assert new_notification.message == "message456"
+    assert new_notification.icon
+    assert not new_notification.link
+    assert new_notification.time > datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    assert str(new_notification).find("app_name=") != -1
 
 
 def test_create_link_icon(nc_app):
     obj_id = nc_app.notifications.create("1", "", link="https://some.link/gg")
     new_notification = nc_app.notifications.by_object_id(obj_id)
     assert isinstance(new_notification, Notification)
-    assert isinstance(new_notification.info, NotificationInfo)
-    assert new_notification.info.subject == "1"
-    assert not new_notification.info.message
-    assert new_notification.info.icon
-    assert new_notification.info.link == "https://some.link/gg"
+    assert new_notification.subject == "1"
+    assert not new_notification.message
+    assert new_notification.icon
+    assert new_notification.link == "https://some.link/gg"
 
 
 def test_delete_all(nc_app):

@@ -5,13 +5,18 @@ All notable changes to this project will be documented in this file.
 ## [0.4.0 - 2023-10-2x]
 
 As the project moves closer to `beta`, final unification changes are being made.
-This release contains some breaking changes in `users` API.
+This release contains some breaking changes in `users`, `notifications` API.
+
+### Added
+
+- `__repr__` method added for most objects(previously it was only present for `FsNode`).
 
 ### Changed
 
 - `users.get_details` renamed to `get_user` and returns a class instead of a dictionary. #145
 - Optional argument `displayname` in `users.create` renamed to `display_name`.
-- The `apps.ExAppInfo` class has been rewritten in the same format as all the others.
+- The `apps.ExAppInfo` class has been rewritten in the same format as all the others. #146
+- `notifications.Notification` class has been rewritten in the same format as all the others.
 
 ### Fixed
 
