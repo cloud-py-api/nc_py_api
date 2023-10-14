@@ -1,6 +1,7 @@
 """Nextcloud API for working with applications."""
 
 import dataclasses
+import datetime
 import typing
 
 from ._misc import require_capabilities
@@ -11,26 +12,40 @@ from ._session import NcSessionBasic
 class ExAppInfo:
     """Information about the External Application."""
 
-    app_id: str
-    """`ID` of the application"""
-    name: str
-    """Display name"""
-    version: str
-    """Version of the application"""
-    enabled: bool
-    """Flag indicating if the application enabled"""
-    last_check_time: int
-    """UTC time of last successful application check"""
-    system: bool
-    """Flag indicating if the application is a system application"""
-
     def __init__(self, raw_data: dict):
-        self.app_id = raw_data["id"]
-        self.name = raw_data["name"]
-        self.version = raw_data["version"]
-        self.enabled = bool(raw_data["enabled"])
-        self.last_check_time = raw_data["last_check_time"]
-        self.system = raw_data["system"]
+        self._raw_data = raw_data
+
+    @property
+    def app_id(self) -> str:
+        """`ID` of the application."""
+        return self._raw_data["id"]
+
+    @property
+    def name(self) -> str:
+        """Display name."""
+        return self._raw_data["name"]
+
+    @property
+    def version(self) -> str:
+        """Version of the application."""
+        return self._raw_data["version"]
+
+    @property
+    def enabled(self) -> bool:
+        """Flag indicating if the application enabled."""
+        return bool(self._raw_data["enabled"])
+
+    @property
+    def last_check_time(self) -> datetime.datetime:
+        """Time of the last successful application check."""
+        return datetime.datetime.utcfromtimestamp(int(self._raw_data["last_check_time"])).replace(
+            tzinfo=datetime.timezone.utc
+        )
+
+    @property
+    def system(self) -> bool:
+        """Flag indicating if the application is a system application."""
+        return bool(self._raw_data["system"])
 
 
 class _AppsAPI:

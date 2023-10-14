@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 APP_NAME = "files_trashbin"
@@ -68,7 +70,7 @@ def test_ex_app_get_list(nc, nc_app):
         assert isinstance(app.name, str)
         assert isinstance(app.version, str)
         assert isinstance(app.enabled, bool)
-        assert isinstance(app.last_check_time, int)
+        assert isinstance(app.last_check_time, datetime.datetime)
         assert isinstance(app.system, bool)
         if app.app_id == "nc_py_api":
             assert app.system is True
