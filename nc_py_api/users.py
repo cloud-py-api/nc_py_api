@@ -287,3 +287,21 @@ class _UsersAPI:
         :param group_id: group where user should be removed from administrators.
         """
         self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
+
+    def get_avatar(
+        self, user_id: str = "", size: typing.Literal[64, 512] = 512, dark: bool = False, guest: bool = False
+    ) -> bytes:
+        """Returns user avatar binary data.
+
+        :param user_id: The ID of the user whose avatar should be returned.
+            .. note:: To return the current user's avatar, leave the field blank.
+        :param size: Size of the avatar. Currently supported values: ``64`` and ``512``.
+        :param dark: Flag indicating whether a dark theme avatar should be returned or not.
+        :param guest: Flag indicating whether user ID is a guest name or not.
+        """
+        if not user_id and not guest:
+            user_id = self._session.user
+        url_path = f"/index.php/avatar/{user_id}/{size}" if not guest else f"/index.php/avatar/guest/{user_id}/{size}"
+        if dark:
+            url_path += "/dark"
+        return self._session.request(method="GET", path=url_path).content

@@ -1,8 +1,10 @@
 import contextlib
 import datetime
+from io import BytesIO
 from os import environ
 
 import pytest
+from PIL import Image
 
 from nc_py_api import (
     NextcloudApp,
@@ -141,3 +143,15 @@ def test_edit_user(nc_client):
 
 def test_resend_user_email(nc_client):
     nc_client.users.resend_welcome_email(nc_client.user)
+
+
+def test_avatars(nc):
+    im = nc.users.get_avatar()
+    im_64 = nc.users.get_avatar(size=64)
+    im_black = nc.users.get_avatar(dark=True)
+    im_64_black = nc.users.get_avatar(size=64, dark=True)
+    assert len(im_64) < len(im)
+    assert len(im_64_black) < len(im_black)
+    for i in (im, im_64, im_black, im_64_black):
+        img = Image.open(BytesIO(i))
+        img.load()

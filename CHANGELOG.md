@@ -2,13 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.4.0 - 2023-10-2x]
+## [0.4.0 - 2023-10-15]
 
 As the project moves closer to `beta`, final unification changes are being made.
 This release contains some breaking changes in `users`, `notifications` API.
 
 ### Added
 
+- Support for users avatars(`get_avatar`). #149
 - `__repr__` method added for most objects(previously it was only present for `FsNode`). #147
 
 ### Changed
@@ -21,7 +22,7 @@ This release contains some breaking changes in `users`, `notifications` API.
 ### Fixed
 
 - `users.get_details` with empty parameter in some cases was raised exception.
-- ClientMode: in case when LDAP was used as user backend, user login differs from user_id and most API failed with 404. #148
+- ClientMode: in case when LDAP was used as user backend, user login differs from `user id`, and most API failed with 404. #148
 
 ## [0.3.1 - 2023-10-07]
 
