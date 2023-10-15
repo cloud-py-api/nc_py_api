@@ -122,7 +122,7 @@ class Nextcloud(_NextcloudBasic):
 
     @property
     def user(self) -> str:
-        """Returns current user name."""
+        """Returns current user ID."""
         return self._session.user
 
 
@@ -184,7 +184,7 @@ class NextcloudApp(_NextcloudBasic):
 
     @property
     def user(self) -> str:
-        """Property containing the current username.
+        """Property containing the current user ID.
 
         *System Applications* can set it and impersonate the user. For normal applications, it is set automatically.
         """
