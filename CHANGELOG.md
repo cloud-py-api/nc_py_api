@@ -9,7 +9,7 @@ This release contains some breaking changes in `users`, `notifications` API.
 
 ### Added
 
-- `__repr__` method added for most objects(previously it was only present for `FsNode`).
+- `__repr__` method added for most objects(previously it was only present for `FsNode`). #147
 
 ### Changed
 
@@ -21,6 +21,7 @@ This release contains some breaking changes in `users`, `notifications` API.
 ### Fixed
 
 - `users.get_details` with empty parameter in some cases was raised exception.
+- ClientMode: in case when LDAP was used as user backend, user login differs from user_id and most API failed with 404. #148
 
 ## [0.3.1 - 2023-10-07]
 

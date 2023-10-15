@@ -134,15 +134,15 @@ class NcSessionBasic(ABC):
     adapter: Client
     adapter_dav: Client
     cfg: BasicConfig
-    user: str
     custom_headers: dict
-    _capabilities: dict
     response_headers: HttpxHeaders
+    _user: str
+    _capabilities: dict
 
     @abstractmethod
     def __init__(self, **kwargs):
         self._capabilities = {}
-        self.user = kwargs.get("user", "")
+        self._user = kwargs.get("user", "")
         self.custom_headers = kwargs.get("headers", {})
         self.limits = Limits(max_keepalive_connections=20, max_connections=20, keepalive_expiry=60.0)
         self.init_adapter()
@@ -168,6 +168,23 @@ class NcSessionBasic(ABC):
             "GET", f"{self.cfg.endpoint}{path_params}", headers=headers, timeout=timeout, **kwargs
         )
 
+    def request(
+        self,
+        method: str,
+        path: str,
+        params: Optional[dict] = None,
+        data: Optional[Union[bytes, str]] = None,
+        json: Optional[Union[dict, list]] = None,
+        **kwargs,
+    ):
+        method = method.upper()
+        if params is None:
+            params = {}
+        params.update({"format": "json"})
+        headers = kwargs.pop("headers", {})
+        data_bytes = self.__data_to_bytes(headers, data, json)
+        return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data_bytes, not_parse=True)
+
     def request_json(
         self,
         method: str,
@@ -177,13 +194,7 @@ class NcSessionBasic(ABC):
         json: Optional[Union[dict, list]] = None,
         **kwargs,
     ) -> dict:
-        method = method.upper()
-        if params is None:
-            params = {}
-        params.update({"format": "json"})
-        headers = kwargs.pop("headers", {})
-        data_bytes = self.__data_to_bytes(headers, data, json)
-        r = self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data_bytes, not_parse=True)
+        r = self.request(method, path, params, data, json, **kwargs)
         return loads(r.text) if r.status_code != 304 else {}
 
     def ocs(
@@ -320,6 +331,17 @@ class NcSessionBasic(ABC):
         self._capabilities = self.ocs(method="GET", path="/ocs/v1.php/cloud/capabilities")
 
     @property
+    def user(self) -> str:
+        """Current user ID. Can be different from login name."""
+        if not self._user:
+            self._user = self.ocs(method="GET", path="/ocs/v1.php/cloud/user")["id"]
+        return self._user
+
+    @user.setter
+    def user(self, value: str):
+        self._user = value
+
+    @property
     def capabilities(self) -> dict:
         if not self._capabilities:
             self.update_server_info()
@@ -360,7 +382,7 @@ class NcSession(NcSessionBasic):
 
     def __init__(self, **kwargs):
         self.cfg = Config(**kwargs)
-        super().__init__(user=self.cfg.auth[0])
+        super().__init__()
 
     def _create_adapter(self) -> Client:
         return Client(auth=self.cfg.auth, follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
