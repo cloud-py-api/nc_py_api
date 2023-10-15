@@ -332,8 +332,8 @@ class NcSessionBasic(ABC):
 
     @property
     def user(self) -> str:
-        """Current user ID. Can be different from login name."""
-        if not self._user and isinstance(self, NcSession):  # do not trigger for NextcloudApp
+        """Current user ID. Can be different from the login name."""
+        if isinstance(self, NcSession) and not self._user:  # do not trigger for NextcloudApp
             self._user = self.ocs(method="GET", path="/ocs/v1.php/cloud/user")["id"]
         return self._user
 
