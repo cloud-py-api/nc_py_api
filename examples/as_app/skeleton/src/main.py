@@ -12,7 +12,6 @@ APP = FastAPI()
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     # This will be called each time application is `enabled` or `disabled`
-    # All scopes that application required already granted before this step.
     # NOTE: `user` is unavailable on this step, so all NC API calls that require it will fail as unauthorized.
     print(f"enabled={enabled}")
     if enabled:
@@ -32,5 +31,5 @@ def initialization():
 
 if __name__ == "__main__":
     # Wrapper around `uvicorn.run`.
-    # You are free to call it directly, just use `APP_HOST` and `APP_PORT` from the environment.
+    # You are free to call it directly, with just using the `APP_HOST` and `APP_PORT` variables from the environment.
     run_app("main:APP", log_level="trace")
