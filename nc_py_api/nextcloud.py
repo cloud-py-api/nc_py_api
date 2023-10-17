@@ -256,8 +256,8 @@ class NextcloudApp(_NextcloudBasic):
             return False
         return True
 
-    def update_init_status(self, progress: int) -> None:
-        """Updates initialization status of installation.
+    def set_init_status(self, progress: int) -> None:
+        """Sets state of the app initialization.
 
         :param progress: a number from ``0`` to ``100`` indicating the percentage of application readiness for work.
             After sending ``100`` AppAPI will enable the application.

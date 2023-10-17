@@ -6,7 +6,6 @@ import hmac
 import json
 import typing
 
-import tqdm
 from fastapi import (
     BackgroundTasks,
     Depends,
@@ -16,7 +15,6 @@ from fastapi import (
     responses,
     status,
 )
-from huggingface_hub import snapshot_download
 
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import NextcloudApp
@@ -66,31 +64,37 @@ def set_handlers(
     :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
     :param heartbeat_handler: Optional, callback that will be called for the `heartbeat` deploy event.
     :param init_handler: Optional, callback that will be called for the `init`  event.
-    :param models_to_fetch: Optional, dictionary describing which models should be downloaded during `init`.
-    :param models_download_params: Optional, parameters to pass to ``snapshot_download``.
 
-    .. note:: If ``init_handler`` is specified, it is up to a developer to send an application init progress status.
-        AppAPI will only call `enabled_handler` after it receives ``100`` as initialization status progress.
+        .. note:: If ``init_handler`` is specified, it is up to a developer to set the application init progress status.
+            AppAPI will only call `enabled_handler` after it receives ``100`` as initialization status progress.
+
+    :param models_to_fetch: Dictionary describing which models should be downloaded during `init`.
+
+        .. note:: ``tqdm`` and ``huggingface_hub`` packages should be present for automatic models fetching.
+
+    :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
     """
 
     def fetch_models_task(models: dict):
-        class TqdmProgress(tqdm.tqdm):
-            def display(self, msg=None, pos=None):
-                if init_handler is None:
-                    a = min(int((self.n * 100 / self.total) / len(models)), 100)
-                    # NextcloudApp().update_init_status(a)
-                    print(a)
-                return super().display(msg, pos)
+        if models:
+            from huggingface_hub import snapshot_download  # pylint: disable=C0415
+            from tqdm import tqdm  # pylint: disable=C0415
 
-        params = models_download_params if models_download_params else {}
-        if "max_workers" not in params:
-            params["max_workers"] = 2
-        if "cache_dir" not in params:
-            params["cache_dir"] = persistent_storage()
-        for model in models:
-            snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
+            class TqdmProgress(tqdm):
+                def display(self, msg=None, pos=None):
+                    if init_handler is None:
+                        NextcloudApp().set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
+                    return super().display(msg, pos)
+
+            params = models_download_params if models_download_params else {}
+            if "max_workers" not in params:
+                params["max_workers"] = 2
+            if "cache_dir" not in params:
+                params["cache_dir"] = persistent_storage()
+            for model in models:
+                snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
         if init_handler is None:
-            NextcloudApp().update_init_status(100)
+            NextcloudApp().set_init_status(100)
 
     @fast_api_app.put("/enabled")
     def enabled_callback(
