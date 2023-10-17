@@ -77,8 +77,8 @@ def set_handlers(
 
     def fetch_models_task(models: dict):
         if models:
-            from huggingface_hub import snapshot_download  # pylint: disable=C0415
-            from tqdm import tqdm  # pylint: disable=C0415
+            from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
+            from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
 
             class TqdmProgress(tqdm):
                 def display(self, msg=None, pos=None):
