@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1 - 2023-10-17]
+
+### Added
+
+- Support for the new AppAPI endpoint `/init` and automatically downloading models from `huggingface`. #151
+
+### Changed
+
+- All examples were adjusted to changes in AppAPI.
+
 ## [0.4.0 - 2023-10-15]
 
 As the project moves closer to `beta`, final unification changes are being made.

@@ -255,3 +255,16 @@ class NextcloudApp(_NextcloudBasic):
             print(e)
             return False
         return True
+
+    def update_init_status(self, progress: int) -> None:
+        """Updates initialization status of installation.
+
+        :param progress: a number from ``0`` to ``100`` indicating the percentage of application readiness for work.
+            After sending ``100`` AppAPI will enable the application.
+        """
+        self._session.ocs(
+            method="PUT",
+            path=f"/index.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
+            json={"progress": progress},
+            not_parse=True,
+        )
