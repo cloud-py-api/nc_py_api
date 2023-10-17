@@ -70,7 +70,7 @@ def set_handlers(
 
     :param models_to_fetch: Dictionary describing which models should be downloaded during `init`.
 
-        .. note:: ``tqdm`` and ``huggingface_hub`` packages should be present for automatic models fetching.
+        .. note:: ```huggingface_hub`` package should be present for automatic models fetching.
 
     :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
     """
@@ -95,6 +95,8 @@ def set_handlers(
                 snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
         if init_handler is None:
             NextcloudApp().set_init_status(100)
+        else:
+            init_handler()
 
     @fast_api_app.put("/enabled")
     def enabled_callback(
@@ -114,6 +116,4 @@ def set_handlers(
     @fast_api_app.post("/init")
     def init_callback(background_tasks: BackgroundTasks):
         background_tasks.add_task(fetch_models_task, models_to_fetch if models_to_fetch else {})
-        if init_handler is not None:
-            init_handler()
         return responses.JSONResponse(content={}, status_code=200)
