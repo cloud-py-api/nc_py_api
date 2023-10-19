@@ -33,7 +33,7 @@ deploy:
 .PHONY: run28
 run28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister to_gif --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register to_gif docker_dev -e --force-scopes \
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register to_gif docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: manual_register28
@@ -41,12 +41,12 @@ manual_register28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister to_gif --silent || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register to_gif manual_install --json-info \
   "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9031,\"scopes\":{\"required\":[\"FILES\", \"NOTIFICATIONS\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
-  -e --force-scopes
+  --force-scopes
 
 .PHONY: run27
 run27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister to_gif --silent || true
-	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register to_gif docker_dev -e --force-scopes \
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register to_gif docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: manual_register27
@@ -54,4 +54,4 @@ manual_register27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister to_gif --silent || true
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register to_gif manual_install --json-info \
   "{\"appid\":\"to_gif\",\"name\":\"to_gif\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9031,\"scopes\":{\"required\":[\"FILES\", \"NOTIFICATIONS\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
-  -e --force-scopes
+  --force-scopes
