@@ -69,6 +69,7 @@ dev = [
 ]
 dev-min = [
   "coverage",
+  "huggingface_hub",
   "pillow",
   "pre-commit",
   "pylint",
