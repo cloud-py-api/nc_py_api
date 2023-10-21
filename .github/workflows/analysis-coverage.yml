@@ -153,8 +153,8 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
 
-          ../php occ app_api:app:unregister "$APP_ID" --silent
-          ../php occ app_api:daemon:unregister manual_install
+          php ../occ app_api:app:unregister "$APP_ID" --silent
+          php ../occ app_api:daemon:unregister manual_install
 
           coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
           echo $! > /tmp/_install_models.pid
