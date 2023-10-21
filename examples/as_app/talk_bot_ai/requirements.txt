@@ -1,4 +1,4 @@
-nc_py_api[app]>=0.3.0
+nc_py_api[app]>=0.4.1
 transformers>=4.33
 torch
 torchvision

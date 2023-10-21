@@ -32,13 +32,13 @@ deploy:
 .PHONY: run28
 run28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister talk_bot_multi --silent || true
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register talk_bot_multi docker_dev -e --force-scopes \
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register talk_bot_multi docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot_multi/appinfo/info.xml
 
 .PHONY: run27
 run27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister talk_bot_multi --silent || true
-	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register talk_bot_multi docker_dev -e --force-scopes \
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register talk_bot_multi docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot_multi/appinfo/info.xml
 
 .PHONY: manual_register
@@ -46,4 +46,4 @@ manual_register:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister talk_bot_multi --silent || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register talk_bot_multi manual_install --json-info \
   "{\"appid\":\"talk_bot_multi\",\"name\":\"TalkBotMulti\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9033,\"scopes\":{\"required\":[\"TALK\", \"TALK_BOT\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
-  -e --force-scopes
+  --force-scopes
