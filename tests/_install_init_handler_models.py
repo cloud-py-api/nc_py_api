@@ -10,7 +10,7 @@ MODEL_NAME = "MBZUAI/LaMini-T5-61M"
 def enabled_handler(_enabled: bool, _nc: NextcloudApp) -> str:
     if _enabled:
         try:
-            snapshot_download(MODEL_NAME, local_files_only=True)
+            snapshot_download(MODEL_NAME, local_files_only=True, cache_dir=ex_app.persistent_storage())
         except Exception:  # noqa
             return "model not found"
     return ""

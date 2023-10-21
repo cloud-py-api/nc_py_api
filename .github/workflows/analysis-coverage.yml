@@ -847,7 +847,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_sqlite_${{ matrix.nextcloud }}
+          name: coverage_sqlite_${{ matrix.nextcloud }}_client
           file: coverage.xml
           fail_ci_if_error: true
           verbose: true
