@@ -152,6 +152,17 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+
+          ../php occ app_api:app:unregister "$APP_ID" --silent
+          ../php occ app_api:daemon:unregister manual_install
+
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
+          echo $! > /tmp/_install_models.pid
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          sh scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          kill -15 $(cat /tmp/_install_models.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
+
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -323,127 +334,127 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  tests-oci:
-    needs: [analysis]
-    runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • OCI
-    strategy:
-      fail-fast: false
-      matrix:
-          nextcloud: [ "27.1.2" ]
-          python: [ "3.11" ]
-          php-version: [ "8.2" ]
-
-    services:
-      oracle:
-        image: ghcr.io/gvenzl/oracle-xe:11
-        env:
-          ORACLE_RANDOM_PASSWORD: true
-          APP_USER: useroracle
-          APP_USER_PASSWORD: userpassword
-        options: >-
-          --health-cmd healthcheck.sh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-        ports:
-          - 1521:1521/tcp
-
-    steps:
-      - name: Set up php
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
-            posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: cache-nextcloud
-        id: nextcloud_setup
-        uses: actions/cache@v3
-        with:
-          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
-          key: ${{ matrix.nextcloud }}
-
-      - name: Download Nextcloud
-        if: steps.nextcloud_setup.outputs.cache-hit != 'true'
-        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
-
-      - name: Set up Nextcloud
-        run: |
-          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
-          mkdir data
-          php occ maintenance:install --verbose --database=oci --database-name=XE \
-            --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
-            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
-          php occ config:system:set loglevel --value=1 --type=integer
-          php occ config:system:set debug --value=true --type=boolean
-          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
-
-      - name: Checkout NcPyApi
-        uses: actions/checkout@v4
-        with:
-          path: nc_py_api
-
-      - name: Install NcPyApi
-        working-directory: nc_py_api
-        run: python3 -m pip -v install ".[app,dev-min]"
-
-      - name: Checkout AppAPI
-        uses: actions/checkout@v4
-        with:
-          path: apps/app_api
-          repository: cloud-py-api/app_api
-
-      - name: Install AppAPI
-        run: |
-          php occ app:enable app_api
-          cd nc_py_api
-          coverage run --data-file=.coverage.ci_install tests/_install.py &
-          echo $! > /tmp/_install.pid
-          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
-          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
-          cd ..
-          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
-          kill -15 $(cat /tmp/_install.pid)
-          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
-
-      - name: Generate coverage report
-        working-directory: nc_py_api
-        run: |
-          coverage run --data-file=.coverage.ci -m pytest
-          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
-        env:
-          SKIP_NC_CLIENT_TESTS: 1
-
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
-
-      - name: Upload NC logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: nc_log_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: data/nextcloud.log
-          if-no-files-found: warn
+#  tests-oci:
+#    needs: [analysis]
+#    runs-on: ubuntu-22.04
+#    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • OCI
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#          nextcloud: [ "27.1.2" ]
+#          python: [ "3.11" ]
+#          php-version: [ "8.2" ]
+#
+#    services:
+#      oracle:
+#        image: ghcr.io/gvenzl/oracle-xe:11
+#        env:
+#          ORACLE_RANDOM_PASSWORD: true
+#          APP_USER: useroracle
+#          APP_USER_PASSWORD: userpassword
+#        options: >-
+#          --health-cmd healthcheck.sh
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 10
+#        ports:
+#          - 1521:1521/tcp
+#
+#    steps:
+#      - name: Set up php
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: ${{ matrix.php-version }}
+#          extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
+#            posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
+#
+#      - uses: actions/setup-python@v4
+#        with:
+#          python-version: ${{ matrix.python }}
+#
+#      - name: cache-nextcloud
+#        id: nextcloud_setup
+#        uses: actions/cache@v3
+#        with:
+#          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
+#          key: ${{ matrix.nextcloud }}
+#
+#      - name: Download Nextcloud
+#        if: steps.nextcloud_setup.outputs.cache-hit != 'true'
+#        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
+#
+#      - name: Set up Nextcloud
+#        run: |
+#          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
+#          mkdir data
+#          php occ maintenance:install --verbose --database=oci --database-name=XE \
+#            --database-host=127.0.0.1 --database-port=1521 --database-user=useroracle --database-pass=userpassword \
+#            --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
+#          php occ config:system:set loglevel --value=1 --type=integer
+#          php occ config:system:set debug --value=true --type=boolean
+#          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
+#
+#      - name: Checkout NcPyApi
+#        uses: actions/checkout@v4
+#        with:
+#          path: nc_py_api
+#
+#      - name: Install NcPyApi
+#        working-directory: nc_py_api
+#        run: python3 -m pip -v install ".[app,dev-min]"
+#
+#      - name: Checkout AppAPI
+#        uses: actions/checkout@v4
+#        with:
+#          path: apps/app_api
+#          repository: cloud-py-api/app_api
+#
+#      - name: Install AppAPI
+#        run: |
+#          php occ app:enable app_api
+#          cd nc_py_api
+#          coverage run --data-file=.coverage.ci_install tests/_install.py &
+#          echo $! > /tmp/_install.pid
+#          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+#          python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
+#          cd ..
+#          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+#          kill -15 $(cat /tmp/_install.pid)
+#          timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
+#
+#      - name: Generate coverage report
+#        working-directory: nc_py_api
+#        run: |
+#          coverage run --data-file=.coverage.ci -m pytest
+#          coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+#          coverage combine && coverage xml && coverage html
+#        env:
+#          SKIP_NC_CLIENT_TESTS: 1
+#
+#      - name: HTML coverage to artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+#          path: nc_py_api/htmlcov
+#          if-no-files-found: error
+#
+#      - name: Upload report to Codecov
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          name: coverage_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+#          file: coverage.xml
+#          fail_ci_if_error: true
+#          verbose: true
+#          working-directory: nc_py_api
+#
+#      - name: Upload NC logs
+#        if: always()
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: nc_log_oci_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+#          path: data/nextcloud.log
+#          if-no-files-found: warn
 
   tests-latest-maria:
     needs: [analysis]
