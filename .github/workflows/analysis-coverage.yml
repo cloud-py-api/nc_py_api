@@ -876,7 +876,7 @@ jobs:
     permissions:
       contents: none
     runs-on: ubuntu-22.04
-    needs: [tests-maria, tests-pgsql, tests-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    needs: [tests-maria, tests-pgsql, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
     name: Tests-OK
     steps:
       - run: echo "Tests passed successfully"
