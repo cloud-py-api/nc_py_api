@@ -164,9 +164,11 @@ jobs:
           coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
           echo $! > /tmp/_install_models.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
-          sh scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          cd ..
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
+          cd nc_py_api
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
