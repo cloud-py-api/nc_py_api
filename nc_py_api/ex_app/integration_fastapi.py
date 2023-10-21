@@ -75,7 +75,7 @@ def set_handlers(
     :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
     """
 
-    def fetch_models_task(models: dict):
+    def fetch_models_task(models: list[str]) -> None:
         if models:
             from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
             from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
@@ -115,5 +115,5 @@ def set_handlers(
 
     @fast_api_app.post("/init")
     def init_callback(background_tasks: BackgroundTasks):
-        background_tasks.add_task(fetch_models_task, models_to_fetch if models_to_fetch else {})
+        background_tasks.add_task(fetch_models_task, models_to_fetch if models_to_fetch else [])
         return responses.JSONResponse(content={}, status_code=200)

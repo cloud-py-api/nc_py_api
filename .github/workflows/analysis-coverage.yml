@@ -99,7 +99,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
-          php -S localhost:8080 &
+          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -143,7 +143,7 @@ jobs:
       - name: Enable Talk
         run: php occ app:enable spreed
 
-      - name: Generate coverage report
+      - name: Generate coverage report (1)
         working-directory: nc_py_api
         run: |
           coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
@@ -152,6 +152,23 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+
+      - name: Uninstall NcPyApi
+        run: |
+          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:daemon:unregister manual_install
+
+      - name: Generate coverage report (2)
+        working-directory: nc_py_api
+        run: |
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
+          echo $! > /tmp/_install_models.pid
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          cd ..
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          kill -15 $(cat /tmp/_install_models.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
+          cd nc_py_api
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -243,7 +260,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1
           php occ config:system:set debug --value=true --type=boolean
-          php -S localhost:8080 &
+          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -287,7 +304,7 @@ jobs:
       - name: Enable Talk
         run: php occ app:enable spreed
 
-      - name: Generate coverage report
+      - name: Generate coverage report (1)
         working-directory: nc_py_api
         run: |
           coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
@@ -296,6 +313,23 @@ jobs:
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+
+      - name: Uninstall NcPyApi
+        run: |
+          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:daemon:unregister manual_install
+
+      - name: Generate coverage report (2)
+        working-directory: nc_py_api
+        run: |
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
+          echo $! > /tmp/_install_models.pid
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          cd ..
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          kill -15 $(cat /tmp/_install_models.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
+          cd nc_py_api
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -381,7 +415,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
-          php -S localhost:8080 &
+          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -512,7 +546,7 @@ jobs:
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
           ./occ app:enable notes
-          php -S localhost:8080 &
+          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -662,7 +696,7 @@ jobs:
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
           ./occ app:enable activity
-          php -S localhost:8080 &
+          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -802,7 +836,7 @@ jobs:
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable activity
           ./occ app:enable notes
-          php -S localhost:8080 &
+          PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -847,7 +881,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_sqlite_${{ matrix.nextcloud }}
+          name: coverage_sqlite_${{ matrix.nextcloud }}_client
           file: coverage.xml
           fail_ci_if_error: true
           verbose: true

@@ -27,13 +27,17 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
+def init_handler():
+    NextcloudApp().set_init_status(100)
+
+
 def heartbeat_callback():
     return "ok"
 
 
 @APP.on_event("startup")
 def initialization():
-    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback)
+    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback, init_handler=init_handler)
 
 
 if __name__ == "__main__":
