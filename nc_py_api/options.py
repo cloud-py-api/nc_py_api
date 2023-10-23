@@ -3,6 +3,7 @@
 Each setting only affects newly created instances of **Nextcloud**/**NextcloudApp** class, unless otherwise specified.
 Specifying options in **kwargs** has higher priority than this.
 """
+
 import typing
 from os import environ
 

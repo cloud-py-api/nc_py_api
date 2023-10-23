@@ -1,4 +1,5 @@
 """Nextcloud API for working with apps V2's storage w/wo user context(table oc_appconfig_ex/oc_preferences_ex)."""
+
 import dataclasses
 import typing
 

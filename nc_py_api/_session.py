@@ -1,4 +1,5 @@
 """Session represents one connection to Nextcloud. All related stuff for these live here."""
+
 import typing
 from abc import ABC, abstractmethod
 from base64 import b64encode

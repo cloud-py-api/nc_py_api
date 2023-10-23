@@ -1,4 +1,5 @@
 """Example of an application that uses Python Transformers library with Talk Bot APIs."""
+
 import re
 from contextlib import asynccontextmanager
 from typing import Annotated

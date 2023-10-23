@@ -1,4 +1,5 @@
 """Exceptions for the Nextcloud API."""
+
 from httpx import codes
 
 

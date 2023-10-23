@@ -1,4 +1,5 @@
 """Nextcloud API for working with drop-down file's menu."""
+
 import os
 import typing
 from datetime import datetime, timezone
