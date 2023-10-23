@@ -9,15 +9,17 @@ help:
 	@echo "  "
 	@echo "  build-push        build image and upload to ghcr.io"
 	@echo "  "
-	@echo "  deploy            deploy Skeleton to registered 'docker_dev'"
+	@echo "  deploy28          deploy Skeleton to registered 'docker_dev' for Nextcloud 28"
+	@echo "  deploy27          deploy Skeleton to registered 'docker_dev' for Nextcloud 27"
 	@echo "  "
 	@echo "  run28             install Skeleton for Nextcloud 28"
 	@echo "  run27             install Skeleton for Nextcloud 27"
 	@echo "  "
 	@echo "  For development of this example use PyCharm run configurations. Development is always set for last Nextcloud."
-	@echo "  First run 'Skeleton' and then 'make manual_register', after that you can use/debug/develop it and easy test."
+	@echo "  First run 'Skeleton' and then 'make registerXX', after that you can use/debug/develop it and easy test."
 	@echo "  "
-	@echo "  manual_register   perform registration of running Skeleton into the 'manual_install' deploy daemon."
+	@echo "  register28        perform registration of running Skeleton into the 'manual_install' deploy daemon."
+	@echo "  register27        perform registration of running Skeleton into the 'manual_install' deploy daemon."
 
 .PHONY: build-push
 build-push:
