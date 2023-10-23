@@ -1,4 +1,5 @@
 """Nextcloud Talk API for bots."""
+
 import dataclasses
 import hashlib
 import hmac

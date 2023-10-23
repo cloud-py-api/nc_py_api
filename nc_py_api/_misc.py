@@ -2,6 +2,7 @@
 
 For internal use, prototypes can change between versions.
 """
+
 import secrets
 from base64 import b64decode
 from datetime import datetime, timezone

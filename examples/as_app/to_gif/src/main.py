@@ -1,4 +1,5 @@
 """Simplest example of files_dropdown_menu + notification."""
+
 import tempfile
 from contextlib import asynccontextmanager
 from os import path

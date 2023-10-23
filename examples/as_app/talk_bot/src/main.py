@@ -1,4 +1,5 @@
 """Example of an application(currency convertor) that uses Talk Bot APIs."""
+
 import re
 from contextlib import asynccontextmanager
 from typing import Annotated

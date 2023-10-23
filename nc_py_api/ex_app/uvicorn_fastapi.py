@@ -1,4 +1,5 @@
 """Uvicorn wrappers to run the external application."""
+
 import typing
 from os import environ
 
