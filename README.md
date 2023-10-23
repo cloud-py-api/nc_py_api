@@ -57,6 +57,38 @@ as long as it doesn't involve calls that require user password verification.
 
 **NextcloudApp** avalaible only from Nextcloud 27.1.2 and greater version with installed **AppAPI**.
 
+### Nextcloud skeleton app in Python
+
+```python3
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
+from nc_py_api import NextcloudApp
+from nc_py_api.ex_app import LogLvl, run_app, set_handlers
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    set_handlers(APP, enabled_handler)
+    yield
+
+
+APP = FastAPI(lifespan=lifespan)
+
+
+def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+    if enabled:
+        nc.log(LogLvl.WARNING, "Hello from nc_py_api.")
+    else:
+        nc.log(LogLvl.WARNING, "Bye bye from nc_py_api.")
+    return ""
+
+
+if __name__ == "__main__":
+    run_app("main:APP", log_level="trace")
+```
+
 ### Support
 
 You can support us in several ways:
@@ -81,18 +113,3 @@ You can support us in several ways:
   - [Issues](https://github.com/cloud-py-api/nc_py_api/issues)
   - [Setting up dev environment](https://cloud-py-api.github.io/nc_py_api/DevSetup.html)
 - [Changelog](https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md)
-
-### Motivation
-
-_Python's language, elegant and clear,_<br>
-_Weaves logic's threads without fear,_<br>
-_And in the sky, where clouds take form,_<br>
-_Nextcloud emerges, a digital norm._<br>
-
-_Together they stand, a duo bright,_<br>
-_Python and Nextcloud, day and night,_<br>
-_In a digital dance, they guide and sail,_<br>
-_Shaping tomorrow, where new ideas prevail._<br>
-
-#### **Know that we are always here to support and assist you on your journey.**
-### P.S: **_Good luck, and we hope you have fun!_**

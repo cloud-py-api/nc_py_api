@@ -12,6 +12,7 @@ keywords = [
   "api",
   "client",
   "framework",
+  "library",
   "nextcloud",
 ]
 license = "BSD-3-Clause"
