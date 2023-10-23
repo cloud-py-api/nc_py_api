@@ -1,13 +1,19 @@
-"""
-Simplest example.
-"""
+"""Simplest example."""
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from nc_py_api import NextcloudApp
 from nc_py_api.ex_app import LogLvl, run_app, set_handlers
 
-APP = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    set_handlers(APP, enabled_handler)
+    yield
+
+
+APP = FastAPI(lifespan=lifespan)
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
@@ -20,13 +26,6 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
         nc.log(LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     # In case of an error, a non-empty short string should be returned, which will be shown to the NC administrator.
     return ""
-
-
-# Of course, you can use `FastAPI lifespan: <https://fastapi.tiangolo.com/advanced/events/#lifespan>` instead of this.
-# The only requirement for the application is to define `/enabled` and `/heartbeat` handlers.
-@APP.on_event("startup")
-def initialization():
-    set_handlers(APP, enabled_handler)
 
 
 if __name__ == "__main__":

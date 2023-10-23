@@ -8,7 +8,7 @@ How To Install
 
     to deploy a docker image with Bot to docker.
 
-4. php occ app_api:app:register talk_bot "daemon_deploy_name" -e --force-scopes \
+4. php occ app_api:app:register talk_bot "daemon_deploy_name" --force-scopes \
 --info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
 
     to call its **enable** handler and accept all required API scopes by default.

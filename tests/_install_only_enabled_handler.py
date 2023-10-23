@@ -1,17 +1,21 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from nc_py_api import NextcloudApp, ex_app
 
-APP = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    ex_app.set_handlers(APP, enabled_handler)
+    yield
+
+
+APP = FastAPI(lifespan=lifespan)
 
 
 def enabled_handler(_enabled: bool, _nc: NextcloudApp) -> str:
     return ""
-
-
-@APP.on_event("startup")
-def initialization():
-    ex_app.set_handlers(APP, enabled_handler)
 
 
 if __name__ == "__main__":
