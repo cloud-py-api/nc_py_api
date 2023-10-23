@@ -96,7 +96,7 @@ class _UiFilesActionsAPI:
                 "permissions": kwargs.get("permissions", 31),
                 "order": kwargs.get("order", 0),
                 "icon": kwargs.get("icon", ""),
-                "icon_class": kwargs.get("icon_class", "icon-app-ecosystem-v2"),
+                "icon_class": kwargs.get("icon_class", "icon-app-api"),
                 "action_handler": callback_url,
             },
         }

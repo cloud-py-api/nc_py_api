@@ -1,6 +1,6 @@
 """Example of an application(currency convertor) that uses Talk Bot APIs."""
-
 import re
+from contextlib import asynccontextmanager
 from typing import Annotated
 
 import requests
@@ -9,7 +9,15 @@ from fastapi import BackgroundTasks, Depends, FastAPI
 from nc_py_api import NextcloudApp, talk_bot
 from nc_py_api.ex_app import run_app, set_handlers, talk_bot_app
 
-APP = FastAPI()
+
+# The same stuff as for usual External Applications
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    set_handlers(APP, enabled_handler)
+    yield
+
+
+APP = FastAPI(lifespan=lifespan)
 # We define bot globally, so if no `multiprocessing` module is used, it can be reused by calls.
 # All stuff in it works only with local variables, so in the case of multithreading, there should not be problems.
 CURRENCY_BOT = talk_bot.TalkBot("/currency_talk_bot", "Currency convertor", "Usage: `@currency convert 100 EUR to USD`")
@@ -74,12 +82,6 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     except Exception as e:
         return str(e)
     return ""
-
-
-# The same stuff as for usual External Applications
-@APP.on_event("startup")
-def initialization():
-    set_handlers(APP, enabled_handler)
 
 
 if __name__ == "__main__":

@@ -2,15 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.4.1 - 2023-10-17]
+## [0.5.0 - 2023-10-23]
 
 ### Added
 
-- Support for the new AppAPI endpoint `/init` and automatically downloading models from `huggingface`. #151
+- Support for the new `/init` AppAPI endpoint and the ability to automatically load models from `huggingface`. #151
 
 ### Changed
 
 - All examples were adjusted to changes in AppAPI.
+- The examples now use FastAPIs `lifespan` instead of the deprecated `on_event`.
 
 ## [0.4.0 - 2023-10-15]
 

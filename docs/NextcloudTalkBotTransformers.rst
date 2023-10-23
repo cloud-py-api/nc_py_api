@@ -37,7 +37,7 @@ Requirements
 We opt for the latest version of the Transformers library.
 Because the example was developed on a Mac, we ended up using Torchvision.
 
-`If you're working solely with Nvidia, you're free to use TensorFlow instead of PyTorch.`
+`You're free to use TensorFlow instead of PyTorch.`
 
 Next, we integrate the latest version of `nc_py_api` to minimize code redundancy and focus on the application's logic.
 
@@ -52,63 +52,20 @@ We specify the model name globally so that we can easily change the model name i
 
 **When Should We Download the Language Model?**
 
-Although the example uses the smallest model available, weighing in at 300 megabytes, it's common knowledge that larger language models can be substantially bigger.
-Downloading such models should not begin when a processing request is already received.
+To make process of initializing applications more robust, separate logic was introduced, with an ``/init`` endpoint.
 
-So we have two options:
-
-* Heartbeat
-* enabled_handler
-
-This can't be accomplished in the **app on/off handler** as Nextcloud expects an immediate response regarding the app's operability.
-
-Thus, we place the model downloading within the Heartbeat:
+This library also provides an additional functionality over this endpoint for easy downloading of models from the `huggingface <https://huggingface.co>`_.
 
 .. code-block::
 
-    # Thread that performs model download.
-    def download_models():
-        pipeline("text2text-generation", model=MODEL_NAME)  # this will download model
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI):
+        set_handlers(APP, enabled_handler, models_to_fetch=[MODEL_NAME])
+        yield
 
+This will automatically download models specified in ``models_to_fetch`` parameter to the application persistent storage.
 
-    def heartbeat_handler() -> str:
-        global MODEL_INIT_THREAD
-        print("heartbeat_handler: called")  # for debug
-        # if it is the first heartbeat, then start background thread to download a model
-        if MODEL_INIT_THREAD is None:
-            MODEL_INIT_THREAD = Thread(target=download_models)
-            MODEL_INIT_THREAD.start()
-            print("heartbeat_handler: started initialization thread")  # for debug
-        # if thread is finished then we will have "ok" in response, and AppAPI will consider that program is ready.
-        r = "init" if MODEL_INIT_THREAD.is_alive() else "ok"
-        print(f"heartbeat_handler: result={r}")  # for debug
-        return r
-
-
-    @APP.on_event("startup")
-    def initialization():
-        # Provide our custom **heartbeat_handler** to set_handlers
-        set_handlers(APP, enabled_handler, heartbeat_handler)
-
-
-.. note:: While this may not be the most ideal way to download models, it remains a viable method.
-    In the future, a more efficient wrapper for model downloading is planned to make the process even more convenient.
-
-Model Storage
-"""""""""""""
-
-By default, models will be downloaded to a directory that's removed when updating the app.
-To persistently store the models even after updates, add the following line to your code:
-
-.. code-block::
-
-    from nc_py_api.ex_app import persist_transformers_cache  # noqa # isort:skip
-
-This will set ``TRANSFORMERS_CACHE`` environment variable to point to the application persistent storage.
-Import of this **must be** on top before importing any code that perform the import of the ``transformers`` library.
-
-And that is all, ``transformers`` will automatically download all
-models you use to the **Application Persistent Storage** and AppAPI will keep it between updates.
+If you want write your own logic, you can always pass your own defined ``init_handler`` callback to ``set_handlers``.
 
 Working with Language Models
 """"""""""""""""""""""""""""
@@ -122,13 +79,16 @@ Finally, we arrive at the core aspect of the application, where we interact with
         r = re.search(r"@ai\s(.*)", message.object_content["message"], re.IGNORECASE)
         if r is None:
             return
-        model = pipeline("text2text-generation", model=MODEL_NAME)
+        model = pipeline(
+            "text2text-generation",
+            model=snapshot_download(MODEL_NAME, local_files_only=True, cache_dir=persistent_storage()),
+        )
         # Pass all text after "@ai" we to the Language model.
         response_text = model(r.group(1), max_length=64, do_sample=True)[0]["generated_text"]
         AI_BOT.send_message(response_text, message)
 
 
-Simply put, the AI logic is just two lines of code when using Transformers, which is incredibly efficient and cool.
+Simply put, AI logic is a few lines of code when using Transformers, which is incredibly efficient and cool.
 
 Messages from the AI model are then sent back to Talk Chat as you would expect from a typical chatbot.
 

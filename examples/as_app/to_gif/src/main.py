@@ -1,6 +1,6 @@
 """Simplest example of files_dropdown_menu + notification."""
-
 import tempfile
+from contextlib import asynccontextmanager
 from os import path
 from typing import Annotated
 
@@ -20,7 +20,14 @@ from nc_py_api.ex_app import (
     set_handlers,
 )
 
-APP = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    set_handlers(APP, enabled_handler)
+    yield
+
+
+APP = FastAPI(lifespan=lifespan)
 
 
 def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
@@ -85,11 +92,6 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     except Exception as e:
         return str(e)
     return ""
-
-
-@APP.on_event("startup")
-def initialization():
-    set_handlers(APP, enabled_handler)
 
 
 if __name__ == "__main__":

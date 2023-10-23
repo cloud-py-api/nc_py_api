@@ -12,12 +12,12 @@ Skeleton
 
 What's going on in the skeleton?
 
-First, it's important to understand that an external application acts more like a microservice, with its endpoints being called by Nextcloud.
+In `FastAPI lifespan <https://fastapi.tiangolo.com/advanced/events/?h=lifespan#lifespan>`_ we call the ``set_handlers`` function to further process the application installation logic.
 
-Therefore, when the application receives a request at the endpoint ``/enable``,
+Since this is a simple skeleton application, we only define the ``/enable`` endpoint.
+
+When the application receives a request at the endpoint ``/enable``,
 it should register all its functionalities in the cloud and wait for requests from Nextcloud.
-
-.. note:: This doesn't apply to system applications, which will be covered in the next chapter.
 
 So, calling:
 
@@ -54,7 +54,7 @@ Here they are:
 
 * APP_ID - ID of the application.
 * APP_PORT - Port on which application listen for the requests from the Nextcloud.
-* APP_SECRET - Secret for ``hmac`` signature generation.
+* APP_SECRET - Shared secret between Nextcloud and Application.
 * APP_VERSION - Version of the application.
 * AA_VERSION - Version of the AppAPI.
 * NEXTCLOUD_URL - URL at which the application can access the Nextcloud API.
@@ -67,7 +67,7 @@ After launching your application, execute the following command in the Nextcloud
 
     php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
         "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"host\":\"host.docker.internal\",\"scopes\":{\"required\":[2, 10, 11],\"optional\":[30, 31, 32, 33]},\"port\":SELECTED_PORT,\"protocol\":\"http\",\"system_app\":0}" \
-        -e --force-scopes
+        --force-scopes
 
 You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.
 
@@ -79,8 +79,7 @@ Examples for such Makefiles can be found in this repository:
 `ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ ,
 `nc_py_api <https://github.com/cloud-py-api/nc_py_api/blob/main/scripts/dev_register.sh>`_
 
-During the execution of `php occ app_api:app:register`, the **enabled_handler** will be called,
-as we pass the flag ``-e``, meaning ``enable after registration``.
+During the execution of `php occ app_api:app:register`, the **enabled_handler** will be called
 
 This is likely all you need to start debugging and developing an application for Nextcloud.
 

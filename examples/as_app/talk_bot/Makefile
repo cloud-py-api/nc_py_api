@@ -24,9 +24,14 @@ build-push:
 	docker login ghcr.io
 	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag ghcr.io/cloud-py-api/talk_bot:latest .
 
-.PHONY: deploy
-deploy:
+.PHONY: deploy28
+deploy28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:deploy talk_bot docker_dev \
+		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
+
+.PHONY: deploy27
+deploy27:
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:deploy talk_bot docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
 
 .PHONY: run28
@@ -41,9 +46,16 @@ run27:
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register talk_bot docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/talk_bot/appinfo/info.xml
 
-.PHONY: manual_register
-manual_register:
+.PHONY: register28
+register28:
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister talk_bot --silent || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register talk_bot manual_install --json-info \
+  "{\"appid\":\"talk_bot\",\"name\":\"TalkBot\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9032,\"scopes\":{\"required\":[\"TALK\", \"TALK_BOT\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
+  --force-scopes
+
+.PHONY: register27
+register27:
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister talk_bot --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register talk_bot manual_install --json-info \
   "{\"appid\":\"talk_bot\",\"name\":\"TalkBot\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9032,\"scopes\":{\"required\":[\"TALK\", \"TALK_BOT\"],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
   --force-scopes
