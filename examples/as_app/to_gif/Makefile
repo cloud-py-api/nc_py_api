@@ -27,12 +27,14 @@ build-push:
 
 .PHONY: deploy28
 deploy28:
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister to_gif --silent || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:deploy to_gif docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: deploy27
 deploy27:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:deploy to_gif docker_dev \
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister to_gif --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:deploy to_gif docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/to_gif/appinfo/info.xml
 
 .PHONY: run28
