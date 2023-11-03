@@ -576,12 +576,20 @@ jobs:
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
+      - name: Talk Branch Main
+        if: ${{ matrix.nextcloud }} == 'master'
+        run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
+
+      - name: Talk Branch Stable27
+        if: ${{ matrix.nextcloud }} == 'stable27'
+        run: echo "TALK_BRANCH_NAME=stable27" >> $GITHUB_ENV
+
       - name: Checkout Talk
         uses: actions/checkout@v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ matrix.nextcloud }}
+          ref: ${{ env.TALK_BRANCH_NAME }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -726,12 +734,20 @@ jobs:
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
+      - name: Talk Branch Main
+        if: ${{ matrix.nextcloud }} == 'master'
+        run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
+
+      - name: Talk Branch Stable27
+        if: ${{ matrix.nextcloud }} == 'stable27'
+        run: echo "TALK_BRANCH_NAME=stable27" >> $GITHUB_ENV
+
       - name: Checkout Talk
         uses: actions/checkout@v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ matrix.nextcloud }}
+          ref: ${{ env.TALK_BRANCH_NAME }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -847,12 +863,20 @@ jobs:
         working-directory: nc_py_api
         run: python3 -m pip -v install . pytest coverage pillow
 
+      - name: Talk Branch Main
+        if: ${{ matrix.nextcloud }} == 'master'
+        run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
+
+      - name: Talk Branch Stable27
+        if: ${{ matrix.nextcloud }} == 'stable27'
+        run: echo "TALK_BRANCH_NAME=stable27" >> $GITHUB_ENV
+
       - name: Checkout Talk
         uses: actions/checkout@v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ matrix.nextcloud }}
+          ref: ${{ env.TALK_BRANCH_NAME }}
 
       - name: Install Talk
         working-directory: apps/spreed
