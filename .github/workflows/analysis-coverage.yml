@@ -577,12 +577,12 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Talk Branch Main
-        if: ${{ matrix.nextcloud }} == 'master'
+        if: ${{ startsWith(matrix.nextcloud, 'master') }}
         run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
 
-      - name: Talk Branch Stable27
-        if: ${{ matrix.nextcloud }} == 'stable27'
-        run: echo "TALK_BRANCH_NAME=stable27" >> $GITHUB_ENV
+      - name: Talk Branch Other
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        run: echo "TALK_BRANCH_NAME=${{ matrix.nextcloud }}" >> $GITHUB_ENV
 
       - name: Checkout Talk
         uses: actions/checkout@v4
@@ -735,12 +735,12 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Talk Branch Main
-        if: ${{ matrix.nextcloud }} == 'master'
+        if: ${{ startsWith(matrix.nextcloud, 'master') }}
         run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
 
-      - name: Talk Branch Stable27
-        if: ${{ matrix.nextcloud }} == 'stable27'
-        run: echo "TALK_BRANCH_NAME=stable27" >> $GITHUB_ENV
+      - name: Talk Branch Other
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        run: echo "TALK_BRANCH_NAME=${{ matrix.nextcloud }}" >> $GITHUB_ENV
 
       - name: Checkout Talk
         uses: actions/checkout@v4
@@ -864,12 +864,12 @@ jobs:
         run: python3 -m pip -v install . pytest coverage pillow
 
       - name: Talk Branch Main
-        if: ${{ matrix.nextcloud }} == 'master'
+        if: ${{ startsWith(matrix.nextcloud, 'master') }}
         run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
 
-      - name: Talk Branch Stable27
-        if: ${{ matrix.nextcloud }} == 'stable27'
-        run: echo "TALK_BRANCH_NAME=stable27" >> $GITHUB_ENV
+      - name: Talk Branch Other
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        run: echo "TALK_BRANCH_NAME=${{ matrix.nextcloud }}" >> $GITHUB_ENV
 
       - name: Checkout Talk
         uses: actions/checkout@v4
