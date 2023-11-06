@@ -131,6 +131,28 @@ max-complexity = 16
 [tool.isort]
 profile = "black"
 
+[tool.pylint]
+master.py-version = "3.9"
+master.extension-pkg-allow-list = ["pydantic"]
+design.max-attributes = 8
+design.max-locals = 16
+design.max-branches = 16
+design.max-returns = 8
+design.max-args = 7
+basic.good-names = [
+    "a", "b", "c", "d", "e", "f", "i", "j", "k", "r", "v",
+    "ex", "_", "fp", "im", "nc", "ui",
+]
+reports.output-format = "colorized"
+similarities.ignore-imports = "yes"
+messages_control.disable = [
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "line-too-long",
+    "too-few-public-methods",
+    "too-many-public-methods",
+]
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = [
@@ -171,25 +193,3 @@ warn_no_return = true
 strict_optional = true
 check_untyped_defs = true
 show_error_codes = true
-
-[tool.pylint]
-master.py-version = "3.9"
-master.extension-pkg-allow-list = ["pydantic"]
-design.max-attributes = 8
-design.max-locals = 16
-design.max-branches = 16
-design.max-returns = 8
-design.max-args = 7
-basic.good-names = [
-    "a", "b", "c", "d", "e", "f", "i", "j", "k", "r", "v",
-    "ex", "_", "fp", "im", "nc", "ui",
-]
-reports.output-format = "colorized"
-similarities.ignore-imports = "yes"
-messages_control.disable = [
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "line-too-long",
-    "too-few-public-methods",
-    "too-many-public-methods",
-]
