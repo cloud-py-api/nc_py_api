@@ -11,8 +11,7 @@ from urllib.parse import unquote
 from xml.etree import ElementTree
 
 import xmltodict
-from httpx import Response
-from httpx import Headers
+from httpx import Headers, Response
 
 from .._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
 from .._misc import clear_from_params_empty, random_string, require_capabilities
