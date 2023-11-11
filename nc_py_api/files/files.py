@@ -12,6 +12,7 @@ from xml.etree import ElementTree
 
 import xmltodict
 from httpx import Response
+from httpx import Headers
 
 from .._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
 from .._misc import clear_from_params_empty, random_string, require_capabilities
@@ -273,7 +274,7 @@ class FilesAPI:
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
         dest = self._session.cfg.dav_endpoint + full_dest_path
-        headers = {"Destination": dest, "Overwrite": "T" if overwrite else "F"}
+        headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
         response = self._session.dav(
             "MOVE",
             self._dav_get_obj_path(self._session.user, path_src),
@@ -295,7 +296,7 @@ class FilesAPI:
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
         dest = self._session.cfg.dav_endpoint + full_dest_path
-        headers = {"Destination": dest, "Overwrite": "T" if overwrite else "F"}
+        headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
         response = self._session.dav(
             "COPY",
             self._dav_get_obj_path(self._session.user, path_src),
@@ -372,7 +373,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
 
         dest = self._session.cfg.dav_endpoint + f"/trashbin/{self._session.user}/restore/{restore_name}"
-        headers = {"Destination": dest}
+        headers = Headers({"Destination": dest}, encoding="utf-8")
         response = self._session.dav(
             "MOVE",
             path=f"/trashbin/{self._session.user}/{path}",
@@ -416,7 +417,7 @@ class FilesAPI:
         """
         require_capabilities("files.versioning", self._session.capabilities)
         dest = self._session.cfg.dav_endpoint + f"/versions/{self._session.user}/restore/{file_object.name}"
-        headers = {"Destination": dest}
+        headers = Headers({"Destination": dest}, encoding="utf-8")
         response = self._session.dav(
             "MOVE",
             path=f"/versions/{self._session.user}/{file_object.user_path}",
