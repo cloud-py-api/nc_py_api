@@ -424,7 +424,7 @@ class NcSessionApp(NcSessionBasic):
         return adapter
 
     def sign_request(self, headers: dict) -> None:
-        headers["AUTHORIZATION-APP-API"] = b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
+        headers.update({"AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))})
 
     def sign_check(self, request: Request) -> None:
         headers = {
