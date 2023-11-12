@@ -2,10 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.5.1 - 2023-11-xx]
+## [0.5.1 - 2023-11-12]
 
 ### Fixed
 
+- `move`, `copy`, `trashbin_restore` correctly set `utf-8` headers. #157 Thanks to @tschechniker
+- `upload_stream` correctly set `utf-8` headers. #159
 - `headers` can now be `httpx.Headers` and not only `dict`. #158
 
 ## [0.5.0 - 2023-10-23]

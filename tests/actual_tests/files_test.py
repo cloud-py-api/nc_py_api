@@ -201,13 +201,14 @@ def test_file_upload_file(nc_any):
     assert nc_any.files.download("test_dir_tmp/test_file_upload_file") == content
 
 
-def test_file_upload_chunked_v2(nc_any):
+@pytest.mark.parametrize("dest_path", ("test_dir_tmp/test_file_upl_chunk_v2", "test_dir_tmp/test_file_upl_chunk_v2_ü"))
+def test_file_upload_chunked_v2(nc_any, dest_path):
     with NamedTemporaryFile() as tmp_file:
         tmp_file.seek(7 * 1024 * 1024)
         tmp_file.write(b"\0")
         tmp_file.flush()
-        nc_any.files.upload_stream("test_dir_tmp/test_file_upload_chunked_v2", tmp_file.name)
-    assert len(nc_any.files.download("test_dir_tmp/test_file_upload_chunked_v2")) == 7 * 1024 * 1024 + 1
+        nc_any.files.upload_stream(dest_path, tmp_file.name)
+    assert len(nc_any.files.download(dest_path)) == 7 * 1024 * 1024 + 1
 
 
 @pytest.mark.parametrize("file_name", ("chunked_zero", "chunked_zero/", "chunked_zero//"))
@@ -288,43 +289,44 @@ def test_favorites(nc_any):
     assert not favorites
 
 
-def test_copy_file(nc_any, rand_bytes):
-    copied_file = nc_any.files.copy("test_64_bytes.bin", "test_dir_tmp/test_64_bytes.bin")
+@pytest.mark.parametrize("dest_path", ("test_dir_tmp/test_64_bytes.bin", "test_dir_tmp/test_64_bytes_ü.bin"))
+def test_copy_file(nc_any, rand_bytes, dest_path):
+    copied_file = nc_any.files.copy("test_64_bytes.bin", dest_path)
     assert copied_file.file_id
     assert copied_file.is_dir is False
-    assert nc_any.files.download("test_dir_tmp/test_64_bytes.bin") == rand_bytes
+    assert nc_any.files.download(dest_path) == rand_bytes
     with pytest.raises(NextcloudException):
-        nc_any.files.copy("test_64_bytes.bin", "test_dir_tmp/test_64_bytes.bin")
-    copied_file = nc_any.files.copy("test_12345_text.txt", "test_dir_tmp/test_64_bytes.bin", overwrite=True)
+        nc_any.files.copy("test_64_bytes.bin", dest_path)
+    copied_file = nc_any.files.copy("test_12345_text.txt", dest_path, overwrite=True)
     assert copied_file.file_id
     assert copied_file.is_dir is False
-    assert nc_any.files.download("test_dir_tmp/test_64_bytes.bin") == b"12345"
+    assert nc_any.files.download(dest_path) == b"12345"
 
 
-def test_move_file(nc_any):
+@pytest.mark.parametrize("dest_path", ("test_dir_tmp/dest move test file", "test_dir_tmp/dest move test file-ä"))
+def test_move_file(nc_any, dest_path):
     src = "test_dir_tmp/src move test file"
-    dest = "test_dir_tmp/dest move test file"
     content = b"content of the file"
     content2 = b"content of the file-second part"
     nc_any.files.upload(src, content=content)
-    nc_any.files.delete(dest, not_fail=True)
-    result = nc_any.files.move(src, dest)
+    nc_any.files.delete(dest_path, not_fail=True)
+    result = nc_any.files.move(src, dest_path)
     assert result.etag
     assert result.file_id
     assert result.is_dir is False
-    assert nc_any.files.download(dest) == content
+    assert nc_any.files.download(dest_path) == content
     with pytest.raises(NextcloudException):
         nc_any.files.download(src)
     nc_any.files.upload(src, content=content2)
     with pytest.raises(NextcloudException):
-        nc_any.files.move(src, dest)
-    result = nc_any.files.move(src, dest, overwrite=True)
+        nc_any.files.move(src, dest_path)
+    result = nc_any.files.move(src, dest_path, overwrite=True)
     assert result.etag
     assert result.file_id
     assert result.is_dir is False
     with pytest.raises(NextcloudException):
         nc_any.files.download(src)
-    assert nc_any.files.download(dest) == content2
+    assert nc_any.files.download(dest_path) == content2
 
 
 def test_move_copy_dir(nc_any):
@@ -515,10 +517,11 @@ def test_fs_node_last_modified_time():
     assert fs_node.info.last_modified == datetime(2022, 4, 5, 1, 2, 3)
 
 
-def test_trashbin(nc_any):
+@pytest.mark.parametrize("file_path", ("test_dir_tmp/trashbin_test", "test_dir_tmp/trashbin_test-ä"))
+def test_trashbin(nc_any, file_path):
     r = nc_any.files.trashbin_list()
     assert isinstance(r, list)
-    new_file = nc_any.files.upload("test_dir_tmp/trashbin_test", content=b"")
+    new_file = nc_any.files.upload(file_path, content=b"")
     nc_any.files.delete(new_file)
     # minimum one object now in a trashbin
     r = nc_any.files.trashbin_list()
@@ -528,7 +531,7 @@ def test_trashbin(nc_any):
     # no objects should be in trashbin
     r = nc_any.files.trashbin_list()
     assert not r
-    new_file = nc_any.files.upload("test_dir_tmp/trashbin_test", content=b"")
+    new_file = nc_any.files.upload(file_path, content=b"")
     nc_any.files.delete(new_file)
     # one object now in a trashbin
     r = nc_any.files.trashbin_list()
@@ -537,7 +540,7 @@ def test_trashbin(nc_any):
     i: FsNode = r[0]
     assert i.info.in_trash is True
     assert i.info.trashbin_filename.find("trashbin_test") != -1
-    assert i.info.trashbin_original_location == "test_dir_tmp/trashbin_test"
+    assert i.info.trashbin_original_location == file_path
     assert isinstance(i.info.trashbin_deletion_time, int)
     # restore that object
     nc_any.files.trashbin_restore(r[0])
@@ -561,13 +564,14 @@ def test_trashbin(nc_any):
     assert not r
 
 
-def test_file_versions(nc_any):
+@pytest.mark.parametrize("dest_path", ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt"))
+def test_file_versions(nc_any, dest_path):
     if nc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
     for i in (0, 1):
-        nc_any.files.delete("/test_dir_tmp/file_versions_test.txt", not_fail=True)
-        nc_any.files.upload("/test_dir_tmp/file_versions_test.txt", content=b"22")
-        new_file = nc_any.files.upload("/test_dir_tmp/file_versions_test.txt", content=b"333")
+        nc_any.files.delete(dest_path, not_fail=True)
+        nc_any.files.upload(dest_path, content=b"22")
+        new_file = nc_any.files.upload(dest_path, content=b"333")
         if i:
             new_file = nc_any.files.by_id(new_file)
         versions = nc_any.files.get_versions(new_file)

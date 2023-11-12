@@ -696,7 +696,7 @@ class FilesAPI:
         _dav_path = self._dav_get_obj_path(self._session.user, "nc-py-api-" + random_string(56), root_path="/uploads")
         _v2 = bool(self._session.cfg.options.upload_chunk_v2 and chunk_size >= 5 * 1024 * 1024)
         full_path = self._dav_get_obj_path(self._session.user, path)
-        headers = {"Destination": self._session.cfg.dav_endpoint + full_path}
+        headers = Headers({"Destination": self._session.cfg.dav_endpoint + full_path}, encoding="utf-8")
         if _v2:
             response = self._session.dav("MKCOL", _dav_path, headers=headers)
         else:
