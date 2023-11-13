@@ -24,9 +24,9 @@ from .misc import persistent_storage
 
 def nc_app(request: Request) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    user = get_username_secret_from_headers(
-        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
-    )[0]
+    user = get_username_secret_from_headers({
+        "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")
+    })[0]
     request_id = request.headers.get("AA-REQUEST-ID", None)
     headers = {"AA-REQUEST-ID": request_id} if request_id else {}
     nextcloud_app = NextcloudApp(user=user, headers=headers)

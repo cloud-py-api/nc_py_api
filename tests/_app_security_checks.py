@@ -16,13 +16,11 @@ if __name__ == "__main__":
     headers = {}
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 401  # Missing headers
-    headers.update(
-        {
-            "AA-VERSION": environ.get("AA_VERSION", "1.0.0"),
-            "EX-APP-ID": environ.get("APP_ID", "nc_py_api"),
-            "EX-APP-VERSION": environ.get("APP_VERSION", "1.0.0"),
-        }
-    )
+    headers.update({
+        "AA-VERSION": environ.get("AA_VERSION", "1.0.0"),
+        "EX-APP-ID": environ.get("APP_ID", "nc_py_api"),
+        "EX-APP-VERSION": environ.get("APP_VERSION", "1.0.0"),
+    })
     sign_request(headers)
     result = requests.put(request_url, headers=headers)
     assert result.status_code == 200
