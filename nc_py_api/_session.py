@@ -414,13 +414,11 @@ class NcSessionApp(NcSessionBasic):
 
     def _create_adapter(self) -> Client:
         adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
-        adapter.headers.update(
-            {
-                "AA-VERSION": self.cfg.aa_version,
-                "EX-APP-ID": self.cfg.app_name,
-                "EX-APP-VERSION": self.cfg.app_version,
-            }
-        )
+        adapter.headers.update({
+            "AA-VERSION": self.cfg.aa_version,
+            "EX-APP-ID": self.cfg.app_name,
+            "EX-APP-VERSION": self.cfg.app_version,
+        })
         return adapter
 
     def sign_request(self, headers: dict) -> None:
