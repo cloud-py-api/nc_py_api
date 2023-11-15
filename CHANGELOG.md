@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.2 - 2023-11-xx]
+
+### Fixed
+
+- AppAPI: added authentication to `/init` endpoint. #162
+
 ## [0.5.1 - 2023-11-12]
 
 ### Fixed

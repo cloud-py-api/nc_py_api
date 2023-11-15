@@ -35,8 +35,8 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
-def init_handler():
-    NextcloudApp().set_init_status(100)
+def init_handler(nc: NextcloudApp):
+    nc.set_init_status(100)
 
 
 def heartbeat_callback():

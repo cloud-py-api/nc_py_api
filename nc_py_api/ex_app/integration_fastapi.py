@@ -54,7 +54,7 @@ def set_handlers(
     fast_api_app: FastAPI,
     enabled_handler: typing.Callable[[bool, NextcloudApp], str],
     heartbeat_handler: typing.Optional[typing.Callable[[], str]] = None,
-    init_handler: typing.Optional[typing.Callable[[], None]] = None,
+    init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]] = None,
     models_to_fetch: typing.Optional[list[str]] = None,
     models_download_params: typing.Optional[dict] = None,
 ):
@@ -75,7 +75,7 @@ def set_handlers(
     :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
     """
 
-    def fetch_models_task(models: list[str]) -> None:
+    def fetch_models_task(nc: NextcloudApp, models: list[str]) -> None:
         if models:
             from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
             from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
@@ -83,7 +83,7 @@ def set_handlers(
             class TqdmProgress(tqdm):
                 def display(self, msg=None, pos=None):
                     if init_handler is None:
-                        NextcloudApp().set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
+                        nc.set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
                     return super().display(msg, pos)
 
             params = models_download_params if models_download_params else {}
@@ -94,9 +94,9 @@ def set_handlers(
             for model in models:
                 snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
         if init_handler is None:
-            NextcloudApp().set_init_status(100)
+            nc.set_init_status(100)
         else:
-            init_handler()
+            init_handler(nc)
 
     @fast_api_app.put("/enabled")
     def enabled_callback(
@@ -114,6 +114,9 @@ def set_handlers(
         return responses.JSONResponse(content={"status": return_status}, status_code=200)
 
     @fast_api_app.post("/init")
-    def init_callback(background_tasks: BackgroundTasks):
-        background_tasks.add_task(fetch_models_task, models_to_fetch if models_to_fetch else [])
+    def init_callback(
+        background_tasks: BackgroundTasks,
+        nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
+    ):
+        background_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else [])
         return responses.JSONResponse(content={}, status_code=200)
