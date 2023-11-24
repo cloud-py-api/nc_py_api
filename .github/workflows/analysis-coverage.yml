@@ -486,7 +486,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable27', 'stable28','master' ]
+        nextcloud: [ 'stable27', 'stable28', 'master' ]
 
     services:
       mariadb:
@@ -529,6 +529,7 @@ jobs:
 
       - name: Checkout Notes
         uses: actions/checkout@v4
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/notes
           ref: "main"
@@ -545,8 +546,13 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
-          ./occ app:enable notes
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
+
+      - name: Enable Notes
+        uses: actions/checkout@v4
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        run: |
+          ./occ app:enable notes
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -835,6 +841,7 @@ jobs:
 
       - name: Checkout Notes
         uses: actions/checkout@v4
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/notes
           ref: "main"
@@ -851,8 +858,13 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable activity
-          ./occ app:enable notes
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
+
+      - name: Enable Notes
+        uses: actions/checkout@v4
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        run: |
+          ./occ app:enable notes
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
