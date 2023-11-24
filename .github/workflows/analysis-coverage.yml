@@ -46,7 +46,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - nextcloud: "27.1.2"
+          - nextcloud: "27.1.4"
             python: "3.10"
             php-version: "8.1"
 
@@ -204,7 +204,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - nextcloud: "27.1.2"
+          - nextcloud: "27.1.4"
             python: "3.11"
             php-version: "8.2"
     env:
@@ -364,7 +364,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          nextcloud: [ "27.1.2" ]
+          nextcloud: [ "27.1.4" ]
           python: [ "3.11" ]
           php-version: [ "8.2" ]
 
@@ -486,7 +486,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable27', 'master' ]
+        nextcloud: [ 'stable27', 'stable28','master' ]
 
     services:
       mariadb:
@@ -641,7 +641,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable27', 'master' ]
+        nextcloud: [ 'stable27', 'stable28', 'master' ]
     env:
       NC_dbname: nextcloud_abz
 
@@ -804,7 +804,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable26', 'stable27', 'master' ]
+        nextcloud: [ 'stable26', 'stable27', 'stable28', 'master' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
 
