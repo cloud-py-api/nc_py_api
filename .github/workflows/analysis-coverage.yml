@@ -549,10 +549,8 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Enable Notes
-        uses: actions/checkout@v4
         if: ${{ !startsWith(matrix.nextcloud, 'master') }}
-        run: |
-          ./occ app:enable notes
+        run: ./occ app:enable notes
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
@@ -861,10 +859,8 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Enable Notes
-        uses: actions/checkout@v4
         if: ${{ !startsWith(matrix.nextcloud, 'master') }}
-        run: |
-          ./occ app:enable notes
+        run: ./occ app:enable notes
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4
