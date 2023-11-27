@@ -14,7 +14,7 @@ echo $! > /tmp/_install.pid
 python3 tests/_install_wait.py "http://localhost:9009/heartbeat" "\"status\":\"ok\"" 15 0.5
 docker exec "$1" sudo -u www-data php occ app_api:app:register nc_py_api manual_install --json-info \
   "{\"appid\":\"nc_py_api\",\"name\":\"nc_py_api\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"scopes\":{\"required\":[\"SYSTEM\", \"FILES\", \"FILES_SHARING\"],\"optional\":[\"USER_INFO\", \"USER_STATUS\", \"NOTIFICATIONS\", \"WEATHER_STATUS\", \"TALK\", \"TALK_BOT\", \"ACTIVITIES\", \"NOTES\"]},\"port\":9009,\"protocol\":\"http\",\"system_app\":1}" \
-  --force-scopes
+  --force-scopes --wait-finish
 cat /tmp/_install.pid
 kill -15 "$(cat /tmp/_install.pid)"
 echo "nc_py_api for $1 is ready to use"
