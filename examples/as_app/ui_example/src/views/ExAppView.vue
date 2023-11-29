@@ -1,10 +1,10 @@
 <template>
-	<NcContent>
+	<NcContent app-name="app_api">
 		<NcAppContent>
 			<div class="ui-example">
-				<h1>{{ t('ui_example', 'ExApp UI example') }}</h1>
+				<h2>{{ t('ui_example', 'ExApp UI example') }}</h2>
 				<p>{{ t('ui_example', 'All front-end stuff kept the same for seamless migration for developers. All needed stuff is proxying via AppAPI') }}</p>
-				<NcInputField :value.sync="initialState.initial_value" :label="t('ui_example', 'Initial value')" :disabled="true" />
+				<NcInputField :value="initialState?.initial_value" :label="t('ui_example', 'Initial value')" :disabled="true" />
 				<p>
 					{{ t('ui_example', 'Initial value from store') }}: {{ initialStateValue }}
 				</p>
@@ -33,16 +33,13 @@ export default {
 	},
 	data() {
 		return {
-			initialState: loadState('ui_example', 'ui_example_state'),
+			initialState: loadState('app_api', 'ui_example_state'),
 		}
 	},
 	computed: {
 		initialStateValue() {
 			return this.$store.getters.getInitialStateValue
 		},
-	},
-	beforeMount() {
-		this.$store.commit('setInitialStateValue', this.initialState?.initial_value)
 	},
 	methods: {
 		verifyInitialValue() {
@@ -52,7 +49,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .ui-example {
 	width: 100%;
 	max-width: 600px;
@@ -60,5 +57,10 @@ export default {
 	flex-direction: column;
 	align-items: center;
 	margin: 0 auto;
+	padding: 30px;
+
+	input, p {
+		margin: 20px 0;
+	}
 }
 </style>

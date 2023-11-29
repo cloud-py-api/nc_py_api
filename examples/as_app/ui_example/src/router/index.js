@@ -1,7 +1,7 @@
 import VueRouter from 'vue-router' // eslint-disable-line
 import { generateUrl } from '@nextcloud/router'
 import Vue from 'vue'
-import { APP_API_PROXY_URL_PREFIX, EX_APP_ID } from '../constants/AppAPI.js'
+import { APP_API_ROUTER_BASE, EX_APP_ID, EX_APP_MENU_ENTRY_NAME } from '../constants/AppAPI.js'
 
 const ExAppView = () => import('../views/ExAppView.vue')
 
@@ -17,7 +17,7 @@ function setPageHeading(heading) {
 const baseTitle = document.title
 const router = new VueRouter({
 	mode: 'history',
-	base: generateUrl(`${APP_API_PROXY_URL_PREFIX}/${EX_APP_ID}`, ''), // setting base to AppAPI proxy URL
+	base: generateUrl(`${APP_API_ROUTER_BASE}/${EX_APP_ID}/${EX_APP_MENU_ENTRY_NAME}`, ''), // setting base to AppAPI proxy URL
 	linkActiveClass: 'active',
 	routes: [
 		{
