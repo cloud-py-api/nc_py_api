@@ -4,7 +4,6 @@ import typing
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, responses
-from fastapi.staticfiles import StaticFiles
 
 from nc_py_api import NextcloudApp
 from nc_py_api.ex_app import nc_app, run_app, set_handlers
@@ -17,7 +16,6 @@ async def lifespan(_app: FastAPI):
 
 
 APP = FastAPI(lifespan=lifespan)
-APP.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
@@ -25,13 +23,12 @@ def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
     return ""
 
 
-@APP.put("/some_endpoint")
-def some_endpoint(
-    param: str,
+@APP.post("/verify_initial_value")
+def verify_initial_value(
     _nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
 ):
-    print(param)
-    return responses.JSONResponse(content={"key": "some content"}, status_code=200)
+    # print(param)
+    return responses.JSONResponse(content={"initial_value": "Button was pressed"}, status_code=200)
 
 
 if __name__ == "__main__":

@@ -9,4 +9,4 @@ Vue.prototype.OC = window.OC
 Vue.prototype.OCA = window.OCA
 
 // eslint-disable-next-line
-__webpack_public_path__ = generateUrl(`${APP_API_PROXY_URL_PREFIX}/${EX_APP_ID}/static/js/`)
+__webpack_public_path__ = generateUrl(`${APP_API_PROXY_URL_PREFIX}/${EX_APP_ID}/js/`)
