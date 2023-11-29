@@ -15,22 +15,22 @@ help:
 	@echo "  Next commands are only for dev environment with nextcloud-docker-dev!"
 	@echo "  They should run from the host you are developing on(with activated venv) and not in the container with Nextcloud!"
 	@echo "  "
-	@echo "  register28          register nc_py_api for Nextcloud 28"
+	@echo "  register            register nc_py_api for Nextcloud Last"
 	@echo "  register27          register nc_py_api for Nextcloud 27"
 	@echo "  "
-	@echo "  tests28             run nc_py_api tests for Nextcloud 28"
+	@echo "  tests               run nc_py_api tests for Nextcloud Last"
 	@echo "  tests27             run nc_py_api tests for Nextcloud 27"
 
-.PHONY: register28
-register28:
+.PHONY: register
+register:
 	/bin/sh scripts/dev_register.sh master-nextcloud-1 nextcloud.local
 
 .PHONY: register27
 register27:
 	/bin/sh scripts/dev_register.sh master-stable27-1 stable27.local
 
-.PHONY: tests28
-tests28:
+.PHONY: tests
+tests:
 	NEXTCLOUD_URL=http://nextcloud.local python3 -m pytest
 
 .PHONY: tests27
