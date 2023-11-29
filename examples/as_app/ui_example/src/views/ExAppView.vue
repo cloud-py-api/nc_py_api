@@ -33,7 +33,7 @@ export default {
 	},
 	data() {
 		return {
-			initialState: loadState('app_api', 'ui_example_state'),
+			initialState: JSON.parse(loadState('app_api', 'ui_example_state')),
 		}
 	},
 	computed: {
