@@ -1,17 +1,17 @@
 <template>
 	<NcContent>
 		<NcAppContent>
-            <div class="ui-example">
-                <h1>{{ t('ui_example', 'ExApp UI example') }}</h1>
-                <p>{{ t('ui_example', 'All front-end stuff kept the same for seamless migration for developers. All needed stuff is proxying via AppAPI') }}</p>
-                <NcInputField :value.sync="initialState.initial_value" :label="t('ui_example', 'Initial value')" :disabled="true" />
-                <p>
-                    {{ t('ui_example', 'Initial value from store') }}: {{ initialStateValue }}
-                </p>
-                <NcButton @click="verifyInitialValue">
-                    {{ t('ui_example', 'Verify initial value') }}
-                </NcButton>
-            </div>
+			<div class="ui-example">
+				<h1>{{ t('ui_example', 'ExApp UI example') }}</h1>
+				<p>{{ t('ui_example', 'All front-end stuff kept the same for seamless migration for developers. All needed stuff is proxying via AppAPI') }}</p>
+				<NcInputField :value.sync="initialState.initial_value" :label="t('ui_example', 'Initial value')" :disabled="true" />
+				<p>
+					{{ t('ui_example', 'Initial value from store') }}: {{ initialStateValue }}
+				</p>
+				<NcButton @click="verifyInitialValue">
+					{{ t('ui_example', 'Verify initial value') }}
+				</NcButton>
+			</div>
 		</NcAppContent>
 	</NcContent>
 </template>
