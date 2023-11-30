@@ -122,7 +122,7 @@ extend-ignore = ["D107", "D105", "D203", "D213", "D401", "I001", "RUF100"]
 [tool.ruff.extend-per-file-ignores]
 "benchmarks/**/*.py" = ["D"]
 "docs/**/*.py" = ["D"]
-"examples/**/*.py" = ["D", "S106"]
+"examples/**/*.py" = ["D", "S106", "S311"]
 "tests/**/*.py" = ["D", "E402", "S", "UP"]
 
 [tool.ruff.mccabe]
