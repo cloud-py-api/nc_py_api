@@ -36,6 +36,18 @@ const actions = {
 				showError(t('ui_example', 'Initial value is incorrect'))
 			})
 	},
+
+	sendNextcloudFileToExApp(context, fileInfo) {
+		axios.post(generateUrl(`${APP_API_PROXY_URL_PREFIX}/${EX_APP_ID}/nextcloud_file`), {
+			file_info: fileInfo,
+		})
+			.then(() => {
+				showSuccess(t('ui_example', 'File sent'))
+			})
+			.catch(() => {
+				showError(t('ui_example', 'Failed to send file'))
+			})
+	},
 }
 
 export default { state, mutations, getters, actions }

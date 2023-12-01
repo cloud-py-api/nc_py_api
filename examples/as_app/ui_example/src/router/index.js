@@ -4,6 +4,7 @@ import Vue from 'vue'
 import { APP_API_ROUTER_BASE, EX_APP_ID, EX_APP_MENU_ENTRY_NAME } from '../constants/AppAPI.js'
 
 const ExAppView = () => import('../views/ExAppView.vue')
+const FilePicker = () => import('../views/FilePicker.vue')
 
 Vue.use(VueRouter)
 
@@ -17,16 +18,26 @@ function setPageHeading(heading) {
 const baseTitle = document.title
 const router = new VueRouter({
 	mode: 'history',
-	base: generateUrl(`${APP_API_ROUTER_BASE}/${EX_APP_ID}/${EX_APP_MENU_ENTRY_NAME}`, ''), // setting base to AppAPI proxy URL
+	base: generateUrl(`${APP_API_ROUTER_BASE}/${EX_APP_ID}/${EX_APP_MENU_ENTRY_NAME}`, ''), // setting base to AppAPI embedded URL
 	linkActiveClass: 'active',
 	routes: [
 		{
-			path: '/',
+			path: '',
 			component: ExAppView,
 			name: 'ui_example_index',
 			meta: {
 				title: async () => {
 					return t('app_api', 'ExApp UI Example')
+				},
+			},
+		},
+		{
+			path: '/file_picker',
+			component: FilePicker,
+			name: 'ui_example_file_picker',
+			meta: {
+				title: async () => {
+					return t('app_api', 'ExApp send file')
 				},
 			},
 		},

@@ -1,25 +1,19 @@
 <template>
-	<NcContent app-name="app_api">
-		<NcAppContent>
-			<div class="ui-example">
-				<h2>{{ t('ui_example', 'ExApp UI example') }}</h2>
-				<p>{{ t('ui_example', 'All front-end stuff kept the same for seamless migration for developers. All needed stuff is proxying via AppAPI') }}</p>
-				<NcInputField :value="initialState?.initial_value" :label="t('ui_example', 'Initial value')" :disabled="true" />
-				<p>
-					{{ t('ui_example', 'Initial value from store') }}: {{ initialStateValue }}
-				</p>
-				<NcButton @click="verifyInitialValue">
-					{{ t('ui_example', 'Verify initial value') }}
-				</NcButton>
-			</div>
-		</NcAppContent>
-	</NcContent>
+	<div class="ui-example">
+		<h2>{{ t('ui_example', 'ExApp UI example') }}</h2>
+		<p>{{ t('ui_example', 'All front-end stuff kept the same for seamless migration for developers. All needed stuff is proxying via AppAPI') }}</p>
+		<NcInputField :value="initialState?.initial_value" :label="t('ui_example', 'Initial value')" :disabled="true" />
+		<p>
+			{{ t('ui_example', 'Initial value from store') }}: {{ initialStateValue }}
+		</p>
+		<NcButton @click="verifyInitialValue">
+			{{ t('ui_example', 'Verify initial value') }}
+		</NcButton>
+	</div>
 </template>
 
 <script>
 import { loadState } from '@nextcloud/initial-state'
-import NcContent from '@nextcloud/vue/dist/Components/NcContent.js'
-import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
 import NcInputField from '@nextcloud/vue/dist/Components/NcInputField.js'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 
@@ -28,8 +22,6 @@ export default {
 	components: {
 		NcInputField,
 		NcButton,
-		NcContent,
-		NcAppContent,
 	},
 	data() {
 		return {
