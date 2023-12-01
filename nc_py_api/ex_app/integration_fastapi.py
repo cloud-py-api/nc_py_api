@@ -76,7 +76,7 @@ def set_handlers(
         .. note:: ```huggingface_hub`` package should be present for automatic models fetching.
 
     :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
-    :param map_app_static: Should be folders ``js``, ``css``, ``l10n`` automatically mounted in FastAPI or not.
+    :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
     """
 
     def fetch_models_task(nc: NextcloudApp, models: list[str]) -> None:
@@ -126,7 +126,7 @@ def set_handlers(
         return responses.JSONResponse(content={}, status_code=200)
 
     if map_app_static:
-        for mnt_dir in ("js", "l10n", "css"):
+        for mnt_dir in ("js", "l10n", "css", "img"):
             mnt_dir_path = os.path.join(os.getcwd(), mnt_dir)
             if os.path.exists(mnt_dir_path):
                 fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)

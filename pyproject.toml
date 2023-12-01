@@ -75,7 +75,6 @@ dev-min = [
   "pre-commit",
   "pylint",
   "pytest",
-  "selenium",
 ]
 docs = [
   "autodoc_pydantic>=2.0.1",
@@ -145,6 +144,7 @@ basic.good-names = [
 ]
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
+similarities.min-similarity-lines = 6
 messages_control.disable = [
     "missing-class-docstring",
     "missing-function-docstring",
