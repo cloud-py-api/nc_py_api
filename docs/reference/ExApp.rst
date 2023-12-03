@@ -33,8 +33,26 @@ UI methods should be accessed with the help of :class:`~nc_py_api.nextcloud.Next
 .. autoclass:: nc_py_api.ex_app.ui.ui.UiApi
     :members:
 
-.. automodule:: nc_py_api.ex_app.ui.files
+.. automodule:: nc_py_api.ex_app.ui.files_actions
     :members:
 
-.. autoclass:: nc_py_api.ex_app.ui.files._UiFilesActionsAPI
+.. autoclass:: nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI
+    :members:
+
+.. automodule:: nc_py_api.ex_app.ui.top_menu
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.resources._UiResources
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.resources.UiInitState
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.resources.UiScript
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.resources.UiStyle
     :members:

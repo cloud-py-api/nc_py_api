@@ -1,66 +1,44 @@
-from os import environ
-from time import sleep
-
 import pytest
 
 from nc_py_api import FilePermissions, FsNode, NextcloudExceptionNotFound, ex_app
 
-pytest.importorskip("selenium", reason="Selenium is not installed")
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as exp_cond
-from selenium.webdriver.support.wait import WebDriverWait
-
-
-@pytest.mark.skipif(environ.get("CI", None) is not None, reason="do not work on GitHub")
-@pytest.mark.skipif(
-    not environ.get("NC_AUTH_USER", None) or not environ.get("NC_AUTH_PASS", None),
-    reason="needs username & password for tests.",
-)
 def test_register_ui_file_actions(nc_app):
-    tmp_png = nc_app.files.by_path("test_dir/test_generated_image.png")
     nc_app.ui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
-    nc_app.ui.files_dropdown_menu.register("test_ui_action_txt", "UI TEST Txt", "/ui_action_test", mime="text")
-    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST Any", "/ui_action_test")
-    opts = webdriver.FirefoxOptions()
-    opts.add_argument("--headless")
-    driver = webdriver.Firefox(opts)
-    try:
-        driver.get(environ["NEXTCLOUD_URL"])
-        driver.find_element(By.ID, "user").send_keys(environ["NC_AUTH_USER"])
-        driver.find_element(By.ID, "password").send_keys(environ["NC_AUTH_PASS"])
-        driver.find_element(By.ID, "password").send_keys(Keys.RETURN)
-        WebDriverWait(driver, 15.0).until(exp_cond.url_contains("dashboard"))
-        nc_url = environ["NEXTCLOUD_URL"]
-        nc_url = nc_url.replace("index.php/", "")
-        nc_url = nc_url.removesuffix("/")
-        driver.get(nc_url + "/index.php/apps/files/?dir=/test_dir")
-        WebDriverWait(driver, 15.0).until(exp_cond.url_contains("apps/files"))
-        sleep(2.5)
-        tmp_png_s = driver.find_element(By.XPATH, f'//a[contains(@href,"openfile={tmp_png.info.fileid}")]')
-        items = tmp_png_s.find_elements(By.TAG_NAME, "a")
-        for i in items:
-            if i.accessible_name == "Actions":
-                driver.execute_script("arguments[0].click();", i)
-                break
-        sleep(1)
-        driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_any")]')
-        driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_im")]')
-        with pytest.raises(NoSuchElementException):
-            driver.find_element(By.XPATH, '//a[contains(@data-action,"test_ui_action_txt")]')
-    finally:
-        driver.quit()
-    nc_app.ui.files_dropdown_menu.unregister("test_ui_action_im")
-    nc_app.ui.files_dropdown_menu.unregister("test_ui_action_txt")
-    nc_app.ui.files_dropdown_menu.unregister("test_ui_action_any")
+    result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_im")
+    assert result.name == "test_ui_action_im"
+    assert result.display_name == "UI TEST Image"
+    assert result.action_handler == "/ui_action_test"
+    assert result.mime == "image"
+    assert result.permissions == 31
+    assert result.order == 0
+    assert result.icon == ""
+    nc_app.ui.files_dropdown_menu.unregister(result.name)
+    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST", "/ui_action", permissions=1, order=1)
+    result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
+    assert result.name == "test_ui_action_any"
+    assert result.display_name == "UI TEST"
+    assert result.action_handler == "/ui_action"
+    assert result.mime == "file"
+    assert result.permissions == 1
+    assert result.order == 1
+    assert result.icon == ""
+    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI", "/ui_action2")
+    result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
+    assert result.name == "test_ui_action_any"
+    assert result.display_name == "UI"
+    assert result.action_handler == "/ui_action2"
+    assert result.mime == "file"
+    assert result.permissions == 31
+    assert result.order == 0
+    assert result.icon == ""
+    nc_app.ui.files_dropdown_menu.unregister(result.name)
 
 
 def test_unregister_ui_file_actions(nc_app):
     nc_app.ui.files_dropdown_menu.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
     nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
+    assert nc_app.ui.files_dropdown_menu.get_entry("test_ui_action") is None
     nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)

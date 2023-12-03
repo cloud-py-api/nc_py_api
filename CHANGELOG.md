@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.5.2 - 2023-11-xx]
+## [0.6.0 - 2023-12-0x]
+
+### Added
+
+- Ability to develop applications with `UI`, example of such app, support for all new stuff of `AppAPI 1.4`. #168
 
 ### Fixed
 

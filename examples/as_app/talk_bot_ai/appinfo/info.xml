@@ -16,7 +16,7 @@
 	<bugs>https://github.com/cloud-py-api/nc_py_api/issues</bugs>
 	<repository type="git">https://github.com/cloud-py-api/nc_py_api</repository>
 	<dependencies>
-		<nextcloud min-version="27" max-version="28"/>
+		<nextcloud min-version="27" max-version="29"/>
 	</dependencies>
 	<external-app>
 		<docker-install>

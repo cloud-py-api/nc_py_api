@@ -1,0 +1,63 @@
+{
+	"name": "ui_example",
+	"description": "Nextcloud ExApp UI Example",
+	"version": "1.0.0",
+	"homepage": "https://github.com/cloud-py-api/nc_py_api",
+	"bugs": {
+		"url": "https://github.com/cloud-py-api/nc_py_api/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cloud-py-api/nc_py_api"
+	},
+	"license": "agpl",
+	"private": true,
+	"author": "Andrey Borysenko <andrey18106x@gmail.com>",
+	"contributors": [
+		"Andrey Borysenko <andrey18106x@gmail.com>",
+		"Alexander Piskun <bigcat88@icloud.com>"
+	],
+	"scripts": {
+		"build": "NODE_OPTIONS=--max_old_space_size=1024 webpack --node-env production --progress",
+		"dev": "webpack --node-env development --progress",
+		"watch": "webpack --node-env development --progress --watch",
+		"lint": "eslint --ext .js,.vue src",
+		"lint:fix": "eslint --ext .js,.vue src --fix",
+		"stylelint": "stylelint css/*.css src/**/*.vue",
+		"stylelint:fix": "stylelint css/*.css src/**/*.vue --fix"
+	},
+	"browserslist": [
+		"extends @nextcloud/browserslist-config"
+	],
+	"dependencies": {
+		"@nextcloud/auth": "^2.2.1",
+		"@nextcloud/axios": "^2.4.0",
+		"@nextcloud/dialogs": "^4.2.1",
+		"@nextcloud/event-bus": "^3.1.0",
+		"@nextcloud/files": "^3.0.0",
+		"@nextcloud/initial-state": "^2.1.0",
+		"@nextcloud/l10n": "^2.2.0",
+		"@nextcloud/moment": "^1.2.1",
+		"@nextcloud/router": "^2.1.2",
+		"@nextcloud/vue": "^7.12.6",
+		"vue": "^2.7.14",
+		"vue-material-design-icons": "^5.2.0",
+		"vue-router": "^3.5.3",
+		"vue-template-compiler": "^2.7.14",
+		"vuex": "^3.6.2",
+		"vuex-router-sync": "^5.0.0"
+	},
+	"devDependencies": {
+		"@nextcloud/babel-config": "^1.0.0",
+		"@nextcloud/browserslist-config": "^2.3.0",
+		"@nextcloud/eslint-config": "^8.3.0",
+		"@nextcloud/stylelint-config": "^2.3.0",
+		"@nextcloud/webpack-vue-config": "^5.4.0",
+		"eslint-webpack-plugin": "^4.0.1",
+		"stylelint-webpack-plugin": "^4.1.1"
+	},
+	"engines": {
+		"node": ">=16.0.0",
+		"npm": "^7.0.0 || ^8.0.0"
+	}
+}
