@@ -31,13 +31,14 @@ class UiTopMenuEntry:
         return self._raw_data["display_name"]
 
     @property
-    def icon_url(self) -> str:
+    def icon(self) -> str:
         """Relative to the ExApp url with icon or empty value to use the default one icon."""
-        return self._raw_data["icon_url"] if self._raw_data["icon_url"] else ""
+        return self._raw_data["icon"] if self._raw_data["icon"] else ""
 
     @property
     def admin_required(self) -> bool:
         """Flag that determines whether the entry menu is displayed only for administrators."""
+        print(self._raw_data["admin_required"])
         return bool(self._raw_data["admin_required"])
 
     def __repr__(self):
@@ -52,19 +53,19 @@ class _UiTopMenuAPI:
     def __init__(self, session: NcSessionApp):
         self._session = session
 
-    def register(self, name: str, display_name: str, icon_url: str = "", admin_required=False) -> None:
+    def register(self, name: str, display_name: str, icon: str = "", admin_required=False) -> None:
         """Registers or edit the App entry in Top Meny.
 
         :param name: Unique name for the menu entry.
         :param display_name: Display name of the menu entry.
-        :param icon_url: Optional, url relative to the ExApp, like: "img/icon.svg"
+        :param icon: Optional, url relative to the ExApp, like: "img/icon.svg"
         :param admin_required: Boolean value indicating should be Entry visible to all or only to admins.
         """
         require_capabilities("app_api", self._session.capabilities)
         params = {
             "name": name,
             "displayName": display_name,
-            "iconUrl": icon_url,
+            "icon": icon,
             "adminRequired": int(admin_required),
         }
         self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._ep_suffix}", json=params)

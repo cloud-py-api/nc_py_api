@@ -122,7 +122,7 @@ def test_appcfg_sensitive(nc_app):
     assert appcfg.get_value("test_key") == "123"
     assert appcfg.get_values(["test_key"])[0].value == "123"
     appcfg.delete("test_key")
-    # next code tests `sensitive` value from the `AppEcosystem`
+    # next code tests `sensitive` value from the `AppAPI`
     params = {"configKey": "test_key", "configValue": "123"}
     result = nc_app._session.ocs(method="POST", path=f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert not result["sensitive"]  # by default if sensitive value is unspecified it is False
