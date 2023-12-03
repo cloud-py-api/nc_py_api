@@ -33,7 +33,7 @@ class UiTopMenuEntry:
     @property
     def icon_url(self) -> str:
         """Relative to the ExApp url with icon or empty value to use the default one icon."""
-        return self._raw_data["icon_url"]
+        return self._raw_data["icon_url"] if self._raw_data["icon_url"] else ""
 
     @property
     def admin_required(self) -> bool:
