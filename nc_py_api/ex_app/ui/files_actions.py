@@ -1,8 +1,9 @@
 """Nextcloud API for working with drop-down file's menu."""
 
+import dataclasses
+import datetime
 import os
 import typing
-from datetime import datetime, timezone
 
 from pydantic import BaseModel
 
@@ -10,6 +11,57 @@ from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
 from ..._session import NcSessionApp
 from ...files import FsNode, permissions_to_str
+
+
+@dataclasses.dataclass
+class UiFileActionEntry:
+    """Files app, right click file action entry description."""
+
+    def __init__(self, raw_data: dict):
+        self._raw_data = raw_data
+
+    @property
+    def appid(self) -> str:
+        """App ID for which this entry is."""
+        return self._raw_data["appid"]
+
+    @property
+    def name(self) -> str:
+        """File action name, acts like ID."""
+        return self._raw_data["name"]
+
+    @property
+    def display_name(self) -> str:
+        """Display name of the entry."""
+        return self._raw_data["display_name"]
+
+    @property
+    def mime(self) -> str:
+        """For which file types this entry applies."""
+        return self._raw_data["mime"]
+
+    @property
+    def permissions(self) -> int:
+        """For which file permissions this entry applies."""
+        return int(self._raw_data["permissions"])
+
+    @property
+    def order(self) -> int:
+        """Order of the entry in the file action list."""
+        return int(self._raw_data["order"])
+
+    @property
+    def icon(self) -> str:
+        """-no description-."""
+        return self._raw_data["icon"]
+
+    @property
+    def action_handler(self) -> str:
+        """Relative ExApp url which will be called if user click on the entry."""
+        return self._raw_data["action_handler"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} name={self.name}, mime={self.mime}, handler={self.action_handler}>"
 
 
 class UiActionFileInfo(BaseModel):
@@ -62,7 +114,7 @@ class UiActionFileInfo(BaseModel):
             favorite=bool(self.favorite.lower() == "true"),
             file_id=file_id + self.instanceId if self.instanceId else file_id,
             fileid=self.fileId,
-            last_modified=datetime.utcfromtimestamp(self.mtime).replace(tzinfo=timezone.utc),
+            last_modified=datetime.datetime.utcfromtimestamp(self.mtime).replace(tzinfo=datetime.timezone.utc),
             mimetype=self.mime,
         )
 
@@ -112,3 +164,13 @@ class _UiFilesActionsAPI:
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
+
+    def get_entry(self, name: str) -> typing.Optional[UiFileActionEntry]:
+        """Get information of the file action meny entry for current app."""
+        require_capabilities("app_api", self._session.capabilities)
+        try:
+            return UiFileActionEntry(
+                self._session.ocs(method="GET", path=f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+            )
+        except NextcloudExceptionNotFound:
+            return None

@@ -20,8 +20,14 @@ async def lifespan(_app: FastAPI):
 APP = FastAPI(lifespan=lifespan)
 
 
-def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
+def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled={enabled}")
+    if enabled:
+        nc.ui.resources.set_initial_state(
+            "top_menu", "first_menu", "ui_example_state", {"initial_value": "test init value"}
+        )
+        nc.ui.resources.set_script("top_menu", "first_menu", "js/ui_example-main")
+        nc.ui.top_menu.register("first_menu", "UI example", "img/icon.svg")
     return ""
 
 
