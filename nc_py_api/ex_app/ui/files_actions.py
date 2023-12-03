@@ -53,7 +53,7 @@ class UiFileActionEntry:
     @property
     def icon(self) -> str:
         """-no description-."""
-        return self._raw_data["icon"]
+        return self._raw_data["icon"] if self._raw_data["icon"] else ""
 
     @property
     def action_handler(self) -> str:
