@@ -23,7 +23,7 @@ def test_register_ui_file_actions(nc_app):
     assert result.permissions == 1
     assert result.order == 1
     assert result.icon == ""
-    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI", "/ui_action2")
+    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI", "/ui_action2", icon="/img/icon.svg")
     result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
     assert result.name == "test_ui_action_any"
     assert result.display_name == "UI"
@@ -31,7 +31,7 @@ def test_register_ui_file_actions(nc_app):
     assert result.mime == "file"
     assert result.permissions == 31
     assert result.order == 0
-    assert result.icon == ""
+    assert result.icon == "/img/icon.svg"
     nc_app.ui.files_dropdown_menu.unregister(result.name)
 
 

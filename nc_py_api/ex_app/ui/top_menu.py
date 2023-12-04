@@ -38,11 +38,7 @@ class UiTopMenuEntry:
     @property
     def admin_required(self) -> bool:
         """Flag that determines whether the entry menu is displayed only for administrators."""
-        return (
-            bool(int(self._raw_data["admin_required"]))
-            if isinstance(self._raw_data["admin_required"], str)
-            else bool(self._raw_data["admin_required"])
-        )
+        return bool(int(self._raw_data["admin_required"]))
 
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name}, admin_required={self.admin_required}>"
