@@ -1,7 +1,12 @@
 FROM python:3.11-bookworm
 
 COPY requirements.txt /
-ADD /src/ /app/
+
+ADD /css /app/
+ADD /img /app/
+ADD /js /app/
+ADD /l10n /app/
+ADD /lib /app/
 
 RUN \
     apt-get update && \
@@ -11,5 +16,5 @@ RUN \
 RUN \
   python3 -m pip install -r requirements.txt && rm -rf ~/.cache && rm requirements.txt
 
-WORKDIR /app
+WORKDIR /app/lib
 ENTRYPOINT ["python3", "main.py"]

@@ -4,20 +4,20 @@
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
       <env name="APP_ID" value="to_gif" />
       <env name="APP_PORT" value="9031" />
       <env name="APP_SECRET" value="12345" />
       <env name="APP_VERSION" value="1.0.0" />
       <env name="NEXTCLOUD_URL" value="http://stable27.local/index.php" />
-      <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/as_app/to_gif" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/as_app/to_gif/src/main.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/as_app/to_gif/lib/main.py" />
     <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
