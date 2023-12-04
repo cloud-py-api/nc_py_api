@@ -31,7 +31,7 @@ def test_register_ui_file_actions(nc_app):
     assert result.mime == "file"
     assert result.permissions == 31
     assert result.order == 0
-    assert result.icon == "/img/icon.svg"
+    assert result.icon == "img/icon.svg"
     nc_app.ui.files_dropdown_menu.unregister(result.name)
 
 
