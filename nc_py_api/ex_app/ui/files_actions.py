@@ -52,7 +52,7 @@ class UiFileActionEntry:
 
     @property
     def icon(self) -> str:
-        """-no description-."""
+        """Relative to the ExApp url with icon or empty value to use the default one icon."""
         return self._raw_data["icon"] if self._raw_data["icon"] else ""
 
     @property
@@ -119,21 +119,10 @@ class UiActionFileInfo(BaseModel):
         )
 
 
-class UiFileActionHandlerInfo(BaseModel):
-    """Action information Nextcloud sends to the External Application."""
-
-    actionName: str
-    """Name of the action, useful when App registers multiple actions for one handler."""
-    actionHandler: str
-    """Callback url, which was called with this information."""
-    actionFile: UiActionFileInfo
-    """Information about the file on which the action run."""
-
-
 class _UiFilesActionsAPI:
     """API for the drop-down menu in Nextcloud **Files app**."""
 
-    _ep_suffix: str = "files/actions/menu"
+    _ep_suffix: str = "ui/files-actions-menu"
 
     def __init__(self, session: NcSessionApp):
         self._session = session
@@ -142,25 +131,21 @@ class _UiFilesActionsAPI:
         """Registers the files a dropdown menu element."""
         require_capabilities("app_api", self._session.capabilities)
         params = {
-            "fileActionMenuParams": {
-                "name": name,
-                "display_name": display_name,
-                "mime": kwargs.get("mime", "file"),
-                "permissions": kwargs.get("permissions", 31),
-                "order": kwargs.get("order", 0),
-                "icon": kwargs.get("icon", ""),
-                "icon_class": kwargs.get("icon_class", "icon-app-api"),
-                "action_handler": callback_url,
-            },
+            "name": name,
+            "displayName": display_name,
+            "actionHandler": callback_url,
+            "icon": kwargs.get("icon", ""),
+            "mime": kwargs.get("mime", "file"),
+            "permissions": kwargs.get("permissions", 31),
+            "order": kwargs.get("order", 0),
         }
         self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._ep_suffix}", json=params)
 
     def unregister(self, name: str, not_fail=True) -> None:
         """Removes files dropdown menu element."""
         require_capabilities("app_api", self._session.capabilities)
-        params = {"fileActionMenuName": name}
         try:
-            self._session.ocs(method="DELETE", path=f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+            self._session.ocs(method="DELETE", path=f"{self._session.ae_url}/{self._ep_suffix}", json={"name": name})
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
