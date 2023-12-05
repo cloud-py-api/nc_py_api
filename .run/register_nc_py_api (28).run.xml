@@ -4,12 +4,13 @@
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
-      <env name="PYTHONUNBUFFERED" value="1" />
       <env name="APP_ID" value="nc_py_api" />
       <env name="APP_PORT" value="9009" />
       <env name="APP_SECRET" value="12345" />
       <env name="APP_VERSION" value="1.0.0" />
       <env name="NEXTCLOUD_URL" value="http://stable28.local/index.php" />
+      <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="APP_HOST" value="0.0.0.0" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
