@@ -66,6 +66,18 @@ def test_scripts(nc_app):
     nc_app.ui.resources.delete_script("top_menu", "some_page", "js/script2", not_fail=False)
 
 
+def test_scripts_slash(nc_app):
+    nc_app.ui.resources.set_script("top_menu", "test_slash", "/js/script1")
+    r = nc_app.ui.resources.get_script("top_menu", "test_slash", "/js/script1")
+    assert r == nc_app.ui.resources.get_script("top_menu", "test_slash", "js/script1")
+    assert r.path == "js/script1"
+    nc_app.ui.resources.delete_script("top_menu", "test_slash", "/js/script1", not_fail=False)
+    assert nc_app.ui.resources.get_script("top_menu", "test_slash", "js/script1") is None
+    assert nc_app.ui.resources.get_script("top_menu", "test_slash", "/js/script1") is None
+    with pytest.raises(NextcloudExceptionNotFound):
+        nc_app.ui.resources.delete_script("top_menu", "test_slash", "/js/script1", not_fail=False)
+
+
 def test_style(nc_app):
     nc_app.ui.resources.delete_style("top_menu", "some_page", "css/some_path")
     assert nc_app.ui.resources.get_style("top_menu", "some_page", "css/some_path") is None
@@ -89,3 +101,15 @@ def test_styles(nc_app):
     assert r2.path == "css/style2"
     nc_app.ui.resources.delete_style("top_menu", "some_page", "css/style1", not_fail=False)
     nc_app.ui.resources.delete_style("top_menu", "some_page", "css/style2", not_fail=False)
+
+
+def test_styles_slash(nc_app):
+    nc_app.ui.resources.set_style("top_menu", "test_slash", "/js/script1")
+    r = nc_app.ui.resources.get_style("top_menu", "test_slash", "/js/script1")
+    assert r == nc_app.ui.resources.get_style("top_menu", "test_slash", "js/script1")
+    assert r.path == "js/script1"
+    nc_app.ui.resources.delete_style("top_menu", "test_slash", "/js/script1", not_fail=False)
+    assert nc_app.ui.resources.get_style("top_menu", "test_slash", "js/script1") is None
+    assert nc_app.ui.resources.get_style("top_menu", "test_slash", "/js/script1") is None
+    with pytest.raises(NextcloudExceptionNotFound):
+        nc_app.ui.resources.delete_style("top_menu", "test_slash", "/js/script1", not_fail=False)
