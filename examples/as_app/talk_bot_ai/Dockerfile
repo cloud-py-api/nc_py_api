@@ -2,11 +2,11 @@ FROM python:3.11-bookworm
 
 COPY requirements.txt /
 
-ADD /css /app/
-ADD /img /app/
-ADD /js /app/
-ADD /l10n /app/
-ADD /lib /app/
+ADD cs[s] /app/css
+ADD im[g] /app/img
+ADD j[s] /app/js
+ADD l10[n] /app/l10n
+ADD li[b] /app/lib
 
 RUN \
   python3 -m pip install -r requirements.txt && rm -rf ~/.cache && rm requirements.txt
