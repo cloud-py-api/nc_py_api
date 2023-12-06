@@ -44,5 +44,25 @@ async def verify_initial_value(
     return responses.JSONResponse(content={"initial_value": str(random.randint(0, 100))}, status_code=200)
 
 
+class FileInfo(BaseModel):
+    getlastmodified: str
+    getetag: str
+    getcontenttype: str
+    fileid: int
+    permissions: str
+    size: int
+    getcontentlength: int
+    favorite: int
+
+
+@APP.post("/nextcloud_file")
+async def nextcloud_file(
+    _nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
+    args: dict,
+):
+    print(args["file_info"])
+    return responses.Response()
+
+
 if __name__ == "__main__":
     run_app("main:APP", log_level="trace")

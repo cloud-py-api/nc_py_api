@@ -15,7 +15,7 @@ def test_register_ui_top_menu(nc_app):
     nc_app.ui.top_menu.unregister(result.name)
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.ui.top_menu.unregister(result.name, not_fail=False)
-    nc_app.ui.top_menu.register("test_name", "display", "img/test.svg", admin_required=True)
+    nc_app.ui.top_menu.register("test_name", "display", "/img/test.svg", admin_required=True)
     result = nc_app.ui.top_menu.get_entry("test_name")
     assert result.name == "test_name"
     assert result.display_name == "display"

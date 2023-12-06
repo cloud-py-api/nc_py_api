@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.6.0 - 2023-12-0x]
+## [0.6.0 - 2023-12-06]
 
 ### Added
 
@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- AppAPI: added authentication to `/init` endpoint. #162
+- AppAPI: added authentication to the `/init` endpoint. #162
 
 ## [0.5.1 - 2023-11-12]
 

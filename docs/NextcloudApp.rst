@@ -8,7 +8,7 @@ As a first step, let's take a look at the structure of a basic Python applicatio
 Skeleton
 --------
 
-.. literalinclude:: ../examples/as_app/skeleton/src/main.py
+.. literalinclude:: ../examples/as_app/skeleton/lib/main.py
 
 What's going on in the skeleton?
 
