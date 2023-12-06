@@ -13,13 +13,7 @@ from pygifsicle import optimize
 from requests import Response
 
 from nc_py_api import FsNode, NextcloudApp
-from nc_py_api.ex_app import (
-    LogLvl,
-    UiFileActionHandlerInfo,
-    nc_app,
-    run_app,
-    set_handlers,
-)
+from nc_py_api.ex_app import LogLvl, UiActionFileInfo, nc_app, run_app, set_handlers
 
 
 @asynccontextmanager
@@ -75,11 +69,11 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
 
 @APP.post("/video_to_gif")
 async def video_to_gif(
-    file: UiFileActionHandlerInfo,
+    file: UiActionFileInfo,
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(convert_video_to_gif, file.actionFile.to_fs_node(), nc)
+    background_tasks.add_task(convert_video_to_gif, file.to_fs_node(), nc)
     return Response()
 
 
@@ -87,9 +81,13 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled={enabled}")
     try:
         if enabled:
-            nc.ui.files_dropdown_menu.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
-        else:
-            nc.ui.files_dropdown_menu.unregister("to_gif")
+            nc.ui.files_dropdown_menu.register(
+                "to_gif",
+                "TO GIF",
+                "/video_to_gif",
+                mime="video",
+                icon="img/icon.svg",
+            )
     except Exception as e:
         return str(e)
     return ""

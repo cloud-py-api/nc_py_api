@@ -77,6 +77,8 @@ def set_handlers(
 
     :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
+
+        .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
     """
 
     def fetch_models_task(nc: NextcloudApp, models: list[str]) -> None:
@@ -126,7 +128,14 @@ def set_handlers(
         return responses.JSONResponse(content={}, status_code=200)
 
     if map_app_static:
-        for mnt_dir in ("js", "l10n", "css", "img"):
-            mnt_dir_path = os.path.join(os.getcwd(), mnt_dir)
-            if os.path.exists(mnt_dir_path):
-                fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
+        __map_app_static_folders(fast_api_app)
+
+
+def __map_app_static_folders(fast_api_app: FastAPI):
+    """Function to mount all necessary static folders to FastAPI."""
+    for mnt_dir in ("js", "l10n", "css", "img"):
+        mnt_dir_path = os.path.join(os.getcwd(), mnt_dir)
+        if not os.path.exists(mnt_dir_path):
+            mnt_dir_path = os.path.join(os.path.dirname(os.getcwd()), mnt_dir)
+        if os.path.exists(mnt_dir_path):
+            fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
