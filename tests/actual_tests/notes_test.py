@@ -75,5 +75,7 @@ def test_get_update_note(nc_any):
 
 
 def test_update_note_invalid_param(nc_any):
+    if nc_any.notes.available is False:
+        pytest.skip("Notes is not installed")
     with pytest.raises(ValueError):
         nc_any.notes.update(notes.Note({"id": 0, "etag": "42242"}))
