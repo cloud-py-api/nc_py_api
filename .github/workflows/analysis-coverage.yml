@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
@@ -71,7 +71,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
 
@@ -232,7 +232,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
 
@@ -385,7 +385,7 @@ jobs:
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
             posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -505,7 +505,7 @@ jobs:
           php-version: 8.2
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
@@ -667,7 +667,7 @@ jobs:
           php-version: 8.2
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -815,7 +815,7 @@ jobs:
           php-version: 8.1
           extensions: mbstring, fileinfo, intl, sqlite, pdo_sqlite, zip, gd, curl
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
