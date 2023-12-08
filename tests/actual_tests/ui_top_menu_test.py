@@ -10,6 +10,7 @@ def test_register_ui_top_menu(nc_app):
     assert result.display_name == "Disp name"
     assert result.icon == ""
     assert result.admin_required is False
+    assert result.appid == "nc_py_api"
     nc_app.ui.top_menu.unregister(result.name)
     assert nc_app.ui.top_menu.get_entry("test_name") is None
     nc_app.ui.top_menu.unregister(result.name)
@@ -29,3 +30,4 @@ def test_register_ui_top_menu(nc_app):
     assert result.admin_required is False
     nc_app.ui.top_menu.unregister(result.name)
     assert nc_app.ui.top_menu.get_entry("test_name") is None
+    assert str(result).find("name=test_name")

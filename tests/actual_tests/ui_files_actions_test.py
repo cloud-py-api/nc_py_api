@@ -13,6 +13,7 @@ def test_register_ui_file_actions(nc_app):
     assert result.permissions == 31
     assert result.order == 0
     assert result.icon == ""
+    assert result.appid == "nc_py_api"
     nc_app.ui.files_dropdown_menu.unregister(result.name)
     nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST", "ui_action", permissions=1, order=1)
     result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
@@ -33,6 +34,7 @@ def test_register_ui_file_actions(nc_app):
     assert result.order == 0
     assert result.icon == "img/icon.svg"
     nc_app.ui.files_dropdown_menu.unregister(result.name)
+    assert str(result).find("name=test_ui_action")
 
 
 def test_unregister_ui_file_actions(nc_app):
