@@ -357,7 +357,7 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  tests-oci:
+  tests-stable27-oci:
     needs: [analysis]
     runs-on: ubuntu-22.04
     name: stable27 • 🐘8.1 • 🐍3.11 • OCI
@@ -927,7 +927,7 @@ jobs:
     permissions:
       contents: none
     runs-on: ubuntu-22.04
-    needs: [tests-maria, tests-pgsql, tests-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    needs: [tests-maria, tests-pgsql, tests-stable27-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
     name: Tests-OK
     steps:
       - run: echo "Tests passed successfully"
