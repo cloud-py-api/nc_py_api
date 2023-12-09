@@ -37,6 +37,25 @@ The API will not fail, and in such cases, it will simply re-register without err
 If any error prevents your application from functioning, you should provide a brief description in the return instead
 of an empty string, and log comprehensive information that will assist the administrator in addressing the issue.
 
+Dockerfile
+----------
+
+We decided to keep all the examples and applications in the same format as the usual PHP applications for Nextcloud.
+
+.. code-block::
+
+    ADD cs[s] /app/css
+    ADD im[g] /app/img
+    ADD j[s] /app/js
+    ADD l10[n] /app/l10n
+    ADD li[b] /app/lib
+
+This code from dockerfile copies folders of app if they exists to the docker container.
+
+**nc_py_api** will automatically mount ``css``, ``img``, ``js``, ``l10n`` folders to the FastAPI.
+
+.. note:: If you do not want automatic mount happen, pass ``map_app_static=False`` to ``set_handlers``.
+
 Debugging
 ---------
 
@@ -54,6 +73,7 @@ Here they are:
 
 * APP_ID - ID of the application.
 * APP_PORT - Port on which application listen for the requests from the Nextcloud.
+* APP_HOST - "0.0.0.0"/"127.0.0.1"/other host value.
 * APP_SECRET - Shared secret between Nextcloud and Application.
 * APP_VERSION - Version of the application.
 * AA_VERSION - Version of the AppAPI.
@@ -67,7 +87,7 @@ After launching your application, execute the following command in the Nextcloud
 
     php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
         "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"host\":\"host.docker.internal\",\"scopes\":{\"required\":[2, 10, 11],\"optional\":[30, 31, 32, 33]},\"port\":SELECTED_PORT,\"protocol\":\"http\",\"system_app\":0}" \
-        --force-scopes
+        --force-scopes --wait-finish
 
 You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.
 
@@ -75,9 +95,9 @@ It's advisable to write these steps as commands in a Makefile for quick use.
 
 Examples for such Makefiles can be found in this repository:
 `Skeleton <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/skeleton/Makefile>`_ ,
-`TalkBot <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/Makefile>`_
+`TalkBot <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/Makefile>`_ ,
 `ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ ,
-`nc_py_api <https://github.com/cloud-py-api/nc_py_api/blob/main/scripts/dev_register.sh>`_
+`UiExample <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/ui_example/Makefile>`_
 
 During the execution of `php occ app_api:app:register`, the **enabled_handler** will be called
 
@@ -201,6 +221,6 @@ into a standard :py:class:`~nc_py_api.files.FsNode` class that describes the fil
 In the **convert_video_to_gif** function, a standard conversion using ``OpenCV`` from a video file to a GIF image occurs,
 and since this is not directly related to working with NextCloud, we will skip this for now.
 
-**ToGif** example `full source <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/src/main.py>`_ code.
+**ToGif** example `full source <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/lib/main.py>`_ code.
 
 This chapter ends here, but the next topics are even more intriguing.

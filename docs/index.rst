@@ -25,19 +25,20 @@ and handle complex problems through issues.
 Have a great time with Python and Nextcloud!
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   Installation
-   FirstSteps
-   MoreAPIs
-   NextcloudApp
-   NextcloudTalkBot
-   NextcloudTalkBotTransformers
-   NextcloudSysApp
-   Options
-   reference/index.rst
-   DevSetup
-   benchmarks/AppAPI.rst
+    Installation
+    FirstSteps
+    MoreAPIs
+    NextcloudApp
+    NextcloudTalkBot
+    NextcloudTalkBotTransformers
+    NextcloudSysApp
+    NextcloudUiApp
+    Options
+    reference/index.rst
+    DevSetup
+    benchmarks/AppAPI.rst
 
 Indices and tables
 ==================

@@ -46,8 +46,9 @@ The **Nextcloud** class functions as a standard Nextcloud client,
 enabling you to make API requests using a username and password.
 
 On the other hand, the **NextcloudApp** class is designed for creating applications for Nextcloud.<br>
-It uses the [AppAPI](https://github.com/cloud-py-api/app_api) to allow
-applications to impersonate users through a separate authentication mechanism.
+It uses [AppAPI](https://github.com/cloud-py-api/app_api) to provide additional functionality allowing
+applications have their own graphical interface, fulfill requests from different users,
+and everything else that is necessary to implement full-fledged applications.
 
 Both classes offer most of the same APIs,
 but NextcloudApp has a broader selection since applications typically require access to more APIs.

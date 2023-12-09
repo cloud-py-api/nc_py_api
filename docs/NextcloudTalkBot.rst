@@ -70,6 +70,6 @@ Currently, bots have access only to three methods:
 All other rules and algorithms remain consistent with regular external applications.
 
 Full source of bot example can be found here:
-`TalkBot <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/src/main.py>`_
+`TalkBot <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/lib/main.py>`_
 
 Wishing success with your Nextcloud bot integration! May the force be with you!
