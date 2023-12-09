@@ -25,7 +25,7 @@ def sec_check(
     return JSONResponse(content={"error": ""}, status_code=200)
 
 
-def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+async def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled_handler: enabled={enabled}", flush=True)
     if enabled:
         nc.log(ex_app.LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
@@ -34,13 +34,13 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
-def init_handler(nc: NextcloudApp):
+async def init_handler(nc: NextcloudApp):
     nc.set_init_status(100)
 
 
-def heartbeat_callback():
+async def heartbeat_callback():
     return "ok"
 
 
 if __name__ == "__main__":
-    ex_app.run_app("_install:APP", log_level="trace")
+    ex_app.run_app("_install_async:APP", log_level="trace")
