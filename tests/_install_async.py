@@ -17,7 +17,7 @@ APP = FastAPI(lifespan=lifespan)
 
 
 @APP.put("/sec_check")
-def sec_check(
+async def sec_check(
     value: int,
     _nc: Annotated[NextcloudApp, Depends(ex_app.nc_app)],
 ):
@@ -34,7 +34,7 @@ async def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     return ""
 
 
-async def init_handler(nc: NextcloudApp):
+def init_handler(nc: NextcloudApp):
     nc.set_init_status(100)
 
 

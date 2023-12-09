@@ -56,7 +56,7 @@ def set_handlers(
     fast_api_app: FastAPI,
     enabled_handler: typing.Callable[[bool, NextcloudApp], typing.Union[str, typing.Awaitable[str]]],
     heartbeat_handler: typing.Optional[typing.Callable[[], typing.Union[str, typing.Awaitable[str]]]] = None,
-    init_handler: typing.Optional[typing.Callable[[NextcloudApp], typing.Union[None, typing.Awaitable[None]]]] = None,
+    init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]] = None,
     models_to_fetch: typing.Optional[list[str]] = None,
     models_download_params: typing.Optional[dict] = None,
     map_app_static: bool = True,
@@ -131,9 +131,9 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-async def __fetch_models_task(
+def __fetch_models_task(
     nc: NextcloudApp,
-    init_handler: typing.Optional[typing.Callable[[NextcloudApp], typing.Union[None, typing.Awaitable[None]]]],
+    init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]],
     models: list[str],
     params: dict[str, typing.Any],
 ) -> None:
@@ -155,7 +155,5 @@ async def __fetch_models_task(
             snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
     if init_handler is None:
         nc.set_init_status(100)
-    elif asyncio.iscoroutinefunction(init_handler):
-        await init_handler(nc)
     else:
         init_handler(nc)
