@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1 - 202x-xx-xx]
+
+### Added
+
+- set_handlers: `enabled_handler`, `heartbeat_handler` now can be async(Coroutines). #175
+
 ## [0.6.0 - 2023-12-06]
 
 ### Added

@@ -54,8 +54,8 @@ def talk_bot_app(request: Request) -> TalkBotMessage:
 
 def set_handlers(
     fast_api_app: FastAPI,
-    enabled_handler: typing.Callable[[bool, NextcloudApp], str],
-    heartbeat_handler: typing.Optional[typing.Callable[[], str]] = None,
+    enabled_handler: typing.Callable[[bool, NextcloudApp], typing.Union[str, typing.Awaitable[str]]],
+    heartbeat_handler: typing.Optional[typing.Callable[[], typing.Union[str, typing.Awaitable[str]]]] = None,
     init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]] = None,
     models_to_fetch: typing.Optional[list[str]] = None,
     models_download_params: typing.Optional[dict] = None,
@@ -81,50 +81,40 @@ def set_handlers(
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
     """
 
-    def fetch_models_task(nc: NextcloudApp, models: list[str]) -> None:
-        if models:
-            from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
-            from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
-
-            class TqdmProgress(tqdm):
-                def display(self, msg=None, pos=None):
-                    if init_handler is None:
-                        nc.set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
-                    return super().display(msg, pos)
-
-            params = models_download_params if models_download_params else {}
-            if "max_workers" not in params:
-                params["max_workers"] = 2
-            if "cache_dir" not in params:
-                params["cache_dir"] = persistent_storage()
-            for model in models:
-                snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
-        if init_handler is None:
-            nc.set_init_status(100)
-        else:
-            init_handler(nc)
-
     @fast_api_app.put("/enabled")
-    def enabled_callback(
+    async def enabled_callback(
         enabled: bool,
         nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
     ):
-        r = enabled_handler(enabled, nc)
+        if asyncio.iscoroutinefunction(heartbeat_handler):
+            r = await enabled_handler(enabled, nc)  # type: ignore
+        else:
+            r = enabled_handler(enabled, nc)
         return responses.JSONResponse(content={"error": r}, status_code=200)
 
     @fast_api_app.get("/heartbeat")
-    def heartbeat_callback():
-        return_status = "ok"
+    async def heartbeat_callback():
         if heartbeat_handler is not None:
-            return_status = heartbeat_handler()
+            if asyncio.iscoroutinefunction(heartbeat_handler):
+                return_status = await heartbeat_handler()
+            else:
+                return_status = heartbeat_handler()
+        else:
+            return_status = "ok"
         return responses.JSONResponse(content={"status": return_status}, status_code=200)
 
     @fast_api_app.post("/init")
-    def init_callback(
+    async def init_callback(
         background_tasks: BackgroundTasks,
         nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
     ):
-        background_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else [])
+        background_tasks.add_task(
+            __fetch_models_task,
+            nc,
+            init_handler,
+            models_to_fetch if models_to_fetch else [],
+            models_download_params if models_download_params else {},
+        )
         return responses.JSONResponse(content={}, status_code=200)
 
     if map_app_static:
@@ -139,3 +129,31 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             mnt_dir_path = os.path.join(os.path.dirname(os.getcwd()), mnt_dir)
         if os.path.exists(mnt_dir_path):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
+
+
+def __fetch_models_task(
+    nc: NextcloudApp,
+    init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]],
+    models: list[str],
+    params: dict[str, typing.Any],
+) -> None:
+    if models:
+        from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
+        from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
+
+        class TqdmProgress(tqdm):
+            def display(self, msg=None, pos=None):
+                if init_handler is None:
+                    nc.set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
+                return super().display(msg, pos)
+
+        if "max_workers" not in params:
+            params["max_workers"] = 2
+        if "cache_dir" not in params:
+            params["cache_dir"] = persistent_storage()
+        for model in models:
+            snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
+    if init_handler is None:
+        nc.set_init_status(100)
+    else:
+        init_handler(nc)

@@ -725,7 +725,7 @@ jobs:
         run: |
           php occ app:enable app_api
           cd nc_py_api
-          coverage run --data-file=.coverage.ci_install tests/_install.py &
+          coverage run --data-file=.coverage.ci_install tests/_install_async.py &
           echo $! > /tmp/_install.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           python3 tests/_app_security_checks.py http://127.0.0.1:$APP_PORT
