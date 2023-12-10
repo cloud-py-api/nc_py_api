@@ -14,7 +14,9 @@ from urllib.parse import quote, urlencode
 from fastapi import Request
 from httpx import Client
 from httpx import Headers as HttpxHeaders
-from httpx import Limits, ReadTimeout, Response
+from httpx import Limits, ReadTimeout
+from httpx import Request as HttpxRequest
+from httpx import Response
 
 from . import options
 from ._exceptions import (
@@ -397,14 +399,23 @@ class NcSessionApp(NcSessionBasic):
         super().__init__(**kwargs)
 
     def _create_adapter(self) -> Client:
-        adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
+        adapter = Client(
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            event_hooks={"request": [self._add_auth]},
+        )
         adapter.headers.update({
             "AA-VERSION": self.cfg.aa_version,
             "EX-APP-ID": self.cfg.app_name,
             "EX-APP-VERSION": self.cfg.app_version,
-            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8")),
         })
         return adapter
+
+    def _add_auth(self, request: HttpxRequest):
+        request.headers.update({
+            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
+        })
 
     def sign_check(self, request: Request) -> None:
         headers = {
