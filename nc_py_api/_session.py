@@ -10,12 +10,8 @@ from os import environ
 from typing import Optional, TypedDict, Union
 from urllib.parse import quote, urlencode
 
-from fastapi import Request
-from httpx import Client
-from httpx import Headers as HttpxHeaders
-from httpx import Limits, ReadTimeout
-from httpx import Request as HttpxRequest
-from httpx import Response
+from fastapi import Request as FastAPIRequest
+from httpx import Client, Headers, Limits, ReadTimeout, Request
 
 from . import options
 from ._exceptions import (
@@ -137,7 +133,7 @@ class NcSessionBasic(ABC):
     adapter_dav: Client
     cfg: BasicConfig
     custom_headers: dict
-    response_headers: HttpxHeaders
+    response_headers: Headers
     _user: str
     _capabilities: dict
 
@@ -149,7 +145,7 @@ class NcSessionBasic(ABC):
         self.limits = Limits(max_keepalive_connections=20, max_connections=20, keepalive_expiry=60.0)
         self.init_adapter()
         self.init_adapter_dav()
-        self.response_headers = HttpxHeaders()
+        self.response_headers = Headers()
 
     def __del__(self):
         if hasattr(self, "adapter") and self.adapter:
@@ -237,38 +233,6 @@ class NcSessionBasic(ABC):
                 raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info)
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
-
-    def dav(
-        self,
-        method: str,
-        path: str,
-        data: Optional[Union[str, bytes]] = None,
-        json: Optional[Union[dict, list]] = None,
-        **kwargs,
-    ) -> Response:
-        headers = kwargs.pop("headers", {})
-        data_bytes = self.__data_to_bytes(headers, data, json)
-        return self._dav(
-            method,
-            quote(path) if isinstance(path, str) else path,
-            headers,
-            data_bytes,
-            **kwargs,
-        )
-
-    def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
-        self.init_adapter_dav()
-        timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        result = self.adapter_dav.request(
-            method,
-            path if isinstance(path, str) else str(path),
-            headers=headers,
-            content=data,
-            timeout=timeout,
-            **kwargs,
-        )
-        self.response_headers = result.headers
-        return result
 
     def init_adapter(self, restart=False) -> None:
         if getattr(self, "adapter", None) is None or restart:
@@ -359,7 +323,7 @@ class NcSession(NcSessionBasic):
             follow_redirects=True,
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
-            base_url=self.cfg.endpoint + self.cfg.dav_url_suffix if dav else self.cfg.endpoint,
+            base_url=self.cfg.dav_endpoint if dav else self.cfg.endpoint,
             timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
         )
 
@@ -377,7 +341,7 @@ class NcSessionApp(NcSessionBasic):
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
             event_hooks={"request": [self._add_auth]},
-            base_url=self.cfg.endpoint + self.cfg.dav_url_suffix if dav else self.cfg.endpoint,
+            base_url=self.cfg.dav_endpoint if dav else self.cfg.endpoint,
             timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
         )
         adapter.headers.update({
@@ -387,12 +351,12 @@ class NcSessionApp(NcSessionBasic):
         })
         return adapter
 
-    def _add_auth(self, request: HttpxRequest):
+    def _add_auth(self, request: Request):
         request.headers.update({
             "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
         })
 
-    def sign_check(self, request: Request) -> None:
+    def sign_check(self, request: FastAPIRequest) -> None:
         headers = {
             "AA-VERSION": request.headers.get("AA-VERSION", ""),
             "EX-APP-ID": request.headers.get("EX-APP-ID", ""),

@@ -22,7 +22,9 @@ try:
                 body = body.encode("UTF-8")
             if body:
                 body = body.replace(b"\n", b"\r\n").replace(b"\r\r\n", b"\r\n")
-            r = self._session.dav(method, url, data=body, headers=headers)
+            r = self._session.adapter_dav.request(
+                method, url if isinstance(url, str) else str(url), content=body, headers=headers
+            )
             return DAVResponse(r)
 
 except ImportError:

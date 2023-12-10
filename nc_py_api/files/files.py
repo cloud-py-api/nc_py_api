@@ -126,7 +126,9 @@ class FilesAPI:
         self._build_search_req(xml_where, req)
 
         headers = {"Content-Type": "text/xml"}
-        webdav_response = self._session.dav("SEARCH", "", data=self._element_tree_as_str(root), headers=headers)
+        webdav_response = self._session.adapter_dav.request(
+            "SEARCH", "", content=self._element_tree_as_str(root), headers=headers
+        )
         request_info = f"find: {self._session.user}, {req}, {path}"
         return self._lf_parse_webdav_response(webdav_response, request_info)
 
@@ -136,7 +138,7 @@ class FilesAPI:
         :param path: path to download file.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = self._session.dav("GET", self._dav_get_obj_path(self._session.user, path))
+        response = self._session.adapter_dav.get(self._dav_get_obj_path(self._session.user, path))
         check_error(response.status_code, f"download: user={self._session.user}, path={path}")
         return response.content
 
@@ -191,7 +193,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = self._dav_get_obj_path(self._session.user, path)
-        response = self._session.dav("PUT", full_path, data=content)
+        response = self._session.adapter_dav.put(full_path, content=content)
         check_error(response.status_code, f"upload: user={self._session.user}, path={path}, size={len(content)}")
         return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
 
@@ -220,7 +222,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = self._dav_get_obj_path(self._session.user, path)
-        response = self._session.dav("MKCOL", full_path)
+        response = self._session.adapter_dav.request("MKCOL", full_path)
         check_error(response.status_code, f"mkdir: user={self._session.user}, path={path}")
         full_path += "/" if not full_path.endswith("/") else ""
         return FsNode(full_path.lstrip("/"), **self.__get_etag_fileid_from_response(response))
@@ -255,7 +257,7 @@ class FilesAPI:
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = self._session.dav("DELETE", self._dav_get_obj_path(self._session.user, path))
+        response = self._session.adapter_dav.delete(self._dav_get_obj_path(self._session.user, path))
         if response.status_code == 404 and not_fail:
             return
         check_error(response.status_code, f"delete: user={self._session.user}, path={path}")
@@ -274,7 +276,7 @@ class FilesAPI:
         )
         dest = self._session.cfg.dav_endpoint + full_dest_path
         headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
-        response = self._session.dav(
+        response = self._session.adapter_dav.request(
             "MOVE",
             self._dav_get_obj_path(self._session.user, path_src),
             headers=headers,
@@ -296,7 +298,7 @@ class FilesAPI:
         )
         dest = self._session.cfg.dav_endpoint + full_dest_path
         headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
-        response = self._session.dav(
+        response = self._session.adapter_dav.request(
             "COPY",
             self._dav_get_obj_path(self._session.user, path_src),
             headers=headers,
@@ -329,8 +331,8 @@ class FilesAPI:
             for v in tags:
                 tag_id = v.tag_id if isinstance(v, SystemTag) else v
                 ElementTree.SubElement(xml_filter_rules, "oc:systemtag").text = str(tag_id)
-        webdav_response = self._session.dav(
-            "REPORT", self._dav_get_obj_path(self._session.user), data=self._element_tree_as_str(root)
+        webdav_response = self._session.adapter_dav.request(
+            "REPORT", self._dav_get_obj_path(self._session.user), content=self._element_tree_as_str(root)
         )
         request_info = f"list_files_by_criteria: {self._session.user}"
         check_error(webdav_response.status_code, request_info)
@@ -350,8 +352,8 @@ class FilesAPI:
         xml_set = ElementTree.SubElement(root, "d:set")
         xml_set_prop = ElementTree.SubElement(xml_set, "d:prop")
         ElementTree.SubElement(xml_set_prop, "oc:favorite").text = str(int(bool(value)))
-        webdav_response = self._session.dav(
-            "PROPPATCH", self._dav_get_obj_path(self._session.user, path), data=self._element_tree_as_str(root)
+        webdav_response = self._session.adapter_dav.request(
+            "PROPPATCH", self._dav_get_obj_path(self._session.user, path), content=self._element_tree_as_str(root)
         )
         check_error(webdav_response.status_code, f"setfav: path={path}, value={value}")
 
@@ -373,9 +375,9 @@ class FilesAPI:
 
         dest = self._session.cfg.dav_endpoint + f"/trashbin/{self._session.user}/restore/{restore_name}"
         headers = Headers({"Destination": dest}, encoding="utf-8")
-        response = self._session.dav(
+        response = self._session.adapter_dav.request(
             "MOVE",
-            path=f"/trashbin/{self._session.user}/{path}",
+            f"/trashbin/{self._session.user}/{path}",
             headers=headers,
         )
         check_error(response.status_code, f"trashbin_restore: user={self._session.user}, src={path}, dest={dest}")
@@ -387,14 +389,14 @@ class FilesAPI:
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = self._session.dav(method="DELETE", path=f"/trashbin/{self._session.user}/{path}")
+        response = self._session.adapter_dav.delete(f"/trashbin/{self._session.user}/{path}")
         if response.status_code == 404 and not_fail:
             return
         check_error(response.status_code, f"delete_from_trashbin: user={self._session.user}, path={path}")
 
     def trashbin_cleanup(self) -> None:
         """Empties the TrashBin."""
-        response = self._session.dav(method="DELETE", path=f"/trashbin/{self._session.user}/trash")
+        response = self._session.adapter_dav.delete(f"/trashbin/{self._session.user}/trash")
         check_error(response.status_code, f"trashbin_cleanup: user={self._session.user}")
 
     def get_versions(self, file_object: FsNode) -> list[FsNode]:
@@ -417,9 +419,9 @@ class FilesAPI:
         require_capabilities("files.versioning", self._session.capabilities)
         dest = self._session.cfg.dav_endpoint + f"/versions/{self._session.user}/restore/{file_object.name}"
         headers = Headers({"Destination": dest}, encoding="utf-8")
-        response = self._session.dav(
+        response = self._session.adapter_dav.request(
             "MOVE",
-            path=f"/versions/{self._session.user}/{file_object.user_path}",
+            f"/versions/{self._session.user}/{file_object.user_path}",
             headers=headers,
         )
         check_error(response.status_code, f"restore_version: user={self._session.user}, src={file_object.user_path}")
@@ -434,7 +436,7 @@ class FilesAPI:
         prop_element = ElementTree.SubElement(root, "d:prop")
         for i in properties:
             ElementTree.SubElement(prop_element, i)
-        response = self._session.dav("PROPFIND", "/systemtags", self._element_tree_as_str(root))
+        response = self._session.adapter_dav.request("PROPFIND", "/systemtags", content=self._element_tree_as_str(root))
         result = []
         records = self._webdav_response_to_records(response, "list_tags")
         for record in records:
@@ -451,9 +453,8 @@ class FilesAPI:
         :param user_visible: Should be Tag visible in the UI.
         :param user_assignable: Can Tag be assigned from the UI.
         """
-        response = self._session.dav(
-            "POST",
-            path="/systemtags",
+        response = self._session.adapter_dav.post(
+            "/systemtags",
             json={
                 "name": name,
                 "userVisible": user_visible,
@@ -490,13 +491,15 @@ class FilesAPI:
         prop_element = ElementTree.SubElement(xml_set, "d:prop")
         for k, v in properties.items():
             ElementTree.SubElement(prop_element, k).text = v
-        response = self._session.dav("PROPPATCH", f"/systemtags/{tag_id}", self._element_tree_as_str(root))
+        response = self._session.adapter_dav.request(
+            "PROPPATCH", f"/systemtags/{tag_id}", content=self._element_tree_as_str(root)
+        )
         check_error(response.status_code, info=f"update_tag({tag_id})")
 
     def delete_tag(self, tag_id: Union[int, SystemTag]) -> None:
         """Deletes the tag."""
         tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
-        response = self._session.dav("DELETE", f"/systemtags/{tag_id}")
+        response = self._session.adapter_dav.delete(f"/systemtags/{tag_id}")
         check_error(response.status_code, info=f"delete_tag({tag_id})")
 
     def tag_by_name(self, tag_name: str) -> SystemTag:
@@ -517,10 +520,11 @@ class FilesAPI:
     def _file_change_tag_state(
         self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int], tag_state: bool
     ) -> None:
-        request = "PUT" if tag_state else "DELETE"
         fs_object = file_id.info.fileid if isinstance(file_id, FsNode) else file_id
         tag = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
-        response = self._session.dav(request, f"/systemtags-relations/files/{fs_object}/{tag}")
+        response = self._session.adapter_dav.request(
+            "PUT" if tag_state else "DELETE", f"/systemtags-relations/files/{fs_object}/{tag}"
+        )
         check_error(
             response.status_code,
             info=f"({'Adding' if tag_state else 'Removing'} `{tag}` {'to' if tag_state else 'from'} {fs_object})",
@@ -548,10 +552,10 @@ class FilesAPI:
             dav_path = self._dav_get_obj_path(f"trashbin/{user}/trash", path, root_path="")
         else:
             dav_path = self._dav_get_obj_path(user, path)
-        webdav_response = self._session.dav(
+        webdav_response = self._session.adapter_dav.request(
             "PROPFIND",
             dav_path,
-            self._element_tree_as_str(root),
+            content=self._element_tree_as_str(root),
             headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
 
@@ -696,9 +700,9 @@ class FilesAPI:
         full_path = self._dav_get_obj_path(self._session.user, path)
         headers = Headers({"Destination": self._session.cfg.dav_endpoint + full_path}, encoding="utf-8")
         if _v2:
-            response = self._session.dav("MKCOL", _dav_path, headers=headers)
+            response = self._session.adapter_dav.request("MKCOL", _dav_path, headers=headers)
         else:
-            response = self._session.dav("MKCOL", _dav_path)
+            response = self._session.adapter_dav.request("MKCOL", _dav_path)
         check_error(response.status_code)
         try:
             start_bytes = end_bytes = chunk_number = 0
@@ -708,12 +712,12 @@ class FilesAPI:
                     break
                 end_bytes = start_bytes + len(piece)
                 if _v2:
-                    response = self._session.dav(
-                        "PUT", _dav_path + "/" + str(chunk_number), data=piece, headers=headers
+                    response = self._session.adapter_dav.put(
+                        _dav_path + "/" + str(chunk_number), content=piece, headers=headers
                     )
                 else:
                     _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
-                    response = self._session.dav("PUT", _dav_path + "/" + _filename, data=piece)
+                    response = self._session.adapter_dav.put(_dav_path + "/" + _filename, content=piece)
                 check_error(
                     response.status_code,
                     f"upload_stream(v={_v2}): user={self._session.user}, path={path}, cur_size={end_bytes}",
@@ -721,7 +725,7 @@ class FilesAPI:
                 start_bytes = end_bytes
                 chunk_number += 1
 
-            response = self._session.dav(
+            response = self._session.adapter_dav.request(
                 "MOVE",
                 _dav_path + "/.file",
                 headers=headers,
@@ -732,7 +736,7 @@ class FilesAPI:
             )
             return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
         finally:
-            self._session.dav("DELETE", _dav_path)
+            self._session.adapter_dav.delete(_dav_path)
 
     @staticmethod
     def __get_etag_fileid_from_response(response: Response) -> dict:
