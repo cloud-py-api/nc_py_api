@@ -684,9 +684,7 @@ class FilesAPI:
                 _add_value(xml_element_where, where_part)
 
     def __download2stream(self, path: str, fp, **kwargs) -> None:
-        with self._session.dav_stream(
-            "GET", self._dav_get_obj_path(self._session.user, path)
-        ) as response:  # type: ignore
+        with self._session.adapter_dav.stream("GET", self._dav_get_obj_path(self._session.user, path)) as response:
             self._session.response_headers = response.headers
             check_error(response.status_code, f"download_stream: user={self._session.user}, path={path}")
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):

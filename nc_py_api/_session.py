@@ -3,7 +3,6 @@
 import typing
 from abc import ABC, abstractmethod
 from base64 import b64encode
-from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import IntEnum
 from json import dumps, loads
@@ -257,15 +256,6 @@ class NcSessionBasic(ABC):
             **kwargs,
         )
 
-    def dav_stream(
-        self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs
-    ) -> Iterator[Response]:
-        headers = kwargs.pop("headers", {})
-        data_bytes = None
-        if data is not None:
-            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        return self._dav_stream(method, quote(path), headers, data_bytes, **kwargs)
-
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
         self.init_adapter_dav()
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
@@ -279,11 +269,6 @@ class NcSessionBasic(ABC):
         )
         self.response_headers = result.headers
         return result
-
-    def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
-        self.init_adapter_dav()
-        timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        return self.adapter_dav.stream(method, path, headers=headers, content=data, timeout=timeout, **kwargs)
 
     def init_adapter(self, restart=False) -> None:
         if getattr(self, "adapter", None) is None or restart:
