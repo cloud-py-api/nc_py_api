@@ -251,7 +251,7 @@ class NcSessionBasic(ABC):
         data_bytes = self.__data_to_bytes(headers, data, json)
         return self._dav(
             method,
-            quote(self.cfg.dav_url_suffix + path) if isinstance(path, str) else path,
+            quote(path) if isinstance(path, str) else path,
             headers,
             data_bytes,
             **kwargs,
@@ -264,7 +264,7 @@ class NcSessionBasic(ABC):
         data_bytes = None
         if data is not None:
             data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        return self._dav_stream(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
+        return self._dav_stream(method, quote(path), headers, data_bytes, **kwargs)
 
     def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
         self.init_adapter_dav()
@@ -374,7 +374,7 @@ class NcSession(NcSessionBasic):
             follow_redirects=True,
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
-            base_url=self.cfg.endpoint,
+            base_url=self.cfg.endpoint + self.cfg.dav_url_suffix if dav else self.cfg.endpoint,
             timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
         )
 
@@ -392,7 +392,7 @@ class NcSessionApp(NcSessionBasic):
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
             event_hooks={"request": [self._add_auth]},
-            base_url=self.cfg.endpoint,
+            base_url=self.cfg.endpoint + self.cfg.dav_url_suffix if dav else self.cfg.endpoint,
             timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
         )
         adapter.headers.update({
