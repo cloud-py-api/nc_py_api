@@ -242,6 +242,7 @@ def test_list_bots(nc, nc_app):
         nc.talk.delete_conversation(conversation.token)
 
 
+@pytest.mark.skipif(environ.get("CI", None) is None, reason="run only on GitHub")
 @pytest.mark.require_nc(major=27, minor=1)
 def test_chat_bot_receive_message(nc_app):
     if nc_app.talk.bots_available is False:

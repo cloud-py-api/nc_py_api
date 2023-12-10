@@ -396,33 +396,15 @@ class NcSessionApp(NcSessionBasic):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
 
-    def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
-        self.sign_request(headers)
-        return super()._get_stream(path_params, headers, **kwargs)
-
-    def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
-        self.sign_request(headers)
-        return super()._ocs(method, path_params, headers, data, **kwargs)
-
-    def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
-        self.sign_request(headers)
-        return super()._dav(method, path, headers, data, **kwargs)
-
-    def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
-        self.sign_request(headers)
-        return super()._dav_stream(method, path, headers, data, **kwargs)
-
     def _create_adapter(self) -> Client:
         adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
         adapter.headers.update({
             "AA-VERSION": self.cfg.aa_version,
             "EX-APP-ID": self.cfg.app_name,
             "EX-APP-VERSION": self.cfg.app_version,
+            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8")),
         })
         return adapter
-
-    def sign_request(self, headers: dict) -> None:
-        headers.update({"AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))})
 
     def sign_check(self, request: Request) -> None:
         headers = {
