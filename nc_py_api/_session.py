@@ -158,17 +158,6 @@ class NcSessionBasic(ABC):
         if hasattr(self, "adapter_dav") and self.adapter_dav:
             self.adapter_dav.close()
 
-    def get_stream(self, path: str, params: Optional[dict] = None, **kwargs) -> Iterator[Response]:
-        headers = kwargs.pop("headers", {})
-        return self._get_stream(
-            f"{quote(path)}?{urlencode(params, True)}" if params else quote(path), headers=headers, **kwargs
-        )
-
-    def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
-        self.init_adapter()
-        timeout = kwargs.pop("timeout", self.cfg.options.timeout)
-        return self.adapter.stream("GET", path_params, headers=headers, timeout=timeout, **kwargs)
-
     def request(
         self,
         method: str,
@@ -312,14 +301,14 @@ class NcSessionBasic(ABC):
         if getattr(self, "adapter_dav", None) is None or restart:
             if restart and hasattr(self, "adapter"):
                 self.adapter.close()
-            self.adapter_dav = self._create_adapter()
+            self.adapter_dav = self._create_adapter(dav=True)
             if self.custom_headers:
                 self.adapter_dav.headers.update(self.custom_headers)
             if options.XDEBUG_SESSION:
                 self.adapter_dav.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
 
     @abstractmethod
-    def _create_adapter(self) -> Client:
+    def _create_adapter(self, dav: bool = False) -> Client:
         pass  # pragma: no cover
 
     def update_server_info(self) -> None:
@@ -379,13 +368,14 @@ class NcSession(NcSessionBasic):
         self.cfg = Config(**kwargs)
         super().__init__()
 
-    def _create_adapter(self) -> Client:
+    def _create_adapter(self, dav: bool = False) -> Client:
         return Client(
             auth=self.cfg.auth,
             follow_redirects=True,
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
             base_url=self.cfg.endpoint,
+            timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
         )
 
 
@@ -396,13 +386,14 @@ class NcSessionApp(NcSessionBasic):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
 
-    def _create_adapter(self) -> Client:
+    def _create_adapter(self, dav: bool = False) -> Client:
         adapter = Client(
             follow_redirects=True,
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
             event_hooks={"request": [self._add_auth]},
             base_url=self.cfg.endpoint,
+            timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
         )
         adapter.headers.update({
             "AA-VERSION": self.cfg.aa_version,

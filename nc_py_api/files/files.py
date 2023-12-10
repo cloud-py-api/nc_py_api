@@ -169,9 +169,9 @@ class FilesAPI:
         .. note:: This works only for directories, you should not use this to download a file.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        with self._session.get_stream(
-            "/index.php/apps/files/ajax/download.php", params={"dir": path}
-        ) as response:  # type: ignore
+        with self._session.adapter.stream(
+            "GET", "/index.php/apps/files/ajax/download.php", params={"dir": path}
+        ) as response:
             self._session.response_headers = response.headers
             check_error(response.status_code, f"download_directory_as_zip: user={self._session.user}, path={path}")
             result_path = local_path if local_path else os.path.basename(path)
