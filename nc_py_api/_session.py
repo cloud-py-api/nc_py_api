@@ -167,9 +167,7 @@ class NcSessionBasic(ABC):
     def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
         self.init_adapter()
         timeout = kwargs.pop("timeout", self.cfg.options.timeout)
-        return self.adapter.stream(
-            "GET", f"{self.cfg.endpoint}{path_params}", headers=headers, timeout=timeout, **kwargs
-        )
+        return self.adapter.stream("GET", path_params, headers=headers, timeout=timeout, **kwargs)
 
     def request(
         self,
@@ -219,18 +217,14 @@ class NcSessionBasic(ABC):
 
     def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
         self.init_adapter()
-        url_params = f"{self.cfg.endpoint}{path_params}"
-        info = f"request: method={method}, url={url_params}"
+        info = f"request: method={method}, path_params={path_params}"
         nested_req = kwargs.pop("nested_req", False)
         not_parse = kwargs.pop("not_parse", False)
         try:
             timeout = kwargs.pop("timeout", self.cfg.options.timeout)
-            if method == "GET":
-                response = self.adapter.get(url_params, headers=headers, timeout=timeout, **kwargs)
-            else:
-                response = self.adapter.request(
-                    method, url_params, headers=headers, content=data, timeout=timeout, **kwargs
-                )
+            response = self.adapter.request(
+                method, path_params, headers=headers, content=data, timeout=timeout, **kwargs
+            )
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
@@ -288,7 +282,7 @@ class NcSessionBasic(ABC):
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
         result = self.adapter_dav.request(
             method,
-            self.cfg.endpoint + path if isinstance(path, str) else str(path),
+            path if isinstance(path, str) else str(path),
             headers=headers,
             content=data,
             timeout=timeout,
@@ -300,9 +294,7 @@ class NcSessionBasic(ABC):
     def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
         self.init_adapter_dav()
         timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        return self.adapter_dav.stream(
-            method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
-        )
+        return self.adapter_dav.stream(method, path, headers=headers, content=data, timeout=timeout, **kwargs)
 
     def init_adapter(self, restart=False) -> None:
         if getattr(self, "adapter", None) is None or restart:
@@ -388,7 +380,13 @@ class NcSession(NcSessionBasic):
         super().__init__()
 
     def _create_adapter(self) -> Client:
-        return Client(auth=self.cfg.auth, follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
+        return Client(
+            auth=self.cfg.auth,
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            base_url=self.cfg.endpoint,
+        )
 
 
 class NcSessionApp(NcSessionBasic):
@@ -404,6 +402,7 @@ class NcSessionApp(NcSessionBasic):
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
             event_hooks={"request": [self._add_auth]},
+            base_url=self.cfg.endpoint,
         )
         adapter.headers.update({
             "AA-VERSION": self.cfg.aa_version,
