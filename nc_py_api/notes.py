@@ -211,8 +211,7 @@ class _NotesAPI:
         """
         require_capabilities("notes", self._session.capabilities)
         note_id = note.note_id if isinstance(note, Note) else note
-        response = self._session.adapter.delete(self._ep_base + f"/notes/{note_id}")
-        check_error(response.status_code)
+        check_error(self._session.adapter.delete(self._ep_base + f"/notes/{note_id}"))
 
     def get_settings(self) -> NotesSettings:
         """Returns Notes App settings."""
@@ -230,10 +229,9 @@ class _NotesAPI:
             "fileSuffix": file_suffix,
         }
         clear_from_params_empty(list(params.keys()), params)
-        response = self._session.adapter.put(self._ep_base + "/settings", json=params)
-        check_error(response.status_code)
+        check_error(self._session.adapter.put(self._ep_base + "/settings", json=params))
 
     @staticmethod
     def __response_to_json(response: httpx.Response) -> dict:
-        check_error(response.status_code, info=f"request: {response.request.method} {response.request.url}")
+        check_error(response)
         return json.loads(response.text) if response.status_code != 304 else {}

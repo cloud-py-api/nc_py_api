@@ -306,5 +306,5 @@ class _UsersAPI:
         if dark:
             url_path += "/dark"
         response = self._session.adapter.get(url_path)
-        check_error(response.status_code, info=f"request: {response.request.method} {response.request.url}")
+        check_error(response)
         return response.content

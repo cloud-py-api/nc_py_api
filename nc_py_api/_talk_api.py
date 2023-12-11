@@ -545,7 +545,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         ep_suffix = "/dark" if dark else ""
         response = self._session.adapter.get(self._ep_base + f"/api/v1/room/{token}/avatar" + ep_suffix)
-        check_error(response.status_code)
+        check_error(response)
         return response.content
 
     @staticmethod

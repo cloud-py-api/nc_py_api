@@ -184,7 +184,7 @@ class NcSessionBasic(ABC):
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
-        check_error(response.status_code, info)
+        check_error(response, info)
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":

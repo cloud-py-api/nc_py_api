@@ -2,6 +2,7 @@ import datetime
 import os
 
 import pytest
+from httpx import Request, Response
 
 from nc_py_api import Nextcloud, NextcloudApp, NextcloudException, ex_app
 from nc_py_api._deffered_error import DeferredError  # noqa
@@ -14,9 +15,9 @@ from nc_py_api._session import BasicConfig  # noqa
 def test_check_error(code):
     if 996 <= code <= 999:
         with pytest.raises(NextcloudException):
-            check_error(code)
+            check_error(Response(code, request=Request(method="GET", url="https://example")))
     else:
-        check_error(code)
+        check_error(Response(code, request=Request(method="GET", url="https://example")))
 
 
 def test_nc_exception_to_str():

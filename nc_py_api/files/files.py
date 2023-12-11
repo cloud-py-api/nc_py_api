@@ -139,7 +139,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         response = self._session.adapter_dav.get(self._dav_get_obj_path(self._session.user, path))
-        check_error(response.status_code, f"download: user={self._session.user}, path={path}")
+        check_error(response, f"download: user={self._session.user}, path={path}")
         return response.content
 
     def download2stream(self, path: Union[str, FsNode], fp, **kwargs) -> None:
@@ -175,7 +175,7 @@ class FilesAPI:
             "GET", "/index.php/apps/files/ajax/download.php", params={"dir": path}
         ) as response:
             self._session.response_headers = response.headers
-            check_error(response.status_code, f"download_directory_as_zip: user={self._session.user}, path={path}")
+            check_error(response, f"download_directory_as_zip: user={self._session.user}, path={path}")
             result_path = local_path if local_path else os.path.basename(path)
             with open(
                 result_path,
@@ -194,7 +194,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = self._dav_get_obj_path(self._session.user, path)
         response = self._session.adapter_dav.put(full_path, content=content)
-        check_error(response.status_code, f"upload: user={self._session.user}, path={path}, size={len(content)}")
+        check_error(response, f"upload: user={self._session.user}, path={path}, size={len(content)}")
         return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
 
     def upload_stream(self, path: Union[str, FsNode], fp, **kwargs) -> FsNode:
@@ -223,7 +223,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = self._dav_get_obj_path(self._session.user, path)
         response = self._session.adapter_dav.request("MKCOL", full_path)
-        check_error(response.status_code, f"mkdir: user={self._session.user}, path={path}")
+        check_error(response)
         full_path += "/" if not full_path.endswith("/") else ""
         return FsNode(full_path.lstrip("/"), **self.__get_etag_fileid_from_response(response))
 
@@ -260,7 +260,7 @@ class FilesAPI:
         response = self._session.adapter_dav.delete(self._dav_get_obj_path(self._session.user, path))
         if response.status_code == 404 and not_fail:
             return
-        check_error(response.status_code, f"delete: user={self._session.user}, path={path}")
+        check_error(response)
 
     def move(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
         """Moves an existing file or a directory.
@@ -281,7 +281,7 @@ class FilesAPI:
             self._dav_get_obj_path(self._session.user, path_src),
             headers=headers,
         )
-        check_error(response.status_code, f"move: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
+        check_error(response, f"move: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
         return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
     def copy(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
@@ -303,7 +303,7 @@ class FilesAPI:
             self._dav_get_obj_path(self._session.user, path_src),
             headers=headers,
         )
-        check_error(response.status_code, f"copy: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
+        check_error(response, f"copy: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
         return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
     def list_by_criteria(
@@ -335,7 +335,7 @@ class FilesAPI:
             "REPORT", self._dav_get_obj_path(self._session.user), content=self._element_tree_as_str(root)
         )
         request_info = f"list_files_by_criteria: {self._session.user}"
-        check_error(webdav_response.status_code, request_info)
+        check_error(webdav_response, request_info)
         return self._lf_parse_webdav_response(webdav_response, request_info)
 
     def setfav(self, path: Union[str, FsNode], value: Union[int, bool]) -> None:
@@ -355,7 +355,7 @@ class FilesAPI:
         webdav_response = self._session.adapter_dav.request(
             "PROPPATCH", self._dav_get_obj_path(self._session.user, path), content=self._element_tree_as_str(root)
         )
-        check_error(webdav_response.status_code, f"setfav: path={path}, value={value}")
+        check_error(webdav_response, f"setfav: path={path}, value={value}")
 
     def trashbin_list(self) -> list[FsNode]:
         """Returns a list of all entries in the TrashBin."""
@@ -380,7 +380,7 @@ class FilesAPI:
             f"/trashbin/{self._session.user}/{path}",
             headers=headers,
         )
-        check_error(response.status_code, f"trashbin_restore: user={self._session.user}, src={path}, dest={dest}")
+        check_error(response, f"trashbin_restore: user={self._session.user}, src={path}, dest={dest}")
 
     def trashbin_delete(self, path: Union[str, FsNode], not_fail=False) -> None:
         """Deletes a file/directory permanently from the TrashBin.
@@ -392,12 +392,11 @@ class FilesAPI:
         response = self._session.adapter_dav.delete(f"/trashbin/{self._session.user}/{path}")
         if response.status_code == 404 and not_fail:
             return
-        check_error(response.status_code, f"delete_from_trashbin: user={self._session.user}, path={path}")
+        check_error(response)
 
     def trashbin_cleanup(self) -> None:
         """Empties the TrashBin."""
-        response = self._session.adapter_dav.delete(f"/trashbin/{self._session.user}/trash")
-        check_error(response.status_code, f"trashbin_cleanup: user={self._session.user}")
+        check_error(self._session.adapter_dav.delete(f"/trashbin/{self._session.user}/trash"))
 
     def get_versions(self, file_object: FsNode) -> list[FsNode]:
         """Returns a list of all file versions if any."""
@@ -424,7 +423,7 @@ class FilesAPI:
             f"/versions/{self._session.user}/{file_object.user_path}",
             headers=headers,
         )
-        check_error(response.status_code, f"restore_version: user={self._session.user}, src={file_object.user_path}")
+        check_error(response, f"restore_version: user={self._session.user}, src={file_object.user_path}")
 
     def list_tags(self) -> list[SystemTag]:
         """Returns list of the avalaible Tags."""
@@ -461,7 +460,7 @@ class FilesAPI:
                 "userAssignable": user_assignable,
             },
         )
-        check_error(response.status_code, info=f"create_tag({name})")
+        check_error(response, info=f"create_tag({name})")
 
     def update_tag(
         self,
@@ -494,13 +493,13 @@ class FilesAPI:
         response = self._session.adapter_dav.request(
             "PROPPATCH", f"/systemtags/{tag_id}", content=self._element_tree_as_str(root)
         )
-        check_error(response.status_code, info=f"update_tag({tag_id})")
+        check_error(response)
 
     def delete_tag(self, tag_id: Union[int, SystemTag]) -> None:
         """Deletes the tag."""
         tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
         response = self._session.adapter_dav.delete(f"/systemtags/{tag_id}")
-        check_error(response.status_code, info=f"delete_tag({tag_id})")
+        check_error(response)
 
     def tag_by_name(self, tag_name: str) -> SystemTag:
         """Returns Tag info by its name if found or ``None`` otherwise."""
@@ -526,7 +525,7 @@ class FilesAPI:
             "PUT" if tag_state else "DELETE", f"/systemtags-relations/files/{fs_object}/{tag}"
         )
         check_error(
-            response.status_code,
+            response,
             info=f"({'Adding' if tag_state else 'Removing'} `{tag}` {'to' if tag_state else 'from'} {fs_object})",
         )
 
@@ -635,7 +634,7 @@ class FilesAPI:
 
     @staticmethod
     def _webdav_response_to_records(webdav_res: Response, info: str) -> list[dict]:
-        check_error(webdav_res.status_code, info=info)
+        check_error(webdav_res, info=info)
         if webdav_res.status_code != 207:  # multistatus
             raise NextcloudException(webdav_res.status_code, "Response is not a multistatus.", info=info)
         response_data = loads(dumps(xmltodict.parse(webdav_res.text)))
@@ -690,7 +689,7 @@ class FilesAPI:
     def __download2stream(self, path: str, fp, **kwargs) -> None:
         with self._session.adapter_dav.stream("GET", self._dav_get_obj_path(self._session.user, path)) as response:
             self._session.response_headers = response.headers
-            check_error(response.status_code, f"download_stream: user={self._session.user}, path={path}")
+            check_error(response, f"download_stream: user={self._session.user}, path={path}")
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
 
@@ -703,7 +702,7 @@ class FilesAPI:
             response = self._session.adapter_dav.request("MKCOL", _dav_path, headers=headers)
         else:
             response = self._session.adapter_dav.request("MKCOL", _dav_path)
-        check_error(response.status_code)
+        check_error(response)
         try:
             start_bytes = end_bytes = chunk_number = 0
             while True:
@@ -719,7 +718,7 @@ class FilesAPI:
                     _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
                     response = self._session.adapter_dav.put(_dav_path + "/" + _filename, content=piece)
                 check_error(
-                    response.status_code,
+                    response,
                     f"upload_stream(v={_v2}): user={self._session.user}, path={path}, cur_size={end_bytes}",
                 )
                 start_bytes = end_bytes
@@ -731,7 +730,7 @@ class FilesAPI:
                 headers=headers,
             )
             check_error(
-                response.status_code,
+                response,
                 f"upload_stream(v={_v2}): user={self._session.user}, path={path}, total_size={end_bytes}",
             )
             return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
