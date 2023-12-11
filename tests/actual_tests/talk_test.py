@@ -4,7 +4,7 @@ from os import environ
 import pytest
 from PIL import Image
 
-from nc_py_api import Nextcloud, files, talk, talk_bot
+from nc_py_api import Nextcloud, NextcloudException, files, talk, talk_bot
 
 
 def test_conversation_create_delete(nc):
@@ -383,6 +383,8 @@ def test_conversation_avatar(nc_any):
         assert r.is_custom_avatar is True
         r = nc_any.talk.get_conversation_avatar(conversation, dark=True)
         assert isinstance(r, bytes)
+        with pytest.raises(NextcloudException):
+            nc_any.talk.get_conversation_avatar("not_exist_conversation")
     finally:
         nc_any.talk.delete_conversation(conversation)
 

@@ -176,7 +176,6 @@ class NcSessionBasic(ABC):
         self.init_adapter()
         info = f"request: method={method}, path_params={path_params}"
         nested_req = kwargs.pop("nested_req", False)
-        not_parse = kwargs.pop("not_parse", False)
         try:
             timeout = kwargs.pop("timeout", self.cfg.options.timeout)
             response = self.adapter.request(
@@ -186,8 +185,6 @@ class NcSessionBasic(ABC):
             raise NextcloudException(408, info=info) from None
 
         check_error(response.status_code, info)
-        if not_parse:
-            return response
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":

@@ -276,5 +276,4 @@ class NextcloudApp(_NextcloudBasic):
                 "progress": progress,
                 "error": error,
             },
-            not_parse=True,
         )

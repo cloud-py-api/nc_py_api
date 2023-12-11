@@ -211,7 +211,8 @@ class _NotesAPI:
         """
         require_capabilities("notes", self._session.capabilities)
         note_id = note.note_id if isinstance(note, Note) else note
-        self._session.ocs("DELETE", self._ep_base + f"/notes/{note_id}", not_parse=True)
+        response = self._session.adapter.delete(self._ep_base + f"/notes/{note_id}")
+        check_error(response.status_code)
 
     def get_settings(self) -> NotesSettings:
         """Returns Notes App settings."""
@@ -229,7 +230,8 @@ class _NotesAPI:
             "fileSuffix": file_suffix,
         }
         clear_from_params_empty(list(params.keys()), params)
-        self._session.ocs("PUT", self._ep_base + "/settings", not_parse=True, json=params)
+        response = self._session.adapter.put(self._ep_base + "/settings", json=params)
+        check_error(response.status_code)
 
     @staticmethod
     def __response_to_json(response: httpx.Response) -> dict:

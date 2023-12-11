@@ -3,6 +3,7 @@
 import hashlib
 import typing
 
+from ._exceptions import check_error
 from ._misc import (
     check_capabilities,
     clear_from_params_empty,
@@ -543,7 +544,8 @@ class _TalkAPI:
         require_capabilities("spreed.features.avatar", self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         ep_suffix = "/dark" if dark else ""
-        response = self._session.ocs("GET", self._ep_base + f"/api/v1/room/{token}/avatar" + ep_suffix, not_parse=True)
+        response = self._session.adapter.get(self._ep_base + f"/api/v1/room/{token}/avatar" + ep_suffix)
+        check_error(response.status_code)
         return response.content
 
     @staticmethod
