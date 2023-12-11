@@ -98,11 +98,6 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         return self._session.response_headers
 
     @property
-    def response_headers_dav(self) -> HttpxHeaders:
-        """Returns the `HTTPX headers <https://www.python-httpx.org/api/#headers>`_ from the last DAV response."""
-        return self._session.response_headers_dav
-
-    @property
     def theme(self) -> Optional[ThemingInfo]:
         """Returns Theme information."""
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None

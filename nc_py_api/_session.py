@@ -134,7 +134,6 @@ class NcSessionBasic(ABC):
     cfg: BasicConfig
     custom_headers: dict
     response_headers: Headers
-    response_headers_dav: Headers
     _user: str
     _capabilities: dict
 
@@ -147,7 +146,6 @@ class NcSessionBasic(ABC):
         self.init_adapter()
         self.init_adapter_dav()
         self.response_headers = Headers()
-        self.response_headers_dav = Headers()
 
     def __del__(self):
         if hasattr(self, "adapter") and self.adapter:
@@ -283,7 +281,7 @@ class NcSessionBasic(ABC):
             return {
                 "base_url": self.cfg.dav_endpoint,
                 "timeout": self.cfg.options.timeout_dav,
-                "event_hooks": {"response": [self._response_event_dav]},
+                "event_hooks": {"response": [self._response_event]},
             }
         return {
             "base_url": self.cfg.endpoint,
@@ -298,9 +296,6 @@ class NcSessionBasic(ABC):
             if str_url.endswith(i):
                 return
         self.response_headers = response.headers
-
-    def _response_event_dav(self, response: Response):
-        self.response_headers_dav = response.headers
 
 
 class NcSession(NcSessionBasic):

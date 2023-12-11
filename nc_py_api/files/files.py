@@ -174,7 +174,6 @@ class FilesAPI:
         with self._session.adapter.stream(
             "GET", "/index.php/apps/files/ajax/download.php", params={"dir": path}
         ) as response:
-            self._session.response_headers = response.headers
             check_error(response, f"download_directory_as_zip: user={self._session.user}, path={path}")
             result_path = local_path if local_path else os.path.basename(path)
             with open(
@@ -688,7 +687,6 @@ class FilesAPI:
 
     def __download2stream(self, path: str, fp, **kwargs) -> None:
         with self._session.adapter_dav.stream("GET", self._dav_get_obj_path(self._session.user, path)) as response:
-            self._session.response_headers = response.headers
             check_error(response, f"download_stream: user={self._session.user}, path={path}")
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
