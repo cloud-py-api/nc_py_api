@@ -58,10 +58,20 @@ def test_deffered_error():
         unknown_non_exist_module.some_class_or_func()
 
 
-def test_ocs_response_headers(nc):
+def test_response_headers(nc):
     old_headers = nc.response_headers
-    nc.users.get_user()
+    old_headers_dav = nc.response_headers_dav
+    nc.users.get_user(nc.user)  # do not remove "nc.user" arguments, it helps to trigger response header updates.
     assert old_headers != nc.response_headers
+    assert old_headers_dav == nc.response_headers_dav
+
+
+def test_dav_response_headers(nc):
+    old_headers = nc.response_headers
+    old_headers_dav = nc.response_headers_dav
+    nc.files.listdir()
+    assert old_headers == nc.response_headers
+    assert old_headers_dav != nc.response_headers_dav
 
 
 def test_nc_iso_time_to_datetime():

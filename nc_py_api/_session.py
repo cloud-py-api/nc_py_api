@@ -11,7 +11,7 @@ from typing import Optional, TypedDict, Union
 from urllib.parse import quote, urlencode
 
 from fastapi import Request as FastAPIRequest
-from httpx import Client, Headers, Limits, ReadTimeout, Request
+from httpx import Client, Headers, Limits, ReadTimeout, Request, Response
 
 from . import options
 from ._exceptions import (
@@ -134,6 +134,7 @@ class NcSessionBasic(ABC):
     cfg: BasicConfig
     custom_headers: dict
     response_headers: Headers
+    response_headers_dav: Headers
     _user: str
     _capabilities: dict
 
@@ -146,41 +147,13 @@ class NcSessionBasic(ABC):
         self.init_adapter()
         self.init_adapter_dav()
         self.response_headers = Headers()
+        self.response_headers_dav = Headers()
 
     def __del__(self):
         if hasattr(self, "adapter") and self.adapter:
             self.adapter.close()
         if hasattr(self, "adapter_dav") and self.adapter_dav:
             self.adapter_dav.close()
-
-    def request(
-        self,
-        method: str,
-        path: str,
-        params: Optional[dict] = None,
-        data: Optional[Union[bytes, str]] = None,
-        json: Optional[Union[dict, list]] = None,
-        **kwargs,
-    ):
-        method = method.upper()
-        if params is None:
-            params = {}
-        params.update({"format": "json"})
-        headers = kwargs.pop("headers", {})
-        data_bytes = self.__data_to_bytes(headers, data, json)
-        return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data_bytes, not_parse=True)
-
-    def request_json(
-        self,
-        method: str,
-        path: str,
-        params: Optional[dict] = None,
-        data: Optional[Union[bytes, str]] = None,
-        json: Optional[Union[dict, list]] = None,
-        **kwargs,
-    ) -> dict:
-        r = self.request(method, path, params, data, json, **kwargs)
-        return loads(r.text) if r.status_code != 304 else {}
 
     def ocs(
         self,
@@ -212,7 +185,6 @@ class NcSessionBasic(ABC):
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
-        self.response_headers = response.headers
         check_error(response.status_code, info)
         if not_parse:
             return response
@@ -309,6 +281,30 @@ class NcSessionBasic(ABC):
             return dumps(json).encode("utf-8")
         return None
 
+    def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
+        if dav:
+            return {
+                "base_url": self.cfg.dav_endpoint,
+                "timeout": self.cfg.options.timeout_dav,
+                "event_hooks": {"response": [self._response_event_dav]},
+            }
+        return {
+            "base_url": self.cfg.endpoint,
+            "timeout": self.cfg.options.timeout,
+            "event_hooks": {"response": [self._response_event]},
+        }
+
+    def _response_event(self, response: Response):
+        str_url = str(response.request.url)
+        # we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.
+        for i in ("/ocs/v1.php/cloud/capabilities?format=json", "/ocs/v1.php/cloud/user?format=json"):
+            if str_url.endswith(i):
+                return
+        self.response_headers = response.headers
+
+    def _response_event_dav(self, response: Response):
+        self.response_headers_dav = response.headers
+
 
 class NcSession(NcSessionBasic):
     cfg: Config
@@ -319,12 +315,11 @@ class NcSession(NcSessionBasic):
 
     def _create_adapter(self, dav: bool = False) -> Client:
         return Client(
-            auth=self.cfg.auth,
             follow_redirects=True,
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
-            base_url=self.cfg.dav_endpoint if dav else self.cfg.endpoint,
-            timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
+            **self._get_adapter_kwargs(dav),
+            auth=self.cfg.auth,
         )
 
 
@@ -336,20 +331,19 @@ class NcSessionApp(NcSessionBasic):
         super().__init__(**kwargs)
 
     def _create_adapter(self, dav: bool = False) -> Client:
-        adapter = Client(
+        r = self._get_adapter_kwargs(dav)
+        r["event_hooks"]["request"] = [self._add_auth]
+        return Client(
             follow_redirects=True,
             limits=self.limits,
             verify=self.cfg.options.nc_cert,
-            event_hooks={"request": [self._add_auth]},
-            base_url=self.cfg.dav_endpoint if dav else self.cfg.endpoint,
-            timeout=self.cfg.options.timeout_dav if dav else self.cfg.options.timeout,
+            **r,
+            headers={
+                "AA-VERSION": self.cfg.aa_version,
+                "EX-APP-ID": self.cfg.app_name,
+                "EX-APP-VERSION": self.cfg.app_version,
+            },
         )
-        adapter.headers.update({
-            "AA-VERSION": self.cfg.aa_version,
-            "EX-APP-ID": self.cfg.app_name,
-            "EX-APP-VERSION": self.cfg.app_version,
-        })
-        return adapter
 
     def _add_auth(self, request: Request):
         request.headers.update({

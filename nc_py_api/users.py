@@ -4,6 +4,7 @@ import dataclasses
 import datetime
 import typing
 
+from ._exceptions import check_error
 from ._misc import kwargs_to_params
 from ._session import NcSessionBasic
 
@@ -304,4 +305,6 @@ class _UsersAPI:
         url_path = f"/index.php/avatar/{user_id}/{size}" if not guest else f"/index.php/avatar/guest/{user_id}/{size}"
         if dark:
             url_path += "/dark"
-        return self._session.request(method="GET", path=url_path).content
+        response = self._session.adapter.get(url_path)
+        check_error(response.status_code, info=f"request: {response.request.method} {response.request.url}")
+        return response.content
