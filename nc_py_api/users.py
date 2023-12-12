@@ -170,21 +170,13 @@ class _UsersAPI:
     def get_list(
         self, mask: typing.Optional[str] = "", limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
     ) -> list[str]:
-        """Returns list of user IDs.
-
-        :param mask: user ID mask to apply.
-        :param limit: limits the number of results.
-        :param offset: offset of results.
-        """
+        """Returns list of user IDs."""
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs("GET", self._ep_base, params=data)
         return response_data["users"] if response_data else {}
 
     def get_user(self, user_id: str = "") -> UserInfo:
-        """Returns detailed user information.
-
-        :param user_id: the identifier of the user about which information is to be returned.
-        """
+        """Returns detailed user information."""
         return UserInfo(self._session.ocs("GET", f"{self._ep_base}/{user_id}" if user_id else "/ocs/v1.php/cloud/user"))
 
     def create(self, user_id: str, display_name: typing.Optional[str] = None, **kwargs) -> None:
@@ -216,31 +208,19 @@ class _UsersAPI:
         self._session.ocs("POST", self._ep_base, json=data)
 
     def delete(self, user_id: str) -> None:
-        """Deletes user from the Nextcloud server.
-
-        :param user_id: id of the user.
-        """
+        """Deletes user from the Nextcloud server."""
         self._session.ocs("DELETE", f"{self._ep_base}/{user_id}")
 
     def enable(self, user_id: str) -> None:
-        """Enables user on the Nextcloud server.
-
-        :param user_id: id of the user.
-        """
+        """Enables user on the Nextcloud server."""
         self._session.ocs("PUT", f"{self._ep_base}/{user_id}/enable")
 
     def disable(self, user_id: str) -> None:
-        """Disables user on the Nextcloud server.
-
-        :param user_id: id of the user.
-        """
+        """Disables user on the Nextcloud server."""
         self._session.ocs("PUT", f"{self._ep_base}/{user_id}/disable")
 
     def resend_welcome_email(self, user_id: str) -> None:
-        """Send welcome email for specified user again.
-
-        :param user_id: id of the user.
-        """
+        """Send welcome email for specified user again."""
         self._session.ocs("POST", f"{self._ep_base}/{user_id}/welcome")
 
     def editable_fields(self) -> list[str]:
@@ -257,35 +237,19 @@ class _UsersAPI:
             self._session.ocs("PUT", f"{self._ep_base}/{user_id}", params={"key": k, "value": v})
 
     def add_to_group(self, user_id: str, group_id: str) -> None:
-        """Adds user to the group.
-
-        :param user_id: ID of the user.
-        :param group_id: the destination group to which add user to.
-        """
+        """Adds user to the group."""
         self._session.ocs("POST", f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
 
     def remove_from_group(self, user_id: str, group_id: str) -> None:
-        """Removes user from the group.
-
-        :param user_id: ID of the user.
-        :param group_id: group from which remove user.
-        """
+        """Removes user from the group."""
         self._session.ocs("DELETE", f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
 
     def promote_to_subadmin(self, user_id: str, group_id: str) -> None:
-        """Makes user admin of the group.
-
-        :param user_id: ID of the user.
-        :param group_id: group where user should become administrator.
-        """
+        """Makes user admin of the group."""
         self._session.ocs("POST", f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
 
     def demote_from_subadmin(self, user_id: str, group_id: str) -> None:
-        """Removes user from the admin role of the group.
-
-        :param user_id: ID of the user.
-        :param group_id: group where user should be removed from administrators.
-        """
+        """Removes user from the admin role of the group."""
         self._session.ocs("DELETE", f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
 
     def get_avatar(

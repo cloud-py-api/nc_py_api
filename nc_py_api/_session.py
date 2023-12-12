@@ -321,7 +321,6 @@ class NcSessionApp(NcSessionBasic):
         )
 
     def _add_auth(self, request: Request):
-        # request.url.copy_add_param()
         request.headers.update({
             "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
         })

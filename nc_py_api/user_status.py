@@ -121,11 +121,7 @@ class _UserStatusAPI:
         return not check_capabilities("user_status.enabled", self._session.capabilities)
 
     def get_list(self, limit: typing.Optional[int] = None, offset: typing.Optional[int] = None) -> list[UserStatus]:
-        """Returns statuses for all users.
-
-        :param limit: limits the number of results.
-        :param offset: offset of results.
-        """
+        """Returns statuses for all users."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         data = kwargs_to_params(["limit", "offset"], limit=limit, offset=offset)
         result = self._session.ocs("GET", f"{self._ep_base}/statuses", params=data)
@@ -137,10 +133,7 @@ class _UserStatusAPI:
         return CurrentUserStatus(self._session.ocs("GET", f"{self._ep_base}/user_status"))
 
     def get(self, user_id: str) -> typing.Optional[UserStatus]:
-        """Returns the user status for the specified user.
-
-        :param user_id: User ID for getting status.
-        """
+        """Returns the user status for the specified user."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         try:
             return UserStatus(self._session.ocs("GET", f"{self._ep_base}/statuses/{user_id}"))
@@ -195,10 +188,7 @@ class _UserStatusAPI:
         self._session.ocs("PUT", f"{self._ep_base}/user_status/message/custom", params=params)
 
     def get_backup_status(self, user_id: str = "") -> typing.Optional[UserStatus]:
-        """Get the backup status of the user if any.
-
-        :param user_id: User ID for getting status.
-        """
+        """Get the backup status of the user if any."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         user_id = user_id if user_id else self._session.user
         if not user_id:
@@ -206,10 +196,7 @@ class _UserStatusAPI:
         return self.get(f"_{user_id}")
 
     def restore_backup_status(self, status_id: str) -> typing.Optional[CurrentUserStatus]:
-        """Restores the backup state as current for the current user.
-
-        :param status_id: backup status ID.
-        """
+        """Restores the backup state as current for the current user."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         require_capabilities("user_status.restore", self._session.capabilities)
         result = self._session.ocs("DELETE", f"{self._ep_base}/user_status/revert/{status_id}")
