@@ -124,21 +124,21 @@ def test_appcfg_sensitive(nc_app):
     appcfg.delete("test_key")
     # next code tests `sensitive` value from the `AppAPI`
     params = {"configKey": "test_key", "configValue": "123"}
-    result = nc_app._session.ocs(method="POST", path=f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
+    result = nc_app._session.ocs("POST", f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert not result["sensitive"]  # by default if sensitive value is unspecified it is False
     appcfg.delete("test_key")
     params = {"configKey": "test_key", "configValue": "123", "sensitive": True}
-    result = nc_app._session.ocs(method="POST", path=f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
+    result = nc_app._session.ocs("POST", f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is True
     params.pop("sensitive")  # if we not specify value, AppEcosystem should not change it.
-    result = nc_app._session.ocs(method="POST", path=f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
+    result = nc_app._session.ocs("POST", f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is True
     params["sensitive"] = False
-    result = nc_app._session.ocs(method="POST", path=f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
+    result = nc_app._session.ocs("POST", f"{nc_app._session.ae_url}/{appcfg._url_suffix}", json=params)
     assert result["configkey"] == "test_key"
     assert result["configvalue"] == "123"
     assert bool(result["sensitive"]) is False

@@ -57,7 +57,7 @@ class _WeatherStatusAPI:
     def get_location(self) -> WeatherLocation:
         """Returns the current location set on the Nextcloud server for the user."""
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        return WeatherLocation(self._session.ocs(method="GET", path=f"{self._ep_base}/location"))
+        return WeatherLocation(self._session.ocs("GET", f"{self._ep_base}/location"))
 
     def set_location(
         self,
@@ -79,23 +79,23 @@ class _WeatherStatusAPI:
             params["address"] = address
         else:
             raise ValueError("latitude & longitude or address should be present")
-        result = self._session.ocs(method="PUT", path=f"{self._ep_base}/location", params=params)
+        result = self._session.ocs("PUT", f"{self._ep_base}/location", params=params)
         return result.get("success", False)
 
     def get_forecast(self) -> list[dict]:
         """Get forecast for the current location."""
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        return self._session.ocs(method="GET", path=f"{self._ep_base}/forecast")
+        return self._session.ocs("GET", f"{self._ep_base}/forecast")
 
     def get_favorites(self) -> list[str]:
         """Returns favorites addresses list."""
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        return self._session.ocs(method="GET", path=f"{self._ep_base}/favorites")
+        return self._session.ocs("GET", f"{self._ep_base}/favorites")
 
     def set_favorites(self, favorites: list[str]) -> bool:
         """Sets favorites addresses list."""
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        result = self._session.ocs(method="PUT", path=f"{self._ep_base}/favorites", json={"favorites": favorites})
+        result = self._session.ocs("PUT", f"{self._ep_base}/favorites", json={"favorites": favorites})
         return result.get("success", False)
 
     def set_mode(self, mode: WeatherLocationMode) -> bool:
@@ -103,5 +103,5 @@ class _WeatherStatusAPI:
         if int(mode) == WeatherLocationMode.UNKNOWN.value:
             raise ValueError("This mode can not be set")
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        result = self._session.ocs(method="PUT", path=f"{self._ep_base}/mode", params={"mode": int(mode)})
+        result = self._session.ocs("PUT", f"{self._ep_base}/mode", params={"mode": int(mode)})
         return result.get("success", False)

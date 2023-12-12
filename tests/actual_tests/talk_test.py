@@ -4,7 +4,7 @@ from os import environ
 import pytest
 from PIL import Image
 
-from nc_py_api import Nextcloud, files, talk, talk_bot
+from nc_py_api import Nextcloud, NextcloudException, files, talk, talk_bot
 
 
 def test_conversation_create_delete(nc):
@@ -242,6 +242,7 @@ def test_list_bots(nc, nc_app):
         nc.talk.delete_conversation(conversation.token)
 
 
+@pytest.mark.skipif(environ.get("CI", None) is None, reason="run only on GitHub")
 @pytest.mark.require_nc(major=27, minor=1)
 def test_chat_bot_receive_message(nc_app):
     if nc_app.talk.bots_available is False:
@@ -382,6 +383,8 @@ def test_conversation_avatar(nc_any):
         assert r.is_custom_avatar is True
         r = nc_any.talk.get_conversation_avatar(conversation, dark=True)
         assert isinstance(r, bytes)
+        with pytest.raises(NextcloudException):
+            nc_any.talk.get_conversation_avatar("not_exist_conversation")
     finally:
         nc_any.talk.delete_conversation(conversation)
 

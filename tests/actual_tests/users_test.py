@@ -155,3 +155,5 @@ def test_avatars(nc):
     for i in (im, im_64, im_black, im_64_black):
         img = Image.open(BytesIO(i))
         img.load()
+    with pytest.raises(NextcloudException):
+        nc.users.get_avatar("not_existing_user")

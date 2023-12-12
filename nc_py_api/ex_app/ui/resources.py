@@ -96,15 +96,15 @@ class _UiResources:
             "key": key,
             "value": value,
         }
-        self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._ep_suffix_init_state}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix_init_state}", json=params)
 
     def delete_initial_state(self, ui_type: str, name: str, key: str, not_fail=True) -> None:
         """Removes initial state for the page(template) by object name."""
         require_capabilities("app_api", self._session.capabilities)
         try:
             self._session.ocs(
-                method="DELETE",
-                path=f"{self._session.ae_url}/{self._ep_suffix_init_state}",
+                "DELETE",
+                f"{self._session.ae_url}/{self._ep_suffix_init_state}",
                 params={"type": ui_type, "name": name, "key": key},
             )
         except NextcloudExceptionNotFound as e:
@@ -117,8 +117,8 @@ class _UiResources:
         try:
             return UiInitState(
                 self._session.ocs(
-                    method="GET",
-                    path=f"{self._session.ae_url}/{self._ep_suffix_init_state}",
+                    "GET",
+                    f"{self._session.ae_url}/{self._ep_suffix_init_state}",
                     params={"type": ui_type, "name": name, "key": key},
                 )
             )
@@ -134,15 +134,15 @@ class _UiResources:
             "path": path,
             "afterAppId": after_app_id,
         }
-        self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._ep_suffix_js}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix_js}", json=params)
 
     def delete_script(self, ui_type: str, name: str, path: str, not_fail=True) -> None:
         """Removes script for the page(template) by object name."""
         require_capabilities("app_api", self._session.capabilities)
         try:
             self._session.ocs(
-                method="DELETE",
-                path=f"{self._session.ae_url}/{self._ep_suffix_js}",
+                "DELETE",
+                f"{self._session.ae_url}/{self._ep_suffix_js}",
                 params={"type": ui_type, "name": name, "path": path},
             )
         except NextcloudExceptionNotFound as e:
@@ -155,8 +155,8 @@ class _UiResources:
         try:
             return UiScript(
                 self._session.ocs(
-                    method="GET",
-                    path=f"{self._session.ae_url}/{self._ep_suffix_js}",
+                    "GET",
+                    f"{self._session.ae_url}/{self._ep_suffix_js}",
                     params={"type": ui_type, "name": name, "path": path},
                 )
             )
@@ -171,15 +171,15 @@ class _UiResources:
             "name": name,
             "path": path,
         }
-        self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._ep_suffix_css}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix_css}", json=params)
 
     def delete_style(self, ui_type: str, name: str, path: str, not_fail=True) -> None:
         """Removes style(css) for the page(template) by object name."""
         require_capabilities("app_api", self._session.capabilities)
         try:
             self._session.ocs(
-                method="DELETE",
-                path=f"{self._session.ae_url}/{self._ep_suffix_css}",
+                "DELETE",
+                f"{self._session.ae_url}/{self._ep_suffix_css}",
                 params={"type": ui_type, "name": name, "path": path},
             )
         except NextcloudExceptionNotFound as e:
@@ -192,8 +192,8 @@ class _UiResources:
         try:
             return UiStyle(
                 self._session.ocs(
-                    method="GET",
-                    path=f"{self._session.ae_url}/{self._ep_suffix_css}",
+                    "GET",
+                    f"{self._session.ae_url}/{self._ep_suffix_css}",
                     params={"type": ui_type, "name": name, "path": path},
                 )
             )

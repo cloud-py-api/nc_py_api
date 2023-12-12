@@ -1,6 +1,6 @@
 """Exceptions for the Nextcloud API."""
 
-from httpx import codes
+from httpx import Response, codes
 
 
 class NextcloudException(Exception):
@@ -42,21 +42,24 @@ class NextcloudMissingCapabilities(NextcloudException):
         super().__init__(412, reason=reason, info=info)
 
 
-def check_error(code: int, info: str = ""):
+def check_error(response: Response, info: str = ""):
     """Checks HTTP code from Nextcloud, and raises exception in case of error.
 
     For the OCS and DAV `code` be code returned by HTTP and not the status from ``ocs_meta``.
     """
-    if 996 <= code <= 999:
-        if code == 996:
+    status_code = response.status_code
+    if not info:
+        info = f"request: {response.request.method} {response.request.url}"
+    if 996 <= status_code <= 999:
+        if status_code == 996:
             phrase = "Server error"
-        elif code == 997:
+        elif status_code == 997:
             phrase = "Unauthorised"
-        elif code == 998:
+        elif status_code == 998:
             phrase = "Not found"
         else:
             phrase = "Unknown error"
-        raise NextcloudException(code, reason=phrase, info=info)
-    if not codes.is_error(code):
+        raise NextcloudException(status_code, reason=phrase, info=info)
+    if not codes.is_error(status_code):
         return
-    raise NextcloudException(code, reason=codes(code).phrase, info=info)
+    raise NextcloudException(status_code, reason=codes(status_code).phrase, info=info)
