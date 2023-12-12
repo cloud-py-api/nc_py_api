@@ -259,15 +259,15 @@ class NcSessionBasic(ABC):
             return {
                 "base_url": self.cfg.dav_endpoint,
                 "timeout": self.cfg.options.timeout_dav,
-                "event_hooks": {"request": [self._request_event], "response": [self._response_event]},
+                "event_hooks": {"request": [], "response": [self._response_event]},
             }
         return {
             "base_url": self.cfg.endpoint,
             "timeout": self.cfg.options.timeout,
-            "event_hooks": {"request": [self._request_event], "response": [self._response_event]},
+            "event_hooks": {"request": [self._request_event_ocs], "response": [self._response_event]},
         }
 
-    def _request_event(self, request: Request) -> None:
+    def _request_event_ocs(self, request: Request) -> None:
         str_url = str(request.url)
         if re.search(self.__ocs_regexp, str_url) is not None:  # this is OCS call
             request.url = request.url.copy_merge_params({"format": "json"})
