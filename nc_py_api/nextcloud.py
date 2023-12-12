@@ -166,13 +166,11 @@ class NextcloudApp(_NextcloudBasic):
             return
         if int(log_lvl) < self.capabilities["app_api"].get("loglevel", 0):
             return
-        self._session.ocs(
-            method="POST", path=f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content}
-        )
+        self._session.ocs("POST", f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content})
 
     def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
-        return self._session.ocs("GET", path=f"{self._session.ae_url}/users", params={"format": "json"})
+        return self._session.ocs("GET", f"{self._session.ae_url}/users", params={"format": "json"})
 
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
@@ -223,7 +221,7 @@ class NextcloudApp(_NextcloudBasic):
             "route": callback_url,
             "description": description,
         }
-        result = self._session.ocs(method="POST", path=f"{self._session.ae_url}/talk_bot", json=params)
+        result = self._session.ocs("POST", f"{self._session.ae_url}/talk_bot", json=params)
         return result["id"], result["secret"]
 
     def unregister_talk_bot(self, callback_url: str) -> bool:
@@ -238,7 +236,7 @@ class NextcloudApp(_NextcloudBasic):
             "route": callback_url,
         }
         try:
-            self._session.ocs(method="DELETE", path=f"{self._session.ae_url}/talk_bot", json=params)
+            self._session.ocs("DELETE", f"{self._session.ae_url}/talk_bot", json=params)
         except NextcloudExceptionNotFound:
             return False
         return True
@@ -265,8 +263,8 @@ class NextcloudApp(_NextcloudBasic):
         :param error: if non-empty, signals to AppAPI that the application cannot be initialized successfully.
         """
         self._session.ocs(
-            method="PUT",
-            path=f"/ocs/v1.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
+            "PUT",
+            f"/ocs/v1.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
             json={
                 "progress": progress,
                 "error": error,

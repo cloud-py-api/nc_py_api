@@ -69,7 +69,7 @@ class _UsersGroupsAPI:
         :param offset: offset of results.
         """
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
-        response_data = self._session.ocs(method="GET", path=self._ep_base, params=data)
+        response_data = self._session.ocs("GET", self._ep_base, params=data)
         return response_data["groups"] if response_data else []
 
     def get_details(
@@ -82,7 +82,7 @@ class _UsersGroupsAPI:
         :param offset: offset of results.
         """
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
-        response_data = self._session.ocs(method="GET", path=f"{self._ep_base}/details", params=data)
+        response_data = self._session.ocs("GET", f"{self._ep_base}/details", params=data)
         return [GroupDetails(i) for i in response_data["groups"]] if response_data else []
 
     def create(self, group_id: str, display_name: typing.Optional[str] = None) -> None:
@@ -94,7 +94,7 @@ class _UsersGroupsAPI:
         params = {"groupid": group_id}
         if display_name is not None:
             params["displayname"] = display_name
-        self._session.ocs(method="POST", path=f"{self._ep_base}", params=params)
+        self._session.ocs("POST", f"{self._ep_base}", params=params)
 
     def edit(self, group_id: str, display_name: str) -> None:
         """Edits users group information.
@@ -103,21 +103,21 @@ class _UsersGroupsAPI:
         :param display_name: new group display name.
         """
         params = {"key": "displayname", "value": display_name}
-        self._session.ocs(method="PUT", path=f"{self._ep_base}/{group_id}", params=params)
+        self._session.ocs("PUT", f"{self._ep_base}/{group_id}", params=params)
 
     def delete(self, group_id: str) -> None:
         """Removes the users group.
 
         :param group_id: the ID of group to remove.
         """
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{group_id}")
+        self._session.ocs("DELETE", f"{self._ep_base}/{group_id}")
 
     def get_members(self, group_id: str) -> list[str]:
         """Returns a list of group users.
 
         :param group_id: Group ID to get the list of members.
         """
-        response_data = self._session.ocs(method="GET", path=f"{self._ep_base}/{group_id}")
+        response_data = self._session.ocs("GET", f"{self._ep_base}/{group_id}")
         return response_data["users"] if response_data else {}
 
     def get_subadmins(self, group_id: str) -> list[str]:
@@ -125,4 +125,4 @@ class _UsersGroupsAPI:
 
         :param group_id: group ID to get the list of subadmins.
         """
-        return self._session.ocs(method="GET", path=f"{self._ep_base}/{group_id}/subadmins")
+        return self._session.ocs("GET", f"{self._ep_base}/{group_id}/subadmins")

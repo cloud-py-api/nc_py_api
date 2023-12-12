@@ -44,9 +44,7 @@ class _BasicAppCfgPref:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_api", self._session.capabilities)
         data = {"configKeys": keys}
-        results = self._session.ocs(
-            method="POST", path=f"{self._session.ae_url}/{self._url_suffix}/get-values", json=data
-        )
+        results = self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}/get-values", json=data)
         return [CfgRecord(i) for i in results]
 
     def delete(self, keys: typing.Union[str, list[str]], not_fail=True) -> None:
@@ -59,9 +57,7 @@ class _BasicAppCfgPref:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_api", self._session.capabilities)
         try:
-            self._session.ocs(
-                method="DELETE", path=f"{self._session.ae_url}/{self._url_suffix}", json={"configKeys": keys}
-            )
+            self._session.ocs("DELETE", f"{self._session.ae_url}/{self._url_suffix}", json={"configKeys": keys})
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
@@ -78,7 +74,7 @@ class PreferencesExAPI(_BasicAppCfgPref):
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_api", self._session.capabilities)
         params = {"configKey": key, "configValue": value}
-        self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._url_suffix}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
 
 
 class AppConfigExAPI(_BasicAppCfgPref):
@@ -99,4 +95,4 @@ class AppConfigExAPI(_BasicAppCfgPref):
         params: dict = {"configKey": key, "configValue": value}
         if sensitive is not None:
             params["sensitive"] = sensitive
-        self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._url_suffix}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)

@@ -139,13 +139,13 @@ class _UiFilesActionsAPI:
             "permissions": kwargs.get("permissions", 31),
             "order": kwargs.get("order", 0),
         }
-        self._session.ocs(method="POST", path=f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
 
     def unregister(self, name: str, not_fail=True) -> None:
         """Removes files dropdown menu element."""
         require_capabilities("app_api", self._session.capabilities)
         try:
-            self._session.ocs(method="DELETE", path=f"{self._session.ae_url}/{self._ep_suffix}", json={"name": name})
+            self._session.ocs("DELETE", f"{self._session.ae_url}/{self._ep_suffix}", json={"name": name})
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
@@ -155,7 +155,7 @@ class _UiFilesActionsAPI:
         require_capabilities("app_api", self._session.capabilities)
         try:
             return UiFileActionEntry(
-                self._session.ocs(method="GET", path=f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+                self._session.ocs("GET", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
             )
         except NextcloudExceptionNotFound:
             return None

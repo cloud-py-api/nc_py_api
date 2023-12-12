@@ -128,13 +128,13 @@ class _UserStatusAPI:
         """
         require_capabilities("user_status.enabled", self._session.capabilities)
         data = kwargs_to_params(["limit", "offset"], limit=limit, offset=offset)
-        result = self._session.ocs(method="GET", path=f"{self._ep_base}/statuses", params=data)
+        result = self._session.ocs("GET", f"{self._ep_base}/statuses", params=data)
         return [UserStatus(i) for i in result]
 
     def get_current(self) -> CurrentUserStatus:
         """Returns the current user status."""
         require_capabilities("user_status.enabled", self._session.capabilities)
-        return CurrentUserStatus(self._session.ocs(method="GET", path=f"{self._ep_base}/user_status"))
+        return CurrentUserStatus(self._session.ocs("GET", f"{self._ep_base}/user_status"))
 
     def get(self, user_id: str) -> typing.Optional[UserStatus]:
         """Returns the user status for the specified user.
@@ -143,7 +143,7 @@ class _UserStatusAPI:
         """
         require_capabilities("user_status.enabled", self._session.capabilities)
         try:
-            return UserStatus(self._session.ocs(method="GET", path=f"{self._ep_base}/statuses/{user_id}"))
+            return UserStatus(self._session.ocs("GET", f"{self._ep_base}/statuses/{user_id}"))
         except NextcloudExceptionNotFound:
             return None
 
@@ -152,7 +152,7 @@ class _UserStatusAPI:
         if self._session.nc_version["major"] < 27:
             return []
         require_capabilities("user_status.enabled", self._session.capabilities)
-        result = self._session.ocs(method="GET", path=f"{self._ep_base}/predefined_statuses")
+        result = self._session.ocs("GET", f"{self._ep_base}/predefined_statuses")
         return [PredefinedStatus(i) for i in result]
 
     def set_predefined(self, status_id: str, clear_at: int = 0) -> None:
@@ -167,12 +167,12 @@ class _UserStatusAPI:
         params: dict[str, typing.Union[int, str]] = {"messageId": status_id}
         if clear_at:
             params["clearAt"] = clear_at
-        self._session.ocs(method="PUT", path=f"{self._ep_base}/user_status/message/predefined", params=params)
+        self._session.ocs("PUT", f"{self._ep_base}/user_status/message/predefined", params=params)
 
     def set_status_type(self, value: typing.Literal["online", "away", "dnd", "invisible", "offline"]) -> None:
         """Sets the status type for the current user."""
         require_capabilities("user_status.enabled", self._session.capabilities)
-        self._session.ocs(method="PUT", path=f"{self._ep_base}/user_status/status", params={"statusType": value})
+        self._session.ocs("PUT", f"{self._ep_base}/user_status/status", params={"statusType": value})
 
     def set_status(self, message: typing.Optional[str] = None, clear_at: int = 0, status_icon: str = "") -> None:
         """Sets current user status.
@@ -183,7 +183,7 @@ class _UserStatusAPI:
         """
         require_capabilities("user_status.enabled", self._session.capabilities)
         if message is None:
-            self._session.ocs(method="DELETE", path=f"{self._ep_base}/user_status/message")
+            self._session.ocs("DELETE", f"{self._ep_base}/user_status/message")
             return
         if status_icon:
             require_capabilities("user_status.supports_emoji", self._session.capabilities)
@@ -192,7 +192,7 @@ class _UserStatusAPI:
             params["clearAt"] = clear_at
         if status_icon:
             params["statusIcon"] = status_icon
-        self._session.ocs(method="PUT", path=f"{self._ep_base}/user_status/message/custom", params=params)
+        self._session.ocs("PUT", f"{self._ep_base}/user_status/message/custom", params=params)
 
     def get_backup_status(self, user_id: str = "") -> typing.Optional[UserStatus]:
         """Get the backup status of the user if any.
@@ -212,5 +212,5 @@ class _UserStatusAPI:
         """
         require_capabilities("user_status.enabled", self._session.capabilities)
         require_capabilities("user_status.restore", self._session.capabilities)
-        result = self._session.ocs(method="DELETE", path=f"{self._ep_base}/user_status/revert/{status_id}")
+        result = self._session.ocs("DELETE", f"{self._ep_base}/user_status/revert/{status_id}")
         return result if result else None

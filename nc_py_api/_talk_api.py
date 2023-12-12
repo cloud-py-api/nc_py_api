@@ -167,7 +167,7 @@ class _TalkAPI:
         .. note:: Password should match the password policy.
         """
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}/password", {"password": password})
+        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}/password", params={"password": password})
 
     def set_conversation_readonly(self, conversation: typing.Union[Conversation, str], read_only: bool) -> None:
         """Changes conversation **read_only** state.
@@ -176,7 +176,7 @@ class _TalkAPI:
         :param read_only: value to set for the ``read_only`` state.
         """
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}/read-only", {"state": int(read_only)})
+        self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}/read-only", params={"state": int(read_only)})
 
     def set_conversation_public(self, conversation: typing.Union[Conversation, str], public: bool) -> None:
         """Changes conversation **public** state.
@@ -196,7 +196,7 @@ class _TalkAPI:
         :param new_lvl: new value for notification level for the current user.
         """
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("POST", self._ep_base + f"/api/v4/room/{token}/notify", {"level": int(new_lvl)})
+        self._session.ocs("POST", self._ep_base + f"/api/v4/room/{token}/notify", json={"level": int(new_lvl)})
 
     def get_conversation_by_token(self, conversation: typing.Union[Conversation, str]) -> Conversation:
         """Gets conversation by token."""

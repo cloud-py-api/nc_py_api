@@ -126,17 +126,17 @@ class _NotificationsAPI:
         }
         if link:
             params["params"]["subject_params"]["link"] = link
-        return self._session.ocs(method="POST", path=f"{self._session.ae_url}/notification", json=params)["object_id"]
+        return self._session.ocs("POST", f"{self._session.ae_url}/notification", json=params)["object_id"]
 
     def get_all(self) -> list[Notification]:
         """Gets all notifications for a current user."""
         require_capabilities("notifications", self._session.capabilities)
-        return [Notification(i) for i in self._session.ocs(method="GET", path=self._ep_base)]
+        return [Notification(i) for i in self._session.ocs("GET", self._ep_base)]
 
     def get_one(self, notification_id: int) -> Notification:
         """Gets a single notification for a current user."""
         require_capabilities("notifications", self._session.capabilities)
-        return Notification(self._session.ocs(method="GET", path=f"{self._ep_base}/{notification_id}"))
+        return Notification(self._session.ocs("GET", f"{self._ep_base}/{notification_id}"))
 
     def by_object_id(self, object_id: str) -> typing.Optional[Notification]:
         """Returns Notification if any by its object ID.
@@ -151,14 +151,14 @@ class _NotificationsAPI:
     def delete(self, notification_id: int) -> None:
         """Deletes a notification for the current user."""
         require_capabilities("notifications", self._session.capabilities)
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{notification_id}")
+        self._session.ocs("DELETE", f"{self._ep_base}/{notification_id}")
 
     def delete_all(self) -> None:
         """Deletes all notifications for the current user."""
         require_capabilities("notifications", self._session.capabilities)
-        self._session.ocs(method="DELETE", path=self._ep_base)
+        self._session.ocs("DELETE", self._ep_base)
 
     def exists(self, notification_ids: list[int]) -> list[int]:
         """Checks the existence of notifications for the current user."""
         require_capabilities("notifications", self._session.capabilities)
-        return self._session.ocs(method="POST", path=f"{self._ep_base}/exists", json={"ids": notification_ids})
+        return self._session.ocs("POST", f"{self._ep_base}/exists", json={"ids": notification_ids})
