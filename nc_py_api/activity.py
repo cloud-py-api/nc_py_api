@@ -112,7 +112,7 @@ class Activity:
         .. note:: They are stored in objects as key-value pairs of the object_id and the object_name:
             { object_id: object_name}
         """
-        return self._raw_data["objects"]
+        return self._raw_data["objects"] if isinstance(self._raw_data["objects"], dict) else {}
 
     @property
     def link(self) -> str:
