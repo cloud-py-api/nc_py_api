@@ -2,8 +2,12 @@
 
 import dataclasses
 import datetime
+import json
 import typing
 
+import httpx
+
+from ._exceptions import check_error
 from ._misc import check_capabilities, clear_from_params_empty, require_capabilities
 from ._session import NcSessionBasic
 
@@ -136,15 +140,17 @@ class _NotesAPI:
         }
         clear_from_params_empty(list(params.keys()), params)
         headers = {"If-None-Match": self.last_etag} if self.last_etag and etag else {}
-        r = self._session.request_json("GET", self._ep_base + "/notes", params=params, headers=headers)
+        r = self.__response_to_json(self._session.adapter.get(self._ep_base + "/notes", params=params, headers=headers))
         self.last_etag = self._session.response_headers["ETag"]
         return [Note(i) for i in r]
 
     def by_id(self, note: Note) -> Note:
         """Get updated information about :py:class:`~nc_py_api.notes.Note`."""
         require_capabilities("notes", self._session.capabilities)
-        r = self._session.request_json(
-            "GET", self._ep_base + f"/notes/{note.note_id}", headers={"If-None-Match": f'"{note.etag}"'}
+        r = self.__response_to_json(
+            self._session.adapter.get(
+                self._ep_base + f"/notes/{note.note_id}", headers={"If-None-Match": f'"{note.etag}"'}
+            )
         )
         return Note(r) if r else note
 
@@ -166,7 +172,7 @@ class _NotesAPI:
             "modified": last_modified,
         }
         clear_from_params_empty(list(params.keys()), params)
-        return Note(self._session.request_json("POST", self._ep_base + "/notes", json=params))
+        return Note(self.__response_to_json(self._session.adapter.post(self._ep_base + "/notes", json=params)))
 
     def update(
         self,
@@ -193,7 +199,9 @@ class _NotesAPI:
         if not params:
             raise ValueError("Nothing to update.")
         return Note(
-            self._session.request_json("PUT", self._ep_base + f"/notes/{note.note_id}", json=params, headers=headers)
+            self.__response_to_json(
+                self._session.adapter.put(self._ep_base + f"/notes/{note.note_id}", json=params, headers=headers)
+            )
         )
 
     def delete(self, note: typing.Union[int, Note]) -> None:
@@ -203,12 +211,12 @@ class _NotesAPI:
         """
         require_capabilities("notes", self._session.capabilities)
         note_id = note.note_id if isinstance(note, Note) else note
-        self._session.ocs("DELETE", self._ep_base + f"/notes/{note_id}", not_parse=True)
+        check_error(self._session.adapter.delete(self._ep_base + f"/notes/{note_id}"))
 
     def get_settings(self) -> NotesSettings:
         """Returns Notes App settings."""
         require_capabilities("notes", self._session.capabilities)
-        r = self._session.request_json("GET", self._ep_base + "/settings")
+        r = self.__response_to_json(self._session.adapter.get(self._ep_base + "/settings"))
         return {"notes_path": r["notesPath"], "file_suffix": r["fileSuffix"]}
 
     def set_settings(self, notes_path: typing.Optional[str] = None, file_suffix: typing.Optional[str] = None) -> None:
@@ -221,4 +229,9 @@ class _NotesAPI:
             "fileSuffix": file_suffix,
         }
         clear_from_params_empty(list(params.keys()), params)
-        self._session.ocs("PUT", self._ep_base + "/settings", not_parse=True, json=params)
+        check_error(self._session.adapter.put(self._ep_base + "/settings", json=params))
+
+    @staticmethod
+    def __response_to_json(response: httpx.Response) -> dict:
+        check_error(response)
+        return json.loads(response.text) if response.status_code != 304 else {}

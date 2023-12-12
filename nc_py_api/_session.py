@@ -1,20 +1,16 @@
 """Session represents one connection to Nextcloud. All related stuff for these live here."""
 
+import re
 import typing
 from abc import ABC, abstractmethod
 from base64 import b64encode
-from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import IntEnum
-from json import dumps, loads
+from json import loads
 from os import environ
-from typing import Optional, TypedDict, Union
-from urllib.parse import quote, urlencode
 
-from fastapi import Request
-from httpx import Client
-from httpx import Headers as HttpxHeaders
-from httpx import Limits, ReadTimeout, Response
+from fastapi import Request as FastAPIRequest
+from httpx import Client, Headers, Limits, ReadTimeout, Request, Response
 
 from . import options
 from ._exceptions import (
@@ -35,7 +31,7 @@ class OCSRespond(IntEnum):
     RESPOND_UNKNOWN_ERROR = 999
 
 
-class ServerVersion(TypedDict):
+class ServerVersion(typing.TypedDict):
     """Nextcloud version information."""
 
     major: int
@@ -53,9 +49,9 @@ class ServerVersion(TypedDict):
 @dataclass
 class RuntimeOptions:
     xdebug_session: str
-    timeout: Optional[int]
-    timeout_dav: Optional[int]
-    _nc_cert: Union[str, bool]
+    timeout: typing.Optional[int]
+    timeout_dav: typing.Optional[int]
+    _nc_cert: typing.Union[str, bool]
     upload_chunk_v2: bool
 
     def __init__(self, **kwargs):
@@ -66,7 +62,7 @@ class RuntimeOptions:
         self.upload_chunk_v2 = kwargs.get("chunked_upload_v2", options.CHUNKED_UPLOAD_V2)
 
     @property
-    def nc_cert(self) -> Union[str, bool]:
+    def nc_cert(self) -> typing.Union[str, bool]:
         return self._nc_cert
 
 
@@ -136,7 +132,7 @@ class NcSessionBasic(ABC):
     adapter_dav: Client
     cfg: BasicConfig
     custom_headers: dict
-    response_headers: HttpxHeaders
+    response_headers: Headers
     _user: str
     _capabilities: dict
 
@@ -148,7 +144,8 @@ class NcSessionBasic(ABC):
         self.limits = Limits(max_keepalive_connections=20, max_connections=20, keepalive_expiry=60.0)
         self.init_adapter()
         self.init_adapter_dav()
-        self.response_headers = HttpxHeaders()
+        self.response_headers = Headers()
+        self.__ocs_regexp = re.compile(r"/ocs/v[12]\.php/")
 
     def __del__(self):
         if hasattr(self, "adapter") and self.adapter:
@@ -156,86 +153,25 @@ class NcSessionBasic(ABC):
         if hasattr(self, "adapter_dav") and self.adapter_dav:
             self.adapter_dav.close()
 
-    def get_stream(self, path: str, params: Optional[dict] = None, **kwargs) -> Iterator[Response]:
-        headers = kwargs.pop("headers", {})
-        return self._get_stream(
-            f"{quote(path)}?{urlencode(params, True)}" if params else quote(path), headers=headers, **kwargs
-        )
-
-    def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
-        self.init_adapter()
-        timeout = kwargs.pop("timeout", self.cfg.options.timeout)
-        return self.adapter.stream(
-            "GET", f"{self.cfg.endpoint}{path_params}", headers=headers, timeout=timeout, **kwargs
-        )
-
-    def request(
-        self,
-        method: str,
-        path: str,
-        params: Optional[dict] = None,
-        data: Optional[Union[bytes, str]] = None,
-        json: Optional[Union[dict, list]] = None,
-        **kwargs,
-    ):
-        method = method.upper()
-        if params is None:
-            params = {}
-        params.update({"format": "json"})
-        headers = kwargs.pop("headers", {})
-        data_bytes = self.__data_to_bytes(headers, data, json)
-        return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data_bytes, not_parse=True)
-
-    def request_json(
-        self,
-        method: str,
-        path: str,
-        params: Optional[dict] = None,
-        data: Optional[Union[bytes, str]] = None,
-        json: Optional[Union[dict, list]] = None,
-        **kwargs,
-    ) -> dict:
-        r = self.request(method, path, params, data, json, **kwargs)
-        return loads(r.text) if r.status_code != 304 else {}
-
     def ocs(
         self,
         method: str,
         path: str,
-        params: Optional[dict] = None,
-        data: Optional[Union[bytes, str]] = None,
-        json: Optional[Union[dict, list]] = None,
+        *,
+        content: typing.Optional[typing.Union[bytes, str, typing.Iterable[bytes], typing.AsyncIterable[bytes]]] = None,
+        json: typing.Optional[typing.Union[dict, list]] = None,
+        params: typing.Optional[dict] = None,
         **kwargs,
     ):
-        method = method.upper()
-        if params is None:
-            params = {}
-        params.update({"format": "json"})
-        headers = kwargs.pop("headers", {})
-        data_bytes = self.__data_to_bytes(headers, data, json)
-        return self._ocs(method, f"{quote(path)}?{urlencode(params, True)}", headers, data=data_bytes, **kwargs)
-
-    def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
         self.init_adapter()
-        url_params = f"{self.cfg.endpoint}{path_params}"
-        info = f"request: method={method}, url={url_params}"
+        info = f"request: {method} {path}"
         nested_req = kwargs.pop("nested_req", False)
-        not_parse = kwargs.pop("not_parse", False)
         try:
-            timeout = kwargs.pop("timeout", self.cfg.options.timeout)
-            if method == "GET":
-                response = self.adapter.get(url_params, headers=headers, timeout=timeout, **kwargs)
-            else:
-                response = self.adapter.request(
-                    method, url_params, headers=headers, content=data, timeout=timeout, **kwargs
-                )
+            response = self.adapter.request(method, path, content=content, json=json, params=params, **kwargs)
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
-        self.response_headers = response.headers
-        check_error(response.status_code, info)
-        if not_parse:
-            return response
+        check_error(response, info)
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
@@ -246,61 +182,13 @@ class NcSessionBasic(ABC):
             ):
                 self.adapter.close()
                 self.init_adapter(restart=True)
-                return self._ocs(method, path_params, headers, data, **kwargs, nested_req=True)
+                return self.ocs(method, path, **kwargs, content=content, json=json, params=params, nested_req=True)
             if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
                 raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
             if ocs_meta["statuscode"] == 304:
                 raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info)
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
-
-    def dav(
-        self,
-        method: str,
-        path: str,
-        data: Optional[Union[str, bytes]] = None,
-        json: Optional[Union[dict, list]] = None,
-        **kwargs,
-    ) -> Response:
-        headers = kwargs.pop("headers", {})
-        data_bytes = self.__data_to_bytes(headers, data, json)
-        return self._dav(
-            method,
-            quote(self.cfg.dav_url_suffix + path) if isinstance(path, str) else path,
-            headers,
-            data_bytes,
-            **kwargs,
-        )
-
-    def dav_stream(
-        self, method: str, path: str, data: Optional[Union[str, bytes]] = None, **kwargs
-    ) -> Iterator[Response]:
-        headers = kwargs.pop("headers", {})
-        data_bytes = None
-        if data is not None:
-            data_bytes = data.encode("UTF-8") if isinstance(data, str) else data
-        return self._dav_stream(method, quote(self.cfg.dav_url_suffix + path), headers, data_bytes, **kwargs)
-
-    def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
-        self.init_adapter_dav()
-        timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        result = self.adapter_dav.request(
-            method,
-            self.cfg.endpoint + path if isinstance(path, str) else str(path),
-            headers=headers,
-            content=data,
-            timeout=timeout,
-            **kwargs,
-        )
-        self.response_headers = result.headers
-        return result
-
-    def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
-        self.init_adapter_dav()
-        timeout = kwargs.pop("timeout", self.cfg.options.timeout_dav)
-        return self.adapter_dav.stream(
-            method, self.cfg.endpoint + path, headers=headers, content=data, timeout=timeout, **kwargs
-        )
 
     def init_adapter(self, restart=False) -> None:
         if getattr(self, "adapter", None) is None or restart:
@@ -318,24 +206,24 @@ class NcSessionBasic(ABC):
         if getattr(self, "adapter_dav", None) is None or restart:
             if restart and hasattr(self, "adapter"):
                 self.adapter.close()
-            self.adapter_dav = self._create_adapter()
+            self.adapter_dav = self._create_adapter(dav=True)
             if self.custom_headers:
                 self.adapter_dav.headers.update(self.custom_headers)
             if options.XDEBUG_SESSION:
                 self.adapter_dav.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
 
     @abstractmethod
-    def _create_adapter(self) -> Client:
+    def _create_adapter(self, dav: bool = False) -> Client:
         pass  # pragma: no cover
 
     def update_server_info(self) -> None:
-        self._capabilities = self.ocs(method="GET", path="/ocs/v1.php/cloud/capabilities")
+        self._capabilities = self.ocs("GET", "/ocs/v1.php/cloud/capabilities")
 
     @property
     def user(self) -> str:
         """Current user ID. Can be different from the login name."""
         if isinstance(self, NcSession) and not self._user:  # do not trigger for NextcloudApp
-            self._user = self.ocs(method="GET", path="/ocs/v1.php/cloud/user")["id"]
+            self._user = self.ocs("GET", "/ocs/v1.php/cloud/user")["id"]
         return self._user
 
     @user.setter
@@ -366,16 +254,31 @@ class NcSessionBasic(ABC):
         """Return base url for the App Ecosystem endpoints."""
         return "/ocs/v1.php/apps/app_api/api/v1"
 
-    @staticmethod
-    def __data_to_bytes(
-        headers: dict, data: Optional[Union[bytes, str]] = None, json: Optional[Union[dict, list]] = None
-    ) -> typing.Optional[bytes]:
-        if data is not None:
-            return data.encode("UTF-8") if isinstance(data, str) else data
-        if json is not None:
-            headers.update({"Content-Type": "application/json"})
-            return dumps(json).encode("utf-8")
-        return None
+    def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
+        if dav:
+            return {
+                "base_url": self.cfg.dav_endpoint,
+                "timeout": self.cfg.options.timeout_dav,
+                "event_hooks": {"request": [], "response": [self._response_event]},
+            }
+        return {
+            "base_url": self.cfg.endpoint,
+            "timeout": self.cfg.options.timeout,
+            "event_hooks": {"request": [self._request_event_ocs], "response": [self._response_event]},
+        }
+
+    def _request_event_ocs(self, request: Request) -> None:
+        str_url = str(request.url)
+        if re.search(self.__ocs_regexp, str_url) is not None:  # this is OCS call
+            request.url = request.url.copy_merge_params({"format": "json"})
+
+    def _response_event(self, response: Response) -> None:
+        str_url = str(response.request.url)
+        # we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.
+        for i in ("/ocs/v1.php/cloud/capabilities?format=json", "/ocs/v1.php/cloud/user?format=json"):
+            if str_url.endswith(i):
+                return
+        self.response_headers = response.headers
 
 
 class NcSession(NcSessionBasic):
@@ -385,8 +288,14 @@ class NcSession(NcSessionBasic):
         self.cfg = Config(**kwargs)
         super().__init__()
 
-    def _create_adapter(self) -> Client:
-        return Client(auth=self.cfg.auth, follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
+    def _create_adapter(self, dav: bool = False) -> Client:
+        return Client(
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            **self._get_adapter_kwargs(dav),
+            auth=self.cfg.auth,
+        )
 
 
 class NcSessionApp(NcSessionBasic):
@@ -396,35 +305,27 @@ class NcSessionApp(NcSessionBasic):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
 
-    def _get_stream(self, path_params: str, headers: dict, **kwargs) -> Iterator[Response]:
-        self.sign_request(headers)
-        return super()._get_stream(path_params, headers, **kwargs)
+    def _create_adapter(self, dav: bool = False) -> Client:
+        r = self._get_adapter_kwargs(dav)
+        r["event_hooks"]["request"].append(self._add_auth)
+        return Client(
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            **r,
+            headers={
+                "AA-VERSION": self.cfg.aa_version,
+                "EX-APP-ID": self.cfg.app_name,
+                "EX-APP-VERSION": self.cfg.app_version,
+            },
+        )
 
-    def _ocs(self, method: str, path_params: str, headers: dict, data: Optional[bytes], **kwargs):
-        self.sign_request(headers)
-        return super()._ocs(method, path_params, headers, data, **kwargs)
-
-    def _dav(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Response:
-        self.sign_request(headers)
-        return super()._dav(method, path, headers, data, **kwargs)
-
-    def _dav_stream(self, method: str, path: str, headers: dict, data: Optional[bytes], **kwargs) -> Iterator[Response]:
-        self.sign_request(headers)
-        return super()._dav_stream(method, path, headers, data, **kwargs)
-
-    def _create_adapter(self) -> Client:
-        adapter = Client(follow_redirects=True, limits=self.limits, verify=self.cfg.options.nc_cert)
-        adapter.headers.update({
-            "AA-VERSION": self.cfg.aa_version,
-            "EX-APP-ID": self.cfg.app_name,
-            "EX-APP-VERSION": self.cfg.app_version,
+    def _add_auth(self, request: Request):
+        request.headers.update({
+            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
         })
-        return adapter
 
-    def sign_request(self, headers: dict) -> None:
-        headers.update({"AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))})
-
-    def sign_check(self, request: Request) -> None:
+    def sign_check(self, request: FastAPIRequest) -> None:
         headers = {
             "AA-VERSION": request.headers.get("AA-VERSION", ""),
             "EX-APP-ID": request.headers.get("EX-APP-ID", ""),

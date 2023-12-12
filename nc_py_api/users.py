@@ -4,6 +4,7 @@ import dataclasses
 import datetime
 import typing
 
+from ._exceptions import check_error
 from ._misc import kwargs_to_params
 from ._session import NcSessionBasic
 
@@ -169,23 +170,14 @@ class _UsersAPI:
     def get_list(
         self, mask: typing.Optional[str] = "", limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
     ) -> list[str]:
-        """Returns list of user IDs.
-
-        :param mask: user ID mask to apply.
-        :param limit: limits the number of results.
-        :param offset: offset of results.
-        """
+        """Returns list of user IDs."""
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
-        response_data = self._session.ocs(method="GET", path=self._ep_base, params=data)
+        response_data = self._session.ocs("GET", self._ep_base, params=data)
         return response_data["users"] if response_data else {}
 
     def get_user(self, user_id: str = "") -> UserInfo:
-        """Returns detailed user information.
-
-        :param user_id: the identifier of the user about which information is to be returned.
-        """
-        url_path = f"{self._ep_base}/{user_id}" if user_id else "/ocs/v1.php/cloud/user"
-        return UserInfo(self._session.ocs(method="GET", path=url_path))
+        """Returns detailed user information."""
+        return UserInfo(self._session.ocs("GET", f"{self._ep_base}/{user_id}" if user_id else "/ocs/v1.php/cloud/user"))
 
     def create(self, user_id: str, display_name: typing.Optional[str] = None, **kwargs) -> None:
         """Create a new user on the Nextcloud server.
@@ -213,39 +205,27 @@ class _UsersAPI:
                 data[k] = kwargs[k]
         if display_name is not None:
             data["displayname"] = display_name
-        self._session.ocs(method="POST", path=self._ep_base, json=data)
+        self._session.ocs("POST", self._ep_base, json=data)
 
     def delete(self, user_id: str) -> None:
-        """Deletes user from the Nextcloud server.
-
-        :param user_id: id of the user.
-        """
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}")
+        """Deletes user from the Nextcloud server."""
+        self._session.ocs("DELETE", f"{self._ep_base}/{user_id}")
 
     def enable(self, user_id: str) -> None:
-        """Enables user on the Nextcloud server.
-
-        :param user_id: id of the user.
-        """
-        self._session.ocs(method="PUT", path=f"{self._ep_base}/{user_id}/enable")
+        """Enables user on the Nextcloud server."""
+        self._session.ocs("PUT", f"{self._ep_base}/{user_id}/enable")
 
     def disable(self, user_id: str) -> None:
-        """Disables user on the Nextcloud server.
-
-        :param user_id: id of the user.
-        """
-        self._session.ocs(method="PUT", path=f"{self._ep_base}/{user_id}/disable")
+        """Disables user on the Nextcloud server."""
+        self._session.ocs("PUT", f"{self._ep_base}/{user_id}/disable")
 
     def resend_welcome_email(self, user_id: str) -> None:
-        """Send welcome email for specified user again.
-
-        :param user_id: id of the user.
-        """
-        self._session.ocs(method="POST", path=f"{self._ep_base}/{user_id}/welcome")
+        """Send welcome email for specified user again."""
+        self._session.ocs("POST", f"{self._ep_base}/{user_id}/welcome")
 
     def editable_fields(self) -> list[str]:
         """Returns user fields that avalaible for edit."""
-        return self._session.ocs(method="GET", path="/ocs/v1.php/cloud/user/fields")
+        return self._session.ocs("GET", "/ocs/v1.php/cloud/user/fields")
 
     def edit(self, user_id: str, **kwargs) -> None:
         """Edits user metadata.
@@ -254,39 +234,23 @@ class _UsersAPI:
         :param kwargs: dictionary where keys are values from ``editable_fields`` method, and values to set.
         """
         for k, v in kwargs.items():
-            self._session.ocs(method="PUT", path=f"{self._ep_base}/{user_id}", params={"key": k, "value": v})
+            self._session.ocs("PUT", f"{self._ep_base}/{user_id}", params={"key": k, "value": v})
 
     def add_to_group(self, user_id: str, group_id: str) -> None:
-        """Adds user to the group.
-
-        :param user_id: ID of the user.
-        :param group_id: the destination group to which add user to.
-        """
-        self._session.ocs(method="POST", path=f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
+        """Adds user to the group."""
+        self._session.ocs("POST", f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
 
     def remove_from_group(self, user_id: str, group_id: str) -> None:
-        """Removes user from the group.
-
-        :param user_id: ID of the user.
-        :param group_id: group from which remove user.
-        """
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
+        """Removes user from the group."""
+        self._session.ocs("DELETE", f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
 
     def promote_to_subadmin(self, user_id: str, group_id: str) -> None:
-        """Makes user admin of the group.
-
-        :param user_id: ID of the user.
-        :param group_id: group where user should become administrator.
-        """
-        self._session.ocs(method="POST", path=f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
+        """Makes user admin of the group."""
+        self._session.ocs("POST", f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
 
     def demote_from_subadmin(self, user_id: str, group_id: str) -> None:
-        """Removes user from the admin role of the group.
-
-        :param user_id: ID of the user.
-        :param group_id: group where user should be removed from administrators.
-        """
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
+        """Removes user from the admin role of the group."""
+        self._session.ocs("DELETE", f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
 
     def get_avatar(
         self, user_id: str = "", size: typing.Literal[64, 512] = 512, dark: bool = False, guest: bool = False
@@ -304,4 +268,6 @@ class _UsersAPI:
         url_path = f"/index.php/avatar/{user_id}/{size}" if not guest else f"/index.php/avatar/guest/{user_id}/{size}"
         if dark:
             url_path += "/dark"
-        return self._session.request(method="GET", path=url_path).content
+        response = self._session.adapter.get(url_path)
+        check_error(response)
+        return response.content

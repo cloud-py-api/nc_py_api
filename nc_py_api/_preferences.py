@@ -20,9 +20,9 @@ class PreferencesAPI:
     def set_value(self, app_name: str, key: str, value: str) -> None:
         """Sets the value for the key for the specific application."""
         require_capabilities("provisioning_api", self._session.capabilities)
-        self._session.ocs(method="POST", path=f"{self._ep_base}/{app_name}/{key}", params={"configValue": value})
+        self._session.ocs("POST", f"{self._ep_base}/{app_name}/{key}", params={"configValue": value})
 
     def delete(self, app_name: str, key: str) -> None:
         """Removes a key and its value for a specific application."""
         require_capabilities("provisioning_api", self._session.capabilities)
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/{app_name}/{key}")
+        self._session.ocs("DELETE", f"{self._ep_base}/{app_name}/{key}")

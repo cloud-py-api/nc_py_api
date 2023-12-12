@@ -38,19 +38,19 @@ class _FilesSharingAPI:
         }
         if path:
             params["path"] = path
-        result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares", params=params)
+        result = self._session.ocs("GET", f"{self._ep_base}/shares", params=params)
         return [Share(i) for i in result]
 
     def get_by_id(self, share_id: int) -> Share:
         """Get Share by share ID."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
-        result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares/{share_id}")
+        result = self._session.ocs("GET", f"{self._ep_base}/shares/{share_id}")
         return Share(result[0] if isinstance(result, list) else result)
 
     def get_inherited(self, path: str) -> list[Share]:
         """Get all shares relative to a file, e.g., parent folders shares."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
-        result = self._session.ocs(method="GET", path=f"{self._ep_base}/shares/inherited", params={"path": path})
+        result = self._session.ocs("GET", f"{self._ep_base}/shares/inherited", params={"path": path})
         return [Share(i) for i in result]
 
     def create(
@@ -102,7 +102,7 @@ class _FilesSharingAPI:
             params["note"] = kwargs["note"]
         if "label" in kwargs:
             params["label"] = kwargs["label"]
-        return Share(self._session.ocs(method="POST", path=f"{self._ep_base}/shares", params=params))
+        return Share(self._session.ocs("POST", f"{self._ep_base}/shares", params=params))
 
     def update(self, share_id: typing.Union[int, Share], **kwargs) -> Share:
         """Updates the share options.
@@ -128,7 +128,7 @@ class _FilesSharingAPI:
             params["note"] = kwargs["note"]
         if "label" in kwargs:
             params["label"] = kwargs["label"]
-        return Share(self._session.ocs(method="PUT", path=f"{self._ep_base}/shares/{share_id}", params=params))
+        return Share(self._session.ocs("PUT", f"{self._ep_base}/shares/{share_id}", params=params))
 
     def delete(self, share_id: typing.Union[int, Share]) -> None:
         """Removes the given share.
@@ -137,31 +137,31 @@ class _FilesSharingAPI:
         """
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/shares/{share_id}")
+        self._session.ocs("DELETE", f"{self._ep_base}/shares/{share_id}")
 
     def get_pending(self) -> list[Share]:
         """Returns all pending shares for current user."""
-        return [Share(i) for i in self._session.ocs(method="GET", path=f"{self._ep_base}/shares/pending")]
+        return [Share(i) for i in self._session.ocs("GET", f"{self._ep_base}/shares/pending")]
 
     def accept_share(self, share_id: typing.Union[int, Share]) -> None:
         """Accept pending share."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
-        self._session.ocs(method="POST", path=f"{self._ep_base}/pending/{share_id}")
+        self._session.ocs("POST", f"{self._ep_base}/pending/{share_id}")
 
     def decline_share(self, share_id: typing.Union[int, Share]) -> None:
         """Decline pending share."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
-        self._session.ocs(method="DELETE", path=f"{self._ep_base}/pending/{share_id}")
+        self._session.ocs("DELETE", f"{self._ep_base}/pending/{share_id}")
 
     def get_deleted(self) -> list[Share]:
         """Get a list of deleted shares."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
-        return [Share(i) for i in self._session.ocs(method="GET", path=f"{self._ep_base}/deletedshares")]
+        return [Share(i) for i in self._session.ocs("GET", f"{self._ep_base}/deletedshares")]
 
     def undelete(self, share_id: typing.Union[int, Share]) -> None:
         """Undelete a deleted share."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
-        self._session.ocs(method="POST", path=f"{self._ep_base}/deletedshares/{share_id}")
+        self._session.ocs("POST", f"{self._ep_base}/deletedshares/{share_id}")
