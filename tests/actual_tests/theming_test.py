@@ -1,5 +1,7 @@
 from copy import deepcopy
 
+import pytest
+
 from nc_py_api._theming import convert_str_color  # noqa
 
 
@@ -27,6 +29,14 @@ def test_get_theme(nc):
     assert isinstance(theme["background"], str)
     assert isinstance(theme["background_plain"], bool)
     assert isinstance(theme["background_default"], bool)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_get_theme_async(anc_any):
+    theme = await anc_any.theme
+    assert isinstance(theme["name"], str)
+    assert isinstance(theme["url"], str)
+    assert isinstance(theme["slogan"], str)
 
 
 def test_convert_str_color_values_in(nc_any):
