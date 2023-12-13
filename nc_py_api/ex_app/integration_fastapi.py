@@ -54,11 +54,11 @@ def talk_bot_app(request: Request) -> TalkBotMessage:
 
 def set_handlers(
     fast_api_app: FastAPI,
-    enabled_handler: typing.Callable[[bool, NextcloudApp], typing.Union[str, typing.Awaitable[str]]],
-    heartbeat_handler: typing.Optional[typing.Callable[[], typing.Union[str, typing.Awaitable[str]]]] = None,
-    init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]] = None,
-    models_to_fetch: typing.Optional[list[str]] = None,
-    models_download_params: typing.Optional[dict] = None,
+    enabled_handler: typing.Callable[[bool, NextcloudApp], str | typing.Awaitable[str]],
+    heartbeat_handler: typing.Callable[[], str | typing.Awaitable[str]] | None = None,
+    init_handler: typing.Callable[[NextcloudApp], None] | None = None,
+    models_to_fetch: list[str] | None = None,
+    models_download_params: dict | None = None,
     map_app_static: bool = True,
 ):
     """Defines handlers for the application.
@@ -133,7 +133,7 @@ def __map_app_static_folders(fast_api_app: FastAPI):
 
 def __fetch_models_task(
     nc: NextcloudApp,
-    init_handler: typing.Optional[typing.Callable[[NextcloudApp], None]],
+    init_handler: typing.Callable[[NextcloudApp], None] | None,
     models: list[str],
     params: dict[str, typing.Any],
 ) -> None:

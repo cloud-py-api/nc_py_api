@@ -1,6 +1,6 @@
 from getpass import getuser
 from time import perf_counter
-from typing import Any, Union
+from typing import Any
 
 import matplotlib.pyplot as plt
 from aa_overhead_common import measure_overhead, os_id
@@ -11,7 +11,7 @@ ITERS = 100
 CACHE_SESS = False
 
 
-def measure_get_details(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]:
+def measure_get_details(nc_obj: Nextcloud | NextcloudApp) -> [Any, float]:
     __result = None
     start_time = perf_counter()
     for _ in range(ITERS):

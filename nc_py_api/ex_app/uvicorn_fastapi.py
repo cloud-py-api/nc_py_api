@@ -12,7 +12,7 @@ except ImportError as ex:
 
 
 def run_app(
-    uvicorn_app: typing.Union[typing.Callable, str, typing.Any],
+    uvicorn_app: typing.Callable | str | typing.Any,
     *args,
     **kwargs,
 ) -> None:

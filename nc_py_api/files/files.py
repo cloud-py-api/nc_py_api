@@ -6,7 +6,6 @@ import os
 from io import BytesIO
 from json import dumps, loads
 from pathlib import Path
-from typing import Optional, Union
 from urllib.parse import unquote
 from xml.etree import ElementTree
 
@@ -73,7 +72,7 @@ class FilesAPI:
         self._session = session
         self.sharing = _FilesSharingAPI(session)
 
-    def listdir(self, path: Union[str, FsNode] = "", depth: int = 1, exclude_self=True) -> list[FsNode]:
+    def listdir(self, path: str | FsNode = "", depth: int = 1, exclude_self=True) -> list[FsNode]:
         """Returns a list of all entries in the specified directory.
 
         :param path: path to the directory to get the list.
@@ -87,7 +86,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         return self._listdir(self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self)
 
-    def by_id(self, file_id: Union[int, str, FsNode]) -> Optional[FsNode]:
+    def by_id(self, file_id: int | str | FsNode) -> FsNode | None:
         """Returns :py:class:`~nc_py_api.files.FsNode` by file_id if any.
 
         :param file_id: can be full file ID with Nextcloud instance ID or only clear file ID.
@@ -96,13 +95,13 @@ class FilesAPI:
         result = self.find(req=["eq", "fileid", file_id])
         return result[0] if result else None
 
-    def by_path(self, path: Union[str, FsNode]) -> Optional[FsNode]:
+    def by_path(self, path: str | FsNode) -> FsNode | None:
         """Returns :py:class:`~nc_py_api.files.FsNode` by exact path if any."""
         path = path.user_path if isinstance(path, FsNode) else path
         result = self.listdir(path, depth=0, exclude_self=False)
         return result[0] if result else None
 
-    def find(self, req: list, path: Union[str, FsNode] = "") -> list[FsNode]:
+    def find(self, req: list, path: str | FsNode = "") -> list[FsNode]:
         """Searches a directory for a file or subdirectory with a name.
 
         :param req: list of conditions to search for. Detailed description here...
@@ -132,7 +131,7 @@ class FilesAPI:
         request_info = f"find: {self._session.user}, {req}, {path}"
         return self._lf_parse_webdav_response(webdav_response, request_info)
 
-    def download(self, path: Union[str, FsNode]) -> bytes:
+    def download(self, path: str | FsNode) -> bytes:
         """Downloads and returns the content of a file.
 
         :param path: path to download file.
@@ -142,7 +141,7 @@ class FilesAPI:
         check_error(response, f"download: user={self._session.user}, path={path}")
         return response.content
 
-    def download2stream(self, path: Union[str, FsNode], fp, **kwargs) -> None:
+    def download2stream(self, path: str | FsNode, fp, **kwargs) -> None:
         """Downloads file to the given `fp` object.
 
         :param path: path to download file.
@@ -151,7 +150,7 @@ class FilesAPI:
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **5Mb**
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        if isinstance(fp, (str, Path)):
+        if isinstance(fp, str | Path):
             with builtins.open(fp, "wb") as f:
                 self.__download2stream(path, f, **kwargs)
         elif hasattr(fp, "write"):
@@ -159,9 +158,7 @@ class FilesAPI:
         else:
             raise TypeError("`fp` must be a path to file or an object with `write` method.")
 
-    def download_directory_as_zip(
-        self, path: Union[str, FsNode], local_path: Union[str, Path, None] = None, **kwargs
-    ) -> Path:
+    def download_directory_as_zip(self, path: str | FsNode, local_path: str | Path | None = None, **kwargs) -> Path:
         """Downloads a remote directory as zip archive.
 
         :param path: path to directory to download.
@@ -184,7 +181,7 @@ class FilesAPI:
                     fp.write(data_chunk)
         return Path(result_path)
 
-    def upload(self, path: Union[str, FsNode], content: Union[bytes, str]) -> FsNode:
+    def upload(self, path: str | FsNode, content: bytes | str) -> FsNode:
         """Creates a file with the specified content at the specified path.
 
         :param path: file's upload path.
@@ -196,7 +193,7 @@ class FilesAPI:
         check_error(response, f"upload: user={self._session.user}, path={path}, size={len(content)}")
         return FsNode(full_path.strip("/"), **self.__get_etag_fileid_from_response(response))
 
-    def upload_stream(self, path: Union[str, FsNode], fp, **kwargs) -> FsNode:
+    def upload_stream(self, path: str | FsNode, fp, **kwargs) -> FsNode:
         """Creates a file with content provided by `fp` object at the specified path.
 
         :param path: file's upload path.
@@ -206,7 +203,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         chunk_size = kwargs.get("chunk_size", 5 * 1024 * 1024)
-        if isinstance(fp, (str, Path)):
+        if isinstance(fp, str | Path):
             with builtins.open(fp, "rb") as f:
                 return self.__upload_stream(path, f, chunk_size)
         elif hasattr(fp, "read"):
@@ -214,7 +211,7 @@ class FilesAPI:
         else:
             raise TypeError("`fp` must be a path to file or an object with `read` method.")
 
-    def mkdir(self, path: Union[str, FsNode]) -> FsNode:
+    def mkdir(self, path: str | FsNode) -> FsNode:
         """Creates a new directory.
 
         :param path: path of the directory to be created.
@@ -226,7 +223,7 @@ class FilesAPI:
         full_path += "/" if not full_path.endswith("/") else ""
         return FsNode(full_path.lstrip("/"), **self.__get_etag_fileid_from_response(response))
 
-    def makedirs(self, path: Union[str, FsNode], exist_ok=False) -> Optional[FsNode]:
+    def makedirs(self, path: str | FsNode, exist_ok=False) -> FsNode | None:
         """Creates a new directory and subdirectories.
 
         :param path: path of the directories to be created.
@@ -249,7 +246,7 @@ class FilesAPI:
                         raise e from None
         return result
 
-    def delete(self, path: Union[str, FsNode], not_fail=False) -> None:
+    def delete(self, path: str | FsNode, not_fail=False) -> None:
         """Deletes a file/directory (moves to trash if trash is enabled).
 
         :param path: path to delete.
@@ -261,7 +258,7 @@ class FilesAPI:
             return
         check_error(response)
 
-    def move(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
+    def move(self, path_src: str | FsNode, path_dest: str | FsNode, overwrite=False) -> FsNode:
         """Moves an existing file or a directory.
 
         :param path_src: path of an existing file/directory.
@@ -283,7 +280,7 @@ class FilesAPI:
         check_error(response, f"move: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
         return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
-    def copy(self, path_src: Union[str, FsNode], path_dest: Union[str, FsNode], overwrite=False) -> FsNode:
+    def copy(self, path_src: str | FsNode, path_dest: str | FsNode, overwrite=False) -> FsNode:
         """Copies an existing file/directory.
 
         :param path_src: path of an existing file/directory.
@@ -306,7 +303,7 @@ class FilesAPI:
         return self.find(req=["eq", "fileid", response.headers["OC-FileId"]])[0]
 
     def list_by_criteria(
-        self, properties: Optional[list[str]] = None, tags: Optional[list[Union[int, SystemTag]]] = None
+        self, properties: list[str] | None = None, tags: list[int | SystemTag] | None = None
     ) -> list[FsNode]:
         """Returns a list of all files/directories for the current user filtered by the specified values.
 
@@ -337,7 +334,7 @@ class FilesAPI:
         check_error(webdav_response, request_info)
         return self._lf_parse_webdav_response(webdav_response, request_info)
 
-    def setfav(self, path: Union[str, FsNode], value: Union[int, bool]) -> None:
+    def setfav(self, path: str | FsNode, value: int | bool) -> None:
         """Sets or unsets favourite flag for specific file.
 
         :param path: path to the object to set the state.
@@ -364,7 +361,7 @@ class FilesAPI:
             self._session.user, "", properties=properties, depth=1, exclude_self=False, prop_type=PropFindType.TRASHBIN
         )
 
-    def trashbin_restore(self, path: Union[str, FsNode]) -> None:
+    def trashbin_restore(self, path: str | FsNode) -> None:
         """Restore a file/directory from the TrashBin.
 
         :param path: path to delete, e.g., the ``user_path`` field from ``FsNode`` or the **FsNode** class itself.
@@ -381,7 +378,7 @@ class FilesAPI:
         )
         check_error(response, f"trashbin_restore: user={self._session.user}, src={path}, dest={dest}")
 
-    def trashbin_delete(self, path: Union[str, FsNode], not_fail=False) -> None:
+    def trashbin_delete(self, path: str | FsNode, not_fail=False) -> None:
         """Deletes a file/directory permanently from the TrashBin.
 
         :param path: path to delete, e.g., the ``user_path`` field from ``FsNode`` or the **FsNode** class itself.
@@ -463,10 +460,10 @@ class FilesAPI:
 
     def update_tag(
         self,
-        tag_id: Union[int, SystemTag],
-        name: Optional[str] = None,
-        user_visible: Optional[bool] = None,
-        user_assignable: Optional[bool] = None,
+        tag_id: int | SystemTag,
+        name: str | None = None,
+        user_visible: bool | None = None,
+        user_assignable: bool | None = None,
     ) -> None:
         """Updates the Tag information."""
         tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
@@ -494,7 +491,7 @@ class FilesAPI:
         )
         check_error(response)
 
-    def delete_tag(self, tag_id: Union[int, SystemTag]) -> None:
+    def delete_tag(self, tag_id: int | SystemTag) -> None:
         """Deletes the tag."""
         tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
         response = self._session.adapter_dav.delete(f"/systemtags/{tag_id}")
@@ -507,17 +504,15 @@ class FilesAPI:
             raise NextcloudExceptionNotFound(f"Tag with name='{tag_name}' not found.")
         return r[0]
 
-    def assign_tag(self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int]) -> None:
+    def assign_tag(self, file_id: FsNode | int, tag_id: SystemTag | int) -> None:
         """Assigns Tag to a file/directory."""
         self._file_change_tag_state(file_id, tag_id, True)
 
-    def unassign_tag(self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int]) -> None:
+    def unassign_tag(self, file_id: FsNode | int, tag_id: SystemTag | int) -> None:
         """Removes Tag from a file/directory."""
         self._file_change_tag_state(file_id, tag_id, False)
 
-    def _file_change_tag_state(
-        self, file_id: Union[FsNode, int], tag_id: Union[SystemTag, int], tag_state: bool
-    ) -> None:
+    def _file_change_tag_state(self, file_id: FsNode | int, tag_id: SystemTag | int, tag_state: bool) -> None:
         fs_object = file_id.info.fileid if isinstance(file_id, FsNode) else file_id
         tag = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
         response = self._session.adapter_dav.request(

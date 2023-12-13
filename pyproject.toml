@@ -19,7 +19,7 @@ license = "BSD-3-Clause"
 authors = [
     { name = "Alexander Piskun", email = "bigcat88@icloud.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -28,7 +28,6 @@ classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -105,12 +104,12 @@ exclude = [
 
 [tool.black]
 line-length = 120
-target-versions = ["py39"]
+target-versions = ["py310"]
 preview = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py310"
 select = ["A", "B", "C", "D", "E", "F", "G", "I", "S", "SIM", "PIE", "Q", "RET", "RUF", "UP" , "W"]
 extend-ignore = ["D107", "D105", "D203", "D213", "D401", "I001", "RUF100"]
 
@@ -131,7 +130,7 @@ max-complexity = 16
 profile = "black"
 
 [tool.pylint]
-master.py-version = "3.9"
+master.py-version = "3.10"
 master.extension-pkg-allow-list = ["pydantic"]
 design.max-attributes = 8
 design.max-locals = 16

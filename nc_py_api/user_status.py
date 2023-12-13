@@ -14,7 +14,7 @@ class ClearAt:
 
     clear_type: str
     """Possible values: ``period``, ``end-of``"""
-    time: typing.Union[str, int]
+    time: str | int
     """Depending of ``type`` it can be number of seconds relative to ``now`` or one of the next values: ``day``"""
 
     def __init__(self, raw_data: dict):
@@ -32,7 +32,7 @@ class PredefinedStatus:
     """Icon in string(UTF) format"""
     message: str
     """The message defined for this status. It is translated, so it depends on the user's language setting."""
-    clear_at: typing.Optional[ClearAt]
+    clear_at: ClearAt | None
     """When the default, if not override, the predefined status will be cleared."""
 
     def __init__(self, raw_status: dict):
@@ -68,7 +68,7 @@ class UserStatus:
         return self._raw_data.get("icon", "")
 
     @property
-    def status_clear_at(self) -> typing.Optional[int]:
+    def status_clear_at(self) -> int | None:
         """Unix Timestamp representing the time to clear the status."""
         return self._raw_data.get("clearAt", None)
 
@@ -86,7 +86,7 @@ class CurrentUserStatus(UserStatus):
     """Information about current user status."""
 
     @property
-    def status_id(self) -> typing.Optional[str]:
+    def status_id(self) -> str | None:
         """ID of the predefined status."""
         return self._raw_data["messageId"]
 
@@ -120,7 +120,7 @@ class _UserStatusAPI:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
         return not check_capabilities("user_status.enabled", self._session.capabilities)
 
-    def get_list(self, limit: typing.Optional[int] = None, offset: typing.Optional[int] = None) -> list[UserStatus]:
+    def get_list(self, limit: int | None = None, offset: int | None = None) -> list[UserStatus]:
         """Returns statuses for all users."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         data = kwargs_to_params(["limit", "offset"], limit=limit, offset=offset)
@@ -132,7 +132,7 @@ class _UserStatusAPI:
         require_capabilities("user_status.enabled", self._session.capabilities)
         return CurrentUserStatus(self._session.ocs("GET", f"{self._ep_base}/user_status"))
 
-    def get(self, user_id: str) -> typing.Optional[UserStatus]:
+    def get(self, user_id: str) -> UserStatus | None:
         """Returns the user status for the specified user."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         try:
@@ -157,7 +157,7 @@ class _UserStatusAPI:
         if self._session.nc_version["major"] < 27:
             return
         require_capabilities("user_status.enabled", self._session.capabilities)
-        params: dict[str, typing.Union[int, str]] = {"messageId": status_id}
+        params: dict[str, int | str] = {"messageId": status_id}
         if clear_at:
             params["clearAt"] = clear_at
         self._session.ocs("PUT", f"{self._ep_base}/user_status/message/predefined", params=params)
@@ -167,7 +167,7 @@ class _UserStatusAPI:
         require_capabilities("user_status.enabled", self._session.capabilities)
         self._session.ocs("PUT", f"{self._ep_base}/user_status/status", params={"statusType": value})
 
-    def set_status(self, message: typing.Optional[str] = None, clear_at: int = 0, status_icon: str = "") -> None:
+    def set_status(self, message: str | None = None, clear_at: int = 0, status_icon: str = "") -> None:
         """Sets current user status.
 
         :param message: Message text to set in the status.
@@ -180,14 +180,14 @@ class _UserStatusAPI:
             return
         if status_icon:
             require_capabilities("user_status.supports_emoji", self._session.capabilities)
-        params: dict[str, typing.Union[int, str]] = {"message": message}
+        params: dict[str, int | str] = {"message": message}
         if clear_at:
             params["clearAt"] = clear_at
         if status_icon:
             params["statusIcon"] = status_icon
         self._session.ocs("PUT", f"{self._ep_base}/user_status/message/custom", params=params)
 
-    def get_backup_status(self, user_id: str = "") -> typing.Optional[UserStatus]:
+    def get_backup_status(self, user_id: str = "") -> UserStatus | None:
         """Get the backup status of the user if any."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         user_id = user_id if user_id else self._session.user
@@ -195,7 +195,7 @@ class _UserStatusAPI:
             raise ValueError("user_id can not be empty.")
         return self.get(f"_{user_id}")
 
-    def restore_backup_status(self, status_id: str) -> typing.Optional[CurrentUserStatus]:
+    def restore_backup_status(self, status_id: str) -> CurrentUserStatus | None:
         """Restores the backup state as current for the current user."""
         require_capabilities("user_status.enabled", self._session.capabilities)
         require_capabilities("user_status.restore", self._session.capabilities)

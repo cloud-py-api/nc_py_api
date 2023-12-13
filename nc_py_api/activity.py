@@ -2,7 +2,6 @@
 
 import dataclasses
 import datetime
-import typing
 
 from ._exceptions import NextcloudExceptionNotModified
 from ._misc import check_capabilities, nc_iso_time_to_datetime
@@ -154,8 +153,8 @@ class _ActivityAPI:
 
     def get_activities(
         self,
-        filter_id: typing.Union[ActivityFilter, str] = "",
-        since: typing.Union[int, bool] = 0,
+        filter_id: ActivityFilter | str = "",
+        since: int | bool = 0,
         limit: int = 50,
         object_type: str = "",
         object_id: int = 0,

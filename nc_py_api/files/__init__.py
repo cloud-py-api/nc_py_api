@@ -4,7 +4,6 @@ import dataclasses
 import datetime
 import email.utils
 import enum
-import typing
 
 from .. import _misc
 
@@ -36,7 +35,7 @@ class FsNodeInfo:
             self.last_modified = kwargs.get("last_modified", datetime.datetime(1970, 1, 1))
         except (ValueError, TypeError):
             self.last_modified = datetime.datetime(1970, 1, 1)
-        self._trashbin: dict[str, typing.Union[str, int]] = {}
+        self._trashbin: dict[str, str | int] = {}
         for i in ("trashbin_filename", "trashbin_original_location", "trashbin_deletion_time"):
             if i in kwargs:
                 self._trashbin[i] = kwargs[i]
@@ -70,7 +69,7 @@ class FsNodeInfo:
         return self._last_modified
 
     @last_modified.setter
-    def last_modified(self, value: typing.Union[str, datetime.datetime]):
+    def last_modified(self, value: str | datetime.datetime):
         if isinstance(value, str):
             self._last_modified = email.utils.parsedate_to_datetime(value)
         else:

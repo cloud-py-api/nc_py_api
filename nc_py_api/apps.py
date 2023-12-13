@@ -2,7 +2,6 @@
 
 import dataclasses
 import datetime
-import typing
 
 from ._misc import require_capabilities
 from ._session import NcSessionBasic
@@ -77,7 +76,7 @@ class _AppsAPI:
             raise ValueError("`app_id` parameter can not be empty")
         self._session.ocs("POST", f"{self._ep_base}/{app_id}")
 
-    def get_list(self, enabled: typing.Optional[bool] = None) -> list[str]:
+    def get_list(self, enabled: bool | None = None) -> list[str]:
         """Get the list of installed applications.
 
         :param enabled: filter to list all/only enabled/only disabled applications.

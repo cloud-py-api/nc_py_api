@@ -4,7 +4,6 @@ import dataclasses
 import datetime
 import enum
 import os
-import typing
 
 from . import files as _files
 
@@ -568,7 +567,7 @@ class Conversation(_TalkUserStatus):
         return self._raw_data["lastCommonReadMessage"]
 
     @property
-    def last_message(self) -> typing.Optional[TalkMessage]:
+    def last_message(self) -> TalkMessage | None:
         """Last message in a conversation if available, otherwise ``empty``.
 
         .. note:: Even when given, the message will not contain the ``parent`` or ``reactionsSelf``
@@ -625,7 +624,7 @@ class Conversation(_TalkUserStatus):
         return CallRecordingStatus(self._raw_data.get("callRecording", CallRecordingStatus.NO_RECORDING))
 
     @property
-    def status_clear_at(self) -> typing.Optional[int]:
+    def status_clear_at(self) -> int | None:
         """Unix Timestamp representing the time to clear the status.
 
         .. note:: Available only for ``one-to-one`` conversations.
@@ -760,7 +759,7 @@ class BotInfo(BotInfoBasic):
         return self._raw_data["last_error_date"]
 
     @property
-    def last_error_message(self) -> typing.Optional[str]:
+    def last_error_message(self) -> str | None:
         """The last exception message or error response information when trying to reach the bot."""
         return self._raw_data["last_error_message"]
 

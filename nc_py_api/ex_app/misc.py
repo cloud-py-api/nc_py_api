@@ -1,7 +1,6 @@
 """Different miscellaneous optimization/helper functions for the Nextcloud Applications."""
 
 import os
-import typing
 from sys import platform
 
 
@@ -26,7 +25,7 @@ def _get_app_cache_dir() -> str:
     return r
 
 
-def verify_version(finalize_update: bool = True) -> typing.Optional[tuple[str, str]]:
+def verify_version(finalize_update: bool = True) -> tuple[str, str] | None:
     """Returns tuple with an old version and new version or ``None`` if there was no update taken.
 
     :param finalize_update: Flag indicating whether update information should be updated.

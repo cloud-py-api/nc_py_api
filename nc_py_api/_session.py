@@ -49,9 +49,9 @@ class ServerVersion(typing.TypedDict):
 @dataclass
 class RuntimeOptions:
     xdebug_session: str
-    timeout: typing.Optional[int]
-    timeout_dav: typing.Optional[int]
-    _nc_cert: typing.Union[str, bool]
+    timeout: int | None
+    timeout_dav: int | None
+    _nc_cert: str | bool
     upload_chunk_v2: bool
 
     def __init__(self, **kwargs):
@@ -62,7 +62,7 @@ class RuntimeOptions:
         self.upload_chunk_v2 = kwargs.get("chunked_upload_v2", options.CHUNKED_UPLOAD_V2)
 
     @property
-    def nc_cert(self) -> typing.Union[str, bool]:
+    def nc_cert(self) -> str | bool:
         return self._nc_cert
 
 
@@ -158,9 +158,9 @@ class NcSessionBasic(ABC):
         method: str,
         path: str,
         *,
-        content: typing.Optional[typing.Union[bytes, str, typing.Iterable[bytes], typing.AsyncIterable[bytes]]] = None,
-        json: typing.Optional[typing.Union[dict, list]] = None,
-        params: typing.Optional[dict] = None,
+        content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
+        json: dict | list | None = None,
+        params: dict | None = None,
         **kwargs,
     ):
         self.init_adapter()

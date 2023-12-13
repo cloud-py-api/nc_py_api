@@ -1,7 +1,6 @@
 """Nextcloud API for working with Top App menu."""
 
 import dataclasses
-import typing
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
@@ -78,7 +77,7 @@ class _UiTopMenuAPI:
             if not not_fail:
                 raise e from None
 
-    def get_entry(self, name: str) -> typing.Optional[UiTopMenuEntry]:
+    def get_entry(self, name: str) -> UiTopMenuEntry | None:
         """Get information of the top meny entry for current app."""
         require_capabilities("app_api", self._session.capabilities)
         try:

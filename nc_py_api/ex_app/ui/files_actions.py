@@ -3,7 +3,6 @@
 import dataclasses
 import datetime
 import os
-import typing
 
 from pydantic import BaseModel
 
@@ -87,11 +86,11 @@ class UiActionFileInfo(BaseModel):
     """Last modified time"""
     userId: str
     """The ID of the user performing the action."""
-    shareOwner: typing.Optional[str]
+    shareOwner: str | None
     """If the object is shared, this is a display name of the share owner."""
-    shareOwnerId: typing.Optional[str]
+    shareOwnerId: str | None
     """If the object is shared, this is the owner ID of the share."""
-    instanceId: typing.Optional[str]
+    instanceId: str | None
     """Nextcloud instance ID."""
 
     def to_fs_node(self) -> FsNode:
@@ -150,7 +149,7 @@ class _UiFilesActionsAPI:
             if not not_fail:
                 raise e from None
 
-    def get_entry(self, name: str) -> typing.Optional[UiFileActionEntry]:
+    def get_entry(self, name: str) -> UiFileActionEntry | None:
         """Get information of the file action meny entry for current app."""
         require_capabilities("app_api", self._session.capabilities)
         try:

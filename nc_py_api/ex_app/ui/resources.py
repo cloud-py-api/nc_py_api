@@ -1,7 +1,6 @@
 """API for adding scripts, styles, initial-states to the Nextcloud UI."""
 
 import dataclasses
-import typing
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
@@ -40,7 +39,7 @@ class UiInitState(UiBase):
         return self._raw_data["key"]
 
     @property
-    def value(self) -> typing.Union[dict, list]:
+    def value(self) -> dict | list:
         """Object for the page(template)."""
         return self._raw_data["value"]
 
@@ -87,7 +86,7 @@ class _UiResources:
     def __init__(self, session: NcSessionApp):
         self._session = session
 
-    def set_initial_state(self, ui_type: str, name: str, key: str, value: typing.Union[dict, list]) -> None:
+    def set_initial_state(self, ui_type: str, name: str, key: str, value: dict | list) -> None:
         """Add or update initial state for the page(template)."""
         require_capabilities("app_api", self._session.capabilities)
         params = {
@@ -111,7 +110,7 @@ class _UiResources:
             if not not_fail:
                 raise e from None
 
-    def get_initial_state(self, ui_type: str, name: str, key: str) -> typing.Optional[UiInitState]:
+    def get_initial_state(self, ui_type: str, name: str, key: str) -> UiInitState | None:
         """Get information about initial state for the page(template) by object name."""
         require_capabilities("app_api", self._session.capabilities)
         try:
@@ -149,7 +148,7 @@ class _UiResources:
             if not not_fail:
                 raise e from None
 
-    def get_script(self, ui_type: str, name: str, path: str) -> typing.Optional[UiScript]:
+    def get_script(self, ui_type: str, name: str, path: str) -> UiScript | None:
         """Get information about script for the page(template) by object name."""
         require_capabilities("app_api", self._session.capabilities)
         try:
@@ -186,7 +185,7 @@ class _UiResources:
             if not not_fail:
                 raise e from None
 
-    def get_style(self, ui_type: str, name: str, path: str) -> typing.Optional[UiStyle]:
+    def get_style(self, ui_type: str, name: str, path: str) -> UiStyle | None:
         """Get information about style(css) for the page(template) by object name."""
         require_capabilities("app_api", self._session.capabilities)
         try:

@@ -109,10 +109,10 @@ class _NotesAPI:
 
     def get_list(
         self,
-        category: typing.Optional[str] = None,
-        modified_since: typing.Optional[int] = None,
-        limit: typing.Optional[int] = None,
-        cursor: typing.Optional[str] = None,
+        category: str | None = None,
+        modified_since: int | None = None,
+        limit: int | None = None,
+        cursor: str | None = None,
         no_content: bool = False,
         etag: bool = False,
     ) -> list[Note]:
@@ -157,10 +157,10 @@ class _NotesAPI:
     def create(
         self,
         title: str,
-        content: typing.Optional[str] = None,
-        category: typing.Optional[str] = None,
-        favorite: typing.Optional[bool] = None,
-        last_modified: typing.Optional[typing.Union[int, str, datetime.datetime]] = None,
+        content: str | None = None,
+        category: str | None = None,
+        favorite: bool | None = None,
+        last_modified: int | str | datetime.datetime | None = None,
     ) -> Note:
         """Create new Note."""
         require_capabilities("notes", self._session.capabilities)
@@ -177,10 +177,10 @@ class _NotesAPI:
     def update(
         self,
         note: Note,
-        title: typing.Optional[str] = None,
-        content: typing.Optional[str] = None,
-        category: typing.Optional[str] = None,
-        favorite: typing.Optional[bool] = None,
+        title: str | None = None,
+        content: str | None = None,
+        category: str | None = None,
+        favorite: bool | None = None,
         overwrite: bool = False,
     ) -> Note:
         """Updates Note.
@@ -204,7 +204,7 @@ class _NotesAPI:
             )
         )
 
-    def delete(self, note: typing.Union[int, Note]) -> None:
+    def delete(self, note: int | Note) -> None:
         """Deletes a Note.
 
         :param note: note id or :py:class:`~nc_py_api.notes.Note`.
@@ -219,7 +219,7 @@ class _NotesAPI:
         r = self.__response_to_json(self._session.adapter.get(self._ep_base + "/settings"))
         return {"notes_path": r["notesPath"], "file_suffix": r["fileSuffix"]}
 
-    def set_settings(self, notes_path: typing.Optional[str] = None, file_suffix: typing.Optional[str] = None) -> None:
+    def set_settings(self, notes_path: str | None = None, file_suffix: str | None = None) -> None:
         """Change specified setting(s)."""
         if notes_path is None and file_suffix is None:
             raise ValueError("No setting to change.")
