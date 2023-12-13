@@ -31,3 +31,4 @@ def test_ex_app_enable_disable(nc_client, nc_app, file_to_test):
         assert nc_client.apps.ex_app_is_enabled("nc_py_api") is True
     finally:
         r.terminate()
+        r.wait(timeout=10)
