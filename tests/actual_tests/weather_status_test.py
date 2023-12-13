@@ -12,34 +12,34 @@ async def test_available_async(anc):
     assert await anc.weather_status.available
 
 
-def test_get_set_location(nc):
-    nc.weather_status.set_location(longitude=0.0, latitude=0.0)
-    loc = nc.weather_status.get_location()
+def test_get_set_location(nc_any):
+    nc_any.weather_status.set_location(longitude=0.0, latitude=0.0)
+    loc = nc_any.weather_status.get_location()
     assert loc.latitude == 0.0
     assert loc.longitude == 0.0
     assert isinstance(loc.address, str)
     assert isinstance(loc.mode, int)
     try:
-        assert nc.weather_status.set_location(address="Paris, 75007, France")
+        assert nc_any.weather_status.set_location(address="Paris, 75007, France")
     except NextcloudException as e:
         if e.status_code in (500, 996):
             pytest.skip("Some network problem on the host")
         raise e from None
-    loc = nc.weather_status.get_location()
+    loc = nc_any.weather_status.get_location()
     assert loc.latitude
     assert loc.longitude
     if loc.address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
     assert loc.address.find("Paris") != -1
-    assert nc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
-    loc = nc.weather_status.get_location()
+    assert nc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776)
+    loc = nc_any.weather_status.get_location()
     assert loc.latitude == 41.896655
     assert loc.longitude == 12.488776
     if loc.address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
     assert loc.address.find("Rom") != -1
-    assert nc.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
-    loc = nc.weather_status.get_location()
+    assert nc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
+    loc = nc_any.weather_status.get_location()
     assert loc.latitude == 41.896655
     assert loc.longitude == 12.488776
     if loc.address.find("Unknown") != -1:
@@ -48,34 +48,34 @@ def test_get_set_location(nc):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_get_set_location_async(anc):
-    await anc.weather_status.set_location(longitude=0.0, latitude=0.0)
-    loc = await anc.weather_status.get_location()
+async def test_get_set_location_async(anc_any):
+    await anc_any.weather_status.set_location(longitude=0.0, latitude=0.0)
+    loc = await anc_any.weather_status.get_location()
     assert loc.latitude == 0.0
     assert loc.longitude == 0.0
     assert isinstance(loc.address, str)
     assert isinstance(loc.mode, int)
     try:
-        assert await anc.weather_status.set_location(address="Paris, 75007, France")
+        assert await anc_any.weather_status.set_location(address="Paris, 75007, France")
     except NextcloudException as e:
         if e.status_code in (500, 996):
             pytest.skip("Some network problem on the host")
         raise e from None
-    loc = await anc.weather_status.get_location()
+    loc = await anc_any.weather_status.get_location()
     assert loc.latitude
     assert loc.longitude
     if loc.address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
     assert loc.address.find("Paris") != -1
-    assert await anc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
-    loc = await anc.weather_status.get_location()
+    assert await anc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776)
+    loc = await anc_any.weather_status.get_location()
     assert loc.latitude == 41.896655
     assert loc.longitude == 12.488776
     if loc.address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
     assert loc.address.find("Rom") != -1
-    assert await anc.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
-    loc = await anc.weather_status.get_location()
+    assert await anc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
+    loc = await anc_any.weather_status.get_location()
     assert loc.latitude == 41.896655
     assert loc.longitude == 12.488776
     if loc.address.find("Unknown") != -1:
@@ -94,22 +94,22 @@ async def test_get_set_location_no_lat_lon_address_async(anc):
         await anc.weather_status.set_location()
 
 
-def test_get_forecast(nc):
-    nc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
-    if nc.weather_status.get_location().address.find("Unknown") != -1:
+def test_get_forecast(nc_any):
+    nc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776)
+    if nc_any.weather_status.get_location().address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
-    forecast = nc.weather_status.get_forecast()
+    forecast = nc_any.weather_status.get_forecast()
     assert isinstance(forecast, list)
     assert forecast
     assert isinstance(forecast[0], dict)
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_get_forecast_async(anc):
-    await anc.weather_status.set_location(latitude=41.896655, longitude=12.488776)
-    if (await anc.weather_status.get_location()).address.find("Unknown") != -1:
+async def test_get_forecast_async(anc_any):
+    await anc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776)
+    if (await anc_any.weather_status.get_location()).address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
-    forecast = await anc.weather_status.get_forecast()
+    forecast = await anc_any.weather_status.get_forecast()
     assert isinstance(forecast, list)
     assert forecast
     assert isinstance(forecast[0], dict)
