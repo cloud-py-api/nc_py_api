@@ -1,7 +1,6 @@
 """Nextcloud class providing access to all API endpoints."""
 
 from abc import ABC
-from typing import Optional, Union
 
 from fastapi import Request
 from httpx import Headers as HttpxHeaders
@@ -78,7 +77,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         """Returns dictionary with the server version."""
         return self._session.nc_version
 
-    def check_capabilities(self, capabilities: Union[str, list[str]]) -> list[str]:
+    def check_capabilities(self, capabilities: str | list[str]) -> list[str]:
         """Returns the list with missing capabilities if any.
 
         :param capabilities: one or more features to check for.
@@ -98,7 +97,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         return self._session.response_headers
 
     @property
-    def theme(self) -> Optional[ThemingInfo]:
+    def theme(self) -> ThemingInfo | None:
         """Returns Theme information."""
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 

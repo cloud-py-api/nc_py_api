@@ -2,7 +2,6 @@
 
 import dataclasses
 import datetime
-import typing
 
 from ._misc import (
     check_capabilities,
@@ -94,8 +93,8 @@ class _NotificationsAPI:
         self,
         subject: str,
         message: str = "",
-        subject_params: typing.Optional[dict] = None,
-        message_params: typing.Optional[dict] = None,
+        subject_params: dict | None = None,
+        message_params: dict | None = None,
         link: str = "",
     ) -> str:
         """Create a Notification for the current user and returns it's ObjectID.
@@ -138,7 +137,7 @@ class _NotificationsAPI:
         require_capabilities("notifications", self._session.capabilities)
         return Notification(self._session.ocs("GET", f"{self._ep_base}/{notification_id}"))
 
-    def by_object_id(self, object_id: str) -> typing.Optional[Notification]:
+    def by_object_id(self, object_id: str) -> Notification | None:
         """Returns Notification if any by its object ID.
 
         .. note:: this method is a temporary workaround until `create` can return `notification_id`.

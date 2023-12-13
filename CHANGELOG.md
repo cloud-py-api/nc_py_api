@@ -2,11 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.6.1 - 202x-xx-xx]
+## [0.7.0 - 2022-12-2x]
 
 ### Added
 
 - set_handlers: `enabled_handler`, `heartbeat_handler` now can be async(Coroutines). #175
+
+### Changed
+
+- drop Python 3.9 support. #180
+- internal code refactoring and clean-up #177
 
 ## [0.6.0 - 2023-12-06]
 

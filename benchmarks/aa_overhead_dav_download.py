@@ -1,7 +1,7 @@
 from getpass import getuser
 from random import randbytes
 from time import perf_counter
-from typing import Any, Union
+from typing import Any
 
 import matplotlib.pyplot as plt
 from aa_overhead_common import measure_overhead, os_id
@@ -12,7 +12,7 @@ ITERS = 30
 CACHE_SESS = False
 
 
-def measure_download_1mb(nc_obj: Union[Nextcloud, NextcloudApp]) -> [Any, float]:
+def measure_download_1mb(nc_obj: Nextcloud | NextcloudApp) -> [Any, float]:
     __result = None
     small_file_name = "1Mb.bin"
     small_file = randbytes(1024 * 1024)

@@ -167,9 +167,7 @@ class _UsersAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def get_list(
-        self, mask: typing.Optional[str] = "", limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
-    ) -> list[str]:
+    def get_list(self, mask: str | None = "", limit: int | None = None, offset: int | None = None) -> list[str]:
         """Returns list of user IDs."""
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs("GET", self._ep_base, params=data)
@@ -179,7 +177,7 @@ class _UsersAPI:
         """Returns detailed user information."""
         return UserInfo(self._session.ocs("GET", f"{self._ep_base}/{user_id}" if user_id else "/ocs/v1.php/cloud/user"))
 
-    def create(self, user_id: str, display_name: typing.Optional[str] = None, **kwargs) -> None:
+    def create(self, user_id: str, display_name: str | None = None, **kwargs) -> None:
         """Create a new user on the Nextcloud server.
 
         :param user_id: id of the user to create.

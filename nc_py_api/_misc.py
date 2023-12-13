@@ -5,9 +5,9 @@ For internal use, prototypes can change between versions.
 
 import secrets
 from base64 import b64decode
+from collections.abc import Callable
 from datetime import datetime, timezone
 from string import ascii_letters, digits
-from typing import Callable, Union
 
 from ._exceptions import NextcloudMissingCapabilities
 
@@ -28,7 +28,7 @@ def clear_from_params_empty(keys: list[str], params: dict) -> None:
             params.pop(key)
 
 
-def require_capabilities(capabilities: Union[str, list[str]], srv_capabilities: dict) -> None:
+def require_capabilities(capabilities: str | list[str], srv_capabilities: dict) -> None:
     """Checks for capabilities and raises an exception if any of them are missing."""
     result = check_capabilities(capabilities, srv_capabilities)
     if result:
@@ -52,7 +52,7 @@ def __check_sub_capability(split_capabilities: list[str], srv_capabilities: dict
     return True
 
 
-def check_capabilities(capabilities: Union[str, list[str]], srv_capabilities: dict) -> list[str]:
+def check_capabilities(capabilities: str | list[str], srv_capabilities: dict) -> list[str]:
     """Checks for capabilities and returns a list of missing ones."""
     if isinstance(capabilities, str):
         capabilities = [capabilities]

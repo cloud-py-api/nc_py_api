@@ -1,5 +1,3 @@
-from typing import Optional
-
 from nc_py_api import Nextcloud, NextcloudApp
 
 NC_CFGS = {
@@ -39,19 +37,19 @@ NC_CFGS = {
 }
 
 
-def init_nc(url, cfg) -> Optional[Nextcloud]:
+def init_nc(url, cfg) -> Nextcloud | None:
     if cfg.get("nc_auth_user", "") and cfg.get("nc_auth_pass", ""):
         return Nextcloud(nc_auth_user=cfg["nc_auth_user"], nc_auth_pass=cfg["nc_auth_pass"], nextcloud_url=url)
     return None
 
 
-def init_nc_by_app_pass(url, cfg) -> Optional[Nextcloud]:
+def init_nc_by_app_pass(url, cfg) -> Nextcloud | None:
     if cfg.get("nc_auth_user", "") and cfg.get("nc_auth_app_pass", ""):
         return Nextcloud(nc_auth_user=cfg["nc_auth_user"], nc_auth_pass=cfg["nc_auth_app_pass"], nextcloud_url=url)
     return None
 
 
-def init_nc_app(url, cfg) -> Optional[NextcloudApp]:
+def init_nc_app(url, cfg) -> NextcloudApp | None:
     if cfg.get("secret", "") and cfg.get("app_id", ""):
         return NextcloudApp(
             app_id=cfg["app_id"],

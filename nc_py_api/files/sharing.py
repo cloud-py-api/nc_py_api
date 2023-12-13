@@ -1,7 +1,5 @@
 """Nextcloud API for working with the files shares."""
 
-import typing
-
 from .. import _misc, _session
 from . import FilePermissions, FsNode, Share, ShareType
 
@@ -19,9 +17,7 @@ class _FilesSharingAPI:
         """Returns True if the Nextcloud instance supports this feature, False otherwise."""
         return not _misc.check_capabilities("files_sharing.api_enabled", self._session.capabilities)
 
-    def get_list(
-        self, shared_with_me=False, reshares=False, subfiles=False, path: typing.Union[str, FsNode] = ""
-    ) -> list[Share]:
+    def get_list(self, shared_with_me=False, reshares=False, subfiles=False, path: str | FsNode = "") -> list[Share]:
         """Returns lists of shares.
 
         :param shared_with_me: Shares should be with the current user.
@@ -55,9 +51,9 @@ class _FilesSharingAPI:
 
     def create(
         self,
-        path: typing.Union[str, FsNode],
+        path: str | FsNode,
         share_type: ShareType,
-        permissions: typing.Optional[FilePermissions] = None,
+        permissions: FilePermissions | None = None,
         share_with: str = "",
         **kwargs,
     ) -> Share:
@@ -104,7 +100,7 @@ class _FilesSharingAPI:
             params["label"] = kwargs["label"]
         return Share(self._session.ocs("POST", f"{self._ep_base}/shares", params=params))
 
-    def update(self, share_id: typing.Union[int, Share], **kwargs) -> Share:
+    def update(self, share_id: int | Share, **kwargs) -> Share:
         """Updates the share options.
 
         :param share_id: ID of the Share to update.
@@ -130,7 +126,7 @@ class _FilesSharingAPI:
             params["label"] = kwargs["label"]
         return Share(self._session.ocs("PUT", f"{self._ep_base}/shares/{share_id}", params=params))
 
-    def delete(self, share_id: typing.Union[int, Share]) -> None:
+    def delete(self, share_id: int | Share) -> None:
         """Removes the given share.
 
         :param share_id: The Share object or an ID of the share.
@@ -143,13 +139,13 @@ class _FilesSharingAPI:
         """Returns all pending shares for current user."""
         return [Share(i) for i in self._session.ocs("GET", f"{self._ep_base}/shares/pending")]
 
-    def accept_share(self, share_id: typing.Union[int, Share]) -> None:
+    def accept_share(self, share_id: int | Share) -> None:
         """Accept pending share."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
         self._session.ocs("POST", f"{self._ep_base}/pending/{share_id}")
 
-    def decline_share(self, share_id: typing.Union[int, Share]) -> None:
+    def decline_share(self, share_id: int | Share) -> None:
         """Decline pending share."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id
@@ -160,7 +156,7 @@ class _FilesSharingAPI:
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         return [Share(i) for i in self._session.ocs("GET", f"{self._ep_base}/deletedshares")]
 
-    def undelete(self, share_id: typing.Union[int, Share]) -> None:
+    def undelete(self, share_id: int | Share) -> None:
         """Undelete a deleted share."""
         _misc.require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         share_id = share_id.share_id if isinstance(share_id, Share) else share_id

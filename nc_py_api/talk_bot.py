@@ -111,7 +111,7 @@ class TalkBot:
             nc.unregister_talk_bot(self.callback_url)
 
     def send_message(
-        self, message: str, reply_to_message: typing.Union[int, TalkBotMessage], silent: bool = False, token: str = ""
+        self, message: str, reply_to_message: int | TalkBotMessage, silent: bool = False, token: str = ""
     ) -> tuple[httpx.Response, str]:
         """Send a message and returns a "reference string" to identify the message again in a "get messages" request.
 
@@ -138,9 +138,7 @@ class TalkBot:
         }
         return self._sign_send_request("POST", f"/{token}/message", params, message), reference_id
 
-    def react_to_message(
-        self, message: typing.Union[int, TalkBotMessage], reaction: str, token: str = ""
-    ) -> httpx.Response:
+    def react_to_message(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> httpx.Response:
         """React to a message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to react to.
@@ -159,9 +157,7 @@ class TalkBot:
         }
         return self._sign_send_request("POST", f"/{token}/reaction/{message_id}", params, reaction)
 
-    def delete_reaction(
-        self, message: typing.Union[int, TalkBotMessage], reaction: str, token: str = ""
-    ) -> httpx.Response:
+    def delete_reaction(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> httpx.Response:
         """Removes reaction from a message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to remove reaction from.
@@ -204,7 +200,7 @@ class TalkBot:
         )
 
 
-def get_bot_secret(callback_url: str) -> typing.Union[bytes, None]:
+def get_bot_secret(callback_url: str) -> bytes | None:
     """Returns the bot's secret from an environment variable or from the application's configuration on the server."""
     sha_1 = hashlib.sha1(usedforsecurity=False)
     string_to_hash = os.environ["APP_ID"] + "_" + callback_url

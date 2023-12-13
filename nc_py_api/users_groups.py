@@ -1,7 +1,6 @@
 """Nextcloud API for working with user groups."""
 
 import dataclasses
-import typing
 
 from ._misc import kwargs_to_params
 from ._session import NcSessionBasic
@@ -59,23 +58,21 @@ class _UsersGroupsAPI:
     def __init__(self, session: NcSessionBasic):
         self._session = session
 
-    def get_list(
-        self, mask: typing.Optional[str] = None, limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
-    ) -> list[str]:
+    def get_list(self, mask: str | None = None, limit: int | None = None, offset: int | None = None) -> list[str]:
         """Returns a list of user groups IDs."""
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs("GET", self._ep_base, params=data)
         return response_data["groups"] if response_data else []
 
     def get_details(
-        self, mask: typing.Optional[str] = None, limit: typing.Optional[int] = None, offset: typing.Optional[int] = None
+        self, mask: str | None = None, limit: int | None = None, offset: int | None = None
     ) -> list[GroupDetails]:
         """Returns a list of user groups with detailed information."""
         data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
         response_data = self._session.ocs("GET", f"{self._ep_base}/details", params=data)
         return [GroupDetails(i) for i in response_data["groups"]] if response_data else []
 
-    def create(self, group_id: str, display_name: typing.Optional[str] = None) -> None:
+    def create(self, group_id: str, display_name: str | None = None) -> None:
         """Creates the users group."""
         params = {"groupid": group_id}
         if display_name is not None:

@@ -2,7 +2,6 @@
 
 import dataclasses
 import enum
-import typing
 
 from ._misc import check_capabilities, require_capabilities
 from ._session import NcSessionBasic
@@ -61,9 +60,9 @@ class _WeatherStatusAPI:
 
     def set_location(
         self,
-        latitude: typing.Optional[float] = None,
-        longitude: typing.Optional[float] = None,
-        address: typing.Optional[str] = None,
+        latitude: float | None = None,
+        longitude: float | None = None,
+        address: str | None = None,
     ) -> bool:
         """Sets the user's location on the Nextcloud server.
 
@@ -72,7 +71,7 @@ class _WeatherStatusAPI:
         :param address: city, index(*optional*) and country, e.g. "Paris, 75007, France"
         """
         require_capabilities("weather_status.enabled", self._session.capabilities)
-        params: dict[str, typing.Union[str, float]] = {}
+        params: dict[str, str | float] = {}
         if latitude is not None and longitude is not None:
             params.update({"lat": latitude, "lon": longitude})
         elif address:

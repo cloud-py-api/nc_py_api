@@ -1,7 +1,6 @@
 """Nextcloud Talk API implementation."""
 
 import hashlib
-import typing
 
 from ._exceptions import check_error
 from ._misc import (
@@ -51,7 +50,7 @@ class _TalkAPI:
         return not check_capabilities("spreed.features.bots-v1", self._session.capabilities)
 
     def get_user_conversations(
-        self, no_status_update: bool = True, include_status: bool = False, modified_since: typing.Union[int, bool] = 0
+        self, no_status_update: bool = True, include_status: bool = False, modified_since: int | bool = 0
     ) -> list[Conversation]:
         """Returns the list of the user's conversations.
 
@@ -78,9 +77,7 @@ class _TalkAPI:
         self._update_config_sha()
         return [Conversation(i) for i in result]
 
-    def list_participants(
-        self, conversation: typing.Union[Conversation, str], include_status: bool = False
-    ) -> list[Participant]:
+    def list_participants(self, conversation: Conversation | str, include_status: bool = False) -> list[Participant]:
         """Returns a list of conversation participants.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -127,7 +124,7 @@ class _TalkAPI:
         clear_from_params_empty(["invite", "source", "roomName", "objectType", "objectId"], params)
         return Conversation(self._session.ocs("POST", self._ep_base + "/api/v4/room", json=params))
 
-    def rename_conversation(self, conversation: typing.Union[Conversation, str], new_name: str) -> None:
+    def rename_conversation(self, conversation: Conversation | str, new_name: str) -> None:
         """Renames a conversation.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -136,7 +133,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}", params={"roomName": new_name})
 
-    def set_conversation_description(self, conversation: typing.Union[Conversation, str], description: str) -> None:
+    def set_conversation_description(self, conversation: Conversation | str, description: str) -> None:
         """Sets conversation description.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -147,7 +144,7 @@ class _TalkAPI:
             "PUT", self._ep_base + f"/api/v4/room/{token}/description", params={"description": description}
         )
 
-    def set_conversation_fav(self, conversation: typing.Union[Conversation, str], favorite: bool) -> None:
+    def set_conversation_fav(self, conversation: Conversation | str, favorite: bool) -> None:
         """Changes conversation **favorite** state.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -156,7 +153,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("POST" if favorite else "DELETE", self._ep_base + f"/api/v4/room/{token}/favorite")
 
-    def set_conversation_password(self, conversation: typing.Union[Conversation, str], password: str) -> None:
+    def set_conversation_password(self, conversation: Conversation | str, password: str) -> None:
         """Sets password for a conversation.
 
         Currently, it is only allowed to have a password for ``public`` conversations.
@@ -169,7 +166,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}/password", params={"password": password})
 
-    def set_conversation_readonly(self, conversation: typing.Union[Conversation, str], read_only: bool) -> None:
+    def set_conversation_readonly(self, conversation: Conversation | str, read_only: bool) -> None:
         """Changes conversation **read_only** state.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -178,7 +175,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("PUT", self._ep_base + f"/api/v4/room/{token}/read-only", params={"state": int(read_only)})
 
-    def set_conversation_public(self, conversation: typing.Union[Conversation, str], public: bool) -> None:
+    def set_conversation_public(self, conversation: Conversation | str, public: bool) -> None:
         """Changes conversation **public** state.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -187,9 +184,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("POST" if public else "DELETE", self._ep_base + f"/api/v4/room/{token}/public")
 
-    def set_conversation_notify_lvl(
-        self, conversation: typing.Union[Conversation, str], new_lvl: NotificationLevel
-    ) -> None:
+    def set_conversation_notify_lvl(self, conversation: Conversation | str, new_lvl: NotificationLevel) -> None:
         """Sets new notification level for user in the conversation.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -198,14 +193,14 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("POST", self._ep_base + f"/api/v4/room/{token}/notify", json={"level": int(new_lvl)})
 
-    def get_conversation_by_token(self, conversation: typing.Union[Conversation, str]) -> Conversation:
+    def get_conversation_by_token(self, conversation: Conversation | str) -> Conversation:
         """Gets conversation by token."""
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         result = self._session.ocs("GET", self._ep_base + f"/api/v4/room/{token}")
         self._update_config_sha()
         return Conversation(result)
 
-    def delete_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
+    def delete_conversation(self, conversation: Conversation | str) -> None:
         """Deletes a conversation.
 
         .. note:: Deleting a conversation that is the parent of breakout rooms, will also delete them.
@@ -217,7 +212,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         self._session.ocs("DELETE", self._ep_base + f"/api/v4/room/{token}")
 
-    def leave_conversation(self, conversation: typing.Union[Conversation, str]) -> None:
+    def leave_conversation(self, conversation: Conversation | str) -> None:
         """Removes yourself from the conversation.
 
         .. note:: When the participant is a moderator or owner and there are no other moderators or owners left,
@@ -231,8 +226,8 @@ class _TalkAPI:
     def send_message(
         self,
         message: str,
-        conversation: typing.Union[Conversation, str] = "",
-        reply_to_message: typing.Union[int, TalkMessage] = 0,
+        conversation: Conversation | str = "",
+        reply_to_message: int | TalkMessage = 0,
         silent: bool = False,
         actor_display_name: str = "",
     ) -> TalkMessage:
@@ -262,11 +257,7 @@ class _TalkAPI:
         r = self._session.ocs("POST", self._ep_base + f"/api/v1/chat/{token}", json=params)
         return TalkMessage(r)
 
-    def send_file(
-        self,
-        path: typing.Union[str, FsNode],
-        conversation: typing.Union[Conversation, str] = "",
-    ) -> tuple[Share, str]:
+    def send_file(self, path: str | FsNode, conversation: Conversation | str = "") -> tuple[Share, str]:
         require_capabilities("files_sharing.api_enabled", self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         reference_id = hashlib.sha256(random_string(32).encode("UTF-8")).hexdigest()
@@ -281,7 +272,7 @@ class _TalkAPI:
 
     def receive_messages(
         self,
-        conversation: typing.Union[Conversation, str],
+        conversation: Conversation | str,
         look_in_future: bool = False,
         limit: int = 100,
         timeout: int = 30,
@@ -305,9 +296,7 @@ class _TalkAPI:
         result = self._session.ocs("GET", self._ep_base + f"/api/v1/chat/{token}", params=params)
         return [TalkFileMessage(i, self._session.user) if i["message"] == "{file}" else TalkMessage(i) for i in result]
 
-    def delete_message(
-        self, message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str] = ""
-    ) -> TalkMessage:
+    def delete_message(self, message: TalkMessage | str, conversation: Conversation | str = "") -> TalkMessage:
         """Delete a chat message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk.TalkMessage` to delete.
@@ -321,10 +310,7 @@ class _TalkAPI:
         return TalkMessage(result)
 
     def react_to_message(
-        self,
-        message: typing.Union[TalkMessage, str],
-        reaction: str,
-        conversation: typing.Union[Conversation, str] = "",
+        self, message: TalkMessage | str, reaction: str, conversation: Conversation | str = ""
     ) -> dict[str, list[MessageReactions]]:
         """React to a chat message.
 
@@ -345,10 +331,7 @@ class _TalkAPI:
         return {k: [MessageReactions(i) for i in v] for k, v in r.items()} if r else {}
 
     def delete_reaction(
-        self,
-        message: typing.Union[TalkMessage, str],
-        reaction: str,
-        conversation: typing.Union[Conversation, str] = "",
+        self, message: TalkMessage | str, reaction: str, conversation: Conversation | str = ""
     ) -> dict[str, list[MessageReactions]]:
         """Remove reaction from a chat message.
 
@@ -367,10 +350,7 @@ class _TalkAPI:
         return {k: [MessageReactions(i) for i in v] for k, v in r.items()} if r else {}
 
     def get_message_reactions(
-        self,
-        message: typing.Union[TalkMessage, str],
-        reaction_filter: str = "",
-        conversation: typing.Union[Conversation, str] = "",
+        self, message: TalkMessage | str, reaction_filter: str = "", conversation: Conversation | str = ""
     ) -> dict[str, list[MessageReactions]]:
         """Get reactions information for a chat message.
 
@@ -391,7 +371,7 @@ class _TalkAPI:
         require_capabilities("spreed.features.bots-v1", self._session.capabilities)
         return [BotInfo(i) for i in self._session.ocs("GET", self._ep_base + "/api/v1/bot/admin")]
 
-    def conversation_list_bots(self, conversation: typing.Union[Conversation, str]) -> list[BotInfoBasic]:
+    def conversation_list_bots(self, conversation: Conversation | str) -> list[BotInfoBasic]:
         """Lists the bots that are enabled and can be enabled for the conversation.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -400,7 +380,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         return [BotInfoBasic(i) for i in self._session.ocs("GET", self._ep_base + f"/api/v1/bot/{token}")]
 
-    def enable_bot(self, conversation: typing.Union[Conversation, str], bot: typing.Union[BotInfoBasic, int]) -> None:
+    def enable_bot(self, conversation: Conversation | str, bot: BotInfoBasic | int) -> None:
         """Enable a bot for a conversation as a moderator.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -411,7 +391,7 @@ class _TalkAPI:
         bot_id = bot.bot_id if isinstance(bot, BotInfoBasic) else bot
         self._session.ocs("POST", self._ep_base + f"/api/v1/bot/{token}/{bot_id}")
 
-    def disable_bot(self, conversation: typing.Union[Conversation, str], bot: typing.Union[BotInfoBasic, int]) -> None:
+    def disable_bot(self, conversation: Conversation | str, bot: BotInfoBasic | int) -> None:
         """Disable a bot for a conversation as a moderator.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -424,7 +404,7 @@ class _TalkAPI:
 
     def create_poll(
         self,
-        conversation: typing.Union[Conversation, str],
+        conversation: Conversation | str,
         question: str,
         options: list[str],
         hidden_results: bool = True,
@@ -447,7 +427,7 @@ class _TalkAPI:
         }
         return Poll(self._session.ocs("POST", self._ep_base + f"/api/v1/poll/{token}", json=params), token)
 
-    def get_poll(self, poll: typing.Union[Poll, int], conversation: typing.Union[Conversation, str] = "") -> Poll:
+    def get_poll(self, poll: Poll | int, conversation: Conversation | str = "") -> Poll:
         """Get state or result of a poll.
 
         :param poll: Poll ID or :py:class:`~nc_py_api.talk.Poll`.
@@ -461,12 +441,7 @@ class _TalkAPI:
             token = conversation.token if isinstance(conversation, Conversation) else conversation
         return Poll(self._session.ocs("GET", self._ep_base + f"/api/v1/poll/{token}/{poll_id}"), token)
 
-    def vote_poll(
-        self,
-        options_ids: list[int],
-        poll: typing.Union[Poll, int],
-        conversation: typing.Union[Conversation, str] = "",
-    ) -> Poll:
+    def vote_poll(self, options_ids: list[int], poll: Poll | int, conversation: Conversation | str = "") -> Poll:
         """Vote on a poll.
 
         :param options_ids: The option IDs the participant wants to vote for.
@@ -484,7 +459,7 @@ class _TalkAPI:
         )
         return Poll(r, token)
 
-    def close_poll(self, poll: typing.Union[Poll, int], conversation: typing.Union[Conversation, str] = "") -> Poll:
+    def close_poll(self, poll: Poll | int, conversation: Conversation | str = "") -> Poll:
         """Close a poll.
 
         :param poll: Poll ID or :py:class:`~nc_py_api.talk.Poll`.
@@ -499,9 +474,7 @@ class _TalkAPI:
         return Poll(self._session.ocs("DELETE", self._ep_base + f"/api/v1/poll/{token}/{poll_id}"), token)
 
     def set_conversation_avatar(
-        self,
-        conversation: typing.Union[Conversation, str],
-        avatar: typing.Union[bytes, tuple[str, typing.Union[str, None]]],
+        self, conversation: Conversation | str, avatar: bytes | tuple[str, str | None]
     ) -> Conversation:
         """Set image or emoji as avatar for the conversation.
 
@@ -526,7 +499,7 @@ class _TalkAPI:
             )
         return Conversation(r)
 
-    def delete_conversation_avatar(self, conversation: typing.Union[Conversation, str]) -> Conversation:
+    def delete_conversation_avatar(self, conversation: Conversation | str) -> Conversation:
         """Delete conversation avatar.
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -535,7 +508,7 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         return Conversation(self._session.ocs("DELETE", self._ep_base + f"/api/v1/room/{token}/avatar"))
 
-    def get_conversation_avatar(self, conversation: typing.Union[Conversation, str], dark=False) -> bytes:
+    def get_conversation_avatar(self, conversation: Conversation | str, dark=False) -> bytes:
         """Get conversation avatar (binary).
 
         :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
@@ -549,7 +522,7 @@ class _TalkAPI:
         return response.content
 
     @staticmethod
-    def _get_token(message: typing.Union[TalkMessage, str], conversation: typing.Union[Conversation, str]) -> str:
+    def _get_token(message: TalkMessage | str, conversation: Conversation | str) -> str:
         if not conversation and not isinstance(message, TalkMessage):
             raise ValueError("Either specify 'conversation' or provide 'TalkMessage'.")
 
