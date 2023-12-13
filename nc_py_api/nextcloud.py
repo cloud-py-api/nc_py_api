@@ -7,7 +7,7 @@ from httpx import Headers
 
 from ._exceptions import NextcloudExceptionNotFound
 from ._misc import check_capabilities, require_capabilities
-from ._preferences import PreferencesAPI
+from ._preferences import AsyncPreferencesAPI, PreferencesAPI
 from ._preferences_ex import (
     AppConfigExAPI,
     AsyncAppConfigExAPI,
@@ -122,8 +122,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     # """Nextcloud Calendar API"""
     # files: FilesAPI
     # """Nextcloud API for File System and Files Sharing"""
-    # preferences: PreferencesAPI
-    # """Nextcloud User Preferences API"""
+    preferences: AsyncPreferencesAPI
+    """Nextcloud User Preferences API"""
     # notes: _NotesAPI
     # """Nextcloud Notes API"""
     notifications: _AsyncNotificationsAPI
@@ -145,7 +145,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.activity = _AsyncActivityAPI(session)
         # self.cal = _CalendarAPI(session)
         # self.files = FilesAPI(session)
-        # self.preferences = PreferencesAPI(session)
+        self.preferences = AsyncPreferencesAPI(session)
         # self.notes = _NotesAPI(session)
         self.notifications = _AsyncNotificationsAPI(session)
         # self.talk = _TalkAPI(session)
