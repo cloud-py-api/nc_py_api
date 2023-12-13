@@ -19,7 +19,7 @@ from fastapi import (
 )
 
 from .._misc import get_username_secret_from_headers
-from ..nextcloud import NextcloudApp
+from ..nextcloud import AsyncNextcloudApp, NextcloudApp
 from ..talk_bot import TalkBotMessage, get_bot_secret
 from .misc import persistent_storage
 
@@ -30,16 +30,25 @@ def nc_app(request: Request) -> NextcloudApp:
         "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")
     })[0]
     request_id = request.headers.get("AA-REQUEST-ID", None)
-    headers = {"AA-REQUEST-ID": request_id} if request_id else {}
-    nextcloud_app = NextcloudApp(user=user, headers=headers)
+    nextcloud_app = NextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
     if not nextcloud_app.request_sign_check(request):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     return nextcloud_app
 
 
-def talk_bot_app(request: Request) -> TalkBotMessage:
-    """Authentication handler for bot requests from Nextcloud Talk to the application."""
-    body = asyncio.run(request.body())
+def anc_app(request: Request) -> AsyncNextcloudApp:
+    """Async Authentication handler for requests from Nextcloud to the application."""
+    user = get_username_secret_from_headers({
+        "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")
+    })[0]
+    request_id = request.headers.get("AA-REQUEST-ID", None)
+    nextcloud_app = AsyncNextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
+    if not nextcloud_app.request_sign_check(request):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    return nextcloud_app
+
+
+def __talk_bot_app(request: Request, body: bytes) -> TalkBotMessage:
     secret = get_bot_secret(request.url.components.path)
     if not secret:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -52,10 +61,20 @@ def talk_bot_app(request: Request) -> TalkBotMessage:
     return TalkBotMessage(json.loads(body))
 
 
+def talk_bot_app(request: Request) -> TalkBotMessage:
+    """Authentication handler for bot requests from Nextcloud Talk to the application."""
+    return __talk_bot_app(request, asyncio.run(request.body()))
+
+
+async def atalk_bot_app(request: Request) -> TalkBotMessage:
+    """Async Authentication handler for bot requests from Nextcloud Talk to the application."""
+    return __talk_bot_app(request, await request.body())
+
+
 def set_handlers(
     fast_api_app: FastAPI,
-    enabled_handler: typing.Callable[[bool, NextcloudApp], str | typing.Awaitable[str]],
-    heartbeat_handler: typing.Callable[[], str | typing.Awaitable[str]] | None = None,
+    enabled_handler: typing.Callable[[bool, NextcloudApp], str],
+    heartbeat_handler: typing.Callable[[], str] | None = None,
     init_handler: typing.Callable[[NextcloudApp], None] | None = None,
     models_to_fetch: list[str] | None = None,
     models_download_params: dict | None = None,
@@ -82,34 +101,85 @@ def set_handlers(
     """
 
     @fast_api_app.put("/enabled")
-    async def enabled_callback(
+    def enabled_callback(
         enabled: bool,
         nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
     ):
-        if asyncio.iscoroutinefunction(heartbeat_handler):
-            r = await enabled_handler(enabled, nc)  # type: ignore
-        else:
-            r = enabled_handler(enabled, nc)
+        r = enabled_handler(enabled, nc)
         return responses.JSONResponse(content={"error": r}, status_code=200)
 
     @fast_api_app.get("/heartbeat")
-    async def heartbeat_callback():
-        if heartbeat_handler is not None:
-            if asyncio.iscoroutinefunction(heartbeat_handler):
-                return_status = await heartbeat_handler()
-            else:
-                return_status = heartbeat_handler()
-        else:
-            return_status = "ok"
+    def heartbeat_callback():
+        return_status = "ok" if heartbeat_handler is None else heartbeat_handler()
         return responses.JSONResponse(content={"status": return_status}, status_code=200)
 
     @fast_api_app.post("/init")
-    async def init_callback(
+    def init_callback(
         background_tasks: BackgroundTasks,
         nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
     ):
         background_tasks.add_task(
             __fetch_models_task,
+            nc,
+            init_handler,
+            models_to_fetch if models_to_fetch else [],
+            models_download_params if models_download_params else {},
+        )
+        return responses.JSONResponse(content={}, status_code=200)
+
+    if map_app_static:
+        __map_app_static_folders(fast_api_app)
+
+
+def aset_handlers(
+    fast_api_app: FastAPI,
+    enabled_handler: typing.Callable[[bool, AsyncNextcloudApp], typing.Awaitable[str]],
+    heartbeat_handler: typing.Callable[[], typing.Awaitable[str]] | None = None,
+    init_handler: typing.Callable[[AsyncNextcloudApp], typing.Awaitable[None]] | None = None,
+    models_to_fetch: list[str] | None = None,
+    models_download_params: dict | None = None,
+    map_app_static: bool = True,
+):
+    """Defines async handlers for the application.
+
+    :param fast_api_app: FastAPI() call return value.
+    :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
+    :param heartbeat_handler: Optional, callback that will be called for the `heartbeat` deploy event.
+    :param init_handler: Optional, callback that will be called for the `init`  event.
+
+        .. note:: If ``init_handler`` is specified, it is up to a developer to set the application init progress status.
+            AppAPI will only call `enabled_handler` after it receives ``100`` as initialization status progress.
+
+    :param models_to_fetch: Dictionary describing which models should be downloaded during `init`.
+
+        .. note:: ```huggingface_hub`` package should be present for automatic models fetching.
+
+    :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
+    :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
+
+        .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
+    """
+
+    @fast_api_app.put("/enabled")
+    async def enabled_callback(
+        enabled: bool,
+        nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)],
+    ):
+        r = await enabled_handler(enabled, nc)
+        return responses.JSONResponse(content={"error": r}, status_code=200)
+
+    @fast_api_app.get("/heartbeat")
+    async def heartbeat_callback():
+        return_status = "ok" if heartbeat_handler is None else await heartbeat_handler()
+        return responses.JSONResponse(content={"status": return_status}, status_code=200)
+
+    @fast_api_app.post("/init")
+    async def init_callback(
+        background_tasks: BackgroundTasks,
+        nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)],
+    ):
+        background_tasks.add_task(
+            __afetch_models_task,
             nc,
             init_handler,
             models_to_fetch if models_to_fetch else [],
@@ -157,3 +227,31 @@ def __fetch_models_task(
         nc.set_init_status(100)
     else:
         init_handler(nc)
+
+
+async def __afetch_models_task(
+    nc: AsyncNextcloudApp,
+    init_handler: typing.Callable[[AsyncNextcloudApp], typing.Awaitable[None]] | None,
+    models: list[str],
+    params: dict[str, typing.Any],
+) -> None:
+    if models:
+        from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
+        from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
+
+        class TqdmProgress(tqdm):
+            def display(self, msg=None, pos=None):
+                if init_handler is None:
+                    asyncio.run(nc.set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100)))
+                return super().display(msg, pos)
+
+        if "max_workers" not in params:
+            params["max_workers"] = 2
+        if "cache_dir" not in params:
+            params["cache_dir"] = persistent_storage()
+        for model in models:
+            snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
+    if init_handler is None:
+        await nc.set_init_status(100)
+    else:
+        await init_handler(nc)

@@ -108,12 +108,12 @@ def test_set_predefined(nc, clear_at):
 @pytest.mark.require_nc(major=27)
 def test_get_back_status_from_from_empty_user(nc_app):
     orig_user = nc_app._session.user
-    nc_app._session.user = ""
+    nc_app._session.set_user("")
     try:
         with pytest.raises(ValueError):
             nc_app.user_status.get_backup_status("")
     finally:
-        nc_app._session.user = orig_user
+        nc_app._session.set_user(orig_user)
 
 
 @pytest.mark.require_nc(major=27)

@@ -58,14 +58,14 @@ def test_get_user_info(nc):
 def test_get_current_user_wo_user(nc):
     orig_user = nc._session.user
     try:
-        nc._session.user = ""
+        nc._session.set_user("")
         if isinstance(nc, NextcloudApp):
             with pytest.raises(NextcloudException):
                 nc.users.get_user()
         else:
             assert isinstance(nc.users.get_user(), users.UserInfo)
     finally:
-        nc._session.user = orig_user
+        nc._session.set_user(orig_user)
 
 
 def test_get_user_404(nc):

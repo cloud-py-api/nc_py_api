@@ -2,18 +2,32 @@
 
 from abc import ABC
 
-from fastapi import Request
-from httpx import Headers as HttpxHeaders
+from fastapi import Request as FastAPIRequest
+from httpx import Headers
 
 from ._exceptions import NextcloudExceptionNotFound
 from ._misc import check_capabilities, require_capabilities
 from ._preferences import PreferencesAPI
-from ._preferences_ex import AppConfigExAPI, PreferencesExAPI
-from ._session import AppConfig, NcSession, NcSessionApp, NcSessionBasic, ServerVersion
+from ._preferences_ex import (
+    AppConfigExAPI,
+    AsyncAppConfigExAPI,
+    AsyncPreferencesExAPI,
+    PreferencesExAPI,
+)
+from ._session import (
+    AppConfig,
+    AsyncNcSession,
+    AsyncNcSessionApp,
+    AsyncNcSessionBasic,
+    NcSession,
+    NcSessionApp,
+    NcSessionBasic,
+    ServerVersion,
+)
 from ._talk_api import _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI
-from .apps import _AppsAPI
+from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
@@ -42,7 +56,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     notifications: _NotificationsAPI
     """Nextcloud API for managing user notifications"""
     talk: _TalkAPI
-    """Nextcloud Talk Api"""
+    """Nextcloud Talk API"""
     users: _UsersAPI
     """Nextcloud API for managing users."""
     users_groups: _UsersGroupsAPI
@@ -53,7 +67,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing user weather statuses"""
     _session: NcSessionBasic
 
-    def _init_api(self, session: NcSessionBasic):
+    def __init__(self, session: NcSessionBasic):
         self.apps = _AppsAPI(session)
         self.activity = _ActivityAPI(session)
         self.cal = _CalendarAPI(session)
@@ -78,10 +92,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         return self._session.nc_version
 
     def check_capabilities(self, capabilities: str | list[str]) -> list[str]:
-        """Returns the list with missing capabilities if any.
-
-        :param capabilities: one or more features to check for.
-        """
+        """Returns the list with missing capabilities if any."""
         return check_capabilities(capabilities, self.capabilities)
 
     def update_server_info(self) -> None:
@@ -92,7 +103,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self._session.update_server_info()
 
     @property
-    def response_headers(self) -> HttpxHeaders:
+    def response_headers(self) -> Headers:
         """Returns the `HTTPX headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
         return self._session.response_headers
 
@@ -100,6 +111,79 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     def theme(self) -> ThemingInfo | None:
         """Returns Theme information."""
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
+
+
+class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
+    apps: _AsyncAppsAPI
+    """Nextcloud API for App management"""
+    # activity: _ActivityAPI
+    # """Activity Application API"""
+    # cal: _CalendarAPI
+    # """Nextcloud Calendar API"""
+    # files: FilesAPI
+    # """Nextcloud API for File System and Files Sharing"""
+    # preferences: PreferencesAPI
+    # """Nextcloud User Preferences API"""
+    # notes: _NotesAPI
+    # """Nextcloud Notes API"""
+    # notifications: _NotificationsAPI
+    # """Nextcloud API for managing user notifications"""
+    # talk: _TalkAPI
+    # """Nextcloud Talk API"""
+    # users: _UsersAPI
+    # """Nextcloud API for managing users."""
+    # users_groups: _UsersGroupsAPI
+    # """Nextcloud API for managing user groups."""
+    # user_status: _UserStatusAPI
+    # """Nextcloud API for managing users statuses"""
+    # weather_status: _WeatherStatusAPI
+    # """Nextcloud API for managing user weather statuses"""
+    _session: AsyncNcSessionBasic
+
+    def __init__(self, session: AsyncNcSessionBasic):
+        self.apps = _AsyncAppsAPI(session)
+        # self.activity = _ActivityAPI(session)
+        # self.cal = _CalendarAPI(session)
+        # self.files = FilesAPI(session)
+        # self.preferences = PreferencesAPI(session)
+        # self.notes = _NotesAPI(session)
+        # self.notifications = _NotificationsAPI(session)
+        # self.talk = _TalkAPI(session)
+        # self.users = _UsersAPI(session)
+        # self.users_groups = _UsersGroupsAPI(session)
+        # self.user_status = _UserStatusAPI(session)
+        # self.weather_status = _WeatherStatusAPI(session)
+
+    @property
+    async def capabilities(self) -> dict:
+        """Returns the capabilities of the Nextcloud instance."""
+        return await self._session.capabilities
+
+    @property
+    async def srv_version(self) -> ServerVersion:
+        """Returns dictionary with the server version."""
+        return await self._session.nc_version
+
+    async def check_capabilities(self, capabilities: str | list[str]) -> list[str]:
+        """Returns the list with missing capabilities if any."""
+        return check_capabilities(capabilities, await self.capabilities)
+
+    async def update_server_info(self) -> None:
+        """Updates the capabilities and the Nextcloud version.
+
+        *In normal cases, it is called automatically and there is no need to call it manually.*
+        """
+        await self._session.update_server_info()
+
+    @property
+    def response_headers(self) -> Headers:
+        """Returns the `HTTPX headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
+        return self._session.response_headers
+
+    @property
+    async def theme(self) -> ThemingInfo | None:
+        """Returns Theme information."""
+        return get_parsed_theme((await self.capabilities)["theming"]) if "theming" in await self.capabilities else None
 
 
 class Nextcloud(_NextcloudBasic):
@@ -118,7 +202,7 @@ class Nextcloud(_NextcloudBasic):
         :param nc_auth_pass: password or app-password for the username.
         """
         self._session = NcSession(**kwargs)
-        self._init_api(self._session)
+        super().__init__(self._session)
 
     @property
     def user(self) -> str:
@@ -126,8 +210,32 @@ class Nextcloud(_NextcloudBasic):
         return self._session.user
 
 
+class AsyncNextcloud(_AsyncNextcloudBasic):
+    """Async Nextcloud client class.
+
+    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.
+    """
+
+    _session: AsyncNcSession
+
+    def __init__(self, **kwargs):
+        """If the parameters are not specified, they will be taken from the environment.
+
+        :param nextcloud_url: url of the nextcloud instance.
+        :param nc_auth_user: login username.
+        :param nc_auth_pass: password or app-password for the username.
+        """
+        self._session = AsyncNcSession(**kwargs)
+        super().__init__(self._session)
+
+    @property
+    async def user(self) -> str:
+        """Returns current user ID."""
+        return await self._session.user
+
+
 class NextcloudApp(_NextcloudBasic):
-    """Class for creating Nextcloud applications.
+    """Class for communication with Nextcloud in Nextcloud applications.
 
     Provides additional API required for applications such as user impersonation,
     endpoint registration, new authentication method, etc.
@@ -150,17 +258,13 @@ class NextcloudApp(_NextcloudBasic):
         They can be overridden by specifying them in **kwargs**, but this behavior is highly discouraged.
         """
         self._session = NcSessionApp(**kwargs)
-        self._init_api(self._session)
+        super().__init__(self._session)
         self.appconfig_ex = AppConfigExAPI(self._session)
         self.preferences_ex = PreferencesExAPI(self._session)
         self.ui = UiApi(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
-        """Writes log to the Nextcloud log file.
-
-        :param log_lvl: level of the log, content belongs to.
-        :param content: string to write into the log.
-        """
+        """Writes log to the Nextcloud log file."""
         if self.check_capabilities("app_api"):
             return
         if int(log_lvl) < self.capabilities["app_api"].get("loglevel", 0):
@@ -169,7 +273,7 @@ class NextcloudApp(_NextcloudBasic):
 
     def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
-        return self._session.ocs("GET", f"{self._session.ae_url}/users", params={"format": "json"})
+        return self._session.ocs("GET", f"{self._session.ae_url}/users")
 
     def scope_allowed(self, scope: ApiScope) -> bool:
         """Check if API scope is avalaible for application.
@@ -191,7 +295,7 @@ class NextcloudApp(_NextcloudBasic):
     @user.setter
     def user(self, value: str):
         if self._session.user != value:
-            self._session.user = value
+            self._session.set_user(value)
             self.talk.config_sha = ""
             self.talk.modified_since = 0
             self.activity.last_given = 0
@@ -211,7 +315,7 @@ class NextcloudApp(_NextcloudBasic):
         :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
         :param display_name: The name under which the messages will be posted.
         :param description: Optional description shown in the admin settings.
-        :return: The secret used for signing requests.
+        :return: Tuple with ID and the secret used for signing requests.
         """
         require_capabilities("app_api", self._session.capabilities)
         require_capabilities("spreed.features.bots-v1", self._session.capabilities)
@@ -224,11 +328,7 @@ class NextcloudApp(_NextcloudBasic):
         return result["id"], result["secret"]
 
     def unregister_talk_bot(self, callback_url: str) -> bool:
-        """Unregisters Talk BOT.
-
-        :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
-        :return: The secret used for signing requests.
-        """
+        """Unregisters Talk BOT."""
         require_capabilities("app_api", self._session.capabilities)
         require_capabilities("spreed.features.bots-v1", self._session.capabilities)
         params = {
@@ -240,7 +340,7 @@ class NextcloudApp(_NextcloudBasic):
             return False
         return True
 
-    def request_sign_check(self, request: Request) -> bool:
+    def request_sign_check(self, request: FastAPIRequest) -> bool:
         """Verifies the signature and validity of an incoming request from the Nextcloud.
 
         :param request: The `Starlette request <https://www.starlette.io/requests/>`_
@@ -262,6 +362,143 @@ class NextcloudApp(_NextcloudBasic):
         :param error: if non-empty, signals to AppAPI that the application cannot be initialized successfully.
         """
         self._session.ocs(
+            "PUT",
+            f"/ocs/v1.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
+            json={
+                "progress": progress,
+                "error": error,
+            },
+        )
+
+
+class AsyncNextcloudApp(_AsyncNextcloudBasic):
+    """Class for communication with Nextcloud in Async Nextcloud applications.
+
+    Provides additional API required for applications such as user impersonation,
+    endpoint registration, new authentication method, etc.
+
+    .. note:: Instance of this class should not be created directly in ``normal`` applications,
+        it will be provided for each app endpoint call.
+    """
+
+    _session: AsyncNcSessionApp
+    appconfig_ex: AsyncAppConfigExAPI
+    """Async Nextcloud App Preferences API for ExApps"""
+    preferences_ex: AsyncPreferencesExAPI
+    """Async Nextcloud User Preferences API for ExApps"""
+    # ui: UiApi
+    # """Nextcloud UI API for ExApps"""
+
+    def __init__(self, **kwargs):
+        """The parameters will be taken from the environment.
+
+        They can be overridden by specifying them in **kwargs**, but this behavior is highly discouraged.
+        """
+        self._session = AsyncNcSessionApp(**kwargs)
+        super().__init__(self._session)
+        self.appconfig_ex = AsyncAppConfigExAPI(self._session)
+        self.preferences_ex = AsyncPreferencesExAPI(self._session)
+        # self.ui = UiApi(self._session)
+
+    async def log(self, log_lvl: LogLvl, content: str) -> None:
+        """Writes log to the Nextcloud log file."""
+        if await self.check_capabilities("app_api"):
+            return
+        if int(log_lvl) < (await self.capabilities)["app_api"].get("loglevel", 0):
+            return
+        await self._session.ocs("POST", f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content})
+
+    async def users_list(self) -> list[str]:
+        """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
+        return await self._session.ocs("GET", f"{self._session.ae_url}/users")
+
+    async def scope_allowed(self, scope: ApiScope) -> bool:
+        """Check if API scope is avalaible for application.
+
+        Useful for applications that declare optional scopes to check if they are allowed.
+        """
+        if await self.check_capabilities("app_api"):
+            return False
+        return scope in (await self.capabilities)["app_api"]["scopes"]
+
+    @property
+    async def user(self) -> str:
+        """Property containing the current user ID.
+
+        *System Applications* can set it and impersonate the user. For normal applications, it is set automatically.
+        """
+        return await self._session.user
+
+    @user.setter
+    async def user(self, value: str):
+        if await self._session.user != value:
+            self._session.set_user(value)
+            # self.talk.config_sha = ""
+            # self.talk.modified_since = 0
+            # self.activity.last_given = 0
+            # self.notes.last_etag = ""
+            await self._session.update_server_info()
+
+    @property
+    def app_cfg(self) -> AppConfig:
+        """Returns deploy config, with AppAPI version, Application version and name."""
+        return self._session.cfg
+
+    async def register_talk_bot(self, callback_url: str, display_name: str, description: str = "") -> tuple[str, str]:
+        """Registers Talk BOT.
+
+        .. note:: AppAPI will add a record in a case of successful registration to the ``appconfig_ex`` table.
+
+        :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
+        :param display_name: The name under which the messages will be posted.
+        :param description: Optional description shown in the admin settings.
+        :return: Tuple with ID and the secret used for signing requests.
+        """
+        require_capabilities("app_api", await self._session.capabilities)
+        require_capabilities("spreed.features.bots-v1", await self._session.capabilities)
+        params = {
+            "name": display_name,
+            "route": callback_url,
+            "description": description,
+        }
+        result = await self._session.ocs("POST", f"{self._session.ae_url}/talk_bot", json=params)
+        return result["id"], result["secret"]
+
+    async def unregister_talk_bot(self, callback_url: str) -> bool:
+        """Unregisters Talk BOT."""
+        require_capabilities("app_api", await self._session.capabilities)
+        require_capabilities("spreed.features.bots-v1", await self._session.capabilities)
+        params = {
+            "route": callback_url,
+        }
+        try:
+            await self._session.ocs("DELETE", f"{self._session.ae_url}/talk_bot", json=params)
+        except NextcloudExceptionNotFound:
+            return False
+        return True
+
+    def request_sign_check(self, request: FastAPIRequest) -> bool:
+        """Verifies the signature and validity of an incoming request from the Nextcloud.
+
+        :param request: The `Starlette request <https://www.starlette.io/requests/>`_
+
+        .. note:: In most cases ``nc: Annotated[NextcloudApp, Depends(nc_app)]`` should be used.
+        """
+        try:
+            self._session.sign_check(request)
+        except ValueError as e:
+            print(e)
+            return False
+        return True
+
+    async def set_init_status(self, progress: int, error: str = "") -> None:
+        """Sets state of the app initialization.
+
+        :param progress: a number from ``0`` to ``100`` indicating the percentage of application readiness for work.
+            After sending ``100`` AppAPI will enable the application.
+        :param error: if non-empty, signals to AppAPI that the application cannot be initialized successfully.
+        """
+        await self._session.ocs(
             "PUT",
             f"/ocs/v1.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
             json={
