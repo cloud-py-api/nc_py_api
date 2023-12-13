@@ -26,7 +26,7 @@ from ._session import (
 )
 from ._talk_api import _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
-from .activity import _ActivityAPI
+from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
@@ -34,10 +34,10 @@ from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
 from .notes import _NotesAPI
 from .notifications import _NotificationsAPI
-from .user_status import _UserStatusAPI
-from .users import _UsersAPI
-from .users_groups import _UsersGroupsAPI
-from .weather_status import _WeatherStatusAPI
+from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
+from .users import _AsyncUsersAPI, _UsersAPI
+from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
+from .weather_status import _AsyncWeatherStatusAPI, _WeatherStatusAPI
 
 
 class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
@@ -116,8 +116,8 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
 class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     apps: _AsyncAppsAPI
     """Nextcloud API for App management"""
-    # activity: _ActivityAPI
-    # """Activity Application API"""
+    activity: _AsyncActivityAPI
+    """Activity Application API"""
     # cal: _CalendarAPI
     # """Nextcloud Calendar API"""
     # files: FilesAPI
@@ -130,29 +130,29 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     # """Nextcloud API for managing user notifications"""
     # talk: _TalkAPI
     # """Nextcloud Talk API"""
-    # users: _UsersAPI
-    # """Nextcloud API for managing users."""
-    # users_groups: _UsersGroupsAPI
-    # """Nextcloud API for managing user groups."""
-    # user_status: _UserStatusAPI
-    # """Nextcloud API for managing users statuses"""
-    # weather_status: _WeatherStatusAPI
-    # """Nextcloud API for managing user weather statuses"""
+    users: _AsyncUsersAPI
+    """Nextcloud API for managing users."""
+    users_groups: _AsyncUsersGroupsAPI
+    """Nextcloud API for managing user groups."""
+    user_status: _AsyncUserStatusAPI
+    """Nextcloud API for managing users statuses"""
+    weather_status: _AsyncWeatherStatusAPI
+    """Nextcloud API for managing user weather statuses"""
     _session: AsyncNcSessionBasic
 
     def __init__(self, session: AsyncNcSessionBasic):
         self.apps = _AsyncAppsAPI(session)
-        # self.activity = _ActivityAPI(session)
+        self.activity = _AsyncActivityAPI(session)
         # self.cal = _CalendarAPI(session)
         # self.files = FilesAPI(session)
         # self.preferences = PreferencesAPI(session)
         # self.notes = _NotesAPI(session)
         # self.notifications = _NotificationsAPI(session)
         # self.talk = _TalkAPI(session)
-        # self.users = _UsersAPI(session)
-        # self.users_groups = _UsersGroupsAPI(session)
-        # self.user_status = _UserStatusAPI(session)
-        # self.weather_status = _WeatherStatusAPI(session)
+        self.users = _AsyncUsersAPI(session)
+        self.users_groups = _AsyncUsersGroupsAPI(session)
+        self.user_status = _AsyncUserStatusAPI(session)
+        self.weather_status = _AsyncWeatherStatusAPI(session)
 
     @property
     async def capabilities(self) -> dict:
@@ -435,7 +435,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
             self._session.set_user(value)
             # self.talk.config_sha = ""
             # self.talk.modified_since = 0
-            # self.activity.last_given = 0
+            self.activity.last_given = 0
             # self.notes.last_etag = ""
             await self._session.update_server_info()
 

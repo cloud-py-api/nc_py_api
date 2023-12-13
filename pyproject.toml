@@ -74,6 +74,7 @@ dev-min = [
   "pre-commit",
   "pylint",
   "pytest",
+  "pytest-asyncio",
 ]
 docs = [
   "autodoc_pydantic>=2.0.1",
@@ -165,6 +166,7 @@ addopts = "-rs --color=yes"
 markers = [
     "require_nc: marks a test that requires a minimum version of Nextcloud.",
 ]
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 cover_pylib = true

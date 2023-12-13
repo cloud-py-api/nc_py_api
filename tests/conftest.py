@@ -3,19 +3,29 @@ from typing import Optional, Union
 
 import pytest
 
-from nc_py_api import Nextcloud, NextcloudApp, _session  # noqa
+from nc_py_api import (  # noqa
+    AsyncNextcloud,
+    AsyncNextcloudApp,
+    Nextcloud,
+    NextcloudApp,
+    _session,
+)
 
 from . import gfixture_set_env  # noqa
 
 _TEST_FAILED_INCREMENTAL: dict[str, dict[tuple[int, ...], str]] = {}
 
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
+NC_CLIENT_ASYNC = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else AsyncNextcloud()
 if environ.get("SKIP_AA_TESTS", False):
     NC_APP = None
+    NC_APP_ASYNC = None
 else:
     NC_APP = NextcloudApp(user="admin")
+    NC_APP_ASYNC = AsyncNextcloudApp(user="admin")
     if "app_api" not in NC_APP.capabilities:
         NC_APP = None
+        NC_APP_ASYNC = None
 if NC_CLIENT is None and NC_APP is None:
     raise EnvironmentError("Tests require at least Nextcloud or NextcloudApp.")
 
@@ -33,6 +43,13 @@ def nc_client() -> Optional[Nextcloud]:
 
 
 @pytest.fixture(scope="session")
+def anc_client() -> Optional[AsyncNextcloud]:
+    if NC_CLIENT_ASYNC is None:
+        pytest.skip("Need Async Client mode")
+    return NC_CLIENT_ASYNC
+
+
+@pytest.fixture(scope="session")
 def nc_app() -> Optional[NextcloudApp]:
     if NC_APP is None:
         pytest.skip("Need App mode")
@@ -40,9 +57,22 @@ def nc_app() -> Optional[NextcloudApp]:
 
 
 @pytest.fixture(scope="session")
+def anc_app() -> Optional[AsyncNextcloudApp]:
+    if NC_APP_ASYNC is None:
+        pytest.skip("Need Async App mode")
+    return NC_APP_ASYNC
+
+
+@pytest.fixture(scope="session")
 def nc_any() -> Union[Nextcloud, NextcloudApp]:
     """Marks a test to run once for any of the modes."""
     return NC_APP if NC_APP else NC_CLIENT
+
+
+@pytest.fixture(scope="session")
+def anc_any() -> Union[AsyncNextcloud, AsyncNextcloudApp]:
+    """Marks a test to run once for any of the modes."""
+    return NC_APP_ASYNC if NC_APP_ASYNC else NC_CLIENT_ASYNC
 
 
 @pytest.fixture(scope="session")
