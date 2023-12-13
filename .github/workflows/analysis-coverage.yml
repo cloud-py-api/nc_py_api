@@ -865,7 +865,7 @@ jobs:
 
       - name: Install NcPyApi
         working-directory: nc_py_api
-        run: python3 -m pip -v install . pytest coverage pillow
+        run: python3 -m pip -v install . pytest pytest-asyncio coverage pillow
 
       - name: Talk Branch Main
         if: ${{ startsWith(matrix.nextcloud, 'master') }}
