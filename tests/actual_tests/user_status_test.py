@@ -112,7 +112,7 @@ async def test_get_list_async(anc):
     assert isinstance(r_all, list)
     r_current = await anc.user_status.get_current()
     for i in r_all:
-        if i.user_id == anc.user:
+        if i.user_id == await anc.user:
             compare_user_statuses(i, r_current)
         assert str(i).find("status_type=") != -1
 
