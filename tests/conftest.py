@@ -81,6 +81,12 @@ def nc(request) -> Union[Nextcloud, NextcloudApp]:
     return request.param
 
 
+@pytest.fixture(scope="session")
+def anc(request) -> Union[AsyncNextcloud, AsyncNextcloudApp]:
+    """Marks a test to run for both modes if possible."""
+    return request.param
+
+
 def pytest_generate_tests(metafunc):
     if "nc" in metafunc.fixturenames:
         values_ids = []
@@ -92,6 +98,16 @@ def pytest_generate_tests(metafunc):
             values.append(NC_APP)
             values_ids.append("app")
         metafunc.parametrize("nc", values, ids=values_ids)
+    if "anc" in metafunc.fixturenames:
+        values_ids = []
+        values = []
+        if NC_CLIENT_ASYNC is not None:
+            values.append(NC_CLIENT_ASYNC)
+            values_ids.append("client_async")
+        if NC_APP_ASYNC is not None:
+            values.append(NC_APP_ASYNC)
+            values_ids.append("app_async")
+        metafunc.parametrize("anc", values, ids=values_ids)
 
 
 def pytest_collection_modifyitems(items):

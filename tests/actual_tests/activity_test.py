@@ -32,7 +32,7 @@ async def test_get_filters_async(anc_any):
         assert str(i).find("name=") != -1
 
 
-def _get_activities(r: list[Activity]):
+def _test_get_activities(r: list[Activity]):
     assert r
     for i in r:
         assert i.activity_id
@@ -59,7 +59,7 @@ def test_get_activities(nc_any):
     with pytest.raises(ValueError):
         nc_any.activity.get_activities(object_id=4)
     r = nc_any.activity.get_activities(since=True)
-    _get_activities(r)
+    _test_get_activities(r)
     r2 = nc_any.activity.get_activities(since=True)
     if r2:
         old_activities_id = [i.activity_id for i in r]
@@ -78,7 +78,7 @@ async def test_get_activities_async(anc_any):
     with pytest.raises(ValueError):
         await anc_any.activity.get_activities(object_id=4)
     r = await anc_any.activity.get_activities(since=True)
-    _get_activities(r)
+    _test_get_activities(r)
     r2 = await anc_any.activity.get_activities(since=True)
     if r2:
         old_activities_id = [i.activity_id for i in r]
