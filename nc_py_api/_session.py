@@ -147,16 +147,8 @@ class NcSessionBase(ABC):
         self.response_headers = Headers()
         self._ocs_regexp = re.compile(r"/ocs/v[12]\.php/")
 
-    def __del__(self):
-        if hasattr(self, "adapter") and self.adapter:
-            self.adapter.close()
-        if hasattr(self, "adapter_dav") and self.adapter_dav:
-            self.adapter_dav.close()
-
     def init_adapter(self, restart=False) -> None:
         if getattr(self, "adapter", None) is None or restart:
-            if restart and hasattr(self, "adapter"):
-                self.adapter.close()
             self.adapter = self._create_adapter()
             self.adapter.headers.update({"OCS-APIRequest": "true"})
             if self.custom_headers:
@@ -167,8 +159,6 @@ class NcSessionBase(ABC):
 
     def init_adapter_dav(self, restart=False) -> None:
         if getattr(self, "adapter_dav", None) is None or restart:
-            if restart and hasattr(self, "adapter"):
-                self.adapter.close()
             self.adapter_dav = self._create_adapter(dav=True)
             if self.custom_headers:
                 self.adapter_dav.headers.update(self.custom_headers)
