@@ -33,7 +33,7 @@ from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
 from .notes import _NotesAPI
-from .notifications import _NotificationsAPI
+from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
 from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
 from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
@@ -126,8 +126,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     # """Nextcloud User Preferences API"""
     # notes: _NotesAPI
     # """Nextcloud Notes API"""
-    # notifications: _NotificationsAPI
-    # """Nextcloud API for managing user notifications"""
+    notifications: _AsyncNotificationsAPI
+    """Nextcloud API for managing user notifications"""
     # talk: _TalkAPI
     # """Nextcloud Talk API"""
     users: _AsyncUsersAPI
@@ -147,7 +147,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         # self.files = FilesAPI(session)
         # self.preferences = PreferencesAPI(session)
         # self.notes = _NotesAPI(session)
-        # self.notifications = _NotificationsAPI(session)
+        self.notifications = _AsyncNotificationsAPI(session)
         # self.talk = _TalkAPI(session)
         self.users = _AsyncUsersAPI(session)
         self.users_groups = _AsyncUsersGroupsAPI(session)
