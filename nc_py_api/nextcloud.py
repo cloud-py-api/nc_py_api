@@ -31,7 +31,7 @@ from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import AsyncUiApi, UiApi
-from .files.files import FilesAPI
+from .files.files import AsyncFilesAPI, FilesAPI
 from .notes import _AsyncNotesAPI, _NotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
 from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
@@ -120,8 +120,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Activity Application API"""
     # cal: _CalendarAPI
     # """Nextcloud Calendar API"""
-    # files: FilesAPI
-    # """Nextcloud API for File System and Files Sharing"""
+    files: AsyncFilesAPI
+    """Nextcloud API for File System and Files Sharing"""
     preferences: AsyncPreferencesAPI
     """Nextcloud User Preferences API"""
     notes: _AsyncNotesAPI
@@ -144,7 +144,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.apps = _AsyncAppsAPI(session)
         self.activity = _AsyncActivityAPI(session)
         # self.cal = _CalendarAPI(session)
-        # self.files = FilesAPI(session)
+        self.files = AsyncFilesAPI(session)
         self.preferences = AsyncPreferencesAPI(session)
         self.notes = _AsyncNotesAPI(session)
         self.notifications = _AsyncNotificationsAPI(session)
