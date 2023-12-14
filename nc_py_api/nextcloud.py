@@ -288,14 +288,14 @@ class NextcloudApp(_NextcloudBasic):
     def user(self) -> str:
         """Property containing the current user ID.
 
-        *System Applications* can set it and impersonate the user. For normal applications, it is set automatically.
+        **System Applications** can change user ID they impersonate with **set_user** method.
         """
         return self._session.user
 
-    @user.setter
-    def user(self, value: str):
-        if self._session.user != value:
-            self._session.set_user(value)
+    def set_user(self, user_id: str):
+        """Changes current User ID."""
+        if self._session.user != user_id:
+            self._session.set_user(user_id)
             self.talk.config_sha = ""
             self.talk.modified_since = 0
             self.activity.last_given = 0
@@ -425,14 +425,14 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
     async def user(self) -> str:
         """Property containing the current user ID.
 
-        *System Applications* can set it and impersonate the user. For normal applications, it is set automatically.
+        **System Applications** can change user ID they impersonate with **set_user** method.
         """
         return await self._session.user
 
-    @user.setter
-    async def user(self, value: str):
-        if await self._session.user != value:
-            self._session.set_user(value)
+    async def set_user(self, user_id: str):
+        """Changes current User ID."""
+        if await self._session.user != user_id:
+            self._session.set_user(user_id)
             # self.talk.config_sha = ""
             # self.talk.modified_since = 0
             self.activity.last_given = 0

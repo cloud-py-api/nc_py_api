@@ -245,8 +245,8 @@ class NcSessionBasic(NcSessionBase, ABC):
             self._user = self.ocs("GET", "/ocs/v1.php/cloud/user")["id"]
         return self._user
 
-    def set_user(self, user: str) -> None:
-        self._user = user
+    def set_user(self, user_id: str) -> None:
+        self._user = user_id
 
     def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
         if dav:
