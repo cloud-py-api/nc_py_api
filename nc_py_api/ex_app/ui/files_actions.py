@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
-from ..._session import NcSessionApp
+from ..._session import AsyncNcSessionApp, NcSessionApp
 from ...files import FsNode, permissions_to_str
 
 
@@ -155,6 +155,48 @@ class _UiFilesActionsAPI:
         try:
             return UiFileActionEntry(
                 self._session.ocs("GET", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+            )
+        except NextcloudExceptionNotFound:
+            return None
+
+
+class _AsyncUiFilesActionsAPI:
+    """Async API for the drop-down menu in Nextcloud **Files app**."""
+
+    _ep_suffix: str = "ui/files-actions-menu"
+
+    def __init__(self, session: AsyncNcSessionApp):
+        self._session = session
+
+    async def register(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
+        """Registers the files a dropdown menu element."""
+        require_capabilities("app_api", await self._session.capabilities)
+        params = {
+            "name": name,
+            "displayName": display_name,
+            "actionHandler": callback_url,
+            "icon": kwargs.get("icon", ""),
+            "mime": kwargs.get("mime", "file"),
+            "permissions": kwargs.get("permissions", 31),
+            "order": kwargs.get("order", 0),
+        }
+        await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+
+    async def unregister(self, name: str, not_fail=True) -> None:
+        """Removes files dropdown menu element."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            await self._session.ocs("DELETE", f"{self._session.ae_url}/{self._ep_suffix}", json={"name": name})
+        except NextcloudExceptionNotFound as e:
+            if not not_fail:
+                raise e from None
+
+    async def get_entry(self, name: str) -> UiFileActionEntry | None:
+        """Get information of the file action meny entry for current app."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            return UiFileActionEntry(
+                await self._session.ocs("GET", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
             )
         except NextcloudExceptionNotFound:
             return None

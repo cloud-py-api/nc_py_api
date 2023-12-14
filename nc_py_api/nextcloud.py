@@ -30,7 +30,7 @@ from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
-from .ex_app.ui.ui import UiApi
+from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import FilesAPI
 from .notes import _AsyncNotesAPI, _NotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
@@ -383,11 +383,11 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
 
     _session: AsyncNcSessionApp
     appconfig_ex: AsyncAppConfigExAPI
-    """Async Nextcloud App Preferences API for ExApps"""
+    """Nextcloud App Preferences API for ExApps"""
     preferences_ex: AsyncPreferencesExAPI
-    """Async Nextcloud User Preferences API for ExApps"""
-    # ui: UiApi
-    # """Nextcloud UI API for ExApps"""
+    """Nextcloud User Preferences API for ExApps"""
+    ui: AsyncUiApi
+    """Nextcloud UI API for ExApps"""
 
     def __init__(self, **kwargs):
         """The parameters will be taken from the environment.
@@ -398,7 +398,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         super().__init__(self._session)
         self.appconfig_ex = AsyncAppConfigExAPI(self._session)
         self.preferences_ex = AsyncPreferencesExAPI(self._session)
-        # self.ui = UiApi(self._session)
+        self.ui = AsyncUiApi(self._session)
 
     async def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""

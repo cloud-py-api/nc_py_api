@@ -21,6 +21,25 @@ def test_initial_state(nc_app):
         nc_app.ui.resources.delete_initial_state("top_menu", "some_page", "some_key", not_fail=False)
 
 
+@pytest.mark.asyncio(scope="session")
+async def test_initial_state_async(anc_app):
+    await anc_app.ui.resources.delete_initial_state("top_menu", "some_page", "some_key")
+    assert await anc_app.ui.resources.get_initial_state("top_menu", "some_page", "some_key") is None
+    await anc_app.ui.resources.set_initial_state("top_menu", "some_page", "some_key", {"k1": 1, "k2": 2})
+    r = await anc_app.ui.resources.get_initial_state("top_menu", "some_page", "some_key")
+    assert r.appid == anc_app.app_cfg.app_name
+    assert r.name == "some_page"
+    assert r.key == "some_key"
+    assert r.value == {"k1": 1, "k2": 2}
+    await anc_app.ui.resources.set_initial_state("top_menu", "some_page", "some_key", {"k1": "v1"})
+    r = await anc_app.ui.resources.get_initial_state("top_menu", "some_page", "some_key")
+    assert r.value == {"k1": "v1"}
+    assert str(r).find("key=some_key")
+    await anc_app.ui.resources.delete_initial_state("top_menu", "some_page", "some_key", not_fail=False)
+    with pytest.raises(NextcloudExceptionNotFound):
+        await anc_app.ui.resources.delete_initial_state("top_menu", "some_page", "some_key", not_fail=False)
+
+
 def test_initial_states(nc_app):
     nc_app.ui.resources.set_initial_state("top_menu", "some_page", "key1", [])
     nc_app.ui.resources.set_initial_state("top_menu", "some_page", "key2", {"k2": "v2"})
@@ -51,6 +70,26 @@ def test_script(nc_app):
     nc_app.ui.resources.delete_script("top_menu", "some_page", "js/some_script", not_fail=False)
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.ui.resources.delete_script("top_menu", "some_page", "js/some_script", not_fail=False)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_script_async(anc_app):
+    await anc_app.ui.resources.delete_script("top_menu", "some_page", "js/some_script")
+    assert await anc_app.ui.resources.get_script("top_menu", "some_page", "js/some_script") is None
+    await anc_app.ui.resources.set_script("top_menu", "some_page", "js/some_script")
+    r = await anc_app.ui.resources.get_script("top_menu", "some_page", "js/some_script")
+    assert r.appid == anc_app.app_cfg.app_name
+    assert r.name == "some_page"
+    assert r.path == "js/some_script"
+    assert r.after_app_id == ""
+    await anc_app.ui.resources.set_script("top_menu", "some_page", "js/some_script", "core")
+    r = await anc_app.ui.resources.get_script("top_menu", "some_page", "js/some_script")
+    assert r.path == "js/some_script"
+    assert r.after_app_id == "core"
+    assert str(r).find("path=js/some_script")
+    await anc_app.ui.resources.delete_script("top_menu", "some_page", "js/some_script", not_fail=False)
+    with pytest.raises(NextcloudExceptionNotFound):
+        await anc_app.ui.resources.delete_script("top_menu", "some_page", "js/some_script", not_fail=False)
 
 
 def test_scripts(nc_app):
@@ -90,6 +129,21 @@ def test_style(nc_app):
     nc_app.ui.resources.delete_style("top_menu", "some_page", "css/some_path", not_fail=False)
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.ui.resources.delete_style("top_menu", "some_page", "css/some_path", not_fail=False)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_style_async(anc_app):
+    await anc_app.ui.resources.delete_style("top_menu", "some_page", "css/some_path")
+    assert await anc_app.ui.resources.get_style("top_menu", "some_page", "css/some_path") is None
+    await anc_app.ui.resources.set_style("top_menu", "some_page", "css/some_path")
+    r = await anc_app.ui.resources.get_style("top_menu", "some_page", "css/some_path")
+    assert r.appid == anc_app.app_cfg.app_name
+    assert r.name == "some_page"
+    assert r.path == "css/some_path"
+    assert str(r).find("path=css/some_path")
+    await anc_app.ui.resources.delete_style("top_menu", "some_page", "css/some_path", not_fail=False)
+    with pytest.raises(NextcloudExceptionNotFound):
+        await anc_app.ui.resources.delete_style("top_menu", "some_page", "css/some_path", not_fail=False)
 
 
 def test_styles(nc_app):

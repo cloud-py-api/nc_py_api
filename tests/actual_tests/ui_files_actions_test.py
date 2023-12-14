@@ -37,6 +37,41 @@ def test_register_ui_file_actions(nc_app):
     assert str(result).find("name=test_ui_action")
 
 
+@pytest.mark.asyncio(scope="session")
+async def test_register_ui_file_actions_async(anc_app):
+    await anc_app.ui.files_dropdown_menu.register("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
+    result = await anc_app.ui.files_dropdown_menu.get_entry("test_ui_action_im")
+    assert result.name == "test_ui_action_im"
+    assert result.display_name == "UI TEST Image"
+    assert result.action_handler == "ui_action_test"
+    assert result.mime == "image"
+    assert result.permissions == 31
+    assert result.order == 0
+    assert result.icon == ""
+    assert result.appid == "nc_py_api"
+    await anc_app.ui.files_dropdown_menu.unregister(result.name)
+    await anc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST", "ui_action", permissions=1, order=1)
+    result = await anc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
+    assert result.name == "test_ui_action_any"
+    assert result.display_name == "UI TEST"
+    assert result.action_handler == "ui_action"
+    assert result.mime == "file"
+    assert result.permissions == 1
+    assert result.order == 1
+    assert result.icon == ""
+    await anc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI", "/ui_action2", icon="/img/icon.svg")
+    result = await anc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
+    assert result.name == "test_ui_action_any"
+    assert result.display_name == "UI"
+    assert result.action_handler == "ui_action2"
+    assert result.mime == "file"
+    assert result.permissions == 31
+    assert result.order == 0
+    assert result.icon == "img/icon.svg"
+    await anc_app.ui.files_dropdown_menu.unregister(result.name)
+    assert str(result).find("name=test_ui_action")
+
+
 def test_unregister_ui_file_actions(nc_app):
     nc_app.ui.files_dropdown_menu.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
     nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
@@ -44,6 +79,16 @@ def test_unregister_ui_file_actions(nc_app):
     nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_unregister_ui_file_actions_async(anc_app):
+    await anc_app.ui.files_dropdown_menu.register("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
+    await anc_app.ui.files_dropdown_menu.unregister("test_ui_action")
+    assert await anc_app.ui.files_dropdown_menu.get_entry("test_ui_action") is None
+    await anc_app.ui.files_dropdown_menu.unregister("test_ui_action")
+    with pytest.raises(NextcloudExceptionNotFound):
+        await anc_app.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)
 
 
 def test_ui_file_to_fs_node(nc_app):
