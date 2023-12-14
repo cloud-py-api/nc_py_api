@@ -1,4 +1,5 @@
 from os import environ
+from unittest import mock
 
 import pytest
 
@@ -98,3 +99,16 @@ async def test_change_user_async(anc_app):
     finally:
         await anc_app.set_user(orig_user)
     assert orig_capabilities == await anc_app.capabilities
+
+
+def test_set_user_same_value(nc_app):
+    with (mock.patch("tests.conftest.NC_APP._session.update_server_info") as update_server_info,):
+        nc_app.set_user(nc_app.user)
+        update_server_info.assert_not_called()
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_set_user_same_value_async(anc_app):
+    with (mock.patch("tests.conftest.NC_APP_ASYNC._session.update_server_info") as update_server_info,):
+        await anc_app.set_user(await anc_app.user)
+        update_server_info.assert_not_called()
