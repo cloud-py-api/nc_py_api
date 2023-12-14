@@ -1,3 +1,4 @@
+import os
 from typing import Annotated
 
 import gfixture_set_env  # noqa
@@ -17,7 +18,7 @@ async def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, re
     await COVERAGE_BOT.react_to_message(message, "🥳")
     await COVERAGE_BOT.react_to_message(message, "🫡")
     await COVERAGE_BOT.delete_reaction(message, "🫡")
-    await COVERAGE_BOT.send_message("Hello from async bot!", message)
+    await COVERAGE_BOT.send_message("Hello from bot!", message)
     assert isinstance(message.actor_id, str)
     assert isinstance(message.actor_display_name, str)
     assert isinstance(message.object_name, str)
@@ -45,7 +46,7 @@ async def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, re
 
 
 @APP.post("/talk_bot_coverage")
-async def currency_talk_bot(
+async def talk_bot_coverage(
     request: Request,
     message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_app)],
     background_tasks: BackgroundTasks,
@@ -54,5 +55,12 @@ async def currency_talk_bot(
     return requests.Response()
 
 
+# in real program this is not needed, as bot enabling handler is called in the bots process itself and will reset it.
+@APP.delete("/reset_bot_secret")
+async def reset_bot_secret():
+    os.environ.pop(talk_bot.__get_bot_secret("/talk_bot_coverage"))
+    return requests.Response()
+
+
 if __name__ == "__main__":
-    run_app("_talk_bot:APP", log_level="trace")
+    run_app("_talk_bot_async:APP", log_level="trace")
