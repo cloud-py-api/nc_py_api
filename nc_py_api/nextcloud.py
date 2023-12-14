@@ -32,7 +32,7 @@ from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
 from .ex_app.ui.ui import UiApi
 from .files.files import FilesAPI
-from .notes import _NotesAPI
+from .notes import _AsyncNotesAPI, _NotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
 from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
@@ -124,8 +124,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     # """Nextcloud API for File System and Files Sharing"""
     preferences: AsyncPreferencesAPI
     """Nextcloud User Preferences API"""
-    # notes: _NotesAPI
-    # """Nextcloud Notes API"""
+    notes: _AsyncNotesAPI
+    """Nextcloud Notes API"""
     notifications: _AsyncNotificationsAPI
     """Nextcloud API for managing user notifications"""
     # talk: _TalkAPI
@@ -146,7 +146,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         # self.cal = _CalendarAPI(session)
         # self.files = FilesAPI(session)
         self.preferences = AsyncPreferencesAPI(session)
-        # self.notes = _NotesAPI(session)
+        self.notes = _AsyncNotesAPI(session)
         self.notifications = _AsyncNotificationsAPI(session)
         # self.talk = _TalkAPI(session)
         self.users = _AsyncUsersAPI(session)
@@ -436,7 +436,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
             # self.talk.config_sha = ""
             # self.talk.modified_since = 0
             self.activity.last_given = 0
-            # self.notes.last_etag = ""
+            self.notes.last_etag = ""
             await self._session.update_server_info()
 
     @property
