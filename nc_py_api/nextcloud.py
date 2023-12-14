@@ -24,7 +24,7 @@ from ._session import (
     NcSessionBasic,
     ServerVersion,
 )
-from ._talk_api import _TalkAPI
+from ._talk_api import _AsyncTalkAPI, _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
@@ -128,8 +128,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud Notes API"""
     notifications: _AsyncNotificationsAPI
     """Nextcloud API for managing user notifications"""
-    # talk: _TalkAPI
-    # """Nextcloud Talk API"""
+    talk: _AsyncTalkAPI
+    """Nextcloud Talk API"""
     users: _AsyncUsersAPI
     """Nextcloud API for managing users."""
     users_groups: _AsyncUsersGroupsAPI
@@ -148,7 +148,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.preferences = AsyncPreferencesAPI(session)
         self.notes = _AsyncNotesAPI(session)
         self.notifications = _AsyncNotificationsAPI(session)
-        # self.talk = _TalkAPI(session)
+        self.talk = _AsyncTalkAPI(session)
         self.users = _AsyncUsersAPI(session)
         self.users_groups = _AsyncUsersGroupsAPI(session)
         self.user_status = _AsyncUserStatusAPI(session)
@@ -433,8 +433,8 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         """Changes current User ID."""
         if await self._session.user != user_id:
             self._session.set_user(user_id)
-            # self.talk.config_sha = ""
-            # self.talk.modified_since = 0
+            self.talk.config_sha = ""
+            self.talk.modified_since = 0
             self.activity.last_given = 0
             self.notes.last_etag = ""
             await self._session.update_server_info()

@@ -601,7 +601,7 @@ jobs:
       - name: Generate coverage report
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot_async.py &
           echo $! > /tmp/_talk_bot.pid
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
@@ -760,7 +760,7 @@ jobs:
       - name: Generate coverage report
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot_async.py &
           echo $! > /tmp/_talk_bot.pid
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
