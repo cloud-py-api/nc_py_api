@@ -25,6 +25,7 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
     assert isinstance(message.object_content, dict)
     assert message.object_media_type in ("text/markdown", "text/plain")
     assert isinstance(message.conversation_name, str)
+    assert str(message).find("conversation=") != -1
     with pytest.raises(ValueError):
         COVERAGE_BOT.react_to_message(message.object_id, "🥳")
     with pytest.raises(ValueError):
@@ -42,7 +43,6 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
         request._url = URL("sample_url")
         talk_bot_app(request)
     assert e.value.status_code == 500
-    assert str(message).find("conversation=") != -1
 
 
 @APP.post("/talk_bot_coverage")
