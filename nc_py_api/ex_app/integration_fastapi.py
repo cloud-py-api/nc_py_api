@@ -20,7 +20,7 @@ from fastapi import (
 
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import AsyncNextcloudApp, NextcloudApp
-from ..talk_bot import TalkBotMessage, get_bot_secret
+from ..talk_bot import TalkBotMessage, aget_bot_secret, get_bot_secret
 from .misc import persistent_storage
 
 
@@ -48,8 +48,7 @@ def anc_app(request: Request) -> AsyncNextcloudApp:
     return nextcloud_app
 
 
-def __talk_bot_app(request: Request, body: bytes) -> TalkBotMessage:
-    secret = get_bot_secret(request.url.components.path)
+def __talk_bot_app(secret: bytes | None, request: Request, body: bytes) -> TalkBotMessage:
     if not secret:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     hmac_sign = hmac.new(
@@ -63,12 +62,12 @@ def __talk_bot_app(request: Request, body: bytes) -> TalkBotMessage:
 
 def talk_bot_app(request: Request) -> TalkBotMessage:
     """Authentication handler for bot requests from Nextcloud Talk to the application."""
-    return __talk_bot_app(request, asyncio.run(request.body()))
+    return __talk_bot_app(get_bot_secret(request.url.components.path), request, asyncio.run(request.body()))
 
 
 async def atalk_bot_app(request: Request) -> TalkBotMessage:
     """Async Authentication handler for bot requests from Nextcloud Talk to the application."""
-    return __talk_bot_app(request, await request.body())
+    return __talk_bot_app(await aget_bot_secret(request.url.components.path), request, await request.body())
 
 
 def set_handlers(

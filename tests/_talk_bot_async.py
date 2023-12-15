@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 
 import gfixture_set_env  # noqa
+import pytest
 import requests
 from fastapi import BackgroundTasks, Depends, FastAPI, Request
 
@@ -24,6 +25,12 @@ async def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, re
     assert message.object_media_type in ("text/markdown", "text/plain")
     assert isinstance(message.conversation_name, str)
     assert str(message).find("conversation=") != -1
+    with pytest.raises(ValueError):
+        await COVERAGE_BOT.react_to_message(message.object_id, "🥳")
+    with pytest.raises(ValueError):
+        await COVERAGE_BOT.delete_reaction(message.object_id, "🥳")
+    with pytest.raises(ValueError):
+        await COVERAGE_BOT.send_message("🥳", message.object_id)
 
 
 @APP.post("/talk_bot_coverage")
