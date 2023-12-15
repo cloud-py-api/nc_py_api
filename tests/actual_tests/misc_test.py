@@ -144,3 +144,26 @@ async def test_no_initial_connection_async(anc_any):
     assert not new_nc._session._capabilities
     _ = await new_nc.srv_version
     assert new_nc._session._capabilities
+
+
+def test_ocs_timeout(nc_any):
+    new_nc = Nextcloud(npa_timeout=0.01) if isinstance(nc_any, Nextcloud) else NextcloudApp(npa_timeout=0.01)
+    with pytest.raises(NextcloudException) as e:
+        if new_nc.weather_status.set_location(latitude=41.896655, longitude=12.488776):
+            new_nc.weather_status.get_forecast()
+    if e.value.status_code in (500, 996):
+        pytest.skip("Some network problem on the host")
+    assert e.value.status_code == 408
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_ocs_timeout_async(anc_any):
+    new_nc = (
+        AsyncNextcloud(npa_timeout=0.01) if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp(npa_timeout=0.01)
+    )
+    with pytest.raises(NextcloudException) as e:
+        if await new_nc.weather_status.set_location(latitude=41.896655, longitude=12.488776):
+            await new_nc.weather_status.get_forecast()
+    if e.value.status_code in (500, 996):
+        pytest.skip("Some network problem on the host")
+    assert e.value.status_code == 408
