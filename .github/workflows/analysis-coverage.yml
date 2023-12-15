@@ -616,7 +616,7 @@ jobs:
       - name: Generate coverage report (2)
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models_async.py &
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
           echo $! > /tmp/_install_models.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           cd ..
@@ -796,7 +796,7 @@ jobs:
       - name: Generate coverage report (2)
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models_async.py &
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
           echo $! > /tmp/_install_models.pid
           python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
           cd ..

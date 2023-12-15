@@ -9,7 +9,7 @@ from nc_py_api import AsyncNextcloudApp, ex_app
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    ex_app.aset_handlers(APP, enabled_handler, heartbeat_callback, init_handler=init_handler)
+    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback, init_handler=init_handler)
     yield
 
 

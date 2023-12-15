@@ -3,7 +3,6 @@
 from .defs import ApiScope, LogLvl
 from .integration_fastapi import (
     anc_app,
-    aset_handlers,
     atalk_bot_app,
     nc_app,
     set_handlers,

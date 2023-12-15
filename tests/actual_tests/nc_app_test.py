@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from nc_py_api.ex_app import ApiScope
+from nc_py_api.ex_app import ApiScope, set_handlers
 
 
 def test_get_users_list(nc_app):
@@ -112,3 +112,8 @@ async def test_set_user_same_value_async(anc_app):
     with (mock.patch("tests.conftest.NC_APP_ASYNC._session.update_server_info") as update_server_info,):
         await anc_app.set_user(await anc_app.user)
         update_server_info.assert_not_called()
+
+
+def test_set_handlers_invalid_param(nc_any):
+    with pytest.raises(ValueError):
+        set_handlers(None, None, init_handler=set_handlers, models_to_fetch=["some"])  # noqa
