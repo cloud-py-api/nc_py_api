@@ -6,10 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- set_handlers: `enabled_handler`, `heartbeat_handler` now can be async(Coroutines). #175
+- implemented `AsyncNextcloud` and `AsyncNextcloudApp` classes. #181
 
 ### Changed
 
+- set_handlers: `enabled_handler`, `heartbeat_handler`, `init_handler` now can be async(Coroutines). #175 #181
 - drop Python 3.9 support. #180
 - internal code refactoring and clean-up #177
 
