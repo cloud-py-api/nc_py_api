@@ -9,4 +9,4 @@ from ._exceptions import (
 from ._version import __version__
 from .files import FilePermissions, FsNode
 from .files.sharing import ShareType
-from .nextcloud import Nextcloud, NextcloudApp
+from .nextcloud import AsyncNextcloud, AsyncNextcloudApp, Nextcloud, NextcloudApp

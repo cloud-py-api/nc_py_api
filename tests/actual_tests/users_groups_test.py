@@ -5,6 +5,7 @@ from os import environ
 import pytest
 
 from nc_py_api import NextcloudException
+from nc_py_api.users_groups import GroupDetails
 
 
 def test_group_get_list(nc, nc_client):
@@ -20,8 +21,21 @@ def test_group_get_list(nc, nc_client):
     assert groups[0] != nc.users_groups.get_list(limit=1, offset=1)[0]
 
 
-def test_group_get_details(nc, nc_client):
-    groups = nc.users_groups.get_details(mask=environ["TEST_GROUP_BOTH"])
+@pytest.mark.asyncio(scope="session")
+async def test_group_get_list_async(anc, anc_client):
+    groups = await anc.users_groups.get_list()
+    assert isinstance(groups, list)
+    assert len(groups) >= 3
+    assert environ["TEST_GROUP_BOTH"] in groups
+    assert environ["TEST_GROUP_USER"] in groups
+    groups = await anc.users_groups.get_list(mask="test_nc_py_api_group")
+    assert len(groups) == 2
+    groups = await anc.users_groups.get_list(limit=1)
+    assert len(groups) == 1
+    assert groups[0] != (await anc.users_groups.get_list(limit=1, offset=1))[0]
+
+
+def _test_group_get_details(groups: list[GroupDetails]):
     assert len(groups) == 1
     group = groups[0]
     assert group.group_id == environ["TEST_GROUP_BOTH"]
@@ -33,8 +47,26 @@ def test_group_get_details(nc, nc_client):
     assert str(group).find("user_count=") != -1
 
 
+def test_group_get_details(nc, nc_client):
+    groups = nc.users_groups.get_details(mask=environ["TEST_GROUP_BOTH"])
+    _test_group_get_details(groups)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_group_get_details_async(anc, anc_client):
+    groups = await anc.users_groups.get_details(mask=environ["TEST_GROUP_BOTH"])
+    _test_group_get_details(groups)
+
+
 def test_get_non_existing_group(nc_client):
     groups = nc_client.users_groups.get_list(mask="Such group should not be present")
+    assert isinstance(groups, list)
+    assert not groups
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_get_non_existing_group_async(anc_client):
+    groups = await anc_client.users_groups.get_list(mask="Such group should not be present")
     assert isinstance(groups, list)
     assert not groups
 
@@ -45,6 +77,20 @@ def test_group_edit(nc_client):
     assert nc_client.users_groups.get_details(mask=environ["TEST_GROUP_USER"])[0].display_name == display_name
     with pytest.raises(NextcloudException) as exc_info:
         nc_client.users_groups.edit("non_existing_group", display_name="earth people")
+    # remove 996 in the future, PR was already accepted in Nextcloud Server
+    assert exc_info.value.status_code in (
+        404,
+        996,
+    )
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_group_edit_async(anc_client):
+    display_name = str(int(datetime.now(timezone.utc).timestamp()))
+    await anc_client.users_groups.edit(environ["TEST_GROUP_USER"], display_name=display_name)
+    assert (await anc_client.users_groups.get_details(mask=environ["TEST_GROUP_USER"]))[0].display_name == display_name
+    with pytest.raises(NextcloudException) as exc_info:
+        await anc_client.users_groups.edit("non_existing_group", display_name="earth people")
     # remove 996 in the future, PR was already accepted in Nextcloud Server
     assert exc_info.value.status_code in (
         404,
@@ -88,3 +134,42 @@ def test_group_display_name_promote_demote(nc_client):
         nc_client.users_groups.delete(group_id)
         with pytest.raises(NextcloudException):
             nc_client.users_groups.delete(group_id)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_group_display_name_promote_demote_async(anc_client):
+    group_id = "test_group_display_name_promote_demote"
+    with contextlib.suppress(NextcloudException):
+        await anc_client.users_groups.delete(group_id)
+    await anc_client.users_groups.create(group_id, display_name="12345")
+    try:
+        group_details = await anc_client.users_groups.get_details(mask=group_id)
+        assert len(group_details) == 1
+        assert group_details[0].display_name == "12345"
+
+        group_members = await anc_client.users_groups.get_members(group_id)
+        assert isinstance(group_members, list)
+        assert not group_members
+        group_subadmins = await anc_client.users_groups.get_subadmins(group_id)
+        assert isinstance(group_subadmins, list)
+        assert not group_subadmins
+
+        await anc_client.users.add_to_group(environ["TEST_USER_ID"], group_id)
+        group_members = await anc_client.users_groups.get_members(group_id)
+        assert group_members[0] == environ["TEST_USER_ID"]
+        group_subadmins = await anc_client.users_groups.get_subadmins(group_id)
+        assert not group_subadmins
+        await anc_client.users.promote_to_subadmin(environ["TEST_USER_ID"], group_id)
+        group_subadmins = await anc_client.users_groups.get_subadmins(group_id)
+        assert group_subadmins[0] == environ["TEST_USER_ID"]
+
+        await anc_client.users.demote_from_subadmin(environ["TEST_USER_ID"], group_id)
+        group_subadmins = await anc_client.users_groups.get_subadmins(group_id)
+        assert not group_subadmins
+        await anc_client.users.remove_from_group(environ["TEST_USER_ID"], group_id)
+        group_members = await anc_client.users_groups.get_members(group_id)
+        assert not group_members
+    finally:
+        await anc_client.users_groups.delete(group_id)
+        with pytest.raises(NextcloudException):
+            await anc_client.users_groups.delete(group_id)

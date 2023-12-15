@@ -4,7 +4,7 @@ import dataclasses
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
-from ..._session import NcSessionApp
+from ..._session import AsyncNcSessionApp, NcSessionApp
 
 
 @dataclasses.dataclass
@@ -191,6 +191,130 @@ class _UiResources:
         try:
             return UiStyle(
                 self._session.ocs(
+                    "GET",
+                    f"{self._session.ae_url}/{self._ep_suffix_css}",
+                    params={"type": ui_type, "name": name, "path": path},
+                )
+            )
+        except NextcloudExceptionNotFound:
+            return None
+
+
+class _AsyncUiResources:
+    """Async API for adding scripts, styles, initial-states to the TopMenu pages."""
+
+    _ep_suffix_init_state: str = "ui/initial-state"
+    _ep_suffix_js: str = "ui/script"
+    _ep_suffix_css: str = "ui/style"
+
+    def __init__(self, session: AsyncNcSessionApp):
+        self._session = session
+
+    async def set_initial_state(self, ui_type: str, name: str, key: str, value: dict | list) -> None:
+        """Add or update initial state for the page(template)."""
+        require_capabilities("app_api", await self._session.capabilities)
+        params = {
+            "type": ui_type,
+            "name": name,
+            "key": key,
+            "value": value,
+        }
+        await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix_init_state}", json=params)
+
+    async def delete_initial_state(self, ui_type: str, name: str, key: str, not_fail=True) -> None:
+        """Removes initial state for the page(template) by object name."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            await self._session.ocs(
+                "DELETE",
+                f"{self._session.ae_url}/{self._ep_suffix_init_state}",
+                params={"type": ui_type, "name": name, "key": key},
+            )
+        except NextcloudExceptionNotFound as e:
+            if not not_fail:
+                raise e from None
+
+    async def get_initial_state(self, ui_type: str, name: str, key: str) -> UiInitState | None:
+        """Get information about initial state for the page(template) by object name."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            return UiInitState(
+                await self._session.ocs(
+                    "GET",
+                    f"{self._session.ae_url}/{self._ep_suffix_init_state}",
+                    params={"type": ui_type, "name": name, "key": key},
+                )
+            )
+        except NextcloudExceptionNotFound:
+            return None
+
+    async def set_script(self, ui_type: str, name: str, path: str, after_app_id: str = "") -> None:
+        """Add or update script for the page(template)."""
+        require_capabilities("app_api", await self._session.capabilities)
+        params = {
+            "type": ui_type,
+            "name": name,
+            "path": path,
+            "afterAppId": after_app_id,
+        }
+        await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix_js}", json=params)
+
+    async def delete_script(self, ui_type: str, name: str, path: str, not_fail=True) -> None:
+        """Removes script for the page(template) by object name."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            await self._session.ocs(
+                "DELETE",
+                f"{self._session.ae_url}/{self._ep_suffix_js}",
+                params={"type": ui_type, "name": name, "path": path},
+            )
+        except NextcloudExceptionNotFound as e:
+            if not not_fail:
+                raise e from None
+
+    async def get_script(self, ui_type: str, name: str, path: str) -> UiScript | None:
+        """Get information about script for the page(template) by object name."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            return UiScript(
+                await self._session.ocs(
+                    "GET",
+                    f"{self._session.ae_url}/{self._ep_suffix_js}",
+                    params={"type": ui_type, "name": name, "path": path},
+                )
+            )
+        except NextcloudExceptionNotFound:
+            return None
+
+    async def set_style(self, ui_type: str, name: str, path: str) -> None:
+        """Add or update style(css) for the page(template)."""
+        require_capabilities("app_api", await self._session.capabilities)
+        params = {
+            "type": ui_type,
+            "name": name,
+            "path": path,
+        }
+        await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix_css}", json=params)
+
+    async def delete_style(self, ui_type: str, name: str, path: str, not_fail=True) -> None:
+        """Removes style(css) for the page(template) by object name."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            await self._session.ocs(
+                "DELETE",
+                f"{self._session.ae_url}/{self._ep_suffix_css}",
+                params={"type": ui_type, "name": name, "path": path},
+            )
+        except NextcloudExceptionNotFound as e:
+            if not not_fail:
+                raise e from None
+
+    async def get_style(self, ui_type: str, name: str, path: str) -> UiStyle | None:
+        """Get information about style(css) for the page(template) by object name."""
+        require_capabilities("app_api", await self._session.capabilities)
+        try:
+            return UiStyle(
+                await self._session.ocs(
                     "GET",
                     f"{self._session.ae_url}/{self._ep_suffix_css}",
                     params={"type": ui_type, "name": name, "path": path},

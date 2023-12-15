@@ -4,7 +4,14 @@ import os
 import pytest
 from httpx import Request, Response
 
-from nc_py_api import Nextcloud, NextcloudApp, NextcloudException, ex_app
+from nc_py_api import (
+    AsyncNextcloud,
+    AsyncNextcloudApp,
+    Nextcloud,
+    NextcloudApp,
+    NextcloudException,
+    ex_app,
+)
 from nc_py_api._deffered_error import DeferredError  # noqa
 from nc_py_api._exceptions import check_error  # noqa
 from nc_py_api._misc import nc_iso_time_to_datetime, require_capabilities  # noqa
@@ -65,6 +72,13 @@ def test_response_headers(nc):
     assert old_headers != nc.response_headers
 
 
+@pytest.mark.asyncio(scope="session")
+async def test_response_headers_async(anc):
+    old_headers = anc.response_headers
+    await anc.users.get_user(await anc.user)
+    assert old_headers != anc.response_headers
+
+
 def test_nc_iso_time_to_datetime():
     parsed_time = nc_iso_time_to_datetime("invalid")
     assert parsed_time == datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
@@ -105,8 +119,51 @@ def test_init_adapter_dav(nc_any):
     assert old_adapter != getattr(new_nc._session, "adapter_dav", None)
 
 
+@pytest.mark.asyncio(scope="session")
+async def test_init_adapter_dav_async(anc_any):
+    new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
+    new_nc._session.init_adapter_dav()
+    old_adapter = getattr(new_nc._session, "adapter_dav", None)
+    assert old_adapter is not None
+    new_nc._session.init_adapter_dav()
+    assert old_adapter == getattr(new_nc._session, "adapter_dav", None)
+    new_nc._session.init_adapter_dav(restart=True)
+    assert old_adapter != getattr(new_nc._session, "adapter_dav", None)
+
+
 def test_no_initial_connection(nc_any):
     new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
     assert not new_nc._session._capabilities
     _ = new_nc.srv_version
     assert new_nc._session._capabilities
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_no_initial_connection_async(anc_any):
+    new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
+    assert not new_nc._session._capabilities
+    _ = await new_nc.srv_version
+    assert new_nc._session._capabilities
+
+
+def test_ocs_timeout(nc_any):
+    new_nc = Nextcloud(npa_timeout=0.01) if isinstance(nc_any, Nextcloud) else NextcloudApp(npa_timeout=0.01)
+    with pytest.raises(NextcloudException) as e:
+        if new_nc.weather_status.set_location(latitude=41.896655, longitude=12.488776):
+            new_nc.weather_status.get_forecast()
+    if e.value.status_code in (500, 996):
+        pytest.skip("Some network problem on the host")
+    assert e.value.status_code == 408
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_ocs_timeout_async(anc_any):
+    new_nc = (
+        AsyncNextcloud(npa_timeout=0.01) if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp(npa_timeout=0.01)
+    )
+    with pytest.raises(NextcloudException) as e:
+        if await new_nc.weather_status.set_location(latitude=41.896655, longitude=12.488776):
+            await new_nc.weather_status.get_forecast()
+    if e.value.status_code in (500, 996):
+        pytest.skip("Some network problem on the host")
+    assert e.value.status_code == 408

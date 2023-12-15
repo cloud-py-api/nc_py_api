@@ -598,15 +598,32 @@ jobs:
       - name: Enable Talk
         run: php occ app:enable spreed
 
-      - name: Generate coverage report
+      - name: Generate coverage report (1)
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot_async.py &
           echo $! > /tmp/_talk_bot.pid
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
+
+      - name: Uninstall NcPyApi
+        run: |
+          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:daemon:unregister manual_install
+
+      - name: Generate coverage report (2)
+        working-directory: nc_py_api
+        run: |
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
+          echo $! > /tmp/_install_models.pid
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          cd ..
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          kill -15 $(cat /tmp/_install_models.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
+          cd nc_py_api
           coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
@@ -757,20 +774,37 @@ jobs:
       - name: Enable Talk
         run: php occ app:enable spreed
 
-      - name: Generate coverage report
+      - name: Generate coverage report (1)
         working-directory: nc_py_api
         run: |
-          coverage run --data-file=.coverage.talk_bot tests/_talk_bot.py &
+          coverage run --data-file=.coverage.talk_bot tests/_talk_bot_async.py &
           echo $! > /tmp/_talk_bot.pid
           coverage run --data-file=.coverage.ci -m pytest
           kill -15 $(cat /tmp/_talk_bot.pid)
           timeout 3m tail --pid=$(cat /tmp/_talk_bot.pid) -f /dev/null
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
         env:
           NPA_TIMEOUT: None
           NPA_TIMEOUT_DAV: None
           NPA_NC_CERT: False
+
+      - name: Uninstall NcPyApi
+        run: |
+          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:daemon:unregister manual_install
+
+      - name: Generate coverage report (2)
+        working-directory: nc_py_api
+        run: |
+          coverage run --data-file=.coverage.ci_install_models tests/_install_init_handler_models.py &
+          echo $! > /tmp/_install_models.pid
+          python3 tests/_install_wait.py http://127.0.0.1:$APP_PORT/heartbeat "\"status\":\"ok\"" 15 0.5
+          cd ..
+          sh nc_py_api/scripts/ci_register.sh "$APP_ID" "$APP_VERSION" "$APP_SECRET" "localhost" "$APP_PORT"
+          kill -15 $(cat /tmp/_install_models.pid)
+          timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
+          cd nc_py_api
+          coverage combine && coverage xml && coverage html
 
       - name: HTML coverage to artifacts
         uses: actions/upload-artifact@v3
@@ -865,7 +899,7 @@ jobs:
 
       - name: Install NcPyApi
         working-directory: nc_py_api
-        run: python3 -m pip -v install . pytest coverage pillow
+        run: python3 -m pip -v install . pytest pytest-asyncio coverage pillow
 
       - name: Talk Branch Main
         if: ${{ startsWith(matrix.nextcloud, 'master') }}

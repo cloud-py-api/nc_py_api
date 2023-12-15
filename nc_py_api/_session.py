@@ -10,7 +10,7 @@ from json import loads
 from os import environ
 
 from fastapi import Request as FastAPIRequest
-from httpx import Client, Headers, Limits, ReadTimeout, Request, Response
+from httpx import AsyncClient, Client, Headers, Limits, ReadTimeout, Request, Response
 
 from . import options
 from ._exceptions import (
@@ -127,9 +127,9 @@ class AppConfig(BasicConfig):
         self.app_secret = self._get_config_value("app_secret", **kwargs)
 
 
-class NcSessionBasic(ABC):
-    adapter: Client
-    adapter_dav: Client
+class NcSessionBase(ABC):
+    adapter: AsyncClient | Client
+    adapter_dav: AsyncClient | Client
     cfg: BasicConfig
     custom_headers: dict
     response_headers: Headers
@@ -145,13 +145,39 @@ class NcSessionBasic(ABC):
         self.init_adapter()
         self.init_adapter_dav()
         self.response_headers = Headers()
-        self.__ocs_regexp = re.compile(r"/ocs/v[12]\.php/")
+        self._ocs_regexp = re.compile(r"/ocs/v[12]\.php/")
 
-    def __del__(self):
-        if hasattr(self, "adapter") and self.adapter:
-            self.adapter.close()
-        if hasattr(self, "adapter_dav") and self.adapter_dav:
-            self.adapter_dav.close()
+    def init_adapter(self, restart=False) -> None:
+        if getattr(self, "adapter", None) is None or restart:
+            self.adapter = self._create_adapter()
+            self.adapter.headers.update({"OCS-APIRequest": "true"})
+            if self.custom_headers:
+                self.adapter.headers.update(self.custom_headers)
+            if options.XDEBUG_SESSION:
+                self.adapter.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
+            self._capabilities = {}
+
+    def init_adapter_dav(self, restart=False) -> None:
+        if getattr(self, "adapter_dav", None) is None or restart:
+            self.adapter_dav = self._create_adapter(dav=True)
+            if self.custom_headers:
+                self.adapter_dav.headers.update(self.custom_headers)
+            if options.XDEBUG_SESSION:
+                self.adapter_dav.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
+
+    @abstractmethod
+    def _create_adapter(self, dav: bool = False) -> AsyncClient | Client:
+        pass  # pragma: no cover
+
+    @property
+    def ae_url(self) -> str:
+        """Return base url for the App Ecosystem endpoints."""
+        return "/ocs/v1.php/apps/app_api/api/v1"
+
+
+class NcSessionBasic(NcSessionBase, ABC):
+    adapter: Client
+    adapter_dav: Client
 
     def ocs(
         self,
@@ -190,45 +216,8 @@ class NcSessionBasic(ABC):
             raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
         return response_data["ocs"]["data"]
 
-    def init_adapter(self, restart=False) -> None:
-        if getattr(self, "adapter", None) is None or restart:
-            if restart and hasattr(self, "adapter"):
-                self.adapter.close()
-            self.adapter = self._create_adapter()
-            self.adapter.headers.update({"OCS-APIRequest": "true"})
-            if self.custom_headers:
-                self.adapter.headers.update(self.custom_headers)
-            if options.XDEBUG_SESSION:
-                self.adapter.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
-            self._capabilities = {}
-
-    def init_adapter_dav(self, restart=False) -> None:
-        if getattr(self, "adapter_dav", None) is None or restart:
-            if restart and hasattr(self, "adapter"):
-                self.adapter.close()
-            self.adapter_dav = self._create_adapter(dav=True)
-            if self.custom_headers:
-                self.adapter_dav.headers.update(self.custom_headers)
-            if options.XDEBUG_SESSION:
-                self.adapter_dav.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
-
-    @abstractmethod
-    def _create_adapter(self, dav: bool = False) -> Client:
-        pass  # pragma: no cover
-
     def update_server_info(self) -> None:
         self._capabilities = self.ocs("GET", "/ocs/v1.php/cloud/capabilities")
-
-    @property
-    def user(self) -> str:
-        """Current user ID. Can be different from the login name."""
-        if isinstance(self, NcSession) and not self._user:  # do not trigger for NextcloudApp
-            self._user = self.ocs("GET", "/ocs/v1.php/cloud/user")["id"]
-        return self._user
-
-    @user.setter
-    def user(self, value: str):
-        self._user = value
 
     @property
     def capabilities(self) -> dict:
@@ -250,9 +239,14 @@ class NcSessionBasic(ABC):
         )
 
     @property
-    def ae_url(self) -> str:
-        """Return base url for the App Ecosystem endpoints."""
-        return "/ocs/v1.php/apps/app_api/api/v1"
+    def user(self) -> str:
+        """Current user ID. Can be different from the login name."""
+        if isinstance(self, NcSession) and not self._user:  # do not trigger for NextcloudApp
+            self._user = self.ocs("GET", "/ocs/v1.php/cloud/user")["id"]
+        return self._user
+
+    def set_user(self, user_id: str) -> None:
+        self._user = user_id
 
     def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
         if dav:
@@ -269,10 +263,112 @@ class NcSessionBasic(ABC):
 
     def _request_event_ocs(self, request: Request) -> None:
         str_url = str(request.url)
-        if re.search(self.__ocs_regexp, str_url) is not None:  # this is OCS call
+        if re.search(self._ocs_regexp, str_url) is not None:  # this is OCS call
             request.url = request.url.copy_merge_params({"format": "json"})
 
     def _response_event(self, response: Response) -> None:
+        str_url = str(response.request.url)
+        # we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.
+        for i in ("/ocs/v1.php/cloud/capabilities?format=json", "/ocs/v1.php/cloud/user?format=json"):
+            if str_url.endswith(i):
+                return
+        self.response_headers = response.headers
+
+
+class AsyncNcSessionBasic(NcSessionBase, ABC):
+    adapter: AsyncClient
+    adapter_dav: AsyncClient
+
+    async def ocs(
+        self,
+        method: str,
+        path: str,
+        *,
+        content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
+        json: dict | list | None = None,
+        params: dict | None = None,
+        **kwargs,
+    ):
+        self.init_adapter()
+        info = f"request: {method} {path}"
+        nested_req = kwargs.pop("nested_req", False)
+        try:
+            response = await self.adapter.request(method, path, content=content, json=json, params=params, **kwargs)
+        except ReadTimeout:
+            raise NextcloudException(408, info=info) from None
+
+        check_error(response, info)
+        response_data = loads(response.text)
+        ocs_meta = response_data["ocs"]["meta"]
+        if ocs_meta["status"] != "ok":
+            if (
+                not nested_req
+                and ocs_meta["statuscode"] == 403
+                and str(ocs_meta["message"]).lower().find("password confirmation is required") != -1
+            ):
+                await self.adapter.aclose()
+                self.init_adapter(restart=True)
+                return await self.ocs(
+                    method, path, **kwargs, content=content, json=json, params=params, nested_req=True
+                )
+            if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
+                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
+            if ocs_meta["statuscode"] == 304:
+                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info)
+            raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
+        return response_data["ocs"]["data"]
+
+    async def update_server_info(self) -> None:
+        self._capabilities = await self.ocs("GET", "/ocs/v1.php/cloud/capabilities")
+
+    @property
+    async def capabilities(self) -> dict:
+        if not self._capabilities:
+            await self.update_server_info()
+        return self._capabilities["capabilities"]
+
+    @property
+    async def nc_version(self) -> ServerVersion:
+        if not self._capabilities:
+            await self.update_server_info()
+        v = self._capabilities["version"]
+        return ServerVersion(
+            major=v["major"],
+            minor=v["minor"],
+            micro=v["micro"],
+            string=v["string"],
+            extended_support=v["extendedSupport"],
+        )
+
+    @property
+    async def user(self) -> str:
+        """Current user ID. Can be different from the login name."""
+        if isinstance(self, AsyncNcSession) and not self._user:  # do not trigger for NextcloudApp
+            self._user = (await self.ocs("GET", "/ocs/v1.php/cloud/user"))["id"]
+        return self._user
+
+    def set_user(self, user: str) -> None:
+        self._user = user
+
+    def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
+        if dav:
+            return {
+                "base_url": self.cfg.dav_endpoint,
+                "timeout": self.cfg.options.timeout_dav,
+                "event_hooks": {"request": [], "response": [self._response_event]},
+            }
+        return {
+            "base_url": self.cfg.endpoint,
+            "timeout": self.cfg.options.timeout,
+            "event_hooks": {"request": [self._request_event_ocs], "response": [self._response_event]},
+        }
+
+    async def _request_event_ocs(self, request: Request) -> None:
+        str_url = str(request.url)
+        if re.search(self._ocs_regexp, str_url) is not None:  # this is OCS call
+            request.url = request.url.copy_merge_params({"format": "json"})
+
+    async def _response_event(self, response: Response) -> None:
         str_url = str(response.request.url)
         # we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.
         for i in ("/ocs/v1.php/cloud/capabilities?format=json", "/ocs/v1.php/cloud/user?format=json"):
@@ -288,7 +384,7 @@ class NcSession(NcSessionBasic):
         self.cfg = Config(**kwargs)
         super().__init__()
 
-    def _create_adapter(self, dav: bool = False) -> Client:
+    def _create_adapter(self, dav: bool = False) -> AsyncClient | Client:
         return Client(
             follow_redirects=True,
             limits=self.limits,
@@ -298,32 +394,32 @@ class NcSession(NcSessionBasic):
         )
 
 
-class NcSessionApp(NcSessionBasic):
+class AsyncNcSession(AsyncNcSessionBasic):
+    cfg: Config
+
+    def __init__(self, **kwargs):
+        self.cfg = Config(**kwargs)
+        super().__init__()
+
+    def _create_adapter(self, dav: bool = False) -> AsyncClient | Client:
+        return AsyncClient(
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            **self._get_adapter_kwargs(dav),
+            auth=self.cfg.auth,
+        )
+
+
+class NcSessionAppBasic(ABC):
     cfg: AppConfig
+    _user: str
+    adapter: AsyncClient | Client
+    adapter_dav: AsyncClient | Client
 
     def __init__(self, **kwargs):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
-
-    def _create_adapter(self, dav: bool = False) -> Client:
-        r = self._get_adapter_kwargs(dav)
-        r["event_hooks"]["request"].append(self._add_auth)
-        return Client(
-            follow_redirects=True,
-            limits=self.limits,
-            verify=self.cfg.options.nc_cert,
-            **r,
-            headers={
-                "AA-VERSION": self.cfg.aa_version,
-                "EX-APP-ID": self.cfg.app_name,
-                "EX-APP-VERSION": self.cfg.app_version,
-            },
-        )
-
-    def _add_auth(self, request: Request):
-        request.headers.update({
-            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
-        })
 
     def sign_check(self, request: FastAPIRequest) -> None:
         headers = {
@@ -347,3 +443,51 @@ class NcSessionApp(NcSessionBasic):
         app_secret = get_username_secret_from_headers(headers)[1]
         if app_secret != self.cfg.app_secret:
             raise ValueError(f"Invalid App secret:{app_secret} != {self.cfg.app_secret}")
+
+
+class NcSessionApp(NcSessionAppBasic, NcSessionBasic):
+    cfg: AppConfig
+
+    def _create_adapter(self, dav: bool = False) -> AsyncClient | Client:
+        r = self._get_adapter_kwargs(dav)
+        r["event_hooks"]["request"].append(self._add_auth)
+        return Client(
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            **r,
+            headers={
+                "AA-VERSION": self.cfg.aa_version,
+                "EX-APP-ID": self.cfg.app_name,
+                "EX-APP-VERSION": self.cfg.app_version,
+            },
+        )
+
+    def _add_auth(self, request: Request):
+        request.headers.update({
+            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
+        })
+
+
+class AsyncNcSessionApp(NcSessionAppBasic, AsyncNcSessionBasic):
+    cfg: AppConfig
+
+    def _create_adapter(self, dav: bool = False) -> AsyncClient | Client:
+        r = self._get_adapter_kwargs(dav)
+        r["event_hooks"]["request"].append(self._add_auth)
+        return AsyncClient(
+            follow_redirects=True,
+            limits=self.limits,
+            verify=self.cfg.options.nc_cert,
+            **r,
+            headers={
+                "AA-VERSION": self.cfg.aa_version,
+                "EX-APP-ID": self.cfg.app_name,
+                "EX-APP-VERSION": self.cfg.app_version,
+            },
+        )
+
+    async def _add_auth(self, request: Request):
+        request.headers.update({
+            "AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))
+        })
