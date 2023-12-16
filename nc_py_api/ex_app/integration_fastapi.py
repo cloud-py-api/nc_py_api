@@ -75,8 +75,7 @@ def set_handlers(
     enabled_handler: typing.Callable[[bool, AsyncNextcloudApp | NextcloudApp], typing.Awaitable[str] | str],
     heartbeat_handler: typing.Callable[[], typing.Awaitable[str] | str] | None = None,
     init_handler: typing.Callable[[AsyncNextcloudApp | NextcloudApp], typing.Awaitable[None] | None] | None = None,
-    models_to_fetch: list[str] | None = None,
-    models_download_params: dict | None = None,
+    models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
 ):
     """Defines handlers for the application.
@@ -92,7 +91,6 @@ def set_handlers(
 
         .. note:: ```huggingface_hub`` package should be present for automatic models fetching.
 
-    :param models_download_params: Parameters to pass to ``snapshot_download`` function from **huggingface_hub**.
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
@@ -140,8 +138,7 @@ def set_handlers(
             background_tasks.add_task(
                 __fetch_models_task,
                 nc,
-                models_to_fetch if models_to_fetch else [],
-                models_download_params if models_download_params else {},
+                models_to_fetch if models_to_fetch else {},
             )
             return responses.JSONResponse(content={}, status_code=200)
 
@@ -181,8 +178,7 @@ def __map_app_static_folders(fast_api_app: FastAPI):
 
 def __fetch_models_task(
     nc: NextcloudApp,
-    models: list[str],
-    params: dict[str, typing.Any],
+    models: dict[str, dict],
 ) -> None:
     if models:
         from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
@@ -193,10 +189,8 @@ def __fetch_models_task(
                 nc.set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
                 return super().display(msg, pos)
 
-        if "max_workers" not in params:
-            params["max_workers"] = 2
-        if "cache_dir" not in params:
-            params["cache_dir"] = persistent_storage()
         for model in models:
-            snapshot_download(model, tqdm_class=TqdmProgress, **params)  # noqa
+            workers = models[model].pop("max_workers", 2)
+            cache = models[model].pop("cache_dir", persistent_storage())
+            snapshot_download(model, tqdm_class=TqdmProgress, **models[model], max_workers=workers, cache_dir=cache)
     nc.set_init_status(100)

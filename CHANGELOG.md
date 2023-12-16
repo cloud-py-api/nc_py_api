@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - set_handlers: `enabled_handler`, `heartbeat_handler`, `init_handler` now can be async(Coroutines). #175 #181
+- set_handlers: `models_to_fetch` and `models_download_params` united in one more flexible parameter. #184
 - drop Python 3.9 support. #180
 - internal code refactoring and clean-up #177
 

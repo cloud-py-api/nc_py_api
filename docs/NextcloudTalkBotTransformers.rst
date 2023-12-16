@@ -60,7 +60,7 @@ This library also provides an additional functionality over this endpoint for ea
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
-        set_handlers(APP, enabled_handler, models_to_fetch=[MODEL_NAME])
+        set_handlers(APP, enabled_handler, models_to_fetch={MODEL_NAME:{}})
         yield
 
 This will automatically download models specified in ``models_to_fetch`` parameter to the application persistent storage.

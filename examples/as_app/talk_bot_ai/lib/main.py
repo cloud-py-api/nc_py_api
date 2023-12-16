@@ -15,7 +15,7 @@ from nc_py_api.ex_app import persistent_storage, run_app, set_handlers, talk_bot
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    set_handlers(APP, enabled_handler, models_to_fetch=[MODEL_NAME])
+    set_handlers(APP, enabled_handler, models_to_fetch={MODEL_NAME: {}})
     yield
 
 

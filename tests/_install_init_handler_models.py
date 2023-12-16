@@ -10,7 +10,7 @@ MODEL_NAME = "MBZUAI/LaMini-T5-61M"
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    ex_app.set_handlers(APP, enabled_handler, models_to_fetch=[MODEL_NAME])
+    ex_app.set_handlers(APP, enabled_handler, models_to_fetch={MODEL_NAME: {}})
     yield
 
 
