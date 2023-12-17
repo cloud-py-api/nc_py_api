@@ -4,8 +4,8 @@ import re
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-import requests
-from fastapi import BackgroundTasks, Depends, FastAPI
+import httpx
+from fastapi import BackgroundTasks, Depends, FastAPI, Response
 
 from nc_py_api import NextcloudApp, talk_bot
 from nc_py_api.ex_app import run_app, set_handlers, talk_bot_app
@@ -29,7 +29,7 @@ def convert_currency(amount, from_currency, to_currency):
     base_url = "https://api.exchangerate-api.com/v4/latest/"
 
     # Fetch latest exchange rates
-    response = requests.get(base_url + from_currency, timeout=60)
+    response = httpx.get(base_url + from_currency, timeout=60)
     data = response.json()
 
     if "rates" in data:
@@ -72,7 +72,7 @@ async def currency_talk_bot(
     # As during converting, we do not process converting locally, we perform this in background, in the background task.
     background_tasks.add_task(currency_talk_bot_process_request, message)
     # Return Response immediately for Nextcloud, that we are ok.
-    return requests.Response()
+    return Response()
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:

@@ -21,7 +21,7 @@ Python library that provides a robust and well-documented API that allows develo
  * **Reliable**: Minimum number of incompatible changes.
  * **Robust**: All code is covered with tests as much as possible.
  * **Easy**: Designed to be easy to use with excellent documentation.
- * **Sync+Async**: Provides both sync and async APIs.
+ * **Sync + Async**: Provides both sync and async APIs.
 
 ### Capabilities
 | **_Capability_**      | Nextcloud 26 | Nextcloud 27 | Nextcloud 28 |
