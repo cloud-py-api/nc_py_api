@@ -2,7 +2,7 @@ from base64 import b64encode
 from os import environ
 from sys import argv
 
-import requests
+import httpx
 
 
 def sign_request(req_headers: dict, secret=None, user: str = ""):
@@ -14,7 +14,7 @@ def sign_request(req_headers: dict, secret=None, user: str = ""):
 if __name__ == "__main__":
     request_url = argv[1] + "/sec_check?value=1"
     headers = {}
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 401  # Missing headers
     headers.update({
         "AA-VERSION": environ.get("AA_VERSION", "1.0.0"),
@@ -22,35 +22,35 @@ if __name__ == "__main__":
         "EX-APP-VERSION": environ.get("APP_VERSION", "1.0.0"),
     })
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 200
     # Invalid AA-SIGNATURE
     sign_request(headers, secret="xxx")
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 401
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 200
     # Invalid EX-APP-ID
     old_app_name = headers["EX-APP-ID"]
     headers["EX-APP-ID"] = "unknown_app"
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 401
     headers["EX-APP-ID"] = old_app_name
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 200
     # Invalid EX-APP-VERSION
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 200
     old_version = headers["EX-APP-VERSION"]
     headers["EX-APP-VERSION"] = "999.0.0"
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 401
     headers["EX-APP-VERSION"] = old_version
     sign_request(headers)
-    result = requests.put(request_url, headers=headers)
+    result = httpx.put(request_url, headers=headers)
     assert result.status_code == 200

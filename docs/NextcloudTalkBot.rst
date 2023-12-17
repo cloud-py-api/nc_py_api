@@ -43,7 +43,7 @@ Afterward, using FastAPI, you can define endpoints that will be invoked by Talk:
         message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)],
         background_tasks: BackgroundTasks,
     ):
-        return requests.Response()
+        return Response()
 
 .. note::
     You must include to each endpoint your bot provides the **Depends(talk_bot_app)**.

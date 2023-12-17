@@ -3,8 +3,7 @@ from typing import Annotated
 
 import gfixture_set_env  # noqa
 import pytest
-import requests
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, Response
 from starlette.datastructures import URL
 
 from nc_py_api import talk_bot
@@ -52,14 +51,14 @@ def talk_bot_coverage(
     background_tasks: BackgroundTasks,
 ):
     background_tasks.add_task(coverage_talk_bot_process_request, message, request)
-    return requests.Response()
+    return Response()
 
 
 # in real program this is not needed, as bot enabling handler is called in the bots process itself and will reset it.
 @APP.delete("/reset_bot_secret")
 def reset_bot_secret():
     os.environ.pop(talk_bot.__get_bot_secret("/talk_bot_coverage"))
-    return requests.Response()
+    return Response()
 
 
 if __name__ == "__main__":
