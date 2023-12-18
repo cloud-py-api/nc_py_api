@@ -26,9 +26,9 @@ from .misc import persistent_storage
 
 def nc_app(request: Request) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    user = get_username_secret_from_headers({
-        "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")
-    })[0]
+    user = get_username_secret_from_headers(
+        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
+    )[0]
     request_id = request.headers.get("AA-REQUEST-ID", None)
     nextcloud_app = NextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
     if not nextcloud_app.request_sign_check(request):
@@ -38,9 +38,9 @@ def nc_app(request: Request) -> NextcloudApp:
 
 def anc_app(request: Request) -> AsyncNextcloudApp:
     """Async Authentication handler for requests from Nextcloud to the application."""
-    user = get_username_secret_from_headers({
-        "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")
-    })[0]
+    user = get_username_secret_from_headers(
+        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
+    )[0]
     request_id = request.headers.get("AA-REQUEST-ID", None)
     nextcloud_app = AsyncNextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
     if not nextcloud_app.request_sign_check(request):
