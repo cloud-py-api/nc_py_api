@@ -1,5 +1,6 @@
 """Nextcloud class providing access to all API endpoints."""
 
+import typing
 from abc import ABC
 
 from fastapi import Request as FastAPIRequest
@@ -112,6 +113,19 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         """Returns Theme information."""
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
+    def ocs(
+        self,
+        method: str,
+        path: str,
+        *,
+        content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
+        json: dict | list | None = None,
+        params: dict | None = None,
+        **kwargs,
+    ):
+        """Performs OCS call and returns OCS response payload data."""
+        return self._session.ocs(method, path, content=content, json=json, params=params, **kwargs)
+
 
 class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     apps: _AsyncAppsAPI
@@ -184,6 +198,19 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     async def theme(self) -> ThemingInfo | None:
         """Returns Theme information."""
         return get_parsed_theme((await self.capabilities)["theming"]) if "theming" in await self.capabilities else None
+
+    async def ocs(
+        self,
+        method: str,
+        path: str,
+        *,
+        content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
+        json: dict | list | None = None,
+        params: dict | None = None,
+        **kwargs,
+    ):
+        """Performs OCS call and returns OCS response payload data."""
+        return await self._session.ocs(method, path, content=content, json=json, params=params, **kwargs)
 
 
 class Nextcloud(_NextcloudBasic):
