@@ -167,3 +167,16 @@ async def test_ocs_timeout_async(anc_any):
     if e.value.status_code in (500, 996):
         pytest.skip("Some network problem on the host")
     assert e.value.status_code == 408
+
+
+def test_public_ocs(nc_any):
+    r = nc_any.ocs("GET", "/ocs/v1.php/cloud/capabilities")
+    assert r == nc_any.ocs("GET", "ocs/v1.php/cloud/capabilities")
+    assert r == nc_any._session.ocs("GET", "ocs/v1.php/cloud/capabilities")  # noqa
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_public_ocs_async(anc_any):
+    r = await anc_any.ocs("GET", "/ocs/v1.php/cloud/capabilities")
+    assert r == await anc_any.ocs("GET", "ocs/v1.php/cloud/capabilities")
+    assert r == await anc_any._session.ocs("GET", "ocs/v1.php/cloud/capabilities")  # noqa
