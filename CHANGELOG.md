@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- The `ocs` method is now public, making it easy to use Nextcloud OCS that has not yet been described.
+- The `ocs` method is now public, making it easy to use Nextcloud OCS that has not yet been described. #187
 
 ## [0.7.0 - 2022-12-17]
 
