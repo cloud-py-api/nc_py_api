@@ -3,6 +3,7 @@
 import builtins
 import os
 from pathlib import Path
+from urllib.parse import quote
 
 from httpx import Headers
 
@@ -166,7 +167,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = dav_get_obj_path(self._session.user, path)
-        response = self._session.adapter_dav.request("MKCOL", full_path)
+        response = self._session.adapter_dav.request("MKCOL", quote(full_path))
         check_error(response)
         full_path += "/" if not full_path.endswith("/") else ""
         return FsNode(full_path.lstrip("/"), **etag_fileid_from_response(response))
@@ -201,7 +202,7 @@ class FilesAPI:
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = self._session.adapter_dav.delete(dav_get_obj_path(self._session.user, path))
+        response = self._session.adapter_dav.delete(quote(dav_get_obj_path(self._session.user, path)))
         if response.status_code == 404 and not_fail:
             return
         check_error(response)
@@ -630,7 +631,7 @@ class AsyncFilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = dav_get_obj_path(await self._session.user, path)
-        response = await self._session.adapter_dav.request("MKCOL", full_path)
+        response = await self._session.adapter_dav.request("MKCOL", quote(full_path))
         check_error(response)
         full_path += "/" if not full_path.endswith("/") else ""
         return FsNode(full_path.lstrip("/"), **etag_fileid_from_response(response))
@@ -665,7 +666,7 @@ class AsyncFilesAPI:
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = await self._session.adapter_dav.delete(dav_get_obj_path(await self._session.user, path))
+        response = await self._session.adapter_dav.delete(quote(dav_get_obj_path(await self._session.user, path)))
         if response.status_code == 404 and not_fail:
             return
         check_error(response)
