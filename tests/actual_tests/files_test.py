@@ -452,31 +452,35 @@ async def test_file_upload_chunked_zero_size_async(anc_any, file_name):
     await anc_any.files.delete(f"/test_dir_tmp/{file_name}", not_fail=True)
 
 
-@pytest.mark.parametrize("dir_name", ("1 2", "Яё", "відео та картинки", "复杂 目录 Í", "Björn", "João"))
+@pytest.mark.parametrize("dir_name", ("1 2", "Яё", "відео та картинки", "复杂 目录 Í", "Björn", "João", "1##3"))
 def test_mkdir(nc_any, dir_name):
     nc_any.files.delete(dir_name, not_fail=True)
     result = nc_any.files.mkdir(dir_name)
     assert result.is_dir
     assert not result.has_extra
+    result_by_id = nc_any.files.by_id(result.file_id)
     with pytest.raises(NextcloudException):
         nc_any.files.mkdir(dir_name)
     nc_any.files.delete(dir_name)
     with pytest.raises(NextcloudException):
         nc_any.files.delete(dir_name)
+    assert result_by_id.full_path == result.full_path
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("dir_name", ("1 2", "Яё", "відео та картинки", "复杂 目录 Í", "Björn", "João"))
+@pytest.mark.parametrize("dir_name", ("1 2", "Яё", "відео та картинки", "复杂 目录 Í", "Björn", "João", "1##3"))
 async def test_mkdir_async(anc_any, dir_name):
     await anc_any.files.delete(dir_name, not_fail=True)
     result = await anc_any.files.mkdir(dir_name)
     assert result.is_dir
     assert not result.has_extra
+    result_by_id = await anc_any.files.by_id(result.file_id)
     with pytest.raises(NextcloudException):
         await anc_any.files.mkdir(dir_name)
     await anc_any.files.delete(dir_name)
     with pytest.raises(NextcloudException):
         await anc_any.files.delete(dir_name)
+    assert result_by_id.full_path == result.full_path
 
 
 def test_mkdir_invalid_args(nc_any):
