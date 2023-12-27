@@ -39,6 +39,7 @@ def init_filesystem_for_user(nc_any, rand_bytes):
     /test_12345_text.txt
     /test_generated_image.png                       **Favorite**
     /test_dir_tmp
+    /test_###_dir
     """
     clean_filesystem_for_user(nc_any)
     im = BytesIO()
@@ -48,6 +49,7 @@ def init_filesystem_for_user(nc_any, rand_bytes):
     nc_any.files.makedirs("/test_dir/subdir")
     nc_any.files.mkdir("/test_dir/test_empty_child_dir/")
     nc_any.files.mkdir("/test_dir_tmp")
+    nc_any.files.mkdir("/test_###_dir")
 
     def init_folder(folder: str = ""):
         nc_any.files.upload(path.join(folder, "test_empty_text.txt"), content=b"")
@@ -72,6 +74,7 @@ def clean_filesystem_for_user(nc_any):
         "test_64_bytes.bin",
         "test_12345_text.txt",
         "test_generated_image.png",
+        "test_###_dir",
     ]
     for i in clean_up_list:
         nc_any.files.delete(i, not_fail=True)
