@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - files: proper url encoding of special chars in `mkdir` and `delete` methods. #191 Thanks to @tobenary
+- files: proper url encoding of special chars in all other `DAV` methods. #194
 
 ## [0.7.1 - 2022-12-21]
 

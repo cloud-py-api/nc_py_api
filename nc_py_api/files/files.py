@@ -86,7 +86,7 @@ class FilesAPI:
     def download(self, path: str | FsNode) -> bytes:
         """Downloads and returns the content of a file."""
         path = path.user_path if isinstance(path, FsNode) else path
-        response = self._session.adapter_dav.get(dav_get_obj_path(self._session.user, path))
+        response = self._session.adapter_dav.get(quote(dav_get_obj_path(self._session.user, path)))
         check_error(response, f"download: user={self._session.user}, path={path}")
         return response.content
 
@@ -138,7 +138,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = dav_get_obj_path(self._session.user, path)
-        response = self._session.adapter_dav.put(full_path, content=content)
+        response = self._session.adapter_dav.put(quote(full_path), content=content)
         check_error(response, f"upload: user={self._session.user}, path={path}, size={len(content)}")
         return FsNode(full_path.strip("/"), **etag_fileid_from_response(response))
 
@@ -219,11 +219,11 @@ class FilesAPI:
         full_dest_path = dav_get_obj_path(
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
-        dest = self._session.cfg.dav_endpoint + full_dest_path
+        dest = self._session.cfg.dav_endpoint + quote(full_dest_path)
         headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
         response = self._session.adapter_dav.request(
             "MOVE",
-            dav_get_obj_path(self._session.user, path_src),
+            quote(dav_get_obj_path(self._session.user, path_src)),
             headers=headers,
         )
         check_error(response, f"move: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
@@ -241,11 +241,11 @@ class FilesAPI:
         full_dest_path = dav_get_obj_path(
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
-        dest = self._session.cfg.dav_endpoint + full_dest_path
+        dest = self._session.cfg.dav_endpoint + quote(full_dest_path)
         headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
         response = self._session.adapter_dav.request(
             "COPY",
-            dav_get_obj_path(self._session.user, path_src),
+            quote(dav_get_obj_path(self._session.user, path_src)),
             headers=headers,
         )
         check_error(response, f"copy: user={self._session.user}, src={path_src}, dest={dest}, {overwrite}")
@@ -277,7 +277,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         root = build_setfav_req(value)
         webdav_response = self._session.adapter_dav.request(
-            "PROPPATCH", dav_get_obj_path(self._session.user, path), content=element_tree_as_str(root)
+            "PROPPATCH", quote(dav_get_obj_path(self._session.user, path)), content=element_tree_as_str(root)
         )
         check_error(webdav_response, f"setfav: path={path}, value={value}")
 
@@ -301,7 +301,7 @@ class FilesAPI:
         headers = Headers({"Destination": dest}, encoding="utf-8")
         response = self._session.adapter_dav.request(
             "MOVE",
-            f"/trashbin/{self._session.user}/{path}",
+            quote(f"/trashbin/{self._session.user}/{path}"),
             headers=headers,
         )
         check_error(response, f"trashbin_restore: user={self._session.user}, src={path}, dest={dest}")
@@ -313,7 +313,7 @@ class FilesAPI:
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = self._session.adapter_dav.delete(f"/trashbin/{self._session.user}/{path}")
+        response = self._session.adapter_dav.delete(quote(f"/trashbin/{self._session.user}/{path}"))
         if response.status_code == 404 and not_fail:
             return
         check_error(response)
@@ -431,7 +431,7 @@ class FilesAPI:
         root, dav_path = build_listdir_req(user, path, properties, prop_type)
         webdav_response = self._session.adapter_dav.request(
             "PROPFIND",
-            dav_path,
+            quote(dav_path),
             content=element_tree_as_str(root),
             headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
@@ -440,16 +440,17 @@ class FilesAPI:
         )
 
     def __download2stream(self, path: str, fp, **kwargs) -> None:
-        with self._session.adapter_dav.stream("GET", dav_get_obj_path(self._session.user, path)) as response:
+        with self._session.adapter_dav.stream("GET", quote(dav_get_obj_path(self._session.user, path))) as response:
             check_error(response, f"download_stream: user={self._session.user}, path={path}")
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
 
     def __upload_stream(self, path: str, fp, chunk_size: int) -> FsNode:
-        _dav_path = dav_get_obj_path(self._session.user, "nc-py-api-" + random_string(56), root_path="/uploads")
+        _tmp_path = "nc-py-api-" + random_string(56)
+        _dav_path = quote(dav_get_obj_path(self._session.user, _tmp_path, root_path="/uploads"))
         _v2 = bool(self._session.cfg.options.upload_chunk_v2 and chunk_size >= 5 * 1024 * 1024)
         full_path = dav_get_obj_path(self._session.user, path)
-        headers = Headers({"Destination": self._session.cfg.dav_endpoint + full_path}, encoding="utf-8")
+        headers = Headers({"Destination": self._session.cfg.dav_endpoint + quote(full_path)}, encoding="utf-8")
         if _v2:
             response = self._session.adapter_dav.request("MKCOL", _dav_path, headers=headers)
         else:
@@ -548,7 +549,7 @@ class AsyncFilesAPI:
     async def download(self, path: str | FsNode) -> bytes:
         """Downloads and returns the content of a file."""
         path = path.user_path if isinstance(path, FsNode) else path
-        response = await self._session.adapter_dav.get(dav_get_obj_path(await self._session.user, path))
+        response = await self._session.adapter_dav.get(quote(dav_get_obj_path(await self._session.user, path)))
         check_error(response, f"download: user={await self._session.user}, path={path}")
         return response.content
 
@@ -602,7 +603,7 @@ class AsyncFilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = dav_get_obj_path(await self._session.user, path)
-        response = await self._session.adapter_dav.put(full_path, content=content)
+        response = await self._session.adapter_dav.put(quote(full_path), content=content)
         check_error(response, f"upload: user={await self._session.user}, path={path}, size={len(content)}")
         return FsNode(full_path.strip("/"), **etag_fileid_from_response(response))
 
@@ -683,11 +684,11 @@ class AsyncFilesAPI:
         full_dest_path = dav_get_obj_path(
             await self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
-        dest = self._session.cfg.dav_endpoint + full_dest_path
+        dest = self._session.cfg.dav_endpoint + quote(full_dest_path)
         headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
         response = await self._session.adapter_dav.request(
             "MOVE",
-            dav_get_obj_path(await self._session.user, path_src),
+            quote(dav_get_obj_path(await self._session.user, path_src)),
             headers=headers,
         )
         check_error(response, f"move: user={await self._session.user}, src={path_src}, dest={dest}, {overwrite}")
@@ -705,11 +706,11 @@ class AsyncFilesAPI:
         full_dest_path = dav_get_obj_path(
             await self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
-        dest = self._session.cfg.dav_endpoint + full_dest_path
+        dest = self._session.cfg.dav_endpoint + quote(full_dest_path)
         headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
         response = await self._session.adapter_dav.request(
             "COPY",
-            dav_get_obj_path(await self._session.user, path_src),
+            quote(dav_get_obj_path(await self._session.user, path_src)),
             headers=headers,
         )
         check_error(response, f"copy: user={await self._session.user}, src={path_src}, dest={dest}, {overwrite}")
@@ -741,7 +742,7 @@ class AsyncFilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         root = build_setfav_req(value)
         webdav_response = await self._session.adapter_dav.request(
-            "PROPPATCH", dav_get_obj_path(await self._session.user, path), content=element_tree_as_str(root)
+            "PROPPATCH", quote(dav_get_obj_path(await self._session.user, path)), content=element_tree_as_str(root)
         )
         check_error(webdav_response, f"setfav: path={path}, value={value}")
 
@@ -770,7 +771,7 @@ class AsyncFilesAPI:
         headers = Headers({"Destination": dest}, encoding="utf-8")
         response = await self._session.adapter_dav.request(
             "MOVE",
-            f"/trashbin/{await self._session.user}/{path}",
+            quote(f"/trashbin/{await self._session.user}/{path}"),
             headers=headers,
         )
         check_error(response, f"trashbin_restore: user={await self._session.user}, src={path}, dest={dest}")
@@ -782,7 +783,7 @@ class AsyncFilesAPI:
         :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        response = await self._session.adapter_dav.delete(f"/trashbin/{await self._session.user}/{path}")
+        response = await self._session.adapter_dav.delete(quote(f"/trashbin/{await self._session.user}/{path}"))
         if response.status_code == 404 and not_fail:
             return
         check_error(response)
@@ -900,7 +901,7 @@ class AsyncFilesAPI:
         root, dav_path = build_listdir_req(user, path, properties, prop_type)
         webdav_response = await self._session.adapter_dav.request(
             "PROPFIND",
-            dav_path,
+            quote(dav_path),
             content=element_tree_as_str(root),
             headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
@@ -910,17 +911,18 @@ class AsyncFilesAPI:
 
     async def __download2stream(self, path: str, fp, **kwargs) -> None:
         async with self._session.adapter_dav.stream(
-            "GET", dav_get_obj_path(await self._session.user, path)
+            "GET", quote(dav_get_obj_path(await self._session.user, path))
         ) as response:
             check_error(response, f"download_stream: user={await self._session.user}, path={path}")
             async for data_chunk in response.aiter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
 
     async def __upload_stream(self, path: str, fp, chunk_size: int) -> FsNode:
-        _dav_path = dav_get_obj_path(await self._session.user, "nc-py-api-" + random_string(56), root_path="/uploads")
+        _tmp_path = "nc-py-api-" + random_string(56)
+        _dav_path = quote(dav_get_obj_path(await self._session.user, _tmp_path, root_path="/uploads"))
         _v2 = bool(self._session.cfg.options.upload_chunk_v2 and chunk_size >= 5 * 1024 * 1024)
         full_path = dav_get_obj_path(await self._session.user, path)
-        headers = Headers({"Destination": self._session.cfg.dav_endpoint + full_path}, encoding="utf-8")
+        headers = Headers({"Destination": self._session.cfg.dav_endpoint + quote(full_path)}, encoding="utf-8")
         if _v2:
             response = await self._session.adapter_dav.request("MKCOL", _dav_path, headers=headers)
         else:

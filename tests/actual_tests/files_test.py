@@ -107,6 +107,17 @@ async def test_list_empty_dir_async(anc_any):
     _test_list_empty_dir(result, await anc_any.user)
 
 
+def test_list_spec_dir(nc_any):
+    r = nc_any.files.listdir("test_###_dir", exclude_self=False)
+    assert r[0].full_path.find("test_###_dir") != -1
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_list_spec_dir_async(anc_any):
+    r = await anc_any.files.listdir("test_###_dir", exclude_self=False)
+    assert r[0].full_path.find("test_###_dir") != -1
+
+
 def test_list_dir_wrong_args(nc_any):
     with pytest.raises(ValueError):
         nc_any.files.listdir(depth=0, exclude_self=True)
@@ -358,44 +369,55 @@ async def test_file_upload_chunked_async(anc, chunk_size):
     assert upload_crc == download_crc
 
 
-def test_file_upload_file(nc_any):
+@pytest.mark.parametrize("dest_path", ("test_dir_tmp/test_file_upload_file", "test_###_dir/test_file_upload_file"))
+def test_file_upload_file(nc_any, dest_path):
     content = randbytes(113)
     with NamedTemporaryFile() as tmp_file:
         tmp_file.write(content)
         tmp_file.flush()
-        nc_any.files.upload_stream("test_dir_tmp/test_file_upload_file", tmp_file.name)
-    assert nc_any.files.download("test_dir_tmp/test_file_upload_file") == content
+        r = nc_any.files.upload_stream(dest_path, tmp_file.name)
+    assert nc_any.files.download(dest_path) == content
+    assert nc_any.files.by_id(r.file_id).full_path.find(dest_path) != -1
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_file_upload_file_async(anc_any):
+@pytest.mark.parametrize("dest_path", ("test_dir_tmp/test_file_upload_file", "test_###_dir/test_file_upload_file"))
+async def test_file_upload_file_async(anc_any, dest_path):
     content = randbytes(113)
     with NamedTemporaryFile() as tmp_file:
         tmp_file.write(content)
         tmp_file.flush()
-        await anc_any.files.upload_stream("test_dir_tmp/test_file_upload_file_async", tmp_file.name)
-    assert await anc_any.files.download("test_dir_tmp/test_file_upload_file_async") == content
+        r = await anc_any.files.upload_stream(dest_path, tmp_file.name)
+    assert await anc_any.files.download(dest_path) == content
+    assert (await anc_any.files.by_id(r.file_id)).full_path.find(dest_path) != -1
 
 
-@pytest.mark.parametrize("dest_path", ("test_dir_tmp/upl_chunk_v2", "test_dir_tmp/upl_chunk_v2_ü"))
+@pytest.mark.parametrize(
+    "dest_path", ("test_dir_tmp/upl_chunk_v2", "test_dir_tmp/upl_chunk_v2_ü", "test_dir_tmp/upl_chunk_v2_11###33")
+)
 def test_file_upload_chunked_v2(nc_any, dest_path):
     with NamedTemporaryFile() as tmp_file:
         tmp_file.seek(7 * 1024 * 1024)
         tmp_file.write(b"\0")
         tmp_file.flush()
-        nc_any.files.upload_stream(dest_path, tmp_file.name)
+        r = nc_any.files.upload_stream(dest_path, tmp_file.name)
     assert len(nc_any.files.download(dest_path)) == 7 * 1024 * 1024 + 1
+    assert nc_any.files.by_id(r.file_id).full_path.find(dest_path) != -1
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("dest_path", ("test_dir_tmp/upl_chunk_v2_async", "test_dir_tmp/upl_chunk_v2_ü_async"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("test_dir_tmp/upl_chunk_v2_async", "test_dir_tmp/upl_chunk_v2_ü_async", "test_dir_tmp/upl_chunk_v2_11###33"),
+)
 async def test_file_upload_chunked_v2_async(anc_any, dest_path):
     with NamedTemporaryFile() as tmp_file:
         tmp_file.seek(7 * 1024 * 1024)
         tmp_file.write(b"\0")
         tmp_file.flush()
-        await anc_any.files.upload_stream(dest_path, tmp_file.name)
+        r = await anc_any.files.upload_stream(dest_path, tmp_file.name)
     assert len(await anc_any.files.download(dest_path)) == 7 * 1024 * 1024 + 1
+    assert (await anc_any.files.by_id(r.file_id)).full_path.find(dest_path) != -1
 
 
 @pytest.mark.parametrize("file_name", ("test_file_upload_del", "test_file_upload_del/", "test_file_upload_del//"))
@@ -527,7 +549,7 @@ def test_favorites(nc_any):
     favorites = nc_any.files.list_by_criteria(["favorite"])
     favorites = [i for i in favorites if i.name != "test_generated_image.png"]
     assert not favorites
-    files = ("test_dir_tmp/fav1.txt", "test_dir_tmp/fav2.txt", "test_dir_tmp/fav3.txt")
+    files = ("test_dir_tmp/fav1.txt", "test_dir_tmp/fav2.txt", "test_dir_tmp/fav##3.txt")
     for n in files:
         nc_any.files.upload(n, content=n)
         nc_any.files.setfav(n, True)
@@ -551,7 +573,7 @@ async def test_favorites_async(anc_any):
     favorites = await anc_any.files.list_by_criteria(["favorite"])
     favorites = [i for i in favorites if i.name != "test_generated_image.png"]
     assert not favorites
-    files = ("test_dir_tmp/fav1.txt", "test_dir_tmp/fav2.txt", "test_dir_tmp/fav3.txt")
+    files = ("test_dir_tmp/fav1.txt", "test_dir_tmp/fav2.txt", "test_dir_tmp/fav##3.txt")
     for n in files:
         await anc_any.files.upload(n, content=n)
         await anc_any.files.setfav(n, True)
@@ -566,7 +588,10 @@ async def test_favorites_async(anc_any):
     assert not favorites
 
 
-@pytest.mark.parametrize("dest_path", ("test_dir_tmp/test_64_bytes.bin", "test_dir_tmp/test_64_bytes_ü.bin"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("test_dir_tmp/test_64_bytes.bin", "test_dir_tmp/test_64_bytes_ü.bin", "test_###_dir/test_64_bytes_ü.bin"),
+)
 def test_copy_file(nc_any, rand_bytes, dest_path):
     copied_file = nc_any.files.copy("test_64_bytes.bin", dest_path)
     assert copied_file.file_id
@@ -582,7 +607,10 @@ def test_copy_file(nc_any, rand_bytes, dest_path):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("dest_path", ("test_dir_tmp/test_64_bytes.bin", "test_dir_tmp/test_64_bytes_ü.bin"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("test_dir_tmp/test_64_bytes.bin", "test_dir_tmp/test_64_bytes_ü.bin", "test_###_dir/test_64_bytes_ü.bin"),
+)
 async def test_copy_file_async(anc_any, rand_bytes, dest_path):
     copied_file = await anc_any.files.copy("test_64_bytes.bin", dest_path)
     assert copied_file.file_id
@@ -597,7 +625,10 @@ async def test_copy_file_async(anc_any, rand_bytes, dest_path):
     await anc_any.files.delete(copied_file)
 
 
-@pytest.mark.parametrize("dest_path", ("test_dir_tmp/dest move test file", "test_dir_tmp/dest move test file-ä"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("test_dir_tmp/dest move test file", "test_dir_tmp/dest move test file-ä", "test_###_dir/dest move test file-ä"),
+)
 def test_move_file(nc_any, dest_path):
     src = "test_dir_tmp/src move test file"
     content = b"content of the file"
@@ -625,7 +656,10 @@ def test_move_file(nc_any, dest_path):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("dest_path", ("test_dir_tmp/dest move test file", "test_dir_tmp/dest move test file-ä"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("test_dir_tmp/dest move test file", "test_dir_tmp/dest move test file-ä", "test_###_dir/dest move test file-ä"),
+)
 async def test_move_file_async(anc_any, dest_path):
     src = "test_dir_tmp/src move test file"
     content = b"content of the file"
@@ -921,7 +955,9 @@ def test_fs_node_last_modified_time():
     assert fs_node.info.last_modified == datetime(2022, 4, 5, 1, 2, 3)
 
 
-@pytest.mark.parametrize("file_path", ("test_dir_tmp/trashbin_test", "test_dir_tmp/trashbin_test-ä"))
+@pytest.mark.parametrize(
+    "file_path", ("test_dir_tmp/trashbin_test", "test_dir_tmp/trashbin_test-ä", "test_dir_tmp/trashbin_test-1##3")
+)
 def test_trashbin(nc_any, file_path):
     r = nc_any.files.trashbin_list()
     assert isinstance(r, list)
@@ -969,7 +1005,9 @@ def test_trashbin(nc_any, file_path):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("file_path", ("test_dir_tmp/trashbin_test", "test_dir_tmp/trashbin_test-ä"))
+@pytest.mark.parametrize(
+    "file_path", ("test_dir_tmp/trashbin_test", "test_dir_tmp/trashbin_test-ä", "test_dir_tmp/trashbin_test-1##3")
+)
 async def test_trashbin_async(anc_any, file_path):
     r = await anc_any.files.trashbin_list()
     assert isinstance(r, list)
@@ -1016,7 +1054,10 @@ async def test_trashbin_async(anc_any, file_path):
     assert not r
 
 
-@pytest.mark.parametrize("dest_path", ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt", "test_dir_tmp/file_versions-1##3"),
+)
 def test_file_versions(nc_any, dest_path):
     if nc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
@@ -1036,7 +1077,10 @@ def test_file_versions(nc_any, dest_path):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("dest_path", ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt"))
+@pytest.mark.parametrize(
+    "dest_path",
+    ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt", "test_dir_tmp/file_versions-1##3"),
+)
 async def test_file_versions_async(anc_any, dest_path):
     if await anc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
