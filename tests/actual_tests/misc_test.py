@@ -180,3 +180,18 @@ async def test_public_ocs_async(anc_any):
     r = await anc_any.ocs("GET", "/ocs/v1.php/cloud/capabilities")
     assert r == await anc_any.ocs("GET", "ocs/v1.php/cloud/capabilities")
     assert r == await anc_any._session.ocs("GET", "ocs/v1.php/cloud/capabilities")  # noqa
+
+
+def test_perform_login(nc_any):
+    new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
+    assert not new_nc._session._capabilities
+    new_nc.perform_login()
+    assert new_nc._session._capabilities
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_perform_login_async(anc_any):
+    new_nc = AsyncNextcloud() if isinstance(anc_any, Nextcloud) else AsyncNextcloudApp()
+    assert not new_nc._session._capabilities
+    await new_nc.perform_login()
+    assert new_nc._session._capabilities

@@ -113,6 +113,14 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         """Returns Theme information."""
         return get_parsed_theme(self.capabilities["theming"]) if "theming" in self.capabilities else None
 
+    def perform_login(self) -> bool:
+        """Performs login into Nextcloud if not already logged in; manual invocation of this method is unnecessary."""
+        try:
+            self.update_server_info()
+        except Exception:  # noqa pylint: disable=broad-exception-caught
+            return False
+        return True
+
     def ocs(
         self,
         method: str,
@@ -198,6 +206,14 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     async def theme(self) -> ThemingInfo | None:
         """Returns Theme information."""
         return get_parsed_theme((await self.capabilities)["theming"]) if "theming" in await self.capabilities else None
+
+    async def perform_login(self) -> bool:
+        """Performs login into Nextcloud if not already logged in; manual invocation of this method is unnecessary."""
+        try:
+            await self.update_server_info()
+        except Exception:  # noqa pylint: disable=broad-exception-caught
+            return False
+        return True
 
     async def ocs(
         self,
