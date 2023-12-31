@@ -25,6 +25,7 @@ def test_speech2text_provider(nc_app):
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.providers.speech_to_text.unregister(result.name, not_fail=False)
     nc_app.providers.speech_to_text.unregister(result2.name, not_fail=False)
+    assert nc_app.providers.speech_to_text.unregister(result2.name) is None
     assert str(result).find("name=") != -1
 
 
@@ -51,4 +52,5 @@ async def test_speech2text_provider_async(anc_app):
     with pytest.raises(NextcloudExceptionNotFound):
         await anc_app.providers.speech_to_text.unregister(result.name, not_fail=False)
     await anc_app.providers.speech_to_text.unregister(result2.name, not_fail=False)
+    assert await anc_app.providers.speech_to_text.unregister(result2.name) is None
     assert str(result).find("name=") != -1
