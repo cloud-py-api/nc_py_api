@@ -2,20 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.7.2 - 2022-12-28]
+## [0.8.0 - 2024-01-xx]
+
+### Added
+
+- API for registering Speech to Text provider(*avalaible from Nextcloud 29*). #196
+
+## [0.7.2 - 2023-12-28]
 
 ### Fixed
 
 - files: proper url encoding of special chars in `mkdir` and `delete` methods. #191 Thanks to @tobenary
 - files: proper url encoding of special chars in all other `DAV` methods. #194
 
-## [0.7.1 - 2022-12-21]
+## [0.7.1 - 2023-12-21]
 
 ### Added
 
 - The `ocs` method is now public, making it easy to use Nextcloud OCS that has not yet been described. #187
 
-## [0.7.0 - 2022-12-17]
+## [0.7.0 - 2023-12-17]
 
 ### Added
 

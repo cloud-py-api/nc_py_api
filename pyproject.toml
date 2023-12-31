@@ -143,7 +143,7 @@ basic.good-names = [
 ]
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"
-similarities.min-similarity-lines = 6
+similarities.min-similarity-lines = 10
 messages_control.disable = [
     "missing-class-docstring",
     "missing-function-docstring",
