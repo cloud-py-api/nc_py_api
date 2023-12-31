@@ -56,3 +56,12 @@ UI methods should be accessed with the help of :class:`~nc_py_api.nextcloud.Next
 
 .. autoclass:: nc_py_api.ex_app.ui.resources.UiStyle
     :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.providers.ProvidersApi
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI
+    :members:

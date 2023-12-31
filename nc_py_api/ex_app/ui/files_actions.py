@@ -150,7 +150,7 @@ class _UiFilesActionsAPI:
                 raise e from None
 
     def get_entry(self, name: str) -> UiFileActionEntry | None:
-        """Get information of the file action meny entry for current app."""
+        """Get information of the file action meny entry."""
         require_capabilities("app_api", self._session.capabilities)
         try:
             return UiFileActionEntry(

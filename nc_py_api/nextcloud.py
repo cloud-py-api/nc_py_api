@@ -31,6 +31,7 @@ from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
 from .ex_app.defs import ApiScope, LogLvl
+from .ex_app.providers.providers import AsyncProvidersApi, ProvidersApi
 from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import AsyncFilesAPI, FilesAPI
 from .notes import _AsyncNotesAPI, _NotesAPI
@@ -294,6 +295,8 @@ class NextcloudApp(_NextcloudBasic):
     """Nextcloud User Preferences API for ExApps"""
     ui: UiApi
     """Nextcloud UI API for ExApps"""
+    providers: ProvidersApi
+    """API for registering providers for Nextcloud"""
 
     def __init__(self, **kwargs):
         """The parameters will be taken from the environment.
@@ -305,6 +308,7 @@ class NextcloudApp(_NextcloudBasic):
         self.appconfig_ex = AppConfigExAPI(self._session)
         self.preferences_ex = PreferencesExAPI(self._session)
         self.ui = UiApi(self._session)
+        self.providers = ProvidersApi(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""
@@ -431,6 +435,8 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
     """Nextcloud User Preferences API for ExApps"""
     ui: AsyncUiApi
     """Nextcloud UI API for ExApps"""
+    providers: AsyncProvidersApi
+    """API for registering providers for Nextcloud"""
 
     def __init__(self, **kwargs):
         """The parameters will be taken from the environment.
@@ -442,6 +448,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         self.appconfig_ex = AsyncAppConfigExAPI(self._session)
         self.preferences_ex = AsyncPreferencesExAPI(self._session)
         self.ui = AsyncUiApi(self._session)
+        self.providers = AsyncProvidersApi(self._session)
 
     async def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""
