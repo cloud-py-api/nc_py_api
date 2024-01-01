@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- API for registering Speech to Text provider(*avalaible from Nextcloud 29*). #196
+- NextcloudApp: API for registering Speech to Text providers(*avalaible from Nextcloud 29*). #196
+- NextcloudApp: API for registering Text Processing providers(*avalaible from Nextcloud 29*). #197
 
 ### Fixed
 
