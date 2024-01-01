@@ -182,6 +182,17 @@ async def test_public_ocs_async(anc_any):
     assert r == await anc_any._session.ocs("GET", "ocs/v1.php/cloud/capabilities")  # noqa
 
 
+def test_all_scope(nc_any):
+    r = nc_any.ocs("GET", "/ocs/v2.php/core/whatsnew")
+    assert isinstance(r, list)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_all_scope_async(anc_any):
+    r = await anc_any.ocs("GET", "/ocs/v2.php/core/whatsnew")
+    assert isinstance(r, list)
+
+
 def test_perform_login(nc_any):
     new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
     assert not new_nc._session._capabilities

@@ -21,7 +21,10 @@ async def test_get_users_list_async(anc_app):
 
 def test_scope_allowed(nc_app):
     for i in ApiScope:
-        assert nc_app.scope_allowed(i)
+        if i == ApiScope.ALL.value:
+            assert nc_app.scope_allowed(i)
+        else:
+            assert not nc_app.scope_allowed(i)
     assert not nc_app.scope_allowed(0)  # noqa
     assert not nc_app.scope_allowed(999999999)  # noqa
 
@@ -29,7 +32,10 @@ def test_scope_allowed(nc_app):
 @pytest.mark.asyncio(scope="session")
 async def test_scope_allowed_async(anc_app):
     for i in ApiScope:
-        assert await anc_app.scope_allowed(i)
+        if i == ApiScope.ALL.value:
+            assert await anc_app.scope_allowed(i)
+        else:
+            assert not await anc_app.scope_allowed(i)
     assert not await anc_app.scope_allowed(0)  # noqa
     assert not await anc_app.scope_allowed(999999999)  # noqa
 
@@ -50,12 +56,12 @@ async def test_app_cfg_async(anc_app):
 
 
 def test_scope_allow_app_ecosystem_disabled(nc_client, nc_app):
-    assert nc_app.scope_allowed(ApiScope.FILES)
+    assert nc_app.scope_allowed(ApiScope.ALL)
     nc_client.apps.disable("app_api")
     try:
-        assert nc_app.scope_allowed(ApiScope.FILES)
+        assert nc_app.scope_allowed(ApiScope.ALL)
         nc_app.update_server_info()
-        assert not nc_app.scope_allowed(ApiScope.FILES)
+        assert not nc_app.scope_allowed(ApiScope.ALL)
     finally:
         nc_client.apps.enable("app_api")
         nc_app.update_server_info()
@@ -63,12 +69,12 @@ def test_scope_allow_app_ecosystem_disabled(nc_client, nc_app):
 
 @pytest.mark.asyncio(scope="session")
 async def test_scope_allow_app_ecosystem_disabled_async(anc_client, anc_app):
-    assert await anc_app.scope_allowed(ApiScope.FILES)
+    assert await anc_app.scope_allowed(ApiScope.ALL)
     await anc_client.apps.disable("app_api")
     try:
-        assert await anc_app.scope_allowed(ApiScope.FILES)
+        assert await anc_app.scope_allowed(ApiScope.ALL)
         await anc_app.update_server_info()
-        assert not await anc_app.scope_allowed(ApiScope.FILES)
+        assert not await anc_app.scope_allowed(ApiScope.ALL)
     finally:
         await anc_client.apps.enable("app_api")
         await anc_app.update_server_info()

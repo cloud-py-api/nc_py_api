@@ -44,4 +44,6 @@ class ApiScope(enum.IntEnum):
     ACTIVITIES = 110
     """Activity App endpoints."""
     NOTES = 120
-    """Notes App endpoints"""
+    """Notes App endpoints."""
+    ALL = 9999
+    """All endpoints allowed."""

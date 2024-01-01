@@ -199,7 +199,7 @@ class NcSessionBasic(NcSessionBase, ABC):
 
         check_error(response, info)
         if response.status_code == 204:  # NO_CONTENT
-            return ""
+            return []
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
@@ -300,6 +300,8 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
             raise NextcloudException(408, info=info) from None
 
         check_error(response, info)
+        if response.status_code == 204:  # NO_CONTENT
+            return []
         response_data = loads(response.text)
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
