@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - API for registering Speech to Text provider(*avalaible from Nextcloud 29*). #196
 
+### Fixed
+
+- OCS: Correctly handling of `HTTP 204 No Content` status. #197
+
 ## [0.7.2 - 2023-12-28]
 
 ### Fixed
