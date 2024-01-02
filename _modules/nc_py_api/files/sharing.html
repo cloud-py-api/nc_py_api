@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nc_py_api.files.sharing &mdash; NcPyApi 0.8.0.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=ba145e45"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.8.0.dev0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudSysApp.html">Writing System Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../files.html">nc_py_api.files</a></li>
+      <li class="breadcrumb-item active">nc_py_api.files.sharing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nc_py_api.files.sharing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Nextcloud API for working with the files shares.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">_misc</span><span class="p">,</span> <span class="n">_session</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">FilePermissions</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">Share</span><span class="p">,</span> <span class="n">ShareType</span>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI">[docs]</a>
+<span class="k">class</span> <span class="nc">_FilesSharingAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class provides all File Sharing functionality.&quot;&quot;&quot;</span>
+
+    <span class="n">_ep_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/ocs/v1.php/apps/files_sharing/api/v1&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">_session</span><span class="o">.</span><span class="n">NcSessionBasic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if the Nextcloud instance supports this feature, False otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">_misc</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+
+<div class="viewcode-block" id="_FilesSharingAPI.get_list">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.get_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared_with_me</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reshares</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns lists of shares.</span>
+
+<span class="sd">        :param shared_with_me: Shares should be with the current user.</span>
+<span class="sd">        :param reshares: Only get shares by the current user and reshares.</span>
+<span class="sd">        :param subfiles: Only get all sub shares in a folder.</span>
+<span class="sd">        :param path: Get shares for a specific path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;shared_with_me&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">shared_with_me</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reshares&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">reshares</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;subfiles&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">subfiles</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.get_by_id">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.get_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Share</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Share by share ID.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Share</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.get_inherited">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.get_inherited">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_inherited</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all shares relative to a file, e.g., parent folders shares.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/inherited&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.create">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.create">[docs]</a>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span>
+        <span class="n">share_type</span><span class="p">:</span> <span class="n">ShareType</span><span class="p">,</span>
+        <span class="n">permissions</span><span class="p">:</span> <span class="n">FilePermissions</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">share_with</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Share</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new share.</span>
+
+<span class="sd">        :param path: The path of an existing file/directory.</span>
+<span class="sd">        :param share_type: :py:class:`~nc_py_api.files.sharing.ShareType` value.</span>
+<span class="sd">        :param permissions: combination of the :py:class:`~nc_py_api.files.FilePermissions` values.</span>
+<span class="sd">        :param share_with: the recipient of the shared object.</span>
+<span class="sd">        :param kwargs: See below.</span>
+
+<span class="sd">        Additionally supported arguments:</span>
+
+<span class="sd">            * ``public_upload`` - indicating should share be available for upload for non-registered users.</span>
+<span class="sd">              default = ``False``</span>
+<span class="sd">            * ``password`` - string with password to protect share. default = ``&quot;&quot;``</span>
+<span class="sd">            * ``send_password_by_talk`` - boolean indicating should password be automatically delivered using Talk.</span>
+<span class="sd">              default = ``False``</span>
+<span class="sd">            * ``expire_date`` - :py:class:`~datetime.datetime` time when share should expire.</span>
+<span class="sd">              `hours, minutes, seconds` are ignored. default = ``None``</span>
+<span class="sd">            * ``note`` - string with note, if any. default = ``&quot;&quot;``</span>
+<span class="sd">            * ``label`` - string with label, if any. default = ``&quot;&quot;``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_create</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">share_type</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">share_with</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Share</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.update">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Share</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the share options.</span>
+
+<span class="sd">        :param share_id: ID of the Share to update.</span>
+<span class="sd">        :param kwargs: Available for update: ``permissions``, ``password``, ``send_password_by_talk``,</span>
+<span class="sd">          ``public_upload``, ``expire_date``, ``note``, ``label``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="k">return</span> <span class="n">Share</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.delete">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the given share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.get_pending">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.get_pending">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_pending</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all pending shares for current user.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/pending&quot;</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.accept_share">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.accept_share">[docs]</a>
+    <span class="k">def</span> <span class="nf">accept_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accept pending share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/pending/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.decline_share">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.decline_share">[docs]</a>
+    <span class="k">def</span> <span class="nf">decline_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decline pending share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/pending/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.get_deleted">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.get_deleted">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_deleted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of deleted shares.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/deletedshares&quot;</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="_FilesSharingAPI.undelete">
+<a class="viewcode-back" href="../../../reference/Files/Shares.html#nc_py_api.files.sharing._FilesSharingAPI.undelete">[docs]</a>
+    <span class="k">def</span> <span class="nf">undelete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Undelete a deleted share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/deletedshares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span> <span class="nc">_AsyncFilesSharingAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class provides all Async File Sharing functionality.&quot;&quot;&quot;</span>
+
+    <span class="n">_ep_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/ocs/v1.php/apps/files_sharing/api/v1&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">_session</span><span class="o">.</span><span class="n">AsyncNcSessionBasic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if the Nextcloud instance supports this feature, False otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">_misc</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">shared_with_me</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reshares</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subfiles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns lists of shares.</span>
+
+<span class="sd">        :param shared_with_me: Shares should be with the current user.</span>
+<span class="sd">        :param reshares: Only get shares by the current user and reshares.</span>
+<span class="sd">        :param subfiles: Only get all sub shares in a folder.</span>
+<span class="sd">        :param path: Get shares for a specific path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;shared_with_me&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">shared_with_me</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reshares&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">reshares</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;subfiles&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="n">subfiles</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Share</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Share by share ID.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Share</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_inherited</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all shares relative to a file, e.g., parent folders shares.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/inherited&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span>
+        <span class="n">share_type</span><span class="p">:</span> <span class="n">ShareType</span><span class="p">,</span>
+        <span class="n">permissions</span><span class="p">:</span> <span class="n">FilePermissions</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">share_with</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Share</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new share.</span>
+
+<span class="sd">        :param path: The path of an existing file/directory.</span>
+<span class="sd">        :param share_type: :py:class:`~nc_py_api.files.sharing.ShareType` value.</span>
+<span class="sd">        :param permissions: combination of the :py:class:`~nc_py_api.files.FilePermissions` values.</span>
+<span class="sd">        :param share_with: the recipient of the shared object.</span>
+<span class="sd">        :param kwargs: See below.</span>
+
+<span class="sd">        Additionally supported arguments:</span>
+
+<span class="sd">            * ``public_upload`` - indicating should share be available for upload for non-registered users.</span>
+<span class="sd">              default = ``False``</span>
+<span class="sd">            * ``password`` - string with password to protect share. default = ``&quot;&quot;``</span>
+<span class="sd">            * ``send_password_by_talk`` - boolean indicating should password be automatically delivered using Talk.</span>
+<span class="sd">              default = ``False``</span>
+<span class="sd">            * ``expire_date`` - :py:class:`~datetime.datetime` time when share should expire.</span>
+<span class="sd">              `hours, minutes, seconds` are ignored. default = ``None``</span>
+<span class="sd">            * ``note`` - string with note, if any. default = ``&quot;&quot;``</span>
+<span class="sd">            * ``label`` - string with label, if any. default = ``&quot;&quot;``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_create</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">share_type</span><span class="p">,</span> <span class="n">permissions</span><span class="p">,</span> <span class="n">share_with</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Share</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Share</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the share options.</span>
+
+<span class="sd">        :param share_id: ID of the Share to update.</span>
+<span class="sd">        :param kwargs: Available for update: ``permissions``, ``password``, ``send_password_by_talk``,</span>
+<span class="sd">          ``public_upload``, ``expire_date``, ``note``, ``label``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="k">return</span> <span class="n">Share</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the given share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pending</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all pending shares for current user.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/shares/pending&quot;</span><span class="p">)]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">accept_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accept pending share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/pending/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">decline_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decline pending share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/pending/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_deleted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Share</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of deleted shares.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Share</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/deletedshares&quot;</span><span class="p">)]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">undelete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">share_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Share</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Undelete a deleted share.&quot;&quot;&quot;</span>
+        <span class="n">_misc</span><span class="o">.</span><span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">share_id</span> <span class="o">=</span> <span class="n">share_id</span><span class="o">.</span><span class="n">share_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">share_id</span><span class="p">,</span> <span class="n">Share</span><span class="p">)</span> <span class="k">else</span> <span class="n">share_id</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_base</span><span class="si">}</span><span class="s2">/deletedshares/</span><span class="si">{</span><span class="n">share_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_create</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">share_type</span><span class="p">:</span> <span class="n">ShareType</span><span class="p">,</span> <span class="n">permissions</span><span class="p">:</span> <span class="n">FilePermissions</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">share_with</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span><span class="p">,</span>
+        <span class="s2">&quot;shareType&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">share_type</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">permissions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">permissions</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">share_with</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;shareWith&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">share_with</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;public_upload&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;publicUpload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;password&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;send_password_by_talk&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;sendPasswordByTalk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;expire_date&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;expireDate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;expire_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;note&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;label&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="s2">&quot;permissions&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">&quot;password&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;send_password_by_talk&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;sendPasswordByTalk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;public_upload&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;publicUpload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;expire_date&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;expireDate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;expire_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;note&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;label&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">params</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024 Nextcloud GmbH.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
