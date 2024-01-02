@@ -1,4 +1,5 @@
 import datetime
+import io
 import os
 
 import pytest
@@ -206,3 +207,16 @@ async def test_perform_login_async(anc_any):
     assert not new_nc._session._capabilities
     await new_nc.perform_login()
     assert new_nc._session._capabilities
+
+
+def test_download_log(nc_any):
+    buf = io.BytesIO()
+    nc_any.download_log(buf)
+    assert buf.tell() > 0
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_download_log_async(anc_any):
+    buf = io.BytesIO()
+    await anc_any.download_log(buf)
+    assert buf.tell() > 0

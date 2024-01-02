@@ -1,5 +1,7 @@
 """Session represents one connection to Nextcloud. All related stuff for these live here."""
 
+import builtins
+import pathlib
 import re
 import typing
 from abc import ABC, abstractmethod
@@ -250,6 +252,15 @@ class NcSessionBasic(NcSessionBase, ABC):
     def set_user(self, user_id: str) -> None:
         self._user = user_id
 
+    def download2stream(self, url_path: str, fp, dav: bool = False, **kwargs):
+        if isinstance(fp, str | pathlib.Path):
+            with builtins.open(fp, "wb") as f:
+                self._download2fp(url_path, f, dav, **kwargs)
+        elif hasattr(fp, "write"):
+            self._download2fp(url_path, fp, dav, **kwargs)
+        else:
+            raise TypeError("`fp` must be a path to file or an object with `write` method.")
+
     def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
         if dav:
             return {
@@ -275,6 +286,13 @@ class NcSessionBasic(NcSessionBase, ABC):
             if str_url.endswith(i):
                 return
         self.response_headers = response.headers
+
+    def _download2fp(self, url_path: str, fp, dav: bool, **kwargs):
+        adapter = self.adapter_dav if dav else self.adapter
+        with adapter.stream("GET", url_path) as response:
+            check_error(response)
+            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
+                fp.write(data_chunk)
 
 
 class AsyncNcSessionBasic(NcSessionBase, ABC):
@@ -354,6 +372,15 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
     def set_user(self, user: str) -> None:
         self._user = user
 
+    async def download2stream(self, url_path: str, fp, dav: bool = False, **kwargs):
+        if isinstance(fp, str | pathlib.Path):
+            with builtins.open(fp, "wb") as f:
+                await self._download2fp(url_path, f, dav, **kwargs)
+        elif hasattr(fp, "write"):
+            await self._download2fp(url_path, fp, dav, **kwargs)
+        else:
+            raise TypeError("`fp` must be a path to file or an object with `write` method.")
+
     def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
         if dav:
             return {
@@ -379,6 +406,13 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
             if str_url.endswith(i):
                 return
         self.response_headers = response.headers
+
+    async def _download2fp(self, url_path: str, fp, dav: bool, **kwargs):
+        adapter = self.adapter_dav if dav else self.adapter
+        async with adapter.stream("GET", url_path) as response:
+            check_error(response)
+            async for data_chunk in response.aiter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
+                fp.write(data_chunk)
 
 
 class NcSession(NcSessionBasic):

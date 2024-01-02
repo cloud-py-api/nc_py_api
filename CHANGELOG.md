@@ -6,8 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `download_log` method to download `nextcloud.log`. #199
 - NextcloudApp: API for registering Speech to Text providers(*avalaible from Nextcloud 29*). #196
-- NextcloudApp: API for registering Text Processing providers(*avalaible from Nextcloud 29*). #197
+- NextcloudApp: API for registering Text Processing providers(*avalaible from Nextcloud 29*). #198
 
 ### Fixed
 
