@@ -98,14 +98,8 @@ class FilesAPI:
             The object must implement the ``file.write`` method and be able to write binary data.
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **5Mb**
         """
-        path = path.user_path if isinstance(path, FsNode) else path
-        if isinstance(fp, str | Path):
-            with builtins.open(fp, "wb") as f:
-                self.__download2stream(path, f, **kwargs)
-        elif hasattr(fp, "write"):
-            self.__download2stream(path, fp, **kwargs)
-        else:
-            raise TypeError("`fp` must be a path to file or an object with `write` method.")
+        path = quote(dav_get_obj_path(self._session.user, path.user_path if isinstance(path, FsNode) else path))
+        self._session.download2stream(path, fp, dav=True, **kwargs)
 
     def download_directory_as_zip(self, path: str | FsNode, local_path: str | Path | None = None, **kwargs) -> Path:
         """Downloads a remote directory as zip archive.
@@ -439,12 +433,6 @@ class FilesAPI:
             self._session.cfg.dav_url_suffix, webdav_response, user, path, properties, exclude_self, prop_type
         )
 
-    def __download2stream(self, path: str, fp, **kwargs) -> None:
-        with self._session.adapter_dav.stream("GET", quote(dav_get_obj_path(self._session.user, path))) as response:
-            check_error(response, f"download_stream: user={self._session.user}, path={path}")
-            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
-                fp.write(data_chunk)
-
     def __upload_stream(self, path: str, fp, chunk_size: int) -> FsNode:
         _tmp_path = "nc-py-api-" + random_string(56)
         _dav_path = quote(dav_get_obj_path(self._session.user, _tmp_path, root_path="/uploads"))
@@ -561,14 +549,8 @@ class AsyncFilesAPI:
             The object must implement the ``file.write`` method and be able to write binary data.
         :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **5Mb**
         """
-        path = path.user_path if isinstance(path, FsNode) else path
-        if isinstance(fp, str | Path):
-            with builtins.open(fp, "wb") as f:
-                await self.__download2stream(path, f, **kwargs)
-        elif hasattr(fp, "write"):
-            await self.__download2stream(path, fp, **kwargs)
-        else:
-            raise TypeError("`fp` must be a path to file or an object with `write` method.")
+        path = quote(dav_get_obj_path(await self._session.user, path.user_path if isinstance(path, FsNode) else path))
+        await self._session.download2stream(path, fp, dav=True, **kwargs)
 
     async def download_directory_as_zip(
         self, path: str | FsNode, local_path: str | Path | None = None, **kwargs
@@ -908,14 +890,6 @@ class AsyncFilesAPI:
         return build_listdir_response(
             self._session.cfg.dav_url_suffix, webdav_response, user, path, properties, exclude_self, prop_type
         )
-
-    async def __download2stream(self, path: str, fp, **kwargs) -> None:
-        async with self._session.adapter_dav.stream(
-            "GET", quote(dav_get_obj_path(await self._session.user, path))
-        ) as response:
-            check_error(response, f"download_stream: user={await self._session.user}, path={path}")
-            async for data_chunk in response.aiter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
-                fp.write(data_chunk)
 
     async def __upload_stream(self, path: str, fp, chunk_size: int) -> FsNode:
         _tmp_path = "nc-py-api-" + random_string(56)

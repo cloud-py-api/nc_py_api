@@ -135,6 +135,10 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         """Performs OCS call and returns OCS response payload data."""
         return self._session.ocs(method, path, content=content, json=json, params=params, **kwargs)
 
+    def download_log(self, fp) -> None:
+        """Downloads Nextcloud log file. Requires Admin privileges."""
+        self._session.download2stream("/index.php/settings/admin/log/download", fp)
+
 
 class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     apps: _AsyncAppsAPI
@@ -228,6 +232,10 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     ):
         """Performs OCS call and returns OCS response payload data."""
         return await self._session.ocs(method, path, content=content, json=json, params=params, **kwargs)
+
+    async def download_log(self, fp) -> None:
+        """Downloads Nextcloud log file. Requires Admin privileges."""
+        await self._session.download2stream("/index.php/settings/admin/log/download", fp)
 
 
 class Nextcloud(_NextcloudBasic):
