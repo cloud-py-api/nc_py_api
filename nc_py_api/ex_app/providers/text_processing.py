@@ -1,8 +1,9 @@
 """Nextcloud API for declaring TextProcessing provider."""
 
+import contextlib
 import dataclasses
 
-from ..._exceptions import NextcloudExceptionNotFound
+from ..._exceptions import NextcloudException, NextcloudExceptionNotFound
 from ..._misc import require_capabilities
 from ..._session import AsyncNcSessionApp, NcSessionApp
 
@@ -76,6 +77,16 @@ class _TextProcessingProviderAPI:
         except NextcloudExceptionNotFound:
             return None
 
+    def report_result(self, task_id: int, result: str = "", error: str = "") -> None:
+        """Report results of the text processing to Nextcloud."""
+        require_capabilities("app_api", self._session.capabilities)
+        with contextlib.suppress(NextcloudException):
+            self._session.ocs(
+                "PUT",
+                f"{self._session.ae_url}/{self._ep_suffix}",
+                params={"taskId": task_id, "result": result, "error": error},
+            )
+
 
 class _AsyncTextProcessingProviderAPI:
     """API for registering TextProcessing providers."""
@@ -114,3 +125,13 @@ class _AsyncTextProcessingProviderAPI:
             )
         except NextcloudExceptionNotFound:
             return None
+
+    async def report_result(self, task_id: int, result: str = "", error: str = "") -> None:
+        """Report results of the text processing to Nextcloud."""
+        require_capabilities("app_api", await self._session.capabilities)
+        with contextlib.suppress(NextcloudException):
+            await self._session.ocs(
+                "PUT",
+                f"{self._session.ae_url}/{self._ep_suffix}",
+                params={"taskId": task_id, "result": result, "error": error},
+            )
