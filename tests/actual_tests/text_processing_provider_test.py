@@ -56,3 +56,14 @@ async def test_text_processing_provider_async(anc_app):
     await anc_app.providers.text_processing.unregister(result2.name, not_fail=False)
     assert await anc_app.providers.text_processing.get_entry(result2.name) is None
     assert str(result).find("type=free_prompt") != -1
+
+
+@pytest.mark.require_nc(major=29)
+def test_text_processing_provider_fail_report(nc_app):
+    nc_app.providers.text_processing.report_result(999999)
+
+
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.require_nc(major=29)
+async def test_text_processing_provider_fail_report_async(anc_app):
+    await anc_app.providers.text_processing.report_result(999999)
