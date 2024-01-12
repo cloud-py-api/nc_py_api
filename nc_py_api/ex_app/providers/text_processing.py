@@ -84,7 +84,7 @@ class _TextProcessingProviderAPI:
             self._session.ocs(
                 "PUT",
                 f"{self._session.ae_url}/{self._ep_suffix}",
-                params={"taskId": task_id, "result": result, "error": error},
+                json={"taskId": task_id, "result": result, "error": error},
             )
 
 
@@ -133,5 +133,5 @@ class _AsyncTextProcessingProviderAPI:
             await self._session.ocs(
                 "PUT",
                 f"{self._session.ae_url}/{self._ep_suffix}",
-                params={"taskId": task_id, "result": result, "error": error},
+                json={"taskId": task_id, "result": result, "error": error},
             )
