@@ -6,11 +6,10 @@ from typing import Annotated
 
 import requests
 from fastapi import BackgroundTasks, Depends, FastAPI
-from huggingface_hub import snapshot_download
 from transformers import pipeline
 
 from nc_py_api import NextcloudApp, talk_bot
-from nc_py_api.ex_app import persistent_storage, run_app, set_handlers, talk_bot_app
+from nc_py_api.ex_app import get_model_path, run_app, set_handlers, talk_bot_app
 
 
 @asynccontextmanager
@@ -28,10 +27,7 @@ def ai_talk_bot_process_request(message: talk_bot.TalkBotMessage):
     r = re.search(r"@assistant\s(.*)", message.object_content["message"], re.IGNORECASE)
     if r is None:
         return
-    model = pipeline(
-        "text2text-generation",
-        model=snapshot_download(MODEL_NAME, local_files_only=True, cache_dir=persistent_storage()),
-    )
+    model = pipeline("text2text-generation", model=get_model_path(MODEL_NAME))
     response_text = model(r.group(1), max_length=64, do_sample=True)[0]["generated_text"]
     AI_BOT.send_message(response_text, message)
 

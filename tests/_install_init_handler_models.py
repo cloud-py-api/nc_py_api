@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from huggingface_hub import snapshot_download
 
 from nc_py_api import NextcloudApp, ex_app
 
@@ -20,7 +19,7 @@ APP = FastAPI(lifespan=lifespan)
 def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
     if enabled:
         try:
-            snapshot_download(MODEL_NAME, local_files_only=True, cache_dir=ex_app.persistent_storage())
+            assert ex_app.get_model_path(MODEL_NAME)
         except Exception:  # noqa
             return "model not found"
     return ""

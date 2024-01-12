@@ -35,10 +35,10 @@ Python library that provides a robust and well-documented API that allows develo
 | User & Weather status |      ✅       |      ✅       |      ✅       |      ✅       |
 | Other APIs***         |      ✅       |      ✅       |      ✅       |      ✅       |
 | Talk Bot API*         |     N/A      |      ✅       |      ✅       |      ✅       |
-| TextProcessing*       |     N/A      |     N/A      |     N/A      |      ❌       |
-| SpeechToText*         |     N/A      |     N/A      |     N/A      |      ✅       |
+| AI Providers API**    |     N/A      |     N/A      |     N/A      |      ✅       |
 
 &ast;_available only for **NextcloudApp**_<br>
+&ast;&ast;_available only for **NextcloudApp**: SpeechToText, TextProcessing_<br>
 &ast;&ast;&ast;_Activity, Notes_
 
 ### Differences between the Nextcloud and NextcloudApp classes
