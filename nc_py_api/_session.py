@@ -255,9 +255,9 @@ class NcSessionBasic(NcSessionBase, ABC):
     def download2stream(self, url_path: str, fp, dav: bool = False, **kwargs):
         if isinstance(fp, str | pathlib.Path):
             with builtins.open(fp, "wb") as f:
-                self._download2fp(url_path, f, dav, **kwargs)
+                self.download2fp(url_path, f, dav, **kwargs)
         elif hasattr(fp, "write"):
-            self._download2fp(url_path, fp, dav, **kwargs)
+            self.download2fp(url_path, fp, dav, **kwargs)
         else:
             raise TypeError("`fp` must be a path to file or an object with `write` method.")
 
@@ -287,9 +287,9 @@ class NcSessionBasic(NcSessionBase, ABC):
                 return
         self.response_headers = response.headers
 
-    def _download2fp(self, url_path: str, fp, dav: bool, **kwargs):
+    def download2fp(self, url_path: str, fp, dav: bool, params=None, **kwargs):
         adapter = self.adapter_dav if dav else self.adapter
-        with adapter.stream("GET", url_path) as response:
+        with adapter.stream("GET", url_path, params=params) as response:
             check_error(response)
             for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
@@ -375,9 +375,9 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
     async def download2stream(self, url_path: str, fp, dav: bool = False, **kwargs):
         if isinstance(fp, str | pathlib.Path):
             with builtins.open(fp, "wb") as f:
-                await self._download2fp(url_path, f, dav, **kwargs)
+                await self.download2fp(url_path, f, dav, **kwargs)
         elif hasattr(fp, "write"):
-            await self._download2fp(url_path, fp, dav, **kwargs)
+            await self.download2fp(url_path, fp, dav, **kwargs)
         else:
             raise TypeError("`fp` must be a path to file or an object with `write` method.")
 
@@ -407,9 +407,9 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
                 return
         self.response_headers = response.headers
 
-    async def _download2fp(self, url_path: str, fp, dav: bool, **kwargs):
+    async def download2fp(self, url_path: str, fp, dav: bool, params=None, **kwargs):
         adapter = self.adapter_dav if dav else self.adapter
-        async with adapter.stream("GET", url_path) as response:
+        async with adapter.stream("GET", url_path, params=params) as response:
             check_error(response)
             async for data_chunk in response.aiter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)

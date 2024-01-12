@@ -111,17 +111,11 @@ class FilesAPI:
         .. note:: This works only for directories, you should not use this to download a file.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        with self._session.adapter.stream(
-            "GET", "/index.php/apps/files/ajax/download.php", params={"dir": path}
-        ) as response:
-            check_error(response, f"download_directory_as_zip: user={self._session.user}, path={path}")
-            result_path = local_path if local_path else os.path.basename(path)
-            with open(
-                result_path,
-                "wb",
-            ) as fp:
-                for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
-                    fp.write(data_chunk)
+        result_path = local_path if local_path else os.path.basename(path)
+        with open(result_path, "wb") as fp:
+            self._session.download2fp(
+                "/index.php/apps/files/ajax/download.php", fp, dav=False, params={"dir": path}, **kwargs
+            )
         return Path(result_path)
 
     def upload(self, path: str | FsNode, content: bytes | str) -> FsNode:
@@ -564,17 +558,11 @@ class AsyncFilesAPI:
         .. note:: This works only for directories, you should not use this to download a file.
         """
         path = path.user_path if isinstance(path, FsNode) else path
-        async with self._session.adapter.stream(
-            "GET", "/index.php/apps/files/ajax/download.php", params={"dir": path}
-        ) as response:
-            check_error(response, f"download_directory_as_zip: user={await self._session.user}, path={path}")
-            result_path = local_path if local_path else os.path.basename(path)
-            with open(
-                result_path,
-                "wb",
-            ) as fp:
-                async for data_chunk in response.aiter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
-                    fp.write(data_chunk)
+        result_path = local_path if local_path else os.path.basename(path)
+        with open(result_path, "wb") as fp:
+            await self._session.download2fp(
+                "/index.php/apps/files/ajax/download.php", fp, dav=False, params={"dir": path}, **kwargs
+            )
         return Path(result_path)
 
     async def upload(self, path: str | FsNode, content: bytes | str) -> FsNode:
