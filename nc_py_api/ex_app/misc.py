@@ -43,3 +43,10 @@ def verify_version(finalize_update: bool = True) -> tuple[str, str] | None:
                 version_file.write(os.environ["APP_VERSION"])
                 version_file.truncate()
     return r
+
+
+def get_model_path(model_name: str) -> str:
+    """Wrapper around hugging_face's ``snapshot_download`` to return path to downloaded model directory."""
+    from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
+
+    return snapshot_download(model_name, local_files_only=True, cache_dir=persistent_storage())
