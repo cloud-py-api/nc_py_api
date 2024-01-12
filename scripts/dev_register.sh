@@ -6,7 +6,7 @@ echo "creating 'manual_install' deploy daemon for $1 container"
 docker exec "$1" sudo -u www-data php occ app_api:daemon:register \
   manual_install "Manual Install" manual-install 0 0 0
 echo "unregistering nc_py_api as an app for $1 container"
-docker exec "$1" sudo -u www-data php occ app_api:app:unregister nc_py_api --silent || true
+docker exec "$1" sudo -u www-data php occ app_api:app:unregister nc_py_api --silent --force || true
 echo "registering nc_py_api as an app for $1 container"
 NEXTCLOUD_URL="http://$2" APP_PORT=9009 APP_ID="nc_py_api" APP_SECRET="12345" APP_VERSION="1.0.0" \
   python3 tests/_install.py > /dev/null 2>&1 &

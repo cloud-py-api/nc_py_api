@@ -31,57 +31,57 @@ build-push:
 
 .PHONY: deploy27
 deploy27:
-	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:deploy ui_example docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/ui_example/appinfo/info.xml
 
 .PHONY: deploy28
 deploy28:
-	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:deploy ui_example docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/ui_example/appinfo/info.xml
 
 .PHONY: deploy
 deploy:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:deploy ui_example docker_dev \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/ui_example/appinfo/info.xml
 
 .PHONY: run27
 run27:
-	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register ui_example docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/ui_example/appinfo/info.xml
 
 .PHONY: run28
 run28:
-	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:register ui_example docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/ui_example/appinfo/info.xml
 
 .PHONY: run
 run:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register ui_example docker_dev --force-scopes \
 		--info-xml https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/examples/as_app/ui_example/appinfo/info.xml
 
 .PHONY: register27
 register27:
-	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-stable27-1 sudo -u www-data php occ app_api:app:register ui_example manual_install --json-info \
   "{\"appid\":\"ui_example\",\"name\":\"UI Example\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9035,\"scopes\":{\"required\":[],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
   --force-scopes --wait-finish
 
 .PHONY: register28
 register28:
-	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-stable28-1 sudo -u www-data php occ app_api:app:register ui_example manual_install --json-info \
   "{\"appid\":\"ui_example\",\"name\":\"UI Example\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9035,\"scopes\":{\"required\":[],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
   --force-scopes --wait-finish
 
 .PHONY: register
 register:
-	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent || true
+	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:unregister ui_example --silent --force || true
 	docker exec master-nextcloud-1 sudo -u www-data php occ app_api:app:register ui_example manual_install --json-info \
   "{\"appid\":\"ui_example\",\"name\":\"UI Example\",\"daemon_config_name\":\"manual_install\",\"version\":\"1.0.0\",\"secret\":\"12345\",\"host\":\"host.docker.internal\",\"port\":9035,\"scopes\":{\"required\":[],\"optional\":[]},\"protocol\":\"http\",\"system_app\":0}" \
   --force-scopes --wait-finish
