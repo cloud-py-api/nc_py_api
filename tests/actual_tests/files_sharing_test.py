@@ -54,6 +54,9 @@ def _test_share_fields(new_share: Share, get_by_id: Share, shared_file: FsNode):
     assert get_by_id.share_owner == new_share.share_owner
     assert not get_by_id.share_with
     assert str(get_by_id) == str(new_share)
+    assert get_by_id.file_source_id == shared_file.info.fileid
+    assert get_by_id.can_delete is True
+    assert get_by_id.can_edit is True
 
 
 def test_share_fields(nc_any):

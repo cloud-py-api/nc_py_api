@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - NextcloudApp: `AppAPIAuthMiddleware` for easy cover all endpoints. #205
+- class `Share`: added missing `file_source_id`, `can_edit`, `can_delete` properties. #206
+
+### Changed
+
+- class `Share`.raw_data marked as deprecated and changed to `_raw_data`. #206
 
 ## [0.8.0 - 2024-01-12]
 
