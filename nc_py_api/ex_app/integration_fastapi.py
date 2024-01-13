@@ -12,11 +12,12 @@ from fastapi import (
     Depends,
     FastAPI,
     HTTPException,
-    Request,
     responses,
     staticfiles,
     status,
 )
+from starlette.requests import HTTPConnection, Request
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import AsyncNextcloudApp, NextcloudApp
@@ -24,7 +25,7 @@ from ..talk_bot import TalkBotMessage, aget_bot_secret, get_bot_secret
 from .misc import persistent_storage
 
 
-def nc_app(request: Request) -> NextcloudApp:
+def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
     user = get_username_secret_from_headers(
         {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
@@ -36,7 +37,7 @@ def nc_app(request: Request) -> NextcloudApp:
     return nextcloud_app
 
 
-def anc_app(request: Request) -> AsyncNextcloudApp:
+def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
     """Async Authentication handler for requests from Nextcloud to the application."""
     user = get_username_secret_from_headers(
         {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
@@ -194,3 +195,40 @@ def __fetch_models_task(
             cache = models[model].pop("cache_dir", persistent_storage())
             snapshot_download(model, tqdm_class=TqdmProgress, **models[model], max_workers=workers, cache_dir=cache)
     nc.set_init_status(100)
+
+
+class AppAPIAuthMiddleware:
+    """Pure ASGI AppAPIAuth Middleware."""
+
+    _disable_for: list[str]
+
+    def __init__(
+        self,
+        app: ASGIApp,
+        disable_for: list[str] | None = None,
+    ) -> None:
+        self.app = app
+        disable_for = [] if disable_for is None else [i.lstrip("/") for i in disable_for]
+        self._disable_for = [i for i in disable_for if i != "heartbeat"] + ["heartbeat"]
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """Method that will be called by Starlette for each event."""
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        conn = HTTPConnection(scope)
+        url_path = conn.url.path.lstrip("/")
+        if url_path not in self._disable_for:
+            try:
+                anc_app(conn)
+            except HTTPException as exc:
+                response = self._on_error(exc.status_code, exc.detail)
+                await response(scope, receive, send)
+                return
+
+        await self.app(scope, receive, send)
+
+    @staticmethod
+    def _on_error(status_code: int = 400, content: str = "") -> responses.PlainTextResponse:
+        return responses.PlainTextResponse(content, status_code=status_code)

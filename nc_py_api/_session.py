@@ -11,8 +11,8 @@ from enum import IntEnum
 from json import loads
 from os import environ
 
-from fastapi import Request as FastAPIRequest
 from httpx import AsyncClient, Client, Headers, Limits, ReadTimeout, Request, Response
+from starlette.requests import HTTPConnection
 
 from . import options
 from ._exceptions import (
@@ -459,7 +459,7 @@ class NcSessionAppBasic(ABC):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
 
-    def sign_check(self, request: FastAPIRequest) -> None:
+    def sign_check(self, request: HTTPConnection) -> None:
         headers = {
             "AA-VERSION": request.headers.get("AA-VERSION", ""),
             "EX-APP-ID": request.headers.get("EX-APP-ID", ""),

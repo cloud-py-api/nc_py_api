@@ -3,8 +3,8 @@
 import typing
 from abc import ABC
 
-from fastapi import Request as FastAPIRequest
 from httpx import Headers
+from starlette.requests import HTTPConnection
 
 from ._exceptions import NextcloudExceptionNotFound
 from ._misc import check_capabilities, require_capabilities
@@ -395,7 +395,7 @@ class NextcloudApp(_NextcloudBasic):
             return False
         return True
 
-    def request_sign_check(self, request: FastAPIRequest) -> bool:
+    def request_sign_check(self, request: HTTPConnection) -> bool:
         """Verifies the signature and validity of an incoming request from the Nextcloud.
 
         :param request: The `Starlette request <https://www.starlette.io/requests/>`_
@@ -535,7 +535,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
             return False
         return True
 
-    def request_sign_check(self, request: FastAPIRequest) -> bool:
+    def request_sign_check(self, request: HTTPConnection) -> bool:
         """Verifies the signature and validity of an incoming request from the Nextcloud.
 
         :param request: The `Starlette request <https://www.starlette.io/requests/>`_

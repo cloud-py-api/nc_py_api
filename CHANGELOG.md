@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1 - 2024-0x-xx]
+
+### Added
+
+- NextcloudApp: `AppAPIAuthMiddleware` for easy cover all endpoints. #205
+
 ## [0.8.0 - 2024-01-12]
 
 ### Added
