@@ -4,6 +4,7 @@ import dataclasses
 import datetime
 import email.utils
 import enum
+import warnings
 
 from .. import _misc
 
@@ -299,77 +300,100 @@ class Share:
     """Information about Share."""
 
     def __init__(self, raw_data: dict):
-        self.raw_data = raw_data
+        self._raw_data = raw_data
+
+    def __getattr__(self, name):
+        if name == "raw_data":
+            warnings.warn(
+                f"{name} is deprecated and will be removed in 0.9.0 version.", DeprecationWarning, stacklevel=2
+            )
+            return self._raw_data
+        return getattr(self, name)
 
     @property
     def share_id(self) -> int:
         """Unique ID of the share."""
-        return int(self.raw_data["id"])
+        return int(self._raw_data["id"])
 
     @property
     def share_type(self) -> ShareType:
         """Type of the share."""
-        return ShareType(int(self.raw_data["share_type"]))
+        return ShareType(int(self._raw_data["share_type"]))
 
     @property
     def share_with(self) -> str:
         """To whom Share was created."""
-        return self.raw_data["share_with"]
+        return self._raw_data["share_with"]
 
     @property
     def permissions(self) -> FilePermissions:
         """Recipient permissions."""
-        return FilePermissions(int(self.raw_data["permissions"]))
+        return FilePermissions(int(self._raw_data["permissions"]))
 
     @property
     def url(self) -> str:
         """URL at which Share is avalaible."""
-        return self.raw_data.get("url", "")
+        return self._raw_data.get("url", "")
 
     @property
     def path(self) -> str:
         """Share path relative to the user's root directory."""
-        return self.raw_data.get("path", "").lstrip("/")
+        return self._raw_data.get("path", "").lstrip("/")
 
     @property
     def label(self) -> str:
         """Label for the Shared object."""
-        return self.raw_data.get("label", "")
+        return self._raw_data.get("label", "")
 
     @property
     def note(self) -> str:
         """Note for the Shared object."""
-        return self.raw_data.get("note", "")
+        return self._raw_data.get("note", "")
 
     @property
     def mimetype(self) -> str:
         """Mimetype of the Shared object."""
-        return self.raw_data.get("mimetype", "")
+        return self._raw_data.get("mimetype", "")
 
     @property
     def share_owner(self) -> str:
         """Share's creator ID."""
-        return self.raw_data.get("uid_owner", "")
+        return self._raw_data.get("uid_owner", "")
 
     @property
     def file_owner(self) -> str:
         """File/directory owner ID."""
-        return self.raw_data.get("uid_file_owner", "")
+        return self._raw_data.get("uid_file_owner", "")
 
     @property
     def password(self) -> str:
         """Password to access share."""
-        return self.raw_data.get("password", "")
+        return self._raw_data.get("password", "")
 
     @property
     def send_password_by_talk(self) -> bool:
         """Flag indicating was password send by Talk."""
-        return self.raw_data.get("send_password_by_talk", False)
+        return self._raw_data.get("send_password_by_talk", False)
 
     @property
     def expire_date(self) -> datetime.datetime:
         """Share expiration time."""
-        return _misc.nc_iso_time_to_datetime(self.raw_data.get("expiration", ""))
+        return _misc.nc_iso_time_to_datetime(self._raw_data.get("expiration", ""))
+
+    @property
+    def file_source_id(self) -> int:
+        """File source ID."""
+        return self._raw_data.get("file_source", 0)
+
+    @property
+    def can_edit(self) -> bool:
+        """Does caller have ``write`` permissions."""
+        return self._raw_data.get("can_edit", False)
+
+    @property
+    def can_delete(self) -> bool:
+        """Does caller have ``delete`` permissions."""
+        return self._raw_data.get("can_delete", False)
 
     def __str__(self):
         return (
