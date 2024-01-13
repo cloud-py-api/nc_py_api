@@ -66,6 +66,7 @@ pygments_style = "sphinx"
 nitpicky = True
 nitpick_ignore_regex = [
     (r"py:class", r"starlette\.requests\.Request"),
+    (r"py:class", r"starlette\.requests\.HTTPConnection"),
     (r"py:.*", r"httpx.*"),
 ]
 

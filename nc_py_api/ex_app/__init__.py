@@ -2,6 +2,7 @@
 
 from .defs import ApiScope, LogLvl
 from .integration_fastapi import (
+    AppAPIAuthMiddleware,
     anc_app,
     atalk_bot_app,
     nc_app,

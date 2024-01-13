@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
-from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from nc_py_api import AsyncNextcloudApp, ex_app
@@ -14,12 +13,12 @@ async def lifespan(_app: FastAPI):
 
 
 APP = FastAPI(lifespan=lifespan)
+APP.add_middleware(ex_app.AppAPIAuthMiddleware)
 
 
 @APP.put("/sec_check")
 async def sec_check(
     value: int,
-    _nc: Annotated[AsyncNextcloudApp, Depends(ex_app.anc_app)],
 ):
     print(value, flush=True)
     return JSONResponse(content={"error": ""}, status_code=200)
