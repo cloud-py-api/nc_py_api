@@ -223,4 +223,29 @@ and since this is not directly related to working with NextCloud, we will skip t
 
 **ToGif** example `full source <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/lib/main.py>`_ code.
 
+Using AppAPIAuthMiddleware
+--------------------------
+
+If your application does not implement `Talk Bot` functionality and you most often do not need
+the ``NextcloudApp`` class returned after standard authentication with `Depends`:
+
+.. code-block:: python
+
+    nc: Annotated[NextcloudApp, Depends(nc_app)]
+
+In this case, you can use global authentication. It's quite simple, just add this line of code:
+
+.. code-block:: python
+
+    from nc_py_api.ex_app import AppAPIAuthMiddleware
+
+    APP = FastAPI(lifespan=lifespan)
+    APP.add_middleware(AppAPIAuthMiddleware)
+
+and it will be called for all your endpoints and check the validity of the connection itself.
+
+``AppAPIAuthMiddleware`` supports **disable_for** optional argument, where you can list all routes for which authentication should be skipped.
+
+You can still use at the same time the *AppAPIAuthMiddleware* and *Depends(nc_app)*, it is clever enough and they won't interfere with each other.
+
 This chapter ends here, but the next topics are even more intriguing.

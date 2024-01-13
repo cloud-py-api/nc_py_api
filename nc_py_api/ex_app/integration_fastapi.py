@@ -213,7 +213,7 @@ class AppAPIAuthMiddleware:
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Method that will be called by Starlette for each event."""
-        if scope["type"] not in ["http", "websocket"]:
+        if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
@@ -223,11 +223,8 @@ class AppAPIAuthMiddleware:
             try:
                 anc_app(conn)
             except HTTPException as exc:
-                if scope["type"] == "websocket":
-                    await send({"type": "websocket.close", "code": 1000})
-                else:
-                    response = self._on_error(exc.status_code, exc.detail)
-                    await response(scope, receive, send)
+                response = self._on_error(exc.status_code, exc.detail)
+                await response(scope, receive, send)
                 return
 
         await self.app(scope, receive, send)
