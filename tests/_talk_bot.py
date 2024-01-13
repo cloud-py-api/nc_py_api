@@ -57,7 +57,7 @@ def talk_bot_coverage(
 # in real program this is not needed, as bot enabling handler is called in the bots process itself and will reset it.
 @APP.delete("/reset_bot_secret")
 def reset_bot_secret():
-    os.environ.pop(talk_bot.__get_bot_secret("/talk_bot_coverage"))
+    os.environ.pop(talk_bot.__get_bot_secret("/talk_bot_coverage"), None)
     return Response()
 
 
