@@ -2,12 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.8.1 - 2024-0x-xx]
+## [0.8.1 - 2024-01-xx]
 
 ### Added
 
-- NextcloudApp: `AppAPIAuthMiddleware` for easy cover all endpoints. #205
 - class `Share`: added missing `file_source_id`, `can_edit`, `can_delete` properties. #206
+- NextcloudApp: `AppAPIAuthMiddleware` for easy cover all endpoints. #205
+- NextcloudApp: API for registering `MachineTranslation` providers(*avalaible from Nextcloud 29*). #207
 
 ### Changed
 

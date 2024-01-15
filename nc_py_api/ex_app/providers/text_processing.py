@@ -7,6 +7,8 @@ from ..._exceptions import NextcloudException, NextcloudExceptionNotFound
 from ..._misc import require_capabilities
 from ..._session import AsyncNcSessionApp, NcSessionApp
 
+_EP_SUFFIX: str = "ai_provider/text_processing"
+
 
 @dataclasses.dataclass
 class TextProcessingProvider:
@@ -40,9 +42,7 @@ class TextProcessingProvider:
 
 
 class _TextProcessingProviderAPI:
-    """API for registering TextProcessing providers."""
-
-    _ep_suffix: str = "ai_provider/text_processing"
+    """API for TextProcessing providers."""
 
     def __init__(self, session: NcSessionApp):
         self._session = session
@@ -56,13 +56,13 @@ class _TextProcessingProviderAPI:
             "actionHandler": callback_url,
             "taskType": task_type,
         }
-        self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+        self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
     def unregister(self, name: str, not_fail=True) -> None:
         """Removes TextProcessing provider."""
         require_capabilities("app_api", self._session.capabilities)
         try:
-            self._session.ocs("DELETE", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+            self._session.ocs("DELETE", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"name": name})
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
@@ -72,7 +72,7 @@ class _TextProcessingProviderAPI:
         require_capabilities("app_api", self._session.capabilities)
         try:
             return TextProcessingProvider(
-                self._session.ocs("GET", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+                self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"name": name})
             )
         except NextcloudExceptionNotFound:
             return None
@@ -83,15 +83,13 @@ class _TextProcessingProviderAPI:
         with contextlib.suppress(NextcloudException):
             self._session.ocs(
                 "PUT",
-                f"{self._session.ae_url}/{self._ep_suffix}",
+                f"{self._session.ae_url}/{_EP_SUFFIX}",
                 json={"taskId": task_id, "result": result, "error": error},
             )
 
 
 class _AsyncTextProcessingProviderAPI:
-    """API for registering TextProcessing providers."""
-
-    _ep_suffix: str = "ai_provider/text_processing"
+    """API for TextProcessing providers."""
 
     def __init__(self, session: AsyncNcSessionApp):
         self._session = session
@@ -105,13 +103,13 @@ class _AsyncTextProcessingProviderAPI:
             "actionHandler": callback_url,
             "taskType": task_type,
         }
-        await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+        await self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
     async def unregister(self, name: str, not_fail=True) -> None:
         """Removes TextProcessing provider."""
         require_capabilities("app_api", await self._session.capabilities)
         try:
-            await self._session.ocs("DELETE", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+            await self._session.ocs("DELETE", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"name": name})
         except NextcloudExceptionNotFound as e:
             if not not_fail:
                 raise e from None
@@ -121,7 +119,7 @@ class _AsyncTextProcessingProviderAPI:
         require_capabilities("app_api", await self._session.capabilities)
         try:
             return TextProcessingProvider(
-                await self._session.ocs("GET", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
+                await self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"name": name})
             )
         except NextcloudExceptionNotFound:
             return None
@@ -132,6 +130,6 @@ class _AsyncTextProcessingProviderAPI:
         with contextlib.suppress(NextcloudException):
             await self._session.ocs(
                 "PUT",
-                f"{self._session.ae_url}/{self._ep_suffix}",
+                f"{self._session.ae_url}/{_EP_SUFFIX}",
                 json={"taskId": task_id, "result": result, "error": error},
             )

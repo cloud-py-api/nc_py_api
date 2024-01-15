@@ -38,7 +38,7 @@ Python library that provides a robust and well-documented API that allows develo
 | AI Providers API**    |     N/A      |     N/A      |     N/A      |      ✅       |
 
 &ast;_available only for **NextcloudApp**_<br>
-&ast;&ast;_available only for **NextcloudApp**: SpeechToText, TextProcessing_<br>
+&ast;&ast;_available only for **NextcloudApp**: SpeechToText, TextProcessing, Translation_<br>
 &ast;&ast;&ast;_Activity, Notes_
 
 ### Differences between the Nextcloud and NextcloudApp classes
