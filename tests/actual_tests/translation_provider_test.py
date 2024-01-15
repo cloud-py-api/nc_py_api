@@ -83,8 +83,8 @@ async def test_translation_async(anc_app):
     assert result2.name == "test_id2"
     assert result2.display_name == "Test #2 Prov"
     assert result2.action_handler == "some_url2"
-    assert result.from_languages == {"pl_PL": "Polish"}
-    assert result.to_languages == {"tr_TR": "Turkish"}
+    assert result2.from_languages == {"pl_PL": "Polish"}
+    assert result2.to_languages == {"tr_TR": "Turkish"}
     await anc_app.providers.translations.register(
         "test_id",
         "Renamed",
