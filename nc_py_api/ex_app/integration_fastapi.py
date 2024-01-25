@@ -1,8 +1,6 @@
 """FastAPI directly related stuff."""
 
 import asyncio
-import hashlib
-import hmac
 import json
 import os
 import typing
@@ -21,7 +19,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import AsyncNextcloudApp, NextcloudApp
-from ..talk_bot import TalkBotMessage, aget_bot_secret, get_bot_secret
+from ..talk_bot import TalkBotMessage
 from .misc import persistent_storage
 
 
@@ -49,26 +47,14 @@ def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
     return nextcloud_app
 
 
-def __talk_bot_app(secret: bytes | None, request: Request, body: bytes) -> TalkBotMessage:
-    if not secret:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    hmac_sign = hmac.new(
-        secret, request.headers.get("X-NEXTCLOUD-TALK-RANDOM", "").encode("UTF-8"), digestmod=hashlib.sha256
-    )
-    hmac_sign.update(body)
-    if request.headers["X-NEXTCLOUD-TALK-SIGNATURE"] != hmac_sign.hexdigest():
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    return TalkBotMessage(json.loads(body))
-
-
-def talk_bot_app(request: Request) -> TalkBotMessage:
+def talk_bot_msg(request: Request) -> TalkBotMessage:
     """Authentication handler for bot requests from Nextcloud Talk to the application."""
-    return __talk_bot_app(get_bot_secret(request.url.components.path), request, asyncio.run(request.body()))
+    return TalkBotMessage(json.loads(asyncio.run(request.body())))
 
 
-async def atalk_bot_app(request: Request) -> TalkBotMessage:
+async def atalk_bot_msg(request: Request) -> TalkBotMessage:
     """Async Authentication handler for bot requests from Nextcloud Talk to the application."""
-    return __talk_bot_app(await aget_bot_secret(request.url.components.path), request, await request.body())
+    return TalkBotMessage(json.loads(await request.body()))
 
 
 def set_handlers(

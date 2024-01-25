@@ -3,11 +3,10 @@ from typing import Annotated
 
 import gfixture_set_env  # noqa
 import pytest
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, Response
-from starlette.datastructures import URL
+from fastapi import BackgroundTasks, Depends, FastAPI, Request, Response
 
-from nc_py_api import talk_bot
-from nc_py_api.ex_app import run_app, talk_bot_app
+from nc_py_api import NextcloudApp, talk_bot
+from nc_py_api.ex_app import nc_app, run_app, talk_bot_msg
 
 APP = FastAPI()
 COVERAGE_BOT = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
@@ -31,23 +30,13 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
         COVERAGE_BOT.delete_reaction(message.object_id, "🥳")
     with pytest.raises(ValueError):
         COVERAGE_BOT.send_message("🥳", message.object_id)
-    with pytest.raises(HTTPException) as e:
-        headers = dict(request.scope["headers"])
-        headers[b"x-nextcloud-talk-signature"] = b"122112442412"
-        request.scope["headers"] = list(headers.items())
-        del request._headers  # noqa
-        talk_bot_app(request)
-    assert e.value.status_code == 401
-    with pytest.raises(HTTPException) as e:
-        request._url = URL("sample_url")
-        talk_bot_app(request)
-    assert e.value.status_code == 500
 
 
 @APP.post("/talk_bot_coverage")
 def talk_bot_coverage(
     request: Request,
-    message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)],
+    _nc: Annotated[NextcloudApp, Depends(nc_app)],
+    message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):
     background_tasks.add_task(coverage_talk_bot_process_request, message, request)

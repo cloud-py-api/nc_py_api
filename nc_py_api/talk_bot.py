@@ -94,7 +94,7 @@ class TalkBot:
         :param display_name: The display name of the bot that is shown as author when it posts a message or reaction.
         :param description: Description of the bot helping moderators to decide if they want to enable this bot.
         """
-        self.callback_url = callback_url
+        self.callback_url = callback_url.lstrip("/")
         self.display_name = display_name
         self.description = description
 

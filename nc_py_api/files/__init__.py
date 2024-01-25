@@ -305,7 +305,7 @@ class Share:
     def __getattr__(self, name):
         if name == "raw_data":
             warnings.warn(
-                f"{name} is deprecated and will be removed in 0.9.0 version.", DeprecationWarning, stacklevel=2
+                f"{name} is deprecated and will be removed in 0.10.0 version.", DeprecationWarning, stacklevel=2
             )
             return self._raw_data
         return getattr(self, name)

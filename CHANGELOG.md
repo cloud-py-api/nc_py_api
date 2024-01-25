@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.8.1 - 2024-01-xx]
+## [0.9.0 - 2024-01-25]
 
 ### Added
 
@@ -12,7 +12,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **large amount of incompatible changes** for `AppAPI 2.0`, see PR for description. #212
 - class `Share`.raw_data marked as deprecated and changed to `_raw_data`. #206
+- `ex_app.talk_bot_app`/`ex_app.atalk_bot_app` renamed to `ex_app.talk_bot_msg`/`ex_app.atalk_bot_msg`.
 
 ## [0.8.0 - 2024-01-12]
 
