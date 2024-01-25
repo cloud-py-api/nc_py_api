@@ -81,7 +81,7 @@ jobs:
 
       - name: cache-nextcloud
         id: nextcloud_setup
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
           key: ${{ matrix.nextcloud }}
@@ -242,7 +242,7 @@ jobs:
 
       - name: cache-nextcloud
         id: nextcloud_setup
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
           key: ${{ matrix.nextcloud }}
