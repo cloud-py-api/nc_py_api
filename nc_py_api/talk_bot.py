@@ -211,7 +211,7 @@ class AsyncTalkBot:
         :param display_name: The display name of the bot that is shown as author when it posts a message or reaction.
         :param description: Description of the bot helping moderators to decide if they want to enable this bot.
         """
-        self.callback_url = callback_url
+        self.callback_url = callback_url.lstrip("/")
         self.display_name = display_name
         self.description = description
 
@@ -318,7 +318,7 @@ class AsyncTalkBot:
 
 def __get_bot_secret(callback_url: str) -> str:
     sha_1 = hashlib.sha1(usedforsecurity=False)
-    string_to_hash = os.environ["APP_ID"] + "_" + callback_url
+    string_to_hash = os.environ["APP_ID"] + "_" + callback_url.lstrip("/")
     sha_1.update(string_to_hash.encode("UTF-8"))
     return sha_1.hexdigest()
 
