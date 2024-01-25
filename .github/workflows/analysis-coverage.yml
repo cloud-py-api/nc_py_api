@@ -155,7 +155,7 @@ jobs:
 
       - name: Uninstall NcPyApi
         run: |
-          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:app:unregister "$APP_ID" --silent --force
           php occ app_api:daemon:unregister manual_install
 
       - name: Generate coverage report (2)
@@ -316,7 +316,7 @@ jobs:
 
       - name: Uninstall NcPyApi
         run: |
-          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:app:unregister "$APP_ID" --silent --force
           php occ app_api:daemon:unregister manual_install
 
       - name: Generate coverage report (2)
@@ -610,7 +610,7 @@ jobs:
 
       - name: Uninstall NcPyApi
         run: |
-          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:app:unregister "$APP_ID" --silent --force
           php occ app_api:daemon:unregister manual_install
 
       - name: Generate coverage report (2)
@@ -790,7 +790,7 @@ jobs:
 
       - name: Uninstall NcPyApi
         run: |
-          php occ app_api:app:unregister "$APP_ID" --silent
+          php occ app_api:app:unregister "$APP_ID" --silent --force
           php occ app_api:daemon:unregister manual_install
 
       - name: Generate coverage report (2)
