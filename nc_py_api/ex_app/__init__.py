@@ -4,10 +4,10 @@ from .defs import ApiScope, LogLvl
 from .integration_fastapi import (
     AppAPIAuthMiddleware,
     anc_app,
-    atalk_bot_app,
+    atalk_bot_msg,
     nc_app,
     set_handlers,
-    talk_bot_app,
+    talk_bot_msg,
 )
 from .misc import get_model_path, persistent_storage, verify_version
 from .ui.files_actions import UiActionFileInfo

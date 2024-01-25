@@ -5,8 +5,8 @@ import gfixture_set_env  # noqa
 import pytest
 from fastapi import BackgroundTasks, Depends, FastAPI, Request, Response
 
-from nc_py_api import talk_bot
-from nc_py_api.ex_app import atalk_bot_app, run_app
+from nc_py_api import AsyncNextcloudApp, talk_bot
+from nc_py_api.ex_app import anc_app, atalk_bot_msg, run_app
 
 APP = FastAPI()
 COVERAGE_BOT = talk_bot.AsyncTalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
@@ -35,7 +35,8 @@ async def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, re
 @APP.post("/talk_bot_coverage")
 async def talk_bot_coverage(
     request: Request,
-    message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_app)],
+    _nc: Annotated[AsyncNextcloudApp, Depends(anc_app)],
+    message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):
     background_tasks.add_task(coverage_talk_bot_process_request, message, request)

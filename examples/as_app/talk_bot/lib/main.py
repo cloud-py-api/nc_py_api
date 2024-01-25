@@ -8,7 +8,7 @@ import httpx
 from fastapi import BackgroundTasks, Depends, FastAPI, Response
 
 from nc_py_api import NextcloudApp, talk_bot
-from nc_py_api.ex_app import run_app, set_handlers, talk_bot_app
+from nc_py_api.ex_app import atalk_bot_msg, nc_app, run_app, set_handlers
 
 
 # The same stuff as for usual External Applications
@@ -66,7 +66,8 @@ def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
 
 @APP.post("/currency_talk_bot")
 async def currency_talk_bot(
-    message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)],
+    _nc: Annotated[NextcloudApp, Depends(nc_app)],
+    message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):
     # As during converting, we do not process converting locally, we perform this in background, in the background task.

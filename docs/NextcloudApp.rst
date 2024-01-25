@@ -66,7 +66,7 @@ First register ``manual_install`` daemon:
 
 .. code-block:: shell
 
-    php occ app_api:daemon:register manual_install "Manual Install" manual-install 0 0 0
+    php occ app_api:daemon:register manual_install "Manual Install" manual-install http host.docker.internal 0
 
 Then, launch your application. Since this is a manual deployment, it's your responsibility to set minimum of the environment variables.
 Here they are:
@@ -86,7 +86,7 @@ After launching your application, execute the following command in the Nextcloud
 .. code-block:: shell
 
     php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
-        "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"host\":\"host.docker.internal\",\"scopes\":{\"required\":[2, 10, 11],\"optional\":[30, 31, 32, 33]},\"port\":SELECTED_PORT,\"protocol\":\"http\",\"system_app\":0}" \
+        "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":{\"required\":[\"ALL\"],\"optional\":[]},\"port\":SELECTED_PORT,\"system_app\":0}" \
         --force-scopes --wait-finish
 
 You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.
@@ -226,8 +226,7 @@ and since this is not directly related to working with NextCloud, we will skip t
 Using AppAPIAuthMiddleware
 --------------------------
 
-If your application does not implement `Talk Bot` functionality and you most often do not need
-the ``NextcloudApp`` class returned after standard authentication with `Depends`:
+If in your application in most cases you don't really need the ``NextcloudApp`` class returned after standard authentication using `Depends`:
 
 .. code-block:: python
 

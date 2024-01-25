@@ -30,7 +30,6 @@
 			<optional>
 			</optional>
 		</scopes>
-		<protocol>http</protocol>
 		<system>false</system>
 	</external-app>
 </info>

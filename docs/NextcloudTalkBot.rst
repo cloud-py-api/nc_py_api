@@ -40,16 +40,18 @@ Afterward, using FastAPI, you can define endpoints that will be invoked by Talk:
 
     @APP.post("/currency_talk_bot")
     async def currency_talk_bot(
-        message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)],
+        _nc: Annotated[NextcloudApp, Depends(nc_app)],
+        message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
         background_tasks: BackgroundTasks,
     ):
         return Response()
 
 .. note::
-    You must include to each endpoint your bot provides the **Depends(talk_bot_app)**.
-    **message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)]**
+    You must include to each endpoint your bot provides the **Depends(nc_app)**.
 
-Depending on **talk_bot_app** serves as an automatic authentication handler for messages from the cloud, which returns the received message from Nextcloud upon successful authentication.
+    Depending on **nc_app** serves as an automatic authentication handler for messages from the cloud.
+
+**message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)]** - returns the received message from Nextcloud upon successful authentication.
 
 Additionally, if your bot can provide quick and fixed execution times, you may not need to create background tasks.
 However, in most cases, it's recommended to segregate functionality and perform operations in the background, while promptly returning an empty response to Nextcloud.
