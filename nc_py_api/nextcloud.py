@@ -30,7 +30,7 @@ from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
-from .ex_app.defs import ApiScope, LogLvl
+from .ex_app.defs import LogLvl
 from .ex_app.providers.providers import AsyncProvidersApi, ProvidersApi
 from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import AsyncFilesAPI, FilesAPI
@@ -330,15 +330,6 @@ class NextcloudApp(_NextcloudBasic):
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
         return self._session.ocs("GET", f"{self._session.ae_url}/users")
 
-    def scope_allowed(self, scope: ApiScope) -> bool:
-        """Check if API scope is avalaible for application.
-
-        Useful for applications that declare optional scopes to check if they are allowed.
-        """
-        if self.check_capabilities("app_api"):
-            return False
-        return scope in self.capabilities["app_api"]["scopes"]
-
     @property
     def user(self) -> str:
         """Property containing the current user ID.
@@ -469,15 +460,6 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
     async def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
         return await self._session.ocs("GET", f"{self._session.ae_url}/users")
-
-    async def scope_allowed(self, scope: ApiScope) -> bool:
-        """Check if API scope is avalaible for application.
-
-        Useful for applications that declare optional scopes to check if they are allowed.
-        """
-        if await self.check_capabilities("app_api"):
-            return False
-        return scope in (await self.capabilities)["app_api"]["scopes"]
 
     @property
     async def user(self) -> str:

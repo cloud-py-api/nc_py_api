@@ -13,12 +13,8 @@ The first step is to add the **TALK_BOT** and **TALK** scopes to your `info.xml`
 .. code-block:: xml
 
     <scopes>
-        <required>
-            <value>TALK</value>
-            <value>TALK_BOT</value>
-        </required>
-        <optional>
-        </optional>
+        <value>TALK</value>
+        <value>TALK_BOT</value>
     </scopes>
 
 The TALK_BOT scope enables your application to register the bot within the Nextcloud system, while the TALK scope permits access to Talk's endpoints.
