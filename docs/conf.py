@@ -67,6 +67,7 @@ nitpicky = True
 nitpick_ignore_regex = [
     (r"py:class", r"starlette\.requests\.Request"),
     (r"py:class", r"starlette\.requests\.HTTPConnection"),
+    (r"py:class", r"ComputedFieldInfo"),
     (r"py:.*", r"httpx.*"),
 ]
 

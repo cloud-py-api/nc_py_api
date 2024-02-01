@@ -25,12 +25,8 @@
 			<image-tag>latest</image-tag>
 		</docker-install>
 		<scopes>
-			<required>
-				<value>TALK</value>
-				<value>TALK_BOT</value>
-			</required>
-			<optional>
-			</optional>
+			<value>TALK</value>
+			<value>TALK_BOT</value>
 		</scopes>
 		<system>false</system>
 	</external-app>

@@ -19,7 +19,7 @@ class LogLvl(enum.IntEnum):
 
 
 class ApiScope(enum.IntEnum):
-    """Default API scopes. Should be used as a parameter to the :py:meth:`~.NextcloudApp.scope_allowed` method."""
+    """Defined API scopes."""
 
     SYSTEM = 2
     """Allows access to the System APIs."""

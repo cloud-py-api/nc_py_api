@@ -25,12 +25,8 @@
 			<image-tag>latest</image-tag>
 		</docker-install>
 		<scopes>
-			<required>
-				<value>FILES</value>
-				<value>NOTIFICATIONS</value>
-			</required>
-			<optional>
-			</optional>
+			<value>FILES</value>
+			<value>NOTIFICATIONS</value>
 		</scopes>
 		<system>false</system>
 	</external-app>
