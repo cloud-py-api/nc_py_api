@@ -25,10 +25,6 @@
 			<image-tag>latest</image-tag>
 		</docker-install>
 		<scopes>
-			<required>
-			</required>
-			<optional>
-			</optional>
 		</scopes>
 		<system>false</system>
 	</external-app>

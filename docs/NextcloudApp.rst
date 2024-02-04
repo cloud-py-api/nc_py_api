@@ -151,12 +151,8 @@ First of all, we modernize info.ixml, add the API groups we need for this to wor
 .. code-block:: xml
 
     <scopes>
-        <required>
-            <value>FILES</value>
-            <value>NOTIFICATIONS</value>
-        </required>
-        <optional>
-        </optional>
+        <value>FILES</value>
+        <value>NOTIFICATIONS</value>
     </scopes>
 
 .. note:: Full list of avalaible API scopes can be found `here <https://cloud-py-api.github.io/app_api/tech_details/ApiScopes.html>`_.
