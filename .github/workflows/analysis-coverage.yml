@@ -956,7 +956,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: coverage_*
-          merge-multiple: true
 
       - name: debug
         run: ls -la
