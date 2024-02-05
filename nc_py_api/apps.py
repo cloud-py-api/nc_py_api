@@ -15,6 +15,11 @@ class ExAppInfo:
         self._raw_data = raw_data
 
     @property
+    def test_cov_ci(self) -> str:
+        """Coverage CI Action test."""
+        return "123"
+
+    @property
     def app_id(self) -> str:
         """`ID` of the application."""
         return self._raw_data["id"]
