@@ -5,7 +5,7 @@ import builtins
 import json
 import os
 import typing
-from urllib.parse import quote, urlparse
+from urllib.parse import urlparse
 
 import httpx
 from fastapi import (
@@ -185,21 +185,24 @@ def __fetch_model_as_file(
 ) -> None:
     parsed_url = urlparse(model_path)
     result_path = download_options.pop("save_path", parsed_url.path.split("/")[-1])
-    with httpx.stream("GET", quote(model_path), follow_redirects=True) as response:
-        if response.status_code != 200:
-            nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' returned {response.status_code} status.")
-            return
-        downloaded_size = 0
-        with builtins.open(result_path, "wb") as file:
-            total_size = int(response.headers.get("Content-Length"))
-            last_progress = current_progress
-            for chunk in response.iter_bytes(5 * 1024 * 1024):
-                downloaded_size += file.write(chunk)
-                if total_size:
-                    new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
-                    if new_progress != last_progress:
-                        nc.set_init_status(new_progress)
-                        last_progress = new_progress
+    try:
+        with httpx.stream("GET", model_path, follow_redirects=True) as response:
+            if not response.is_success:
+                nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' returned {response.status_code} status.")
+                return
+            downloaded_size = 0
+            with builtins.open(result_path, "wb") as file:
+                total_size = int(response.headers.get("Content-Length"))
+                last_progress = current_progress
+                for chunk in response.iter_bytes(5 * 1024 * 1024):
+                    downloaded_size += file.write(chunk)
+                    if total_size:
+                        new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
+                        if new_progress != last_progress:
+                            nc.set_init_status(new_progress)
+                            last_progress = new_progress
+    except httpx.RequestError as e:
+        nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' raised an exception: {e}")
 
 
 def __fetch_model_as_snapshot(
