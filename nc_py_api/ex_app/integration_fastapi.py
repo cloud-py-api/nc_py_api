@@ -2,6 +2,7 @@
 
 import asyncio
 import builtins
+import hashlib
 import json
 import os
 import typing
@@ -183,16 +184,35 @@ def __fetch_models_task(nc: NextcloudApp, models: dict[str, dict]) -> None:
 def __fetch_model_as_file(
     current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
 ) -> None:
-    parsed_url = urlparse(model_path)
-    result_path = download_options.pop("save_path", parsed_url.path.split("/")[-1])
+    result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
     try:
         with httpx.stream("GET", model_path, follow_redirects=True) as response:
             if not response.is_success:
                 nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' returned {response.status_code} status.")
                 return
             downloaded_size = 0
+            linked_etag = ""
+            for each_history in response.history:
+                linked_etag = each_history.headers.get("X-Linked-ETag", "")
+                if linked_etag:
+                    break
+            if not linked_etag:
+                linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
+            total_size = int(response.headers.get("Content-Length"))
+            try:
+                existing_size = os.path.getsize(result_path)
+            except OSError:
+                existing_size = 0
+            if linked_etag and total_size == existing_size:
+                with builtins.open(result_path, "rb") as file:
+                    sha256_hash = hashlib.sha256()
+                    for byte_block in iter(lambda: file.read(4096), b""):
+                        sha256_hash.update(byte_block)
+                    if f'"{sha256_hash.hexdigest()}"' == linked_etag:
+                        nc.set_init_status(min(current_progress + progress_for_task, 99))
+                        return
+
             with builtins.open(result_path, "wb") as file:
-                total_size = int(response.headers.get("Content-Length"))
                 last_progress = current_progress
                 for chunk in response.iter_bytes(5 * 1024 * 1024):
                     downloaded_size += file.write(chunk)
