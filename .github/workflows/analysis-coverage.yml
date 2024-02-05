@@ -172,12 +172,6 @@ jobs:
           cd nc_py_api
           coverage combine && coverage xml && coverage html
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
@@ -331,13 +325,6 @@ jobs:
           cd nc_py_api
           coverage combine && coverage xml && coverage html
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
-
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -446,13 +433,6 @@ jobs:
           coverage combine && coverage xml && coverage html
         env:
           SKIP_NC_CLIENT_TESTS: 1
-
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_oci_stable27_3.11_8.1
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
@@ -620,13 +600,6 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
           coverage combine && coverage xml && coverage html
-
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_maria_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
@@ -799,12 +772,6 @@ jobs:
           cd nc_py_api
           coverage combine && coverage xml && coverage html
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_pgsql_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
@@ -923,13 +890,6 @@ jobs:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage_sqlite_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
-          if-no-files-found: error
-
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -964,7 +924,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage-full
           fail_ci_if_error: true
           verbose: true
 
