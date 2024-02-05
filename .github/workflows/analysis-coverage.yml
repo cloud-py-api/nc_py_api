@@ -916,9 +916,6 @@ jobs:
           pattern: coverage_*
           merge-multiple: true
 
-      - name: debug
-        run: ls -la && ls -la coverage
-
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
         with:
