@@ -912,17 +912,18 @@ jobs:
       - name: Download Coverage Artifacts
         uses: actions/download-artifact@v4
         with:
+          path: coverage
           pattern: coverage_*
           merge-multiple: true
 
       - name: debug
-        run: ls -la
+        run: ls -la && ls -la coverage
 
       - name: Upload report to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./
+          directory: coverage
           fail_ci_if_error: true
           verbose: true
 
