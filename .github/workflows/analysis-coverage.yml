@@ -179,15 +179,12 @@ jobs:
           path: nc_py_api/htmlcov
           if-no-files-found: error
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
+          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          file: nc_py_api/coverage.xml
+          if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
@@ -341,15 +338,12 @@ jobs:
           path: nc_py_api/htmlcov
           if-no-files-found: error
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
+          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          file: nc_py_api/coverage.xml
+          if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
@@ -460,15 +454,12 @@ jobs:
           path: nc_py_api/htmlcov
           if-no-files-found: error
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_oci_stable27_3.11_8.1
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
+          name: coverage_oci_stable27_3.11_8.1.xml
+          file: nc_py_api/coverage.xml
+          if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
@@ -637,15 +628,12 @@ jobs:
           path: nc_py_api/htmlcov
           if-no-files-found: error
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_maria_${{ matrix.nextcloud }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
+          name: coverage_maria_${{ matrix.nextcloud }}.xml
+          file: nc_py_api/coverage.xml
+          if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
@@ -818,15 +806,12 @@ jobs:
           path: nc_py_api/htmlcov
           if-no-files-found: error
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_pgsql_${{ matrix.nextcloud }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
+          name: coverage_pgsql_${{ matrix.nextcloud }}.xml
+          file: nc_py_api/coverage.xml
+          if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
@@ -945,15 +930,12 @@ jobs:
           path: nc_py_api/htmlcov
           if-no-files-found: error
 
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_sqlite_${{ matrix.nextcloud }}_client
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
+          name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
+          file: nc_py_api/coverage.xml
+          if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
@@ -963,11 +945,35 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
+  tests-upload-coverage:
+    needs: [tests-maria, tests-pgsql, tests-stable27-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    permissions:
+      contents: none
+    runs-on: ubuntu-22.04
+    name: Upload Coverage
+    steps:
+      - name: Download Coverage Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage_*
+          merge-multiple: true
+
+      - name: debug
+        run: ls -la
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage-full
+          fail_ci_if_error: true
+          verbose: true
+
   tests-success:
     permissions:
       contents: none
     runs-on: ubuntu-22.04
-    needs: [tests-maria, tests-pgsql, tests-stable27-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    needs: [tests-upload-coverage]
     name: Tests-OK
     steps:
       - run: echo "Tests passed successfully"
