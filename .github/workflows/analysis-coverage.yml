@@ -183,7 +183,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
-          file: nc_py_api/coverage.xml
+          path: nc_py_api/coverage.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -342,7 +342,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
-          file: nc_py_api/coverage.xml
+          path: nc_py_api/coverage.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -458,7 +458,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_oci_stable27_3.11_8.1.xml
-          file: nc_py_api/coverage.xml
+          path: nc_py_api/coverage.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -632,7 +632,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_maria_${{ matrix.nextcloud }}.xml
-          file: nc_py_api/coverage.xml
+          path: nc_py_api/coverage.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -810,7 +810,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}.xml
-          file: nc_py_api/coverage.xml
+          path: nc_py_api/coverage.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -934,7 +934,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
-          file: nc_py_api/coverage.xml
+          path: nc_py_api/coverage.xml
           if-no-files-found: error
 
       - name: Upload NC logs
