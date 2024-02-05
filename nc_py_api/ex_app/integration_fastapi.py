@@ -201,7 +201,7 @@ def __fetch_model_as_file(
                         if new_progress != last_progress:
                             nc.set_init_status(new_progress)
                             last_progress = new_progress
-    except httpx.RequestError as e:
+    except Exception as e:  # noqa pylint: disable=broad-exception-caught
         nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' raised an exception: {e}")
 
 
