@@ -170,14 +170,13 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
-
+          coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
-          path: nc_py_api/coverage.xml
+          path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -323,13 +322,13 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
-          path: nc_py_api/coverage.xml
+          path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -430,7 +429,7 @@ jobs:
         run: |
           coverage run --data-file=.coverage.ci -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_oci_stable27_3.11_8.1.xml
         env:
           SKIP_NC_CLIENT_TESTS: 1
 
@@ -438,7 +437,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_oci_stable27_3.11_8.1.xml
-          path: nc_py_api/coverage.xml
+          path: nc_py_api/coverage_oci_stable27_3.11_8.1.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -599,13 +598,13 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage_maria_${{ matrix.nextcloud }}.xml
-          path: nc_py_api/coverage.xml
+          path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -770,14 +769,13 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
-
+          coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}.xml
-          path: nc_py_api/coverage.xml
+          path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -883,9 +881,7 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: |
-          coverage run -m pytest
-          coverage xml && coverage html
+        run: coverage run -m pytest && coverage xml -o coverage_sqlite_${{ matrix.nextcloud }}_client.xml
         env:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
@@ -894,7 +890,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
-          path: nc_py_api/coverage.xml
+          path: nc_py_api/coverage_sqlite_${{ matrix.nextcloud }}_client.xml
           if-no-files-found: error
 
       - name: Upload NC logs
@@ -916,6 +912,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: coverage_*
+          merge-multiple: true
 
       - name: debug
         run: ls -la
