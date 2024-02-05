@@ -1,10 +1,13 @@
 """FastAPI directly related stuff."""
 
 import asyncio
+import builtins
 import json
 import os
 import typing
+from urllib.parse import quote, urlparse
 
+import httpx
 from fastapi import (
     BackgroundTasks,
     Depends,
@@ -20,6 +23,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import AsyncNextcloudApp, NextcloudApp
 from ..talk_bot import TalkBotMessage
+from .defs import LogLvl
 from .misc import persistent_storage
 
 
@@ -163,24 +167,55 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def __fetch_models_task(
-    nc: NextcloudApp,
-    models: dict[str, dict],
-) -> None:
+def __fetch_models_task(nc: NextcloudApp, models: dict[str, dict]) -> None:
     if models:
-        from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
-        from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
-
-        class TqdmProgress(tqdm):
-            def display(self, msg=None, pos=None):
-                nc.set_init_status(min(int((self.n * 100 / self.total) / len(models)), 100))
-                return super().display(msg, pos)
-
+        current_progress = 0
+        percent_for_each = min(int(100 / len(models)), 99)
         for model in models:
-            workers = models[model].pop("max_workers", 2)
-            cache = models[model].pop("cache_dir", persistent_storage())
-            snapshot_download(model, tqdm_class=TqdmProgress, **models[model], max_workers=workers, cache_dir=cache)
+            if model.startswith(("http://", "https://")):
+                __fetch_model_as_file(current_progress, percent_for_each, nc, model, models[model])
+            else:
+                __fetch_model_as_snapshot(current_progress, percent_for_each, nc, model, models[model])
+            current_progress += percent_for_each
     nc.set_init_status(100)
+
+
+def __fetch_model_as_file(
+    current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
+) -> None:
+    parsed_url = urlparse(model_path)
+    result_path = download_options.pop("save_path", parsed_url.path.split("/")[-1])
+    with httpx.stream("GET", quote(model_path), follow_redirects=True) as response:
+        if response.status_code != 200:
+            nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' returned {response.status_code} status.")
+            return
+        downloaded_size = 0
+        with builtins.open(result_path, "wb") as file:
+            total_size = int(response.headers.get("Content-Length"))
+            last_progress = current_progress
+            for chunk in response.iter_bytes(5 * 1024 * 1024):
+                downloaded_size += file.write(chunk)
+                if total_size:
+                    new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
+                    if new_progress != last_progress:
+                        nc.set_init_status(new_progress)
+                        last_progress = new_progress
+
+
+def __fetch_model_as_snapshot(
+    current_progress: int, progress_for_task, nc: NextcloudApp, mode_name: str, download_options: dict
+) -> None:
+    from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
+    from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
+
+    class TqdmProgress(tqdm):
+        def display(self, msg=None, pos=None):
+            nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
+            return super().display(msg, pos)
+
+    workers = download_options.pop("max_workers", 2)
+    cache = download_options.pop("cache_dir", persistent_storage())
+    snapshot_download(mode_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache)
 
 
 class AppAPIAuthMiddleware:
