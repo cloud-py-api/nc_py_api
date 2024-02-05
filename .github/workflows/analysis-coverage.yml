@@ -170,24 +170,14 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
+          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
           if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -332,24 +322,14 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          path: nc_py_api/htmlcov
+          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
           if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -449,26 +429,16 @@ jobs:
         run: |
           coverage run --data-file=.coverage.ci -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_oci_stable27_3.11_8.1.xml
         env:
           SKIP_NC_CLIENT_TESTS: 1
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage_oci_stable27_3.11_8.1
-          path: nc_py_api/htmlcov
+          name: coverage_oci_stable27_3.11_8.1.xml
+          path: nc_py_api/coverage_oci_stable27_3.11_8.1.xml
           if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_oci_stable27_3.11_8.1
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -628,24 +598,14 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}.xml
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage_maria_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
+          name: coverage_maria_${{ matrix.nextcloud }}.xml
+          path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}.xml
           if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_maria_${{ matrix.nextcloud }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -809,24 +769,14 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml && coverage html
+          coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}.xml
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage_pgsql_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
+          name: coverage_pgsql_${{ matrix.nextcloud }}.xml
+          path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}.xml
           if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_pgsql_${{ matrix.nextcloud }}
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -931,29 +881,17 @@ jobs:
 
       - name: Generate coverage report
         working-directory: nc_py_api
-        run: |
-          coverage run -m pytest
-          coverage xml && coverage html
+        run: coverage run -m pytest && coverage xml -o coverage_sqlite_${{ matrix.nextcloud }}_client.xml
         env:
           SKIP_AA_TESTS: 1
           NPA_NC_CERT: ''
 
-      - name: HTML coverage to artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Codecov to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage_sqlite_${{ matrix.nextcloud }}
-          path: nc_py_api/htmlcov
+          name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
+          path: nc_py_api/coverage_sqlite_${{ matrix.nextcloud }}_client.xml
           if-no-files-found: error
-
-      - name: Upload report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          name: coverage_sqlite_${{ matrix.nextcloud }}_client
-          file: coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          working-directory: nc_py_api
 
       - name: Upload NC logs
         if: always()
@@ -963,11 +901,34 @@ jobs:
           path: data/nextcloud.log
           if-no-files-found: warn
 
+  tests-upload-coverage:
+    needs: [tests-maria, tests-pgsql, tests-stable27-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    permissions:
+      contents: none
+    runs-on: ubuntu-22.04
+    name: Upload Coverage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Coverage Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage
+          pattern: coverage_*
+          merge-multiple: true
+
+      - name: Upload report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage
+          fail_ci_if_error: true
+          verbose: true
+
   tests-success:
     permissions:
       contents: none
     runs-on: ubuntu-22.04
-    needs: [tests-maria, tests-pgsql, tests-stable27-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    needs: [tests-upload-coverage]
     name: Tests-OK
     steps:
       - run: echo "Tests passed successfully"
