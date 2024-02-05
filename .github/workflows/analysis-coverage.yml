@@ -49,6 +49,7 @@ jobs:
           - nextcloud: "27.1.4"
             python: "3.10"
             php-version: "8.1"
+    timeout-minutes: 60
 
     services:
       mariadb:
@@ -209,6 +210,7 @@ jobs:
             php-version: "8.2"
     env:
       NC_dbname: nextcloud_abz
+    timeout-minutes: 60
 
     services:
       postgres:
@@ -361,6 +363,7 @@ jobs:
     needs: [analysis]
     runs-on: ubuntu-22.04
     name: stable27 • 🐘8.1 • 🐍3.11 • OCI
+    timeout-minutes: 60
 
     services:
       oracle:
@@ -483,6 +486,7 @@ jobs:
       fail-fast: false
       matrix:
         nextcloud: [ 'stable27', 'stable28', 'master' ]
+    timeout-minutes: 60
 
     services:
       mariadb:
@@ -661,6 +665,7 @@ jobs:
         nextcloud: [ 'stable27', 'stable28', 'master' ]
     env:
       NC_dbname: nextcloud_abz
+    timeout-minutes: 60
 
     services:
       postgres:
@@ -841,6 +846,7 @@ jobs:
         nextcloud: [ 'stable26', 'stable27', 'stable28', 'master' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
+    timeout-minutes: 60
 
     steps:
       - name: Set up php

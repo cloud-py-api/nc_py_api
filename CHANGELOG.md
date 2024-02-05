@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.0 - 2024-02-0x]
+
+### Added
+
+- set_handlers: `models_to_fetch` can now accept direct links to a files to download. #217
+
+### Changed
+
+- adjusted code related to changes in AppAPI `2.0.3` #216
+
 ## [0.9.0 - 2024-01-25]
 
 ### Added
