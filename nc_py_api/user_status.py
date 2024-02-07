@@ -39,7 +39,7 @@ class PredefinedStatus:
         self.status_id = raw_status["id"]
         self.icon = raw_status["icon"]
         self.message = raw_status["message"]
-        clear_at_raw = raw_status.get("clearAt", None)
+        clear_at_raw = raw_status.get("clearAt")
         if clear_at_raw:
             self.clear_at = ClearAt(clear_at_raw)
         else:
