@@ -35,6 +35,7 @@ Python library that provides a robust and well-documented API that allows develo
 | User & Weather status |      ✅       |      ✅       |      ✅       |      ✅       |
 | Other APIs***         |      ✅       |      ✅       |      ✅       |      ✅       |
 | Talk Bot API*         |     N/A      |      ✅       |      ✅       |      ✅       |
+| Declarative Settings* |     N/A      |     N/A      |     N/A      |      ✅       |
 | AI Providers API**    |     N/A      |     N/A      |     N/A      |      ✅       |
 
 &ast;_available only for **NextcloudApp**_<br>

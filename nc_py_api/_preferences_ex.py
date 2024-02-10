@@ -106,7 +106,7 @@ class _AsyncBasicAppCfgPref:
 
 
 class PreferencesExAPI(_BasicAppCfgPref):
-    """User specific preferences API."""
+    """User specific preferences API, avalaible as **nc.preferences_ex**."""
 
     _url_suffix = "ex-app/preference"
 
@@ -134,7 +134,7 @@ class AsyncPreferencesExAPI(_AsyncBasicAppCfgPref):
 
 
 class AppConfigExAPI(_BasicAppCfgPref):
-    """Non-user(App) specific preferences API."""
+    """Non-user(App) specific preferences API, avalaible as **nc.appconfig_ex**."""
 
     _url_suffix = "ex-app/config"
 
