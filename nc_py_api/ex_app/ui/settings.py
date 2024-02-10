@@ -50,6 +50,12 @@ class SettingsField:
     label: str = ""
     notify = False  # to be supported in future
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "SettingsField":
+        """Creates instance of class from dict, ignoring unknown keys."""
+        filtered_data = {k: v for k, v in data.items() if k in cls.__annotations__}
+        return cls(**filtered_data)
+
     def to_dict(self) -> dict:
         """Returns data in format that is accepted by AppAPI."""
         return {
@@ -81,6 +87,13 @@ class SettingsForm:
     priority: int = 50
     doc_url: str = ""
     section_type: str = "personal"
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "SettingsForm":
+        """Creates instance of class from dict, ignoring unknown keys."""
+        filtered_data = {k: v for k, v in data.items() if k in cls.__annotations__}
+        filtered_data["fields"] = [SettingsField.from_dict(i) for i in filtered_data.get("fields", [])]
+        return cls(**filtered_data)
 
     def to_dict(self) -> dict:
         """Returns data in format that is accepted by AppAPI."""
@@ -124,8 +137,8 @@ class _DeclarativeSettingsAPI:
         """Get information of the Settings UI Form."""
         require_capabilities("app_api", self._session.capabilities)
         try:
-            return SettingsForm(
-                *self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"formId": form_id})
+            return SettingsForm.from_dict(
+                self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"formId": form_id})
             )
         except NextcloudExceptionNotFound:
             return None
@@ -137,7 +150,7 @@ class _AsyncDeclarativeSettingsAPI:
     def __init__(self, session: AsyncNcSessionApp):
         self._session = session
 
-    async def register_form(self, form_schema: SettingsForm) -> None:
+    async def register_form(self, form_schema: SettingsForm | dict[str, typing.Any]) -> None:
         """Registers or edit the Settings UI Form."""
         require_capabilities("app_api", await self._session.capabilities)
         param = {"formScheme": form_schema.to_dict() if isinstance(form_schema, SettingsForm) else form_schema}
@@ -156,8 +169,8 @@ class _AsyncDeclarativeSettingsAPI:
         """Get information of the Settings UI Form."""
         require_capabilities("app_api", await self._session.capabilities)
         try:
-            return SettingsForm(
-                *await self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"formId": form_id})
+            return SettingsForm.from_dict(
+                await self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"formId": form_id})
             )
         except NextcloudExceptionNotFound:
             return None

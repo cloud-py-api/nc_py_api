@@ -30,7 +30,7 @@ SETTINGS_EXAMPLE = SettingsForm(
     id="settings_example",
     section_type="admin",
     section_id="ai_integration_team",
-    title="AppAPI declarative settings",
+    title="Example of declarative settings",
     description="These fields are rendered dynamically from declarative schema",
     fields=[
         SettingsField(
@@ -45,7 +45,7 @@ SETTINGS_EXAMPLE = SettingsForm(
         SettingsField(
             id="some_real_setting",
             title="Choose init status check background job interval",
-            description="How often AppAPI should check for initialization status",
+            description="How often ExApp should check for initialization status",
             type=SettingsFieldType.RADIO,
             default="40m",
             placeholder="Choose init status check background job interval",

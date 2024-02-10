@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - set_handlers: `models_to_fetch` can now accept direct links to a files to download. #217
-- DeclarativeSettings API for Nextcloud 29. #
+- DeclarativeSettings API for Nextcloud 29. #222
 
 ### Changed
 
