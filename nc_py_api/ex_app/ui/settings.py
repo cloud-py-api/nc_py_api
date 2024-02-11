@@ -53,7 +53,9 @@ class SettingsField:
     @classmethod
     def from_dict(cls, data: dict) -> "SettingsField":
         """Creates instance of class from dict, ignoring unknown keys."""
-        filtered_data = {k: v for k, v in data.items() if k in cls.__annotations__}
+        filtered_data = {
+            k: SettingsFieldType(v) if k == "type" else v for k, v in data.items() if k in cls.__annotations__
+        }
         return cls(**filtered_data)
 
     def to_dict(self) -> dict:
