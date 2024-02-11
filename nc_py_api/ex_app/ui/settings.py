@@ -109,7 +109,7 @@ class SettingsForm:
         }
 
 
-_EP_SUFFIX: str = "ui/declarative_settings"
+_EP_SUFFIX: str = "ui/settings"
 
 
 class _DeclarativeSettingsAPI:
