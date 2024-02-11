@@ -57,6 +57,18 @@ UI methods should be accessed with the help of :class:`~nc_py_api.nextcloud.Next
 .. autoclass:: nc_py_api.ex_app.ui.resources.UiStyle
     :members:
 
+.. autoclass:: nc_py_api.ex_app.ui.settings.SettingsField
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.settings.SettingsForm
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.settings.SettingsFieldType
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI
+    :members:
+
 .. autoclass:: nc_py_api.ex_app.providers.providers.ProvidersApi
     :members:
 

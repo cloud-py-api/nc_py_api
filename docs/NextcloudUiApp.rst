@@ -19,12 +19,19 @@ Here we will simply describe in detail what happens in the example.
         )
         nc.ui.resources.set_script("top_menu", "first_menu", "js/ui_example-main")
         nc.ui.top_menu.register("first_menu", "UI example", "img/icon.svg")
+        if nc.srv_version["major"] >= 29:
+            nc.ui.settings.register_form(SETTINGS_EXAMPLE)
 
 **set_initial_state** is analogue of PHP ``OCP\AppFramework\Services\IInitialState::provideInitialState``
 
 **set_script** is analogue of PHP ``Util::addScript``
 
 There is also **set_style** (``Util::addStyle``) that can be used for CSS files and works the same way as **set_script**.
+
+Starting with Nextcloud **29** AppAPI supports declaring Settings UI, with very simple and robust API.
+
+Settings values you declare will be saved to ``preferences_ex`` or ``appconfig_ex`` tables and can be retrieved using
+:py:class:`nc_py_api._preferences_ex.PreferencesExAPI` or :py:class:`nc_py_api._preferences_ex.AppConfigExAPI` APIs.
 
 Backend
 -------
