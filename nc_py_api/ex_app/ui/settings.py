@@ -9,7 +9,7 @@ from ..._misc import require_capabilities
 from ..._session import AsyncNcSessionApp, NcSessionApp
 
 
-class SettingsFieldType(enum.StrEnum):
+class SettingsFieldType(enum.Enum):  # StrEnum
     """Declarative Settings Field Type."""
 
     TEXT = "text"
@@ -61,7 +61,7 @@ class SettingsField:
         return {
             "id": self.id,
             "title": self.title,
-            "type": str(self.type),
+            "type": self.type.value,
             "default": self.default,
             "description": self.description,
             "options": (
