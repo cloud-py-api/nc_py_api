@@ -77,7 +77,7 @@ class UiStyle(UiBase):
 
 
 class _UiResources:
-    """API for adding scripts, styles, initial-states to the TopMenu pages."""
+    """API for adding scripts, styles, initial-states to the pages, avalaible as **nc.ui.resources.<method>**."""
 
     _ep_suffix_init_state: str = "ui/initial-state"
     _ep_suffix_js: str = "ui/script"

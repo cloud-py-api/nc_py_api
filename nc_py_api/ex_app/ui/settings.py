@@ -115,7 +115,7 @@ _EP_SUFFIX: str = "ui/settings"
 
 
 class _DeclarativeSettingsAPI:
-    """Class providing API for creating UI for the ExApp settings."""
+    """Class providing API for creating UI for the ExApp settings, avalaible as **nc.ui.settings.<method>**."""
 
     def __init__(self, session: NcSessionApp):
         self._session = session

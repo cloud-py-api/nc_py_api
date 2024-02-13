@@ -5,7 +5,7 @@ from . import FilePermissions, FsNode, Share, ShareType
 
 
 class _FilesSharingAPI:
-    """Class provides all File Sharing functionality."""
+    """Class provides all File Sharing functionality, avalaible as **nc.files.sharing.<method>**."""
 
     _ep_base: str = "/ocs/v1.php/apps/files_sharing/api/v1"
 

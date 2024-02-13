@@ -31,7 +31,7 @@ from .sharing import _AsyncFilesSharingAPI, _FilesSharingAPI
 
 
 class FilesAPI:
-    """Class that encapsulates file system and file sharing API."""
+    """Class that encapsulates file system and file sharing API, avalaible as **nc.files.<method>**."""
 
     sharing: _FilesSharingAPI
     """API for managing Files Shares"""
