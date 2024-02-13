@@ -26,7 +26,7 @@ from .talk import (
 
 
 class _TalkAPI:
-    """Class provides API to work with Nextcloud Talk."""
+    """Class provides API to work with Nextcloud Talk, avalaible as **nc.talk.<method>**."""
 
     _ep_base: str = "/ocs/v2.php/apps/spreed"
     config_sha: str
