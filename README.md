@@ -68,16 +68,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from nc_py_api import NextcloudApp
-from nc_py_api.ex_app import LogLvl, run_app, set_handlers
+from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, run_app, set_handlers
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI):
-    set_handlers(APP, enabled_handler)
+async def lifespan(app: FastAPI):
+    set_handlers(app, enabled_handler)
     yield
 
 
 APP = FastAPI(lifespan=lifespan)
+APP.add_middleware(AppAPIAuthMiddleware)
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
