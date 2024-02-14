@@ -14,12 +14,12 @@ async def lifespan(_app: FastAPI):
 
 
 APP = FastAPI(lifespan=lifespan)
+APP.add_middleware(ex_app.AppAPIAuthMiddleware)
 
 
 @APP.put("/sec_check")
 async def sec_check(
     value: int,
-    _nc: typing.Annotated[AsyncNextcloudApp, Depends(ex_app.anc_app)],
 ):
     print(value, flush=True)
     return JSONResponse(content={"error": ""}, status_code=200)
