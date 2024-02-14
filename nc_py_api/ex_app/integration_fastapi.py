@@ -32,16 +32,14 @@ from .misc import persistent_storage
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
     nextcloud_app = NextcloudApp(**__nc_app(request))
-    if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
-        _request_sign_check(request, nextcloud_app)
+    __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
 
 
 def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
     """Async Authentication handler for requests from Nextcloud to the application."""
     nextcloud_app = AsyncNextcloudApp(**__nc_app(request))
-    if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
-        _request_sign_check(request, nextcloud_app)
+    __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
 
 
@@ -201,6 +199,11 @@ def __nc_app(request: HTTPConnection) -> dict:
     )[0]
     request_id = request.headers.get("AA-REQUEST-ID", None)
     return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
+
+
+def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+    if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
+        _request_sign_check(request, nextcloud_app)
 
 
 def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
