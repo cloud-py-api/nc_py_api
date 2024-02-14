@@ -8,7 +8,7 @@ from nc_py_api import AsyncNextcloudApp, ex_app
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback, init_handler=init_handler)
+    ex_app.set_handlers(APP, enabled_handler)
     yield
 
 
@@ -17,9 +17,7 @@ APP.add_middleware(ex_app.AppAPIAuthMiddleware)
 
 
 @APP.put("/sec_check")
-async def sec_check(
-    value: int,
-):
+async def sec_check(value: int):
     print(value, flush=True)
     return JSONResponse(content={"error": ""}, status_code=200)
 
@@ -31,14 +29,6 @@ async def enabled_handler(enabled: bool, nc: AsyncNextcloudApp) -> str:
     else:
         await nc.log(ex_app.LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
-
-
-async def init_handler(nc: AsyncNextcloudApp):
-    await nc.set_init_status(100)
-
-
-async def heartbeat_callback():
-    return "ok"
 
 
 if __name__ == "__main__":

@@ -10,9 +10,9 @@ from transformers import pipeline
 
 from nc_py_api import NextcloudApp, talk_bot
 from nc_py_api.ex_app import (
+    AppAPIAuthMiddleware,
     atalk_bot_msg,
     get_model_path,
-    nc_app,
     run_app,
     set_handlers,
 )
@@ -25,6 +25,7 @@ async def lifespan(_app: FastAPI):
 
 
 APP = FastAPI(lifespan=lifespan)
+APP.add_middleware(AppAPIAuthMiddleware)
 AI_BOT = talk_bot.TalkBot("/ai_talk_bot", "AI talk bot", "Usage: `@assistant What sounds do cats make?`")
 MODEL_NAME = "MBZUAI/LaMini-Flan-T5-783M"
 
@@ -40,7 +41,6 @@ def ai_talk_bot_process_request(message: talk_bot.TalkBotMessage):
 
 @APP.post("/ai_talk_bot")
 async def ai_talk_bot(
-    _nc: Annotated[NextcloudApp, Depends(nc_app)],
     message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):

@@ -2,6 +2,7 @@
 
 import asyncio
 import builtins
+import fnmatch
 import hashlib
 import json
 import os
@@ -14,10 +15,10 @@ from fastapi import (
     Depends,
     FastAPI,
     HTTPException,
-    responses,
     staticfiles,
     status,
 )
+from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
@@ -65,8 +66,8 @@ async def atalk_bot_msg(request: Request) -> TalkBotMessage:
 def set_handlers(
     fast_api_app: FastAPI,
     enabled_handler: typing.Callable[[bool, AsyncNextcloudApp | NextcloudApp], typing.Awaitable[str] | str],
-    heartbeat_handler: typing.Callable[[], typing.Awaitable[str] | str] | None = None,
-    init_handler: typing.Callable[[AsyncNextcloudApp | NextcloudApp], typing.Awaitable[None] | None] | None = None,
+    default_heartbeat: bool = True,
+    default_init: bool = True,
     models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
 ):
@@ -74,85 +75,68 @@ def set_handlers(
 
     :param fast_api_app: FastAPI() call return value.
     :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
-    :param heartbeat_handler: Optional, callback that will be called for the `heartbeat` deploy event.
-    :param init_handler: Optional, callback that will be called for the `init`  event.
+    :param default_heartbeat: Set to ``False`` to disable the default `heartbeat` route handler.
+    :param default_init: Set to ``False`` to disable the default `init` route handler.
 
-        .. note:: This parameter is **mutually exclusive** with ``models_to_fetch``.
+        .. note:: When this parameter is ``False``, the provision of ``models_to_fetch`` is not allowed.
 
     :param models_to_fetch: Dictionary describing which models should be downloaded during `init`.
 
-        .. note:: ```huggingface_hub`` package should be present for automatic models fetching.
+        .. note:: ``huggingface_hub`` package should be present for automatic models fetching.
 
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
     """
-    if models_to_fetch is not None and init_handler is not None:
-        raise ValueError("Only `init_handler` OR `models_to_fetch` can be defined.")
+    global_auth = bool([i for i in getattr(fast_api_app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware])
+    if models_to_fetch is not None and default_init is False:
+        raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
 
     if asyncio.iscoroutinefunction(enabled_handler):
+        if global_auth:
 
-        @fast_api_app.put("/enabled")
-        async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
-            return responses.JSONResponse(content={"error": await enabled_handler(enabled, nc)}, status_code=200)
+            @fast_api_app.put("/enabled")
+            async def enabled_callback(enabled: bool):
+                return JSONResponse(content={"error": await enabled_handler(enabled, AsyncNextcloudApp())})
+
+        else:
+
+            @fast_api_app.put("/enabled")
+            async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
+                return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
 
     else:
+        if global_auth:
 
-        @fast_api_app.put("/enabled")
-        def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            return responses.JSONResponse(content={"error": enabled_handler(enabled, nc)}, status_code=200)
+            @fast_api_app.put("/enabled")
+            def enabled_callback(enabled: bool):
+                return JSONResponse(content={"error": enabled_handler(enabled, NextcloudApp())})
 
-    if heartbeat_handler is None:
+        else:
+
+            @fast_api_app.put("/enabled")
+            def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+                return JSONResponse(content={"error": enabled_handler(enabled, nc)})
+
+    if default_heartbeat:
 
         @fast_api_app.get("/heartbeat")
         async def heartbeat_callback():
-            return responses.JSONResponse(content={"status": "ok"}, status_code=200)
+            return JSONResponse(content={"status": "ok"})
 
-    elif asyncio.iscoroutinefunction(heartbeat_handler):
-
-        @fast_api_app.get("/heartbeat")
-        async def heartbeat_callback():
-            return responses.JSONResponse(content={"status": await heartbeat_handler()}, status_code=200)
-
-    else:
-
-        @fast_api_app.get("/heartbeat")
-        def heartbeat_callback():
-            return responses.JSONResponse(content={"status": heartbeat_handler()}, status_code=200)
-
-    if init_handler is None:
+    if default_init and global_auth:
 
         @fast_api_app.post("/init")
-        async def init_callback(
-            background_tasks: BackgroundTasks,
-            nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
-        ):
-            background_tasks.add_task(
-                __fetch_models_task,
-                nc,
-                models_to_fetch if models_to_fetch else {},
-            )
-            return responses.JSONResponse(content={}, status_code=200)
+        async def init_callback(b_tasks: BackgroundTasks):
+            b_tasks.add_task(__fetch_models_task, models_to_fetch if models_to_fetch else {})
+            return JSONResponse(content={})
 
-    elif asyncio.iscoroutinefunction(init_handler):
+    elif default_init and not global_auth:
 
         @fast_api_app.post("/init")
-        async def init_callback(
-            background_tasks: BackgroundTasks,
-            nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)],
-        ):
-            background_tasks.add_task(init_handler, nc)
-            return responses.JSONResponse(content={}, status_code=200)
-
-    else:
-
-        @fast_api_app.post("/init")
-        def init_callback(
-            background_tasks: BackgroundTasks,
-            nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
-        ):
-            background_tasks.add_task(init_handler, nc)
-            return responses.JSONResponse(content={}, status_code=200)
+        async def init_callback(b_tasks: BackgroundTasks, _nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
+            b_tasks.add_task(__fetch_models_task, models_to_fetch if models_to_fetch else {})
+            return JSONResponse(content={})
 
     if map_app_static:
         __map_app_static_folders(fast_api_app)
@@ -168,7 +152,8 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def __fetch_models_task(nc: NextcloudApp, models: dict[str, dict]) -> None:
+def __fetch_models_task(models: dict[str, dict]) -> None:
+    nc = NextcloudApp()
     if models:
         current_progress = 0
         percent_for_each = min(int(100 / len(models)), 99)
@@ -263,7 +248,7 @@ class AppAPIAuthMiddleware:
 
         conn = HTTPConnection(scope)
         url_path = conn.url.path.lstrip("/")
-        if url_path not in self._disable_for:
+        if not fnmatch.filter(self._disable_for, url_path):
             try:
                 anc_app(conn)
             except HTTPException as exc:
@@ -274,5 +259,5 @@ class AppAPIAuthMiddleware:
         await self.app(scope, receive, send)
 
     @staticmethod
-    def _on_error(status_code: int = 400, content: str = "") -> responses.PlainTextResponse:
-        return responses.PlainTextResponse(content, status_code=status_code)
+    def _on_error(status_code: int = 400, content: str = "") -> PlainTextResponse:
+        return PlainTextResponse(content, status_code=status_code)
