@@ -32,27 +32,17 @@ from .misc import persistent_storage
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
     nextcloud_app = NextcloudApp(**__nc_app(request))
-    global_auth = bool([i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware])
-    if not global_auth and not nextcloud_app.request_sign_check(request):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
+        _request_sign_check(request, nextcloud_app)
     return nextcloud_app
 
 
 def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
     """Async Authentication handler for requests from Nextcloud to the application."""
     nextcloud_app = AsyncNextcloudApp(**__nc_app(request))
-    global_auth = bool([i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware])
-    if not global_auth and not nextcloud_app.request_sign_check(request):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
+        _request_sign_check(request, nextcloud_app)
     return nextcloud_app
-
-
-def __nc_app(request: HTTPConnection) -> dict:
-    user = get_username_secret_from_headers(
-        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
-    )[0]
-    request_id = request.headers.get("AA-REQUEST-ID", None)
-    return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
 
 
 def talk_bot_msg(request: Request) -> TalkBotMessage:
@@ -205,6 +195,19 @@ def __fetch_model_as_snapshot(
     snapshot_download(mode_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache)
 
 
+def __nc_app(request: HTTPConnection) -> dict:
+    user = get_username_secret_from_headers(
+        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
+    )[0]
+    request_id = request.headers.get("AA-REQUEST-ID", None)
+    return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
+
+
+def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+    if not nextcloud_app.request_sign_check(request):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+
 class AppAPIAuthMiddleware:
     """Pure ASGI AppAPIAuth Middleware."""
 
@@ -229,8 +232,7 @@ class AppAPIAuthMiddleware:
         url_path = conn.url.path.lstrip("/")
         if not fnmatch.filter(self._disable_for, url_path):
             try:
-                if not AsyncNextcloudApp().request_sign_check(conn):
-                    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+                _request_sign_check(conn, AsyncNextcloudApp())
             except HTTPException as exc:
                 response = self._on_error(exc.status_code, exc.detail)
                 await response(scope, receive, send)
