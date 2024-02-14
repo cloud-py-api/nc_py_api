@@ -1,6 +1,7 @@
+import typing
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI
 from fastapi.responses import JSONResponse
 
 from nc_py_api import NextcloudApp, ex_app
@@ -8,18 +9,31 @@ from nc_py_api import NextcloudApp, ex_app
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    ex_app.set_handlers(APP, enabled_handler)
+    ex_app.set_handlers(APP, enabled_handler, default_init=False)
     yield
 
 
 APP = FastAPI(lifespan=lifespan)
-APP.add_middleware(ex_app.AppAPIAuthMiddleware)
+APP.add_middleware(ex_app.AppAPIAuthMiddleware, disable_for=["/init"])
 
 
 @APP.put("/sec_check")
 def sec_check(value: int):
     print(value, flush=True)
     return JSONResponse(content={"error": ""}, status_code=200)
+
+
+def init_handler_background(nc: NextcloudApp):
+    nc.set_init_status(100)
+
+
+@APP.post("/init")
+def init_handler(
+    background_tasks: BackgroundTasks,
+    nc: typing.Annotated[NextcloudApp, Depends(ex_app.nc_app)],
+):
+    background_tasks.add_task(init_handler_background, nc)
+    return JSONResponse(content={}, status_code=200)
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
