@@ -31,26 +31,28 @@ from .misc import persistent_storage
 
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    user = get_username_secret_from_headers(
-        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
-    )[0]
-    request_id = request.headers.get("AA-REQUEST-ID", None)
-    nextcloud_app = NextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
-    if not nextcloud_app.request_sign_check(request):
+    nextcloud_app = NextcloudApp(**__nc_app(request))
+    global_auth = bool([i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware])
+    if not global_auth and not nextcloud_app.request_sign_check(request):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     return nextcloud_app
 
 
 def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
     """Async Authentication handler for requests from Nextcloud to the application."""
+    nextcloud_app = AsyncNextcloudApp(**__nc_app(request))
+    global_auth = bool([i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware])
+    if not global_auth and not nextcloud_app.request_sign_check(request):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    return nextcloud_app
+
+
+def __nc_app(request: HTTPConnection) -> dict:
     user = get_username_secret_from_headers(
         {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
     )[0]
     request_id = request.headers.get("AA-REQUEST-ID", None)
-    nextcloud_app = AsyncNextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
-    if not nextcloud_app.request_sign_check(request):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    return nextcloud_app
+    return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
 
 
 def talk_bot_msg(request: Request) -> TalkBotMessage:
@@ -88,35 +90,20 @@ def set_handlers(
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
     """
-    global_auth = bool([i for i in getattr(fast_api_app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware])
     if models_to_fetch is not None and default_init is False:
         raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
 
     if asyncio.iscoroutinefunction(enabled_handler):
-        if global_auth:
 
-            @fast_api_app.put("/enabled")
-            async def enabled_callback(enabled: bool):
-                return JSONResponse(content={"error": await enabled_handler(enabled, AsyncNextcloudApp())})
-
-        else:
-
-            @fast_api_app.put("/enabled")
-            async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
-                return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
+        @fast_api_app.put("/enabled")
+        async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
+            return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
 
     else:
-        if global_auth:
 
-            @fast_api_app.put("/enabled")
-            def enabled_callback(enabled: bool):
-                return JSONResponse(content={"error": enabled_handler(enabled, NextcloudApp())})
-
-        else:
-
-            @fast_api_app.put("/enabled")
-            def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-                return JSONResponse(content={"error": enabled_handler(enabled, nc)})
+        @fast_api_app.put("/enabled")
+        def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+            return JSONResponse(content={"error": enabled_handler(enabled, nc)})
 
     if default_heartbeat:
 
@@ -124,18 +111,11 @@ def set_handlers(
         async def heartbeat_callback():
             return JSONResponse(content={"status": "ok"})
 
-    if default_init and global_auth:
+    if default_init:
 
         @fast_api_app.post("/init")
-        async def init_callback(b_tasks: BackgroundTasks):
-            b_tasks.add_task(__fetch_models_task, models_to_fetch if models_to_fetch else {})
-            return JSONResponse(content={})
-
-    elif default_init and not global_auth:
-
-        @fast_api_app.post("/init")
-        async def init_callback(b_tasks: BackgroundTasks, _nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
-            b_tasks.add_task(__fetch_models_task, models_to_fetch if models_to_fetch else {})
+        async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+            b_tasks.add_task(__fetch_models_task, nc, models_to_fetch if models_to_fetch else {})
             return JSONResponse(content={})
 
     if map_app_static:
@@ -152,8 +132,7 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def __fetch_models_task(models: dict[str, dict]) -> None:
-    nc = NextcloudApp()
+def __fetch_models_task(nc: NextcloudApp, models: dict[str, dict]) -> None:
     if models:
         current_progress = 0
         percent_for_each = min(int(100 / len(models)), 99)
@@ -250,7 +229,8 @@ class AppAPIAuthMiddleware:
         url_path = conn.url.path.lstrip("/")
         if not fnmatch.filter(self._disable_for, url_path):
             try:
-                anc_app(conn)
+                if not AsyncNextcloudApp().request_sign_check(conn):
+                    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
             except HTTPException as exc:
                 response = self._on_error(exc.status_code, exc.detail)
                 await response(scope, receive, send)
