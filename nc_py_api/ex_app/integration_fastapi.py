@@ -204,8 +204,11 @@ def __nc_app(request: HTTPConnection) -> dict:
 
 
 def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
-    if not nextcloud_app.request_sign_check(request):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    try:
+        nextcloud_app._session.sign_check(request)  # noqa pylint: disable=protected-access
+    except ValueError as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED) from None
 
 
 class AppAPIAuthMiddleware:
