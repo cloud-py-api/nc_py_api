@@ -47,7 +47,7 @@ class TranslationsProvider:
 
 
 class _TranslationsProviderAPI:
-    """API for Translations providers."""
+    """API for Translations providers, avalaible as **nc.providers.translations.<method>**."""
 
     def __init__(self, session: NcSessionApp):
         self._session = session
@@ -102,7 +102,7 @@ class _TranslationsProviderAPI:
 
 
 class _AsyncTranslationsProviderAPI:
-    """API for Translations providers."""
+    """Async API for Translations providers."""
 
     def __init__(self, session: AsyncNcSessionApp):
         self._session = session

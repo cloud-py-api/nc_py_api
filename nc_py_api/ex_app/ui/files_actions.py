@@ -119,7 +119,7 @@ class UiActionFileInfo(BaseModel):
 
 
 class _UiFilesActionsAPI:
-    """API for the drop-down menu in Nextcloud **Files app**."""
+    """API for the drop-down menu in Nextcloud **Files app**, avalaible as **nc.ui.files_dropdown_menu.<method>**."""
 
     _ep_suffix: str = "ui/files-actions-menu"
 

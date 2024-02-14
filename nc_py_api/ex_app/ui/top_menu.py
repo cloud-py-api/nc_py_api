@@ -44,7 +44,7 @@ class UiTopMenuEntry:
 
 
 class _UiTopMenuAPI:
-    """API for the top menu app nav bar in Nextcloud."""
+    """API for the top menu app nav bar in Nextcloud, avalaible as **nc.ui.top_menu.<method>**."""
 
     _ep_suffix: str = "ui/top-menu"
 

@@ -37,7 +37,7 @@ class SpeechToTextProvider:
 
 
 class _SpeechToTextProviderAPI:
-    """API for Speech2Text providers."""
+    """API for Speech2Text providers, avalaible as **nc.providers.text_processing.<method>**."""
 
     def __init__(self, session: NcSessionApp):
         self._session = session
@@ -83,7 +83,7 @@ class _SpeechToTextProviderAPI:
 
 
 class _AsyncSpeechToTextProviderAPI:
-    """API for Speech2Text providers."""
+    """Async API for Speech2Text providers."""
 
     def __init__(self, session: AsyncNcSessionApp):
         self._session = session
