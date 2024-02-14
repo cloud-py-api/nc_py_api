@@ -1,30 +1,30 @@
 """Example with which we test UI elements."""
 
 import random
-import typing
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, responses
+from fastapi import FastAPI, responses
 from pydantic import BaseModel
 
 from nc_py_api import NextcloudApp
 from nc_py_api.ex_app import (
+    AppAPIAuthMiddleware,
     SettingsField,
     SettingsFieldType,
     SettingsForm,
-    nc_app,
     run_app,
     set_handlers,
 )
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI):
-    set_handlers(APP, enabled_handler)
+async def lifespan(app: FastAPI):
+    set_handlers(app, enabled_handler)
     yield
 
 
 APP = FastAPI(lifespan=lifespan)
+APP.add_middleware(AppAPIAuthMiddleware)
 
 SETTINGS_EXAMPLE = SettingsForm(
     id="settings_example",
@@ -170,7 +170,6 @@ class Button1Format(BaseModel):
 
 @APP.post("/verify_initial_value")
 async def verify_initial_value(
-    _nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
     input1: Button1Format,
 ):
     print("Old value: ", input1.initial_value)
@@ -190,7 +189,6 @@ class FileInfo(BaseModel):
 
 @APP.post("/nextcloud_file")
 async def nextcloud_file(
-    _nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
     args: dict,
 ):
     print(args["file_info"])

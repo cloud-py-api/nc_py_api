@@ -19,23 +19,35 @@ Since this is a simple skeleton application, we only define the ``/enable`` endp
 When the application receives a request at the endpoint ``/enable``,
 it should register all its functionalities in the cloud and wait for requests from Nextcloud.
 
-So, calling:
+So, defining:
 
 .. code-block:: python
 
-    set_handlers(APP, enabled_handler)
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        set_handlers(app, enabled_handler)
+        yield
 
 will register an **enabled_handler** that will be called **both when the application is enabled and disabled**.
 
 During the enablement process, you should register all the functionalities that your application offers
 in the **enabled_handler** and remove them during the disablement process.
 
-The API is designed so that you don't have to check whether an endpoint is already registered
+The AppAPI APIs is designed so that you don't have to check whether an endpoint is already registered
 (e.g., in case of a malfunction or if the administrator manually altered something in the Nextcloud database).
-The API will not fail, and in such cases, it will simply re-register without error.
+The AppAPI APIs will not fail, and in such cases, it will simply re-register without error.
 
 If any error prevents your application from functioning, you should provide a brief description in the return instead
 of an empty string, and log comprehensive information that will assist the administrator in addressing the issue.
+
+.. code-block:: python
+
+    APP = FastAPI(lifespan=lifespan)
+    APP.add_middleware(AppAPIAuthMiddleware)
+
+With help of ``AppAPIAuthMiddleware`` you can add **global** AppAPI authentication for all future endpoints you will define.
+
+.. note:: ``AppAPIAuthMiddleware`` supports **disable_for** optional argument, where you can list all routes for which authentication should be skipped.
 
 Dockerfile
 ----------
@@ -86,7 +98,7 @@ After launching your application, execute the following command in the Nextcloud
 .. code-block:: shell
 
     php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
-        "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":{\"required\":[\"ALL\"],\"optional\":[]},\"port\":SELECTED_PORT,\"system_app\":0}" \
+        "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":[\"ALL\"],\"port\":SELECTED_PORT,\"system_app\":0}" \
         --force-scopes --wait-finish
 
 You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.
@@ -178,29 +190,12 @@ After that, let's define the **"/video_to_gif"** endpoint that we had registered
     @APP.post("/video_to_gif")
     async def video_to_gif(
         file: UiFileActionHandlerInfo,
-        nc: Annotated[NextcloudApp, Depends(nc_app)],
         background_tasks: BackgroundTasks,
     ):
         background_tasks.add_task(convert_video_to_gif, file.actionFile.to_fs_node(), nc)
         return Response()
 
-And this step should be discussed in more detail, since it demonstrates most of the process of working External applications.
-
-Here we see: **nc: Annotated[NextcloudApp, Depends(nc_app)]**
-
-For those who already know how FastAPI works, everything should be clear by now,
-and for those who have not, it is very important to understand that:
-
-    It is a declaration of FastAPI `dependency <https://fastapi.tiangolo.com/tutorial/dependencies/#dependencies>`_ to be executed
-    before the code of **video_to_gif** starts execution.
-
-And this required dependency handles authentication and returns an instance of the :py:class:`~nc_py_api.nextcloud.NextcloudApp`
-class that allows you to make requests to Nextcloud.
-
-.. note:: Every endpoint in your application should be protected with such method, this will ensure that only Nextcloud instance
-    will be able to perform requests to the application.
-
-Finally, we are left with two much less interesting parameters, let's start with the last one, with **BackgroundTasks**:
+We see two parameters ``file`` and ``BackgroundTasks``, let's start with the last one, with **BackgroundTasks**:
 
 FastAPI `BackgroundTasks <https://fastapi.tiangolo.com/tutorial/background-tasks/?h=backgroundtasks#background-tasks>`_ documentation.
 
@@ -219,28 +214,36 @@ and since this is not directly related to working with NextCloud, we will skip t
 
 **ToGif** example `full source <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/lib/main.py>`_ code.
 
-Using AppAPIAuthMiddleware
---------------------------
+Life wo AppAPIAuthMiddleware
+----------------------------
 
-If in your application in most cases you don't really need the ``NextcloudApp`` class returned after standard authentication using `Depends`:
+If for some reason you do not want to use global AppAPI authentication **nc_py_api** provides a FastAPI Dependency for authentication your endpoints.
 
-.. code-block:: python
-
-    nc: Annotated[NextcloudApp, Depends(nc_app)]
-
-In this case, you can use global authentication. It's quite simple, just add this line of code:
+This is a modified endpoint from ``to_gif`` example:
 
 .. code-block:: python
 
-    from nc_py_api.ex_app import AppAPIAuthMiddleware
+    @APP.post("/video_to_gif")
+    async def video_to_gif(
+        file: UiFileActionHandlerInfo,
+        nc: Annotated[NextcloudApp, Depends(nc_app)],
+        background_tasks: BackgroundTasks,
+    ):
+        background_tasks.add_task(convert_video_to_gif, file.actionFile.to_fs_node(), nc)
+        return Response()
 
-    APP = FastAPI(lifespan=lifespan)
-    APP.add_middleware(AppAPIAuthMiddleware)
 
-and it will be called for all your endpoints and check the validity of the connection itself.
+Here we see: **nc: Annotated[NextcloudApp, Depends(nc_app)]**
 
-``AppAPIAuthMiddleware`` supports **disable_for** optional argument, where you can list all routes for which authentication should be skipped.
+For those who already know how FastAPI works, everything should be clear by now,
+and for those who have not, it is very important to understand that:
 
-You can still use at the same time the *AppAPIAuthMiddleware* and *Depends(nc_app)*, it is clever enough and they won't interfere with each other.
+    It is a declaration of FastAPI `dependency <https://fastapi.tiangolo.com/tutorial/dependencies/#dependencies>`_ to be executed
+    before the code of **video_to_gif** starts execution.
+
+And this required dependency handles authentication and returns an instance of the :py:class:`~nc_py_api.nextcloud.NextcloudApp`
+class that allows you to make requests to Nextcloud.
+
+.. note:: NcPyAPI is clever enough to detect whether global authentication handler is enabled, and not perform authentication twice for performance reasons.
 
 This chapter ends here, but the next topics are even more intriguing.

@@ -2,6 +2,7 @@
 
 import asyncio
 import builtins
+import fnmatch
 import hashlib
 import json
 import os
@@ -14,10 +15,10 @@ from fastapi import (
     Depends,
     FastAPI,
     HTTPException,
-    responses,
     staticfiles,
     status,
 )
+from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
@@ -30,25 +31,15 @@ from .misc import persistent_storage
 
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    user = get_username_secret_from_headers(
-        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
-    )[0]
-    request_id = request.headers.get("AA-REQUEST-ID", None)
-    nextcloud_app = NextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
-    if not nextcloud_app.request_sign_check(request):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    nextcloud_app = NextcloudApp(**__nc_app(request))
+    __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
 
 
 def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
     """Async Authentication handler for requests from Nextcloud to the application."""
-    user = get_username_secret_from_headers(
-        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
-    )[0]
-    request_id = request.headers.get("AA-REQUEST-ID", None)
-    nextcloud_app = AsyncNextcloudApp(user=user, headers={"AA-REQUEST-ID": request_id} if request_id else {})
-    if not nextcloud_app.request_sign_check(request):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    nextcloud_app = AsyncNextcloudApp(**__nc_app(request))
+    __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
 
 
@@ -65,8 +56,8 @@ async def atalk_bot_msg(request: Request) -> TalkBotMessage:
 def set_handlers(
     fast_api_app: FastAPI,
     enabled_handler: typing.Callable[[bool, AsyncNextcloudApp | NextcloudApp], typing.Awaitable[str] | str],
-    heartbeat_handler: typing.Callable[[], typing.Awaitable[str] | str] | None = None,
-    init_handler: typing.Callable[[AsyncNextcloudApp | NextcloudApp], typing.Awaitable[None] | None] | None = None,
+    default_heartbeat: bool = True,
+    default_init: bool = True,
     models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
 ):
@@ -74,85 +65,46 @@ def set_handlers(
 
     :param fast_api_app: FastAPI() call return value.
     :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
-    :param heartbeat_handler: Optional, callback that will be called for the `heartbeat` deploy event.
-    :param init_handler: Optional, callback that will be called for the `init`  event.
+    :param default_heartbeat: Set to ``False`` to disable the default `heartbeat` route handler.
+    :param default_init: Set to ``False`` to disable the default `init` route handler.
 
-        .. note:: This parameter is **mutually exclusive** with ``models_to_fetch``.
+        .. note:: When this parameter is ``False``, the provision of ``models_to_fetch`` is not allowed.
 
     :param models_to_fetch: Dictionary describing which models should be downloaded during `init`.
 
-        .. note:: ```huggingface_hub`` package should be present for automatic models fetching.
+        .. note:: ``huggingface_hub`` package should be present for automatic models fetching.
 
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
     """
-    if models_to_fetch is not None and init_handler is not None:
-        raise ValueError("Only `init_handler` OR `models_to_fetch` can be defined.")
+    if models_to_fetch is not None and default_init is False:
+        raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
 
     if asyncio.iscoroutinefunction(enabled_handler):
 
         @fast_api_app.put("/enabled")
         async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
-            return responses.JSONResponse(content={"error": await enabled_handler(enabled, nc)}, status_code=200)
+            return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
 
     else:
 
         @fast_api_app.put("/enabled")
         def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            return responses.JSONResponse(content={"error": enabled_handler(enabled, nc)}, status_code=200)
+            return JSONResponse(content={"error": enabled_handler(enabled, nc)})
 
-    if heartbeat_handler is None:
-
-        @fast_api_app.get("/heartbeat")
-        async def heartbeat_callback():
-            return responses.JSONResponse(content={"status": "ok"}, status_code=200)
-
-    elif asyncio.iscoroutinefunction(heartbeat_handler):
+    if default_heartbeat:
 
         @fast_api_app.get("/heartbeat")
         async def heartbeat_callback():
-            return responses.JSONResponse(content={"status": await heartbeat_handler()}, status_code=200)
+            return JSONResponse(content={"status": "ok"})
 
-    else:
-
-        @fast_api_app.get("/heartbeat")
-        def heartbeat_callback():
-            return responses.JSONResponse(content={"status": heartbeat_handler()}, status_code=200)
-
-    if init_handler is None:
+    if default_init:
 
         @fast_api_app.post("/init")
-        async def init_callback(
-            background_tasks: BackgroundTasks,
-            nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
-        ):
-            background_tasks.add_task(
-                __fetch_models_task,
-                nc,
-                models_to_fetch if models_to_fetch else {},
-            )
-            return responses.JSONResponse(content={}, status_code=200)
-
-    elif asyncio.iscoroutinefunction(init_handler):
-
-        @fast_api_app.post("/init")
-        async def init_callback(
-            background_tasks: BackgroundTasks,
-            nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)],
-        ):
-            background_tasks.add_task(init_handler, nc)
-            return responses.JSONResponse(content={}, status_code=200)
-
-    else:
-
-        @fast_api_app.post("/init")
-        def init_callback(
-            background_tasks: BackgroundTasks,
-            nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
-        ):
-            background_tasks.add_task(init_handler, nc)
-            return responses.JSONResponse(content={}, status_code=200)
+        async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+            b_tasks.add_task(__fetch_models_task, nc, models_to_fetch if models_to_fetch else {})
+            return JSONResponse(content={})
 
     if map_app_static:
         __map_app_static_folders(fast_api_app)
@@ -241,6 +193,27 @@ def __fetch_model_as_snapshot(
     snapshot_download(mode_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache)
 
 
+def __nc_app(request: HTTPConnection) -> dict:
+    user = get_username_secret_from_headers(
+        {"AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", "")}
+    )[0]
+    request_id = request.headers.get("AA-REQUEST-ID", None)
+    return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
+
+
+def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+    if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
+        _request_sign_check(request, nextcloud_app)
+
+
+def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+    try:
+        nextcloud_app._session.sign_check(request)  # noqa pylint: disable=protected-access
+    except ValueError as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED) from None
+
+
 class AppAPIAuthMiddleware:
     """Pure ASGI AppAPIAuth Middleware."""
 
@@ -263,9 +236,9 @@ class AppAPIAuthMiddleware:
 
         conn = HTTPConnection(scope)
         url_path = conn.url.path.lstrip("/")
-        if url_path not in self._disable_for:
+        if not fnmatch.filter(self._disable_for, url_path):
             try:
-                anc_app(conn)
+                _request_sign_check(conn, AsyncNextcloudApp())
             except HTTPException as exc:
                 response = self._on_error(exc.status_code, exc.detail)
                 await response(scope, receive, send)
@@ -274,5 +247,5 @@ class AppAPIAuthMiddleware:
         await self.app(scope, receive, send)
 
     @staticmethod
-    def _on_error(status_code: int = 400, content: str = "") -> responses.PlainTextResponse:
-        return responses.PlainTextResponse(content, status_code=status_code)
+    def _on_error(status_code: int = 400, content: str = "") -> PlainTextResponse:
+        return PlainTextResponse(content, status_code=status_code)

@@ -1,6 +1,7 @@
+import typing
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI
 from fastapi.responses import JSONResponse
 
 from nc_py_api import AsyncNextcloudApp, ex_app
@@ -8,7 +9,7 @@ from nc_py_api import AsyncNextcloudApp, ex_app
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback, init_handler=init_handler)
+    ex_app.set_handlers(APP, enabled_handler, default_init=False)
     yield
 
 
@@ -24,6 +25,19 @@ async def sec_check(
     return JSONResponse(content={"error": ""}, status_code=200)
 
 
+async def init_handler_background(nc: AsyncNextcloudApp):
+    await nc.set_init_status(100)
+
+
+@APP.post("/init")
+async def init_handler(
+    background_tasks: BackgroundTasks,
+    nc: typing.Annotated[AsyncNextcloudApp, Depends(ex_app.anc_app)],
+):
+    background_tasks.add_task(init_handler_background, nc)
+    return JSONResponse(content={}, status_code=200)
+
+
 async def enabled_handler(enabled: bool, nc: AsyncNextcloudApp) -> str:
     print(f"enabled_handler: enabled={enabled}", flush=True)
     if enabled:
@@ -31,14 +45,6 @@ async def enabled_handler(enabled: bool, nc: AsyncNextcloudApp) -> str:
     else:
         await nc.log(ex_app.LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
-
-
-async def init_handler(nc: AsyncNextcloudApp):
-    await nc.set_init_status(100)
-
-
-async def heartbeat_callback():
-    return "ok"
 
 
 if __name__ == "__main__":

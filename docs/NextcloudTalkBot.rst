@@ -36,7 +36,6 @@ Afterward, using FastAPI, you can define endpoints that will be invoked by Talk:
 
     @APP.post("/currency_talk_bot")
     async def currency_talk_bot(
-        _nc: Annotated[NextcloudApp, Depends(nc_app)],
         message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
         background_tasks: BackgroundTasks,
     ):

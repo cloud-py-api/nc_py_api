@@ -6,9 +6,10 @@ import pytest
 from fastapi import BackgroundTasks, Depends, FastAPI, Request, Response
 
 from nc_py_api import AsyncNextcloudApp, talk_bot
-from nc_py_api.ex_app import anc_app, atalk_bot_msg, run_app
+from nc_py_api.ex_app import AppAPIAuthMiddleware, anc_app, atalk_bot_msg, run_app
 
 APP = FastAPI()
+APP.add_middleware(AppAPIAuthMiddleware, disable_for=["reset_bot_secret"])
 COVERAGE_BOT = talk_bot.AsyncTalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
 
 

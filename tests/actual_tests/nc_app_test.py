@@ -76,4 +76,4 @@ async def test_set_user_same_value_async(anc_app):
 
 def test_set_handlers_invalid_param(nc_any):
     with pytest.raises(ValueError):
-        set_handlers(None, None, init_handler=set_handlers, models_to_fetch={"some": {}})  # noqa
+        set_handlers(None, None, default_init=False, models_to_fetch={"some": {}})  # noqa

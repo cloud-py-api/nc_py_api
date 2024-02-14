@@ -2,16 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.10.0 - 2024-02-0x]
+## [0.10.0 - 2024-02-14]
 
 ### Added
 
-- set_handlers: `models_to_fetch` can now accept direct links to a files to download. #217
-- DeclarativeSettings API for Nextcloud 29. #222
+- NextcloudApp: `set_handlers`: `models_to_fetch` can now accept direct links to a files to download. #217
+- NextcloudApp: DeclarativeSettings UI API for Nextcloud `29`. #222
 
 ### Changed
 
-- adjusted code related to changes in AppAPI `2.0.3` #216
+- NextcloudApp: adjusted code related to changes in AppAPI `2.0.3` #216
+- NextcloudApp: `set_handlers` **rework of optional parameters** see PR for information. #226
 
 ## [0.9.0 - 2024-01-25]
 

@@ -4,7 +4,6 @@ import typing
 from abc import ABC
 
 from httpx import Headers
-from starlette.requests import HTTPConnection
 
 from ._exceptions import NextcloudExceptionNotFound
 from ._misc import check_capabilities, require_capabilities
@@ -386,20 +385,6 @@ class NextcloudApp(_NextcloudBasic):
             return False
         return True
 
-    def request_sign_check(self, request: HTTPConnection) -> bool:
-        """Verifies the signature and validity of an incoming request from the Nextcloud.
-
-        :param request: The `Starlette request <https://www.starlette.io/requests/>`_
-
-        .. note:: In most cases ``nc: Annotated[NextcloudApp, Depends(nc_app)]`` should be used.
-        """
-        try:
-            self._session.sign_check(request)
-        except ValueError as e:
-            print(e)
-            return False
-        return True
-
     def set_init_status(self, progress: int, error: str = "") -> None:
         """Sets state of the app initialization.
 
@@ -514,20 +499,6 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         try:
             await self._session.ocs("DELETE", f"{self._session.ae_url}/talk_bot", json=params)
         except NextcloudExceptionNotFound:
-            return False
-        return True
-
-    def request_sign_check(self, request: HTTPConnection) -> bool:
-        """Verifies the signature and validity of an incoming request from the Nextcloud.
-
-        :param request: The `Starlette request <https://www.starlette.io/requests/>`_
-
-        .. note:: In most cases ``nc: Annotated[NextcloudApp, Depends(nc_app)]`` should be used.
-        """
-        try:
-            self._session.sign_check(request)
-        except ValueError as e:
-            print(e)
             return False
         return True
 

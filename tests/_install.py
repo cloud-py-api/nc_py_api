@@ -1,7 +1,7 @@
+import typing
 from contextlib import asynccontextmanager
-from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI
 from fastapi.responses import JSONResponse
 
 from nc_py_api import NextcloudApp, ex_app
@@ -9,7 +9,7 @@ from nc_py_api import NextcloudApp, ex_app
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    ex_app.set_handlers(APP, enabled_handler, heartbeat_callback, init_handler=init_handler)
+    ex_app.set_handlers(APP, enabled_handler, default_init=False)
     yield
 
 
@@ -19,10 +19,23 @@ APP = FastAPI(lifespan=lifespan)
 @APP.put("/sec_check")
 def sec_check(
     value: int,
-    _nc: Annotated[NextcloudApp, Depends(ex_app.nc_app)],
+    _nc: typing.Annotated[NextcloudApp, Depends(ex_app.nc_app)],
 ):
     print(value, flush=True)
     return JSONResponse(content={"error": ""}, status_code=200)
+
+
+def init_handler_background(nc: NextcloudApp):
+    nc.set_init_status(100)
+
+
+@APP.post("/init")
+def init_handler(
+    background_tasks: BackgroundTasks,
+    nc: typing.Annotated[NextcloudApp, Depends(ex_app.nc_app)],
+):
+    background_tasks.add_task(init_handler_background, nc)
+    return JSONResponse(content={}, status_code=200)
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
@@ -32,14 +45,6 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     else:
         nc.log(ex_app.LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
-
-
-def init_handler(nc: NextcloudApp):
-    nc.set_init_status(100)
-
-
-def heartbeat_callback():
-    return "ok"
 
 
 if __name__ == "__main__":

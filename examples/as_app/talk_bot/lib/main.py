@@ -8,17 +8,20 @@ import httpx
 from fastapi import BackgroundTasks, Depends, FastAPI, Response
 
 from nc_py_api import NextcloudApp, talk_bot
-from nc_py_api.ex_app import atalk_bot_msg, nc_app, run_app, set_handlers
+from nc_py_api.ex_app import AppAPIAuthMiddleware, atalk_bot_msg, run_app, set_handlers
 
 
 # The same stuff as for usual External Applications
 @asynccontextmanager
-async def lifespan(_app: FastAPI):
-    set_handlers(APP, enabled_handler)
+async def lifespan(app: FastAPI):
+    set_handlers(app, enabled_handler)
     yield
 
 
 APP = FastAPI(lifespan=lifespan)
+APP.add_middleware(AppAPIAuthMiddleware)
+
+
 # We define bot globally, so if no `multiprocessing` module is used, it can be reused by calls.
 # All stuff in it works only with local variables, so in the case of multithreading, there should not be problems.
 CURRENCY_BOT = talk_bot.TalkBot("/currency_talk_bot", "Currency convertor", "Usage: `@currency convert 100 EUR to USD`")
@@ -66,7 +69,6 @@ def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
 
 @APP.post("/currency_talk_bot")
 async def currency_talk_bot(
-    _nc: Annotated[NextcloudApp, Depends(nc_app)],
     message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):
