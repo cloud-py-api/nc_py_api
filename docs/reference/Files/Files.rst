@@ -20,3 +20,9 @@ All File APIs are designed to work relative to the current user.
 
 .. autoclass:: nc_py_api.files.SystemTag
     :members:
+
+.. autoclass:: nc_py_api.files.LockType
+    :members:
+
+.. autoclass:: nc_py_api.files.FsNodeLockInfo
+    :members:

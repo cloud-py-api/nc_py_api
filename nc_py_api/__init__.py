@@ -7,6 +7,6 @@ from ._exceptions import (
     NextcloudMissingCapabilities,
 )
 from ._version import __version__
-from .files import FilePermissions, FsNode
+from .files import FilePermissions, FsNode, LockType
 from .files.sharing import ShareType
 from .nextcloud import AsyncNextcloud, AsyncNextcloudApp, Nextcloud, NextcloudApp

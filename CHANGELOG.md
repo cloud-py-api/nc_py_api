@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.0 - 2024-0x-xx]
+
+### Added
+
+- Files: `lock` and `unlock` methods, lock file information to `FsNode`. #227
+
 ## [0.10.0 - 2024-02-14]
 
 ### Added
