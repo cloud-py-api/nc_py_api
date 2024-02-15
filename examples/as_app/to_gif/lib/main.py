@@ -3,11 +3,12 @@
 import tempfile
 from contextlib import asynccontextmanager
 from os import path
+from typing import Annotated
 
 import cv2
 import imageio
 import numpy
-from fastapi import BackgroundTasks, FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI
 from pygifsicle import optimize
 from requests import Response
 
@@ -16,6 +17,7 @@ from nc_py_api.ex_app import (
     AppAPIAuthMiddleware,
     LogLvl,
     UiActionFileInfo,
+    nc_app,
     run_app,
     set_handlers,
 )
@@ -31,8 +33,7 @@ APP = FastAPI(lifespan=lifespan)
 APP.add_middleware(AppAPIAuthMiddleware)
 
 
-def convert_video_to_gif(input_file: FsNode):
-    nc = NextcloudApp()
+def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
     save_path = path.splitext(input_file.user_path)[0] + ".gif"
     nc.log(LogLvl.WARNING, f"Processing:{input_file.user_path} -> {save_path}")
     try:
@@ -77,9 +78,10 @@ def convert_video_to_gif(input_file: FsNode):
 @APP.post("/video_to_gif")
 async def video_to_gif(
     file: UiActionFileInfo,
+    nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(convert_video_to_gif, file.to_fs_node())
+    background_tasks.add_task(convert_video_to_gif, file.to_fs_node(), nc)
     return Response()
 
 
