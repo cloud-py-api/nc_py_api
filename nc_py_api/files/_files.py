@@ -286,20 +286,17 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pyl
             fs_node_args["trashbin_original_location"] = prop["nc:trashbin-original-location"]
         if "nc:trashbin-deletion-time" in prop_keys:
             fs_node_args["trashbin_deletion_time"] = prop["nc:trashbin-deletion-time"]
-        if "nc:lock" in prop_keys:
-            fs_node_args["is_locked"] = prop["nc:lock"] if prop["nc:lock"] is not None else False
-        if "nc:lock-owner-type" in prop_keys:
-            fs_node_args["lock_owner_type"] = prop["nc:lock-owner-type"]
-        if "nc:lock-owner" in prop_keys:
-            fs_node_args["lock_owner"] = prop["nc:lock-owner"]
-        if "nc:lock-owner-displayname" in prop_keys:
-            fs_node_args["lock_owner_displayname"] = prop["nc:lock-owner-displayname"]
-        if "nc:lock-owner-editor" in prop_keys:
-            fs_node_args["lock_owner_editor"] = prop["nc:lock-owner-editor"]
-        if "nc:lock-time" in prop_keys:
-            fs_node_args["lock_time"] = prop["nc:lock-time"]
-        if "nc:lock-timeout" in prop_keys:
-            fs_node_args["lock_ttl"] = prop["nc:lock-timeout"]
+        for k, v in {
+            "nc:lock": "is_locked",
+            "nc:lock-owner-type": "lock_owner_type",
+            "nc:lock-owner": "lock_owner",
+            "nc:lock-owner-displayname": "lock_owner_displayname",
+            "nc:lock-owner-editor": "lock_owner_editor",
+            "nc:lock-time": "lock_time",
+            "nc:lock-timeout": "lock_ttl",
+        }.items():
+            if k in prop_keys and prop[k] is not None:
+                fs_node_args[v] = prop[k]
     return FsNode(full_path, **fs_node_args)
 
 
