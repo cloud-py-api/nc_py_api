@@ -510,7 +510,7 @@ jobs:
         if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/files_lock
-          ref: matrix.nextcloud
+          ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
 
       - name: Set up & run Nextcloud
@@ -848,7 +848,7 @@ jobs:
         if: ${{ !startsWith(matrix.nextcloud, 'stable26') && !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/files_lock
-          ref: matrix.nextcloud
+          ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
 
       - name: Set up & run Nextcloud
