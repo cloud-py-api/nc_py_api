@@ -12,7 +12,7 @@ from zlib import adler32
 
 import pytest
 
-from nc_py_api import FsNode, NextcloudException, NextcloudExceptionNotFound
+from nc_py_api import FsNode, LockType, NextcloudException, NextcloudExceptionNotFound
 
 
 class MyBytesIO(BytesIO):
@@ -1207,3 +1207,49 @@ async def test_assign_unassign_tag_async(anc_any):
     await anc_any.files.assign_tag(new_file, tag1)
     with pytest.raises(ValueError):
         await anc_any.files.list_by_criteria()
+
+
+def __check_lock_info(fs_node: FsNode):
+    assert isinstance(fs_node.lock_info.owner, str)
+    assert isinstance(fs_node.lock_info.owner_display_name, str)
+    assert isinstance(fs_node.lock_info.type, LockType)
+    assert isinstance(fs_node.lock_info.lock_creation_time, datetime)
+    assert isinstance(fs_node.lock_info.lock_ttl, int)
+    assert isinstance(fs_node.lock_info.owner_editor, str)
+
+
+def test_file_locking(nc_any):
+    if nc_any.check_capabilities("files.locking"):
+        pytest.skip("Files Locking App is not installed")
+    test_file = nc_any.files.upload("/test_dir/test_lock", content="")
+    assert nc_any.files.by_id(test_file).lock_info.is_locked is False
+    with pytest.raises(NextcloudException) as e:
+        nc_any.files.unlock(test_file)
+    assert e.value.status_code == 412
+    nc_any.files.lock(test_file)
+    locked_file = nc_any.files.by_id(test_file)
+    assert locked_file.lock_info.is_locked is True
+    __check_lock_info(locked_file)
+    nc_any.files.unlock(test_file)
+    with pytest.raises(NextcloudException) as e:
+        nc_any.files.unlock(test_file)
+    assert e.value.status_code == 412
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_file_locking_async(anc_any):
+    if await anc_any.check_capabilities("files.locking"):
+        pytest.skip("Files Locking App is not installed")
+    test_file = await anc_any.files.upload("/test_dir/test_lock_async", content="")
+    assert (await anc_any.files.by_id(test_file)).lock_info.is_locked is False
+    with pytest.raises(NextcloudException) as e:
+        await anc_any.files.unlock(test_file)
+    assert e.value.status_code == 412
+    await anc_any.files.lock(test_file)
+    locked_file = await anc_any.files.by_id(test_file)
+    assert locked_file.lock_info.is_locked is True
+    __check_lock_info(locked_file)
+    await anc_any.files.unlock(test_file)
+    with pytest.raises(NextcloudException) as e:
+        await anc_any.files.unlock(test_file)
+    assert e.value.status_code == 412

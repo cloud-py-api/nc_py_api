@@ -10,7 +10,7 @@ import xmltodict
 from httpx import Response
 
 from .._exceptions import NextcloudException, check_error
-from .._misc import clear_from_params_empty
+from .._misc import check_capabilities, clear_from_params_empty
 from . import FsNode, SystemTag
 
 PROPFIND_PROPERTIES = [
@@ -29,13 +29,16 @@ PROPFIND_PROPERTIES = [
     "oc:share-types",
     "oc:favorite",
     "nc:is-encrypted",
+]
+
+PROPFIND_LOCKING_PROPERTIES = [
     "nc:lock",
     "nc:lock-owner-displayname",
     "nc:lock-owner",
     "nc:lock-owner-type",
-    "nc:lock-owner-editor",
-    "nc:lock-time",
-    "nc:lock-timeout",
+    "nc:lock-owner-editor",  # App id of an app owned lock
+    "nc:lock-time",  # Timestamp of the log creation time
+    "nc:lock-timeout",  # TTL of the lock in seconds staring from the creation time
 ]
 
 SEARCH_PROPERTIES_MAP = {
@@ -57,7 +60,14 @@ class PropFindType(enum.IntEnum):
     VERSIONS_FILE_ID = 3
 
 
-def build_find_request(req: list, path: str | FsNode, user: str) -> ElementTree.Element:
+def get_propfind_properties(capabilities: dict) -> list:
+    r = PROPFIND_PROPERTIES
+    if not check_capabilities("files.locking", capabilities):
+        r += PROPFIND_LOCKING_PROPERTIES
+    return r
+
+
+def build_find_request(req: list, path: str | FsNode, user: str, capabilities: dict) -> ElementTree.Element:
     path = path.user_path if isinstance(path, FsNode) else path
     root = ElementTree.Element(
         "d:searchrequest",
@@ -65,7 +75,7 @@ def build_find_request(req: list, path: str | FsNode, user: str) -> ElementTree.
     )
     xml_search = ElementTree.SubElement(root, "d:basicsearch")
     xml_select_prop = ElementTree.SubElement(ElementTree.SubElement(xml_search, "d:select"), "d:prop")
-    for i in PROPFIND_PROPERTIES:
+    for i in get_propfind_properties(capabilities):
         ElementTree.SubElement(xml_select_prop, i)
     xml_from_scope = ElementTree.SubElement(ElementTree.SubElement(xml_search, "d:from"), "d:scope")
     href = f"/files/{user}/{path.removeprefix('/')}"
@@ -76,7 +86,9 @@ def build_find_request(req: list, path: str | FsNode, user: str) -> ElementTree.
     return root
 
 
-def build_list_by_criteria_req(properties: list[str] | None, tags: list[int | SystemTag] | None) -> ElementTree.Element:
+def build_list_by_criteria_req(
+    properties: list[str] | None, tags: list[int | SystemTag] | None, capabilities: dict
+) -> ElementTree.Element:
     if not properties and not tags:
         raise ValueError("Either specify 'properties' or 'tags' to filter results.")
     root = ElementTree.Element(
@@ -84,7 +96,7 @@ def build_list_by_criteria_req(properties: list[str] | None, tags: list[int | Sy
         attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
     )
     prop = ElementTree.SubElement(root, "d:prop")
-    for i in PROPFIND_PROPERTIES:
+    for i in get_propfind_properties(capabilities):
         ElementTree.SubElement(prop, i)
     xml_filter_rules = ElementTree.SubElement(root, "oc:filter-rules")
     if properties and "favorite" in properties:
@@ -243,7 +255,7 @@ def etag_fileid_from_response(response: Response) -> dict:
     return {"etag": response.headers.get("OC-Etag", ""), "file_id": response.headers["OC-FileId"]}
 
 
-def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:
+def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pylint: disable = too-many-branches
     fs_node_args = {}
     for prop_stat in prop_stats:
         if str(prop_stat.get("d:status", "")).find("200 OK") == -1:
@@ -274,7 +286,20 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:
             fs_node_args["trashbin_original_location"] = prop["nc:trashbin-original-location"]
         if "nc:trashbin-deletion-time" in prop_keys:
             fs_node_args["trashbin_deletion_time"] = prop["nc:trashbin-deletion-time"]
-        # xz = prop.get("oc:dDC", "")
+        if "nc:lock" in prop_keys:
+            fs_node_args["is_locked"] = prop["nc:lock"] if prop["nc:lock"] is not None else False
+        if "nc:lock-owner-type" in prop_keys:
+            fs_node_args["lock_owner_type"] = prop["nc:lock-owner-type"]
+        if "nc:lock-owner" in prop_keys:
+            fs_node_args["lock_owner"] = prop["nc:lock-owner"]
+        if "nc:lock-owner-displayname" in prop_keys:
+            fs_node_args["lock_owner_displayname"] = prop["nc:lock-owner-displayname"]
+        if "nc:lock-owner-editor" in prop_keys:
+            fs_node_args["lock_owner_editor"] = prop["nc:lock-owner-editor"]
+        if "nc:lock-time" in prop_keys:
+            fs_node_args["lock_time"] = prop["nc:lock-time"]
+        if "nc:lock-timeout" in prop_keys:
+            fs_node_args["lock_ttl"] = prop["nc:lock-timeout"]
     return FsNode(full_path, **fs_node_args)
 
 

@@ -10,7 +10,7 @@ from httpx import Headers
 from .._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
 from .._misc import random_string, require_capabilities
 from .._session import AsyncNcSessionBasic, NcSessionBasic
-from . import FsNode, SystemTag
+from . import FsNode, LockType, SystemTag
 from ._files import (
     PROPFIND_PROPERTIES,
     PropFindType,
@@ -25,6 +25,7 @@ from ._files import (
     dav_get_obj_path,
     element_tree_as_str,
     etag_fileid_from_response,
+    get_propfind_properties,
     lf_parse_webdav_response,
 )
 from .sharing import _AsyncFilesSharingAPI, _FilesSharingAPI
@@ -50,7 +51,7 @@ class FilesAPI:
         """
         if exclude_self and not depth:
             raise ValueError("Wrong input parameters, query will return nothing.")
-        properties = PROPFIND_PROPERTIES
+        properties = get_propfind_properties(self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         return self._listdir(self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self)
 
@@ -76,7 +77,7 @@ class FilesAPI:
         :param path: path where to search from. Default = **""**.
         """
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
-        root = build_find_request(req, path, self._session.user)
+        root = build_find_request(req, path, self._session.user, self._session.capabilities)
         webdav_response = self._session.adapter_dav.request(
             "SEARCH", "", content=element_tree_as_str(root), headers={"Content-Type": "text/xml"}
         )
@@ -248,7 +249,7 @@ class FilesAPI:
             Supported values: **favorite**
         :param tags: List of ``tags ids`` or ``SystemTag`` that should have been set for the file.
         """
-        root = build_list_by_criteria_req(properties, tags)
+        root = build_list_by_criteria_req(properties, tags, self._session.capabilities)
         webdav_response = self._session.adapter_dav.request(
             "REPORT", dav_get_obj_path(self._session.user), content=element_tree_as_str(root)
         )
@@ -396,6 +397,34 @@ class FilesAPI:
         """Removes Tag from a file/directory."""
         self._file_change_tag_state(file_id, tag_id, False)
 
+    def lock(self, path: FsNode | str, lock_type: LockType = LockType.MANUAL_LOCK) -> None:
+        """Locks the file.
+
+        .. note:: Exception codes: 423 - existing lock present.
+        """
+        require_capabilities("files.locking", self._session.capabilities)
+        full_path = dav_get_obj_path(self._session.user, path.user_path if isinstance(path, FsNode) else path)
+        response = self._session.adapter_dav.request(
+            "LOCK",
+            quote(full_path),
+            headers={"X-User-Lock": "1", "X-User-Lock-Type": str(lock_type.value)},
+        )
+        check_error(response, f"lock: user={self._session.user}, path={full_path}")
+
+    def unlock(self, path: FsNode | str) -> None:
+        """Unlocks the file.
+
+        .. note:: Exception codes: 412 - the file is not locked, 423 - the lock is owned by another user.
+        """
+        require_capabilities("files.locking", self._session.capabilities)
+        full_path = dav_get_obj_path(self._session.user, path.user_path if isinstance(path, FsNode) else path)
+        response = self._session.adapter_dav.request(
+            "UNLOCK",
+            quote(full_path),
+            headers={"X-User-Lock": "1"},
+        )
+        check_error(response, f"unlock: user={self._session.user}, path={full_path}")
+
     def _file_change_tag_state(self, file_id: FsNode | int, tag_id: SystemTag | int, tag_state: bool) -> None:
         fs_object = file_id.info.fileid if isinstance(file_id, FsNode) else file_id
         tag = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
@@ -493,7 +522,7 @@ class AsyncFilesAPI:
         """
         if exclude_self and not depth:
             raise ValueError("Wrong input parameters, query will return nothing.")
-        properties = PROPFIND_PROPERTIES
+        properties = get_propfind_properties(await self._session.capabilities)
         path = path.user_path if isinstance(path, FsNode) else path
         return await self._listdir(
             await self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self
@@ -521,7 +550,7 @@ class AsyncFilesAPI:
         :param path: path where to search from. Default = **""**.
         """
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
-        root = build_find_request(req, path, await self._session.user)
+        root = build_find_request(req, path, await self._session.user, await self._session.capabilities)
         webdav_response = await self._session.adapter_dav.request(
             "SEARCH", "", content=element_tree_as_str(root), headers={"Content-Type": "text/xml"}
         )
@@ -695,7 +724,7 @@ class AsyncFilesAPI:
             Supported values: **favorite**
         :param tags: List of ``tags ids`` or ``SystemTag`` that should have been set for the file.
         """
-        root = build_list_by_criteria_req(properties, tags)
+        root = build_list_by_criteria_req(properties, tags, await self._session.capabilities)
         webdav_response = await self._session.adapter_dav.request(
             "REPORT", dav_get_obj_path(await self._session.user), content=element_tree_as_str(root)
         )
@@ -847,6 +876,34 @@ class AsyncFilesAPI:
     async def unassign_tag(self, file_id: FsNode | int, tag_id: SystemTag | int) -> None:
         """Removes Tag from a file/directory."""
         await self._file_change_tag_state(file_id, tag_id, False)
+
+    async def lock(self, path: FsNode | str, lock_type: LockType = LockType.MANUAL_LOCK) -> None:
+        """Locks the file.
+
+        .. note:: Exception codes: 423 - existing lock present.
+        """
+        require_capabilities("files.locking", await self._session.capabilities)
+        full_path = dav_get_obj_path(await self._session.user, path.user_path if isinstance(path, FsNode) else path)
+        response = await self._session.adapter_dav.request(
+            "LOCK",
+            quote(full_path),
+            headers={"X-User-Lock": "1", "X-User-Lock-Type": str(lock_type.value)},
+        )
+        check_error(response, f"lock: user={self._session.user}, path={full_path}")
+
+    async def unlock(self, path: FsNode | str) -> None:
+        """Unlocks the file.
+
+        .. note:: Exception codes: 412 - the file is not locked, 423 - the lock is owned by another user.
+        """
+        require_capabilities("files.locking", await self._session.capabilities)
+        full_path = dav_get_obj_path(await self._session.user, path.user_path if isinstance(path, FsNode) else path)
+        response = await self._session.adapter_dav.request(
+            "UNLOCK",
+            quote(full_path),
+            headers={"X-User-Lock": "1"},
+        )
+        check_error(response, f"unlock: user={self._session.user}, path={full_path}")
 
     async def _file_change_tag_state(self, file_id: FsNode | int, tag_id: SystemTag | int, tag_state: bool) -> None:
         fs_object = file_id.info.fileid if isinstance(file_id, FsNode) else file_id

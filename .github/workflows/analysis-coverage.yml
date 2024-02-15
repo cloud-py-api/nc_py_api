@@ -505,6 +505,14 @@ jobs:
           ref: "main"
           path: apps/notes
 
+      - name: Checkout Files Locking
+        uses: actions/checkout@v4
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        with:
+          repository: nextcloud/files_lock
+          ref: matrix.nextcloud
+          path: apps/files_lock
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -517,6 +525,10 @@ jobs:
           ./occ config:system:set debug --value=true --type=boolean
           ./occ app:enable notifications
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
+
+      - name: Enable Files Locking
+        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        run: ./occ app:enable files_lock
 
       - name: Enable Notes
         if: ${{ !startsWith(matrix.nextcloud, 'master') }}
@@ -831,6 +843,14 @@ jobs:
           ref: "main"
           path: apps/notes
 
+      - name: Checkout Files Locking
+        uses: actions/checkout@v4
+        if: ${{ !startsWith(matrix.nextcloud, 'stable26') && !startsWith(matrix.nextcloud, 'master') }}
+        with:
+          repository: nextcloud/files_lock
+          ref: matrix.nextcloud
+          path: apps/files_lock
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -847,6 +867,10 @@ jobs:
       - name: Enable Notes
         if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         run: ./occ app:enable notes
+
+      - name: Enable Files Locking
+        if: ${{ !startsWith(matrix.nextcloud, 'stable26') && !startsWith(matrix.nextcloud, 'master') }}
+        run: ./occ app:enable files_lock
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v4

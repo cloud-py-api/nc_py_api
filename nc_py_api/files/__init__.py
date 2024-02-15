@@ -9,6 +9,63 @@ import warnings
 from .. import _misc
 
 
+class LockType(enum.IntEnum):
+    """Nextcloud File Locks types."""
+
+    MANUAL_LOCK = 0
+    COLLABORATIVE_LOCK = 1
+    WEBDAV_TOKEN = 2
+
+
+@dataclasses.dataclass
+class FsNodeLockInfo:
+    """File Lock information if Nextcloud `files_lock` is enabled."""
+
+    def __init__(self, **kwargs):
+        self._is_locked = bool(int(kwargs.get("is_locked", False)))
+        self._lock_owner_type = LockType(int(kwargs.get("lock_owner_type", 0)))
+        self._lock_owner = kwargs.get("lock_owner", "")
+        self._owner_display_name = kwargs.get("owner_display_name", "")
+        self._owner_editor = kwargs.get("lock_owner_editor", "")
+        self._lock_time = int(kwargs.get("lock_time", 0))
+        self._lock_ttl = int(kwargs.get("_lock_ttl", 0))
+
+    @property
+    def is_locked(self) -> bool:
+        """Returns ``True`` if the file is locked, ``False`` otherwise."""
+        return self._is_locked
+
+    @property
+    def type(self) -> LockType:
+        """Type of the lock."""
+        return LockType(self._lock_owner_type)
+
+    @property
+    def owner(self) -> str:
+        """User id of the lock owner."""
+        return self._lock_owner
+
+    @property
+    def owner_display_name(self) -> str:
+        """Display name of the lock owner."""
+        return self._owner_display_name
+
+    @property
+    def owner_editor(self) -> str:
+        """App id of an app owned lock to allow clients to suggest joining the collaborative editing session."""
+        return self._owner_editor
+
+    @property
+    def lock_creation_time(self) -> datetime.datetime:
+        """Lock creation time."""
+        return datetime.datetime.utcfromtimestamp(self._lock_time).replace(tzinfo=datetime.timezone.utc)
+
+    @property
+    def lock_ttl(self) -> int:
+        """TTL of the lock in seconds staring from the creation time. A value of 0 means the timeout is infinite."""
+        return self._lock_ttl
+
+
 @dataclasses.dataclass
 class FsNodeInfo:
     """Extra FS object attributes from Nextcloud."""
@@ -116,11 +173,15 @@ class FsNode:
     info: FsNodeInfo
     """Additional extra information for the object"""
 
+    lock_info: FsNodeLockInfo
+    """Class describing `lock` information if any."""
+
     def __init__(self, full_path: str, **kwargs):
         self.full_path = full_path
         self.file_id = kwargs.get("file_id", "")
         self.etag = kwargs.get("etag", "")
         self.info = FsNodeInfo(**kwargs)
+        self.lock_info = FsNodeLockInfo(**kwargs)
 
     @property
     def is_dir(self) -> bool:
