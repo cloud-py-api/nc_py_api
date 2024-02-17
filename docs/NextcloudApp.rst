@@ -98,7 +98,7 @@ After launching your application, execute the following command in the Nextcloud
 .. code-block:: shell
 
     php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
-        "{\"appid\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":[\"ALL\"],\"port\":SELECTED_PORT,\"system_app\":0}" \
+        "{\"id\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":[\"ALL\"],\"port\":SELECTED_PORT,\"system\":0}" \
         --force-scopes --wait-finish
 
 You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.
@@ -107,9 +107,9 @@ It's advisable to write these steps as commands in a Makefile for quick use.
 
 Examples for such Makefiles can be found in this repository:
 `Skeleton <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/skeleton/Makefile>`_ ,
-`TalkBot <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/Makefile>`_ ,
 `ToGif <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile>`_ ,
-`UiExample <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/ui_example/Makefile>`_
+`TalkBot <https://github.com/cloud-py-api/talk_bot_ai_example/blob/main/Makefile>`_ ,
+`UiExample <https://github.com/cloud-py-api/ui_example/blob/main/Makefile>`_
 
 During the execution of `php occ app_api:app:register`, the **enabled_handler** will be called
 

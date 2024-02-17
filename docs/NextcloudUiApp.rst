@@ -7,7 +7,7 @@ Writing Nextcloud App with UI
 One of the most interesting features is the ability to register a page in the Nextcloud Top Menu.
 
 Full source of UI example can be found here:
-`UiExample <https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/ui_example/lib/main.py>`_
+`UiExample <https://github.com/cloud-py-api/ui_example/blob/main/lib/main.py>`_
 
 Here we will simply describe in detail what happens in the example.
 
@@ -44,7 +44,6 @@ Backend
 
     @APP.post("/verify_initial_value")
     async def verify_initial_value(
-        _nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
         input1: Button1Format,
     ):
         print("Old value: ", input1.initial_value)
@@ -64,7 +63,6 @@ Backend
 
     @APP.post("/nextcloud_file")
     async def nextcloud_file(
-        _nc: typing.Annotated[NextcloudApp, Depends(nc_app)],
         args: dict,
     ):
         print(args["file_info"])

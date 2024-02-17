@@ -1,5 +1,0 @@
-[package]
-before_cmds = [
-	"npm install --deps",
-	"npm run build",
-]
