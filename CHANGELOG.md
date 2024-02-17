@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.11.0 - 2024-0x-xx]
+## [0.11.0 - 2024-02-17]
 
 ### Added
 
 - Files: `lock` and `unlock` methods, lock file information to `FsNode`. #227
+
+### Fixed
+
+- NextcloudApp: `MachineTranslation` provider registration - added optional `actionDetectLang` param. #229
 
 ## [0.10.0 - 2024-02-14]
 
