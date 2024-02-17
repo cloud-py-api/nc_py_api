@@ -21,12 +21,14 @@ def test_translation_provider(nc_app):
     assert result.action_handler == "some_url"
     assert result.from_languages == FROM_LANG1
     assert result.to_languages == TO_LANG1
+    assert result.action_handler_detect_lang == ""
     nc_app.providers.translations.register(
         "test_id2",
         "Test #2 Prov",
         "some_url2",
         {"pl_PL": "Polish"},
         {"tr_TR": "Turkish"},
+        "/detect_lang",
     )
     result2 = nc_app.providers.translations.get_entry("test_id2")
     assert result2.name == "test_id2"
@@ -34,6 +36,7 @@ def test_translation_provider(nc_app):
     assert result2.action_handler == "some_url2"
     assert result2.from_languages == {"pl_PL": "Polish"}
     assert result2.to_languages == {"tr_TR": "Turkish"}
+    assert result2.action_handler_detect_lang == "detect_lang"
     nc_app.providers.translations.register(
         "test_id",
         "Renamed",
@@ -72,12 +75,14 @@ async def test_translation_async(anc_app):
     assert result.action_handler == "some_url"
     assert result.from_languages == FROM_LANG1
     assert result.to_languages == TO_LANG1
+    assert result.action_handler_detect_lang == ""
     await anc_app.providers.translations.register(
         "test_id2",
         "Test #2 Prov",
         "some_url2",
         {"pl_PL": "Polish"},
         {"tr_TR": "Turkish"},
+        "/detect_lang",
     )
     result2 = await anc_app.providers.translations.get_entry("test_id2")
     assert result2.name == "test_id2"
@@ -85,6 +90,7 @@ async def test_translation_async(anc_app):
     assert result2.action_handler == "some_url2"
     assert result2.from_languages == {"pl_PL": "Polish"}
     assert result2.to_languages == {"tr_TR": "Turkish"}
+    assert result2.action_handler_detect_lang == "detect_lang"
     await anc_app.providers.translations.register(
         "test_id",
         "Renamed",

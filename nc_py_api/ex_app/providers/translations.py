@@ -42,6 +42,11 @@ class TranslationsProvider:
         """Relative ExApp url which will be called by Nextcloud."""
         return self._raw_data["action_handler"]
 
+    @property
+    def action_handler_detect_lang(self) -> str:
+        """Relative ExApp url which will be called by Nextcloud to detect language."""
+        return self._raw_data.get("action_detect_lang", "")
+
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name}, handler={self.action_handler}>"
 
@@ -59,6 +64,7 @@ class _TranslationsProviderAPI:
         callback_url: str,
         from_languages: dict[str, str],
         to_languages: dict[str, str],
+        detect_lang_callback_url: str = "",
     ) -> None:
         """Registers or edit the Translations provider."""
         require_capabilities("app_api", self._session.capabilities)
@@ -68,6 +74,7 @@ class _TranslationsProviderAPI:
             "fromLanguages": from_languages,
             "toLanguages": to_languages,
             "actionHandler": callback_url,
+            "actionDetectLang": detect_lang_callback_url,
         }
         self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
@@ -114,6 +121,7 @@ class _AsyncTranslationsProviderAPI:
         callback_url: str,
         from_languages: dict[str, str],
         to_languages: dict[str, str],
+        detect_lang_callback_url: str = "",
     ) -> None:
         """Registers or edit the Translations provider."""
         require_capabilities("app_api", await self._session.capabilities)
@@ -123,6 +131,7 @@ class _AsyncTranslationsProviderAPI:
             "fromLanguages": from_languages,
             "toLanguages": to_languages,
             "actionHandler": callback_url,
+            "actionDetectLang": detect_lang_callback_url,
         }
         await self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
