@@ -50,3 +50,8 @@ def get_model_path(model_name: str) -> str:
     from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
 
     return snapshot_download(model_name, local_files_only=True, cache_dir=persistent_storage())
+
+
+def get_computation_device() -> str:
+    """Returns computation device(`ROCM` or `CUDA`) if it is defined in the environment variable."""
+    return os.environ.get("COMPUTE_DEVICE", "")

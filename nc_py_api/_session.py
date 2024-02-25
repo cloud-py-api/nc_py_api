@@ -123,7 +123,7 @@ class AppConfig(BasicConfig):
         super().__init__(**kwargs)
         self.aa_version = self._get_config_value("aa_version", raise_not_found=False, **kwargs)
         if not self.aa_version:
-            self.aa_version = "1.0.0"
+            self.aa_version = "2.2.0"
         self.app_name = self._get_config_value("app_id", **kwargs)
         self.app_version = self._get_config_value("app_version", **kwargs)
         self.app_secret = self._get_config_value("app_secret", **kwargs)
@@ -459,7 +459,7 @@ class NcSessionAppBasic(ABC):
         self.cfg = AppConfig(**kwargs)
         super().__init__(**kwargs)
 
-    def sign_check(self, request: HTTPConnection) -> None:
+    def sign_check(self, request: HTTPConnection) -> str:
         headers = {
             "AA-VERSION": request.headers.get("AA-VERSION", ""),
             "EX-APP-ID": request.headers.get("EX-APP-ID", ""),
@@ -474,13 +474,10 @@ class NcSessionAppBasic(ABC):
         if headers["EX-APP-ID"] != self.cfg.app_name:
             raise ValueError(f"Invalid EX-APP-ID:{headers['EX-APP-ID']} != {self.cfg.app_name}")
 
-        our_version = self.adapter.headers.get("EX-APP-VERSION", "")
-        if headers["EX-APP-VERSION"] != our_version:
-            raise ValueError(f"Invalid EX-APP-VERSION:{headers['EX-APP-VERSION']} <=> {our_version}")
-
-        app_secret = get_username_secret_from_headers(headers)[1]
+        username, app_secret = get_username_secret_from_headers(headers)
         if app_secret != self.cfg.app_secret:
             raise ValueError(f"Invalid App secret:{app_secret} != {self.cfg.app_secret}")
+        return username
 
 
 class NcSessionApp(NcSessionAppBasic, NcSessionBasic):

@@ -9,7 +9,12 @@ from .integration_fastapi import (
     set_handlers,
     talk_bot_msg,
 )
-from .misc import get_model_path, persistent_storage, verify_version
+from .misc import (
+    get_computation_device,
+    get_model_path,
+    persistent_storage,
+    verify_version,
+)
 from .ui.files_actions import UiActionFileInfo
 from .ui.settings import SettingsField, SettingsFieldType, SettingsForm
 from .uvicorn_fastapi import run_app
