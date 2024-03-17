@@ -8,7 +8,7 @@ Update with new features only for `NextcloudApp` class. #233
 
 ### Added
 
-- `ex_app.get_computation_device` function for retrieving GPU type(only with AppAPI `2.3.0`).
+- `ex_app.get_computation_device` function for retrieving GPU type(only with AppAPI `2.4.0`+).
 - `ex_app.integration_fastapi.fetch_models_task` are now public function, added `progress_init_start_value` param.
 - Global authentication when used now sets `request.scope["username"]` for easy use.
 

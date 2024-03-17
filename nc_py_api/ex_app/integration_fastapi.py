@@ -60,7 +60,6 @@ def set_handlers(
     default_init: bool = True,
     models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
-    progress_init_start_value: int = 0,
 ):
     """Defines handlers for the application.
 
@@ -78,8 +77,6 @@ def set_handlers(
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
-
-    :param progress_init_start_value: The "init" progress value from which the download of models starts.
     """
     if models_to_fetch is not None and default_init is False:
         raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
@@ -106,9 +103,7 @@ def set_handlers(
 
         @fast_api_app.post("/init")
         async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            b_tasks.add_task(
-                fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, progress_init_start_value
-            )
+            b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0)
             return JSONResponse(content={})
 
     if map_app_static:
@@ -125,7 +120,7 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_start_value: int = 0) -> None:
+def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_start_value: int) -> None:
     """Use for cases when you want to define custom `/init` but still need to easy download models."""
     if models:
         current_progress = progress_init_start_value
