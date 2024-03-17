@@ -6,9 +6,6 @@ External Application
 Constants
 ---------
 
-.. autoclass:: ApiScope
-    :members:
-
 .. autoclass:: LogLvl
     :members:
 

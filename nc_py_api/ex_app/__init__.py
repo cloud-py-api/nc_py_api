@@ -1,6 +1,6 @@
 """All possible ExApp stuff for NextcloudApp that can be used."""
 
-from .defs import ApiScope, LogLvl
+from .defs import LogLvl
 from .integration_fastapi import (
     AppAPIAuthMiddleware,
     anc_app,
