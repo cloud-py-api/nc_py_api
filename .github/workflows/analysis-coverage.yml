@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nc_log_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
           path: data/nextcloud.log
@@ -333,7 +333,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nc_log_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
           path: data/nextcloud.log
@@ -442,7 +442,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nc_log_oci_stable27_3.11_8.1
           path: data/nextcloud.log
@@ -621,7 +621,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nc_log_maria_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -792,7 +792,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nc_log_pgsql_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -919,7 +919,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nc_log_sqlite_${{ matrix.nextcloud }}
           path: data/nextcloud.log
