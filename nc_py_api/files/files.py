@@ -330,10 +330,10 @@ class FilesAPI:
         """
         require_capabilities("files.versioning", self._session.capabilities)
         dest = self._session.cfg.dav_endpoint + f"/versions/{self._session.user}/restore/{file_object.name}"
-        headers = Headers({"Destination": dest}, encoding="utf-8")
+        headers = Headers({"Destination": quote(dest)}, encoding="utf-8")
         response = self._session.adapter_dav.request(
             "MOVE",
-            f"/versions/{self._session.user}/{file_object.user_path}",
+            quote(f"/versions/{self._session.user}/{file_object.user_path}"),
             headers=headers,
         )
         check_error(response, f"restore_version: user={self._session.user}, src={file_object.user_path}")
@@ -810,10 +810,10 @@ class AsyncFilesAPI:
         """
         require_capabilities("files.versioning", await self._session.capabilities)
         dest = self._session.cfg.dav_endpoint + f"/versions/{await self._session.user}/restore/{file_object.name}"
-        headers = Headers({"Destination": dest}, encoding="utf-8")
+        headers = Headers({"Destination": quote(dest)}, encoding="utf-8")
         response = await self._session.adapter_dav.request(
             "MOVE",
-            f"/versions/{await self._session.user}/{file_object.user_path}",
+            quote(f"/versions/{await self._session.user}/{file_object.user_path}"),
             headers=headers,
         )
         check_error(response, f"restore_version: user={await self._session.user}, src={file_object.user_path}")
