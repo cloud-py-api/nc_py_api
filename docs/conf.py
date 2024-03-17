@@ -34,7 +34,7 @@ autodoc_pydantic_model_show_json = False
 
 # General information about the project.
 project = "NcPyApi"
-copyright = str(now.year) + " Nextcloud GmbH"  # noqa
+copyright = str(now.year) + f" {project} Authors"  # noqa
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

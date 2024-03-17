@@ -103,7 +103,7 @@ def set_handlers(
 
         @fast_api_app.post("/init")
         async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            b_tasks.add_task(__fetch_models_task, nc, models_to_fetch if models_to_fetch else {})
+            b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0)
             return JSONResponse(content={})
 
     if map_app_static:
@@ -120,10 +120,11 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def __fetch_models_task(nc: NextcloudApp, models: dict[str, dict]) -> None:
+def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_start_value: int) -> None:
+    """Use for cases when you want to define custom `/init` but still need to easy download models."""
     if models:
-        current_progress = 0
-        percent_for_each = min(int(100 / len(models)), 99)
+        current_progress = progress_init_start_value
+        percent_for_each = min(int((100 - progress_init_start_value) / len(models)), 99)
         for model in models:
             if model.startswith(("http://", "https://")):
                 __fetch_model_as_file(current_progress, percent_for_each, nc, model, models[model])
@@ -206,9 +207,9 @@ def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: Nextc
         _request_sign_check(request, nextcloud_app)
 
 
-def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> str:
     try:
-        nextcloud_app._session.sign_check(request)  # noqa pylint: disable=protected-access
+        return nextcloud_app._session.sign_check(request)  # noqa pylint: disable=protected-access
     except ValueError as e:
         print(e)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED) from None
@@ -238,7 +239,7 @@ class AppAPIAuthMiddleware:
         url_path = conn.url.path.lstrip("/")
         if not fnmatch.filter(self._disable_for, url_path):
             try:
-                _request_sign_check(conn, AsyncNextcloudApp())
+                scope["username"] = _request_sign_check(conn, AsyncNextcloudApp())
             except HTTPException as exc:
                 response = self._on_error(exc.status_code, exc.detail)
                 await response(scope, receive, send)

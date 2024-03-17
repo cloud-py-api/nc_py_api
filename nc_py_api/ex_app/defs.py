@@ -16,34 +16,3 @@ class LogLvl(enum.IntEnum):
     """Error log level"""
     FATAL = 4
     """Fatal log level"""
-
-
-class ApiScope(enum.IntEnum):
-    """Defined API scopes."""
-
-    SYSTEM = 2
-    """Allows access to the System APIs."""
-    FILES = 10
-    """Allows access to the Nextcloud file base."""
-    FILES_SHARING = 11
-    """Allows access to APIs that provide File Sharing."""
-    USER_INFO = 30
-    """Allows access to APIs that work with users."""
-    USER_STATUS = 31
-    """Allows access to APIs that work with users statuses."""
-    NOTIFICATIONS = 32
-    """Allows access to APIs that provide Notifications."""
-    WEATHER_STATUS = 33
-    """Allows access to APIs that provide Weather status."""
-    TALK = 50
-    """Allows access to Talk API endpoints."""
-    TALK_BOT = 60
-    """Allows to register Talk Bots."""
-    AI_PROVIDERS = 61
-    """Allows to register AI providers."""
-    ACTIVITIES = 110
-    """Activity App endpoints."""
-    NOTES = 120
-    """Notes App endpoints."""
-    ALL = 9999
-    """All endpoints allowed."""

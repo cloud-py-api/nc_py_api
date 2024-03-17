@@ -1,6 +1,7 @@
 import contextlib
 import math
 import os
+import time
 import zipfile
 from datetime import datetime
 from io import BytesIO
@@ -1073,6 +1074,7 @@ def test_file_versions(nc_any, dest_path):
         assert version_str.find("File version") != -1
         assert version_str.find("bytes size") != -1
         nc_any.files.restore_version(versions[0])
+        time.sleep(0.5)
         assert nc_any.files.download(new_file) == b"22"
 
 
@@ -1096,6 +1098,7 @@ async def test_file_versions_async(anc_any, dest_path):
         assert version_str.find("File version") != -1
         assert version_str.find("bytes size") != -1
         await anc_any.files.restore_version(versions[0])
+        time.sleep(0.5)
         assert await anc_any.files.download(new_file) == b"22"
 
 
