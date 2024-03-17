@@ -1058,8 +1058,8 @@ async def test_trashbin_async(anc_any, file_path):
 @pytest.mark.parametrize(
     "dest_path",
     ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt", "test_dir_tmp/file_versions-1##3"),
-    (False, True),
 )
+@pytest.mark.parametrize("update_by_id", (False, True))
 def test_file_versions(nc_any, dest_path, update_by_id):
     if nc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
@@ -1084,8 +1084,8 @@ def test_file_versions(nc_any, dest_path, update_by_id):
 @pytest.mark.parametrize(
     "dest_path",
     ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt", "test_dir_tmp/file_versions-1##3"),
-    (False, True),
 )
+@pytest.mark.parametrize("update_by_id", (False, True))
 async def test_file_versions_async(anc_any, dest_path, update_by_id):
     if await anc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
