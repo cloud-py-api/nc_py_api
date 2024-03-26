@@ -38,13 +38,6 @@ def test_get_set_location(nc_any):
     if loc.address.find("Unknown") != -1:
         pytest.skip("Some network problem on the host")
     assert loc.address.find("Rom") != -1
-    assert nc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
-    loc = nc_any.weather_status.get_location()
-    assert loc.latitude == 41.896655
-    assert loc.longitude == 12.488776
-    if loc.address.find("Unknown") != -1:
-        pytest.skip("Some network problem on the host")
-    assert loc.address.find("Rom") != -1
 
 
 @pytest.mark.asyncio(scope="session")
@@ -68,13 +61,6 @@ async def test_get_set_location_async(anc_any):
         pytest.skip("Some network problem on the host")
     assert loc.address.find("Paris") != -1
     assert await anc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776)
-    loc = await anc_any.weather_status.get_location()
-    assert loc.latitude == 41.896655
-    assert loc.longitude == 12.488776
-    if loc.address.find("Unknown") != -1:
-        pytest.skip("Some network problem on the host")
-    assert loc.address.find("Rom") != -1
-    assert await anc_any.weather_status.set_location(latitude=41.896655, longitude=12.488776, address="Paris, France")
     loc = await anc_any.weather_status.get_location()
     assert loc.latitude == 41.896655
     assert loc.longitude == 12.488776

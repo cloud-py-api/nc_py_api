@@ -173,7 +173,7 @@ async def test_set_status_type_async(anc, value):
     assert r.status_type_defined
 
 
-@pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
+@pytest.mark.parametrize("clear_at", (None, int(time()) + 60 * 60 * 9))
 def test_set_predefined(nc, clear_at):
     if nc.srv_version["major"] < 27:
         nc.user_status.set_predefined("meeting")
@@ -189,7 +189,7 @@ def test_set_predefined(nc, clear_at):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize("clear_at", (None, int(time()) + 360))
+@pytest.mark.parametrize("clear_at", (None, int(time()) + 60 * 60 * 9))
 async def test_set_predefined_async(anc, clear_at):
     if (await anc.srv_version)["major"] < 27:
         await anc.user_status.set_predefined("meeting")
