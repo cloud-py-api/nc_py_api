@@ -1061,9 +1061,8 @@ def test_file_versions(nc_any, update_by_id):
         pytest.skip("Need 'Versions' App to be enabled.")
     dest_path = "/test_dir_tmp/file_versions-ä.txt"
     nc_any.files.delete(dest_path, not_fail=True)
-    time.sleep(1.0)
     nc_any.files.upload(dest_path, content=b"22")
-    time.sleep(1.0)
+    time.sleep(2.0)
     new_file = nc_any.files.upload(dest_path, content=b"333")
     if update_by_id:
         new_file = nc_any.files.by_id(new_file)
@@ -1072,8 +1071,9 @@ def test_file_versions(nc_any, update_by_id):
     version_str = str(versions[0])
     assert version_str.find("File version") != -1
     assert version_str.find("bytes size") != -1
+    time.sleep(2.0)
     nc_any.files.restore_version(versions[0])
-    time.sleep(1.0)
+    time.sleep(2.0)
     assert nc_any.files.download(new_file) == b"22"
 
 
@@ -1082,11 +1082,10 @@ def test_file_versions(nc_any, update_by_id):
 async def test_file_versions_async(anc_any, update_by_id):
     if await anc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
-    dest_path = "/test_dir_tmp/file_versions-ä.txt"
+    dest_path = "/test_dir_tmp/file_versions-ä-async.txt"
     await anc_any.files.delete(dest_path, not_fail=True)
-    time.sleep(1.0)
     await anc_any.files.upload(dest_path, content=b"22")
-    time.sleep(1.0)
+    time.sleep(2.0)
     new_file = await anc_any.files.upload(dest_path, content=b"333")
     if update_by_id:
         new_file = await anc_any.files.by_id(new_file)
@@ -1095,8 +1094,9 @@ async def test_file_versions_async(anc_any, update_by_id):
     version_str = str(versions[0])
     assert version_str.find("File version") != -1
     assert version_str.find("bytes size") != -1
+    time.sleep(2.0)
     await anc_any.files.restore_version(versions[0])
-    time.sleep(1.0)
+    time.sleep(2.0)
     assert await anc_any.files.download(new_file) == b"22"
 
 
