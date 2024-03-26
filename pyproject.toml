@@ -118,7 +118,7 @@ lint.extend-ignore = ["D107", "D105", "D203", "D213", "D401", "I001", "RUF100"]
 "nc_py_api/ex_app/__init__.py" = ["F401"]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"benchmarks/**/*.py" = ["D", "SIM"]
+"benchmarks/**/*.py" = ["D", "SIM", "S311"]
 "docs/**/*.py" = ["D"]
 "examples/**/*.py" = ["D", "S106", "S311"]
 "tests/**/*.py" = ["D", "E402", "S", "UP"]
