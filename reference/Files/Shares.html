@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Sharing &mdash; NcPyApi 0.12.0.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=4ef3568a"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Users API" href="../Users/index.html" />
+    <link rel="prev" title="File System" href="Files.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.12.0.dev0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudSysApp.html">Writing System Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Apps.html">Applications Management</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Files API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Files.html">File System</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">File Sharing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.sharing._FilesSharingAPI"><code class="docutils literal notranslate"><span class="pre">_FilesSharingAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.sharing.Share"><code class="docutils literal notranslate"><span class="pre">Share</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.sharing.ShareType"><code class="docutils literal notranslate"><span class="pre">ShareType</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Session.html">Session Structures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Files API</a></li>
+      <li class="breadcrumb-item active">File Sharing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/Files/Shares.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-sharing">
+<h1>File Sharing<a class="headerlink" href="#file-sharing" title="Link to this heading"></a></h1>
+<p>The Shares API is universal for both modes and provides all the necessary methods for working with the Nextcloud Shares system.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.sharing.</span></span><span class="sig-name descname"><span class="pre">_FilesSharingAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Session.html#nc_py_api._session.NcSessionBasic" title="nc_py_api._session.NcSessionBasic"><span class="pre">NcSessionBasic</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI" title="Link to this definition"></a></dt>
+<dd><p>Class provides all File Sharing functionality, avalaible as <strong>nc.files.sharing.&lt;method&gt;</strong>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.available">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.available" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the Nextcloud instance supports this feature, False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.get_list">
+<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shared_with_me</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshares</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subfiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="Files.html#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.get_list" title="Link to this definition"></a></dt>
+<dd><p>Returns lists of shares.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shared_with_me</strong> – Shares should be with the current user.</p></li>
+<li><p><strong>reshares</strong> – Only get shares by the current user and reshares.</p></li>
+<li><p><strong>subfiles</strong> – Only get all sub shares in a folder.</p></li>
+<li><p><strong>path</strong> – Get shares for a specific path.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.get_by_id">
+<span class="sig-name descname"><span class="pre">get_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">share_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.get_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.get_by_id" title="Link to this definition"></a></dt>
+<dd><p>Get Share by share ID.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.get_inherited">
+<span class="sig-name descname"><span class="pre">get_inherited</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.get_inherited"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.get_inherited" title="Link to this definition"></a></dt>
+<dd><p>Get all shares relative to a file, e.g., parent folders shares.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="Files.html#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">share_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.sharing.ShareType" title="nc_py_api.files.ShareType"><span class="pre">ShareType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Files.html#nc_py_api.files.FilePermissions" title="nc_py_api.files.FilePermissions"><span class="pre">FilePermissions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.create" title="Link to this definition"></a></dt>
+<dd><p>Creates a new share.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – The path of an existing file/directory.</p></li>
+<li><p><strong>share_type</strong> – <a class="reference internal" href="#nc_py_api.files.sharing.ShareType" title="nc_py_api.files.sharing.ShareType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShareType</span></code></a> value.</p></li>
+<li><p><strong>permissions</strong> – combination of the <a class="reference internal" href="Files.html#nc_py_api.files.FilePermissions" title="nc_py_api.files.FilePermissions"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilePermissions</span></code></a> values.</p></li>
+<li><p><strong>share_with</strong> – the recipient of the shared object.</p></li>
+<li><p><strong>kwargs</strong> – See below.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Additionally supported arguments:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public_upload</span></code> - indicating should share be available for upload for non-registered users.
+default = <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code> - string with password to protect share. default = <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">send_password_by_talk</span></code> - boolean indicating should password be automatically delivered using Talk.
+default = <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expire_date</span></code> - <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> time when share should expire.
+<cite>hours, minutes, seconds</cite> are ignored. default = <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">note</span></code> - string with note, if any. default = <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code> - string with label, if any. default = <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">share_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.update" title="Link to this definition"></a></dt>
+<dd><p>Updates the share options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>share_id</strong> – ID of the Share to update.</p></li>
+<li><p><strong>kwargs</strong> – Available for update: <code class="docutils literal notranslate"><span class="pre">permissions</span></code>, <code class="docutils literal notranslate"><span class="pre">password</span></code>, <code class="docutils literal notranslate"><span class="pre">send_password_by_talk</span></code>,
+<code class="docutils literal notranslate"><span class="pre">public_upload</span></code>, <code class="docutils literal notranslate"><span class="pre">expire_date</span></code>, <code class="docutils literal notranslate"><span class="pre">note</span></code>, <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">share_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.delete" title="Link to this definition"></a></dt>
+<dd><p>Removes the given share.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.get_pending">
+<span class="sig-name descname"><span class="pre">get_pending</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.get_pending"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.get_pending" title="Link to this definition"></a></dt>
+<dd><p>Returns all pending shares for current user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.accept_share">
+<span class="sig-name descname"><span class="pre">accept_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">share_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.accept_share"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.accept_share" title="Link to this definition"></a></dt>
+<dd><p>Accept pending share.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.decline_share">
+<span class="sig-name descname"><span class="pre">decline_share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">share_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.decline_share"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.decline_share" title="Link to this definition"></a></dt>
+<dd><p>Decline pending share.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.get_deleted">
+<span class="sig-name descname"><span class="pre">get_deleted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.get_deleted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.get_deleted" title="Link to this definition"></a></dt>
+<dd><p>Get a list of deleted shares.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing._FilesSharingAPI.undelete">
+<span class="sig-name descname"><span class="pre">undelete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">share_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.sharing.Share" title="nc_py_api.files.Share"><span class="pre">Share</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/sharing.html#_FilesSharingAPI.undelete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing._FilesSharingAPI.undelete" title="Link to this definition"></a></dt>
+<dd><p>Undelete a deleted share.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.sharing.</span></span><span class="sig-name descname"><span class="pre">Share</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#Share"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing.Share" title="Link to this definition"></a></dt>
+<dd><p>Information about Share.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.share_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">share_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.share_id" title="Link to this definition"></a></dt>
+<dd><p>Unique ID of the share.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.share_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">share_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.sharing.ShareType" title="nc_py_api.files.ShareType"><span class="pre">ShareType</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.share_type" title="Link to this definition"></a></dt>
+<dd><p>Type of the share.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.share_with">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">share_with</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.share_with" title="Link to this definition"></a></dt>
+<dd><p>To whom Share was created.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.permissions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Files.html#nc_py_api.files.FilePermissions" title="nc_py_api.files.FilePermissions"><span class="pre">FilePermissions</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.permissions" title="Link to this definition"></a></dt>
+<dd><p>Recipient permissions.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.url" title="Link to this definition"></a></dt>
+<dd><p>URL at which Share is avalaible.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.path" title="Link to this definition"></a></dt>
+<dd><p>Share path relative to the user’s root directory.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.label">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.label" title="Link to this definition"></a></dt>
+<dd><p>Label for the Shared object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.note">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">note</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.note" title="Link to this definition"></a></dt>
+<dd><p>Note for the Shared object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.mimetype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mimetype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.mimetype" title="Link to this definition"></a></dt>
+<dd><p>Mimetype of the Shared object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.share_owner">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">share_owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.share_owner" title="Link to this definition"></a></dt>
+<dd><p>Share’s creator ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.file_owner">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.file_owner" title="Link to this definition"></a></dt>
+<dd><p>File/directory owner ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.password">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.password" title="Link to this definition"></a></dt>
+<dd><p>Password to access share.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.send_password_by_talk">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_password_by_talk</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.send_password_by_talk" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating was password send by Talk.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.expire_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expire_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><span class="pre">datetime</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.expire_date" title="Link to this definition"></a></dt>
+<dd><p>Share expiration time.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.file_source_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_source_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.file_source_id" title="Link to this definition"></a></dt>
+<dd><p>File source ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.can_edit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_edit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.can_edit" title="Link to this definition"></a></dt>
+<dd><p>Does caller have <code class="docutils literal notranslate"><span class="pre">write</span></code> permissions.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.Share.can_delete">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_delete</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.sharing.Share.can_delete" title="Link to this definition"></a></dt>
+<dd><p>Does caller have <code class="docutils literal notranslate"><span class="pre">delete</span></code> permissions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.sharing.</span></span><span class="sig-name descname"><span class="pre">ShareType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#ShareType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.sharing.ShareType" title="Link to this definition"></a></dt>
+<dd><p>Type of the object that will receive share.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_USER">
+<span class="sig-name descname"><span class="pre">TYPE_USER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_USER" title="Link to this definition"></a></dt>
+<dd><p>Share to the user</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_GROUP">
+<span class="sig-name descname"><span class="pre">TYPE_GROUP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_GROUP" title="Link to this definition"></a></dt>
+<dd><p>Share to the group</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_LINK">
+<span class="sig-name descname"><span class="pre">TYPE_LINK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_LINK" title="Link to this definition"></a></dt>
+<dd><p>Share by link</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_EMAIL">
+<span class="sig-name descname"><span class="pre">TYPE_EMAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_EMAIL" title="Link to this definition"></a></dt>
+<dd><p>Share by the email</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_REMOTE">
+<span class="sig-name descname"><span class="pre">TYPE_REMOTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_REMOTE" title="Link to this definition"></a></dt>
+<dd><p>Share to the Federation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_CIRCLE">
+<span class="sig-name descname"><span class="pre">TYPE_CIRCLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_CIRCLE" title="Link to this definition"></a></dt>
+<dd><p>Share to the Nextcloud Circle</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_GUEST">
+<span class="sig-name descname"><span class="pre">TYPE_GUEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_GUEST" title="Link to this definition"></a></dt>
+<dd><p>Share to <cite>Guest</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_REMOTE_GROUP">
+<span class="sig-name descname"><span class="pre">TYPE_REMOTE_GROUP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_REMOTE_GROUP" title="Link to this definition"></a></dt>
+<dd><p>Share to the Federation group</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_ROOM">
+<span class="sig-name descname"><span class="pre">TYPE_ROOM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_ROOM" title="Link to this definition"></a></dt>
+<dd><p>Share to the Talk room</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_DECK">
+<span class="sig-name descname"><span class="pre">TYPE_DECK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_DECK" title="Link to this definition"></a></dt>
+<dd><p>Share to the Nextcloud Deck</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.sharing.ShareType.TYPE_SCIENCE_MESH">
+<span class="sig-name descname"><span class="pre">TYPE_SCIENCE_MESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#nc_py_api.files.sharing.ShareType.TYPE_SCIENCE_MESH" title="Link to this definition"></a></dt>
+<dd><p>Share to the Reva instance(Science Mesh)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Files.html" class="btn btn-neutral float-left" title="File System" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Users/index.html" class="btn btn-neutral float-right" title="Users API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
