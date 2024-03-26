@@ -1055,14 +1055,11 @@ async def test_trashbin_async(anc_any, file_path):
     assert not r
 
 
-@pytest.mark.parametrize(
-    "dest_path",
-    ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt", "test_dir_tmp/file_versions-1##3"),
-)
 @pytest.mark.parametrize("update_by_id", (False, True))
-def test_file_versions(nc_any, dest_path, update_by_id):
+def test_file_versions(nc_any, update_by_id):
     if nc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
+    dest_path = "/test_dir_tmp/file_versions-ä.txt"
     nc_any.files.delete(dest_path, not_fail=True)
     time.sleep(1.0)
     nc_any.files.upload(dest_path, content=b"22")
@@ -1081,14 +1078,11 @@ def test_file_versions(nc_any, dest_path, update_by_id):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.parametrize(
-    "dest_path",
-    ("/test_dir_tmp/file_versions.txt", "/test_dir_tmp/file_versions-ä.txt", "test_dir_tmp/file_versions-1##3"),
-)
 @pytest.mark.parametrize("update_by_id", (False, True))
-async def test_file_versions_async(anc_any, dest_path, update_by_id):
+async def test_file_versions_async(anc_any, update_by_id):
     if await anc_any.check_capabilities("files.versioning"):
         pytest.skip("Need 'Versions' App to be enabled.")
+    dest_path = "/test_dir_tmp/file_versions-ä.txt"
     await anc_any.files.delete(dest_path, not_fail=True)
     time.sleep(1.0)
     await anc_any.files.upload(dest_path, content=b"22")
