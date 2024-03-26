@@ -61,7 +61,7 @@ bench = [
   "py-cpuinfo",
 ]
 calendar = [
-  "caldav==1.3.6",
+  "caldav==1.3.9",
 ]
 dev = [
   "nc_py_api[bench,calendar,dev-min]",
