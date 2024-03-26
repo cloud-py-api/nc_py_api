@@ -1066,6 +1066,7 @@ def test_file_versions(nc_any, update_by_id):
     new_file = nc_any.files.upload(dest_path, content=b"333")
     if update_by_id:
         new_file = nc_any.files.by_id(new_file)
+    time.sleep(2.0)
     versions = nc_any.files.get_versions(new_file)
     assert versions
     version_str = str(versions[0])
@@ -1089,6 +1090,7 @@ async def test_file_versions_async(anc_any, update_by_id):
     new_file = await anc_any.files.upload(dest_path, content=b"333")
     if update_by_id:
         new_file = await anc_any.files.by_id(new_file)
+    time.sleep(2.0)
     versions = await anc_any.files.get_versions(new_file)
     assert versions
     version_str = str(versions[0])
