@@ -8,7 +8,41 @@ As a first step, let's take a look at the structure of a basic Python applicatio
 Skeleton
 --------
 
-.. literalinclude:: ../examples/as_app/skeleton/lib/main.py
+.. code-block:: python
+
+    from contextlib import asynccontextmanager
+
+    from fastapi import FastAPI
+    from nc_py_api import NextcloudApp
+    from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, run_app, set_handlers
+
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        set_handlers(app, enabled_handler)
+        yield
+
+
+    APP = FastAPI(lifespan=lifespan)
+    APP.add_middleware(AppAPIAuthMiddleware)  # set global AppAPI authentication middleware
+
+
+    def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+        # This will be called each time application is `enabled` or `disabled`
+        # NOTE: `user` is unavailable on this step, so all NC API calls that require it will fail as unauthorized.
+        print(f"enabled={enabled}")
+        if enabled:
+            nc.log(LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
+        else:
+            nc.log(LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
+        # In case of an error, a non-empty short string should be returned, which will be shown to the NC administrator.
+        return ""
+
+
+    if __name__ == "__main__":
+        # Wrapper around `uvicorn.run`.
+        # You are free to call it directly, with just using the `APP_HOST` and `APP_PORT` variables from the environment.
+        run_app("main:APP", log_level="trace")
 
 What's going on in the skeleton?
 
@@ -48,6 +82,8 @@ of an empty string, and log comprehensive information that will assist the admin
 With help of ``AppAPIAuthMiddleware`` you can add **global** AppAPI authentication for all future endpoints you will define.
 
 .. note:: ``AppAPIAuthMiddleware`` supports **disable_for** optional argument, where you can list all routes for which authentication should be skipped.
+
+Repository with the skeleton sources can be found here: `app-skeleton-python <https://github.com/cloud-py-api/app-skeleton-python>`_
 
 Dockerfile
 ----------
