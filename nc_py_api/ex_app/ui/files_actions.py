@@ -1,15 +1,10 @@
 """Nextcloud API for working with drop-down file's menu."""
 
 import dataclasses
-import datetime
-import os
-
-from pydantic import BaseModel
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
 from ..._session import AsyncNcSessionApp, NcSessionApp
-from ...files import FsNode, permissions_to_str
 
 
 @dataclasses.dataclass
@@ -61,61 +56,6 @@ class UiFileActionEntry:
 
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name}, mime={self.mime}, handler={self.action_handler}>"
-
-
-class UiActionFileInfo(BaseModel):
-    """File Information Nextcloud sends to the External Application."""
-
-    fileId: int
-    """FileID without Nextcloud instance ID"""
-    name: str
-    """Name of the file/directory"""
-    directory: str
-    """Directory relative to the user's home directory"""
-    etag: str
-    mime: str
-    fileType: str
-    """**file** or **dir**"""
-    size: int
-    """size of file/directory"""
-    favorite: str
-    """**true** or **false**"""
-    permissions: int
-    """Combination of :py:class:`~nc_py_api.files.FilePermissions` values"""
-    mtime: int
-    """Last modified time"""
-    userId: str
-    """The ID of the user performing the action."""
-    shareOwner: str | None
-    """If the object is shared, this is a display name of the share owner."""
-    shareOwnerId: str | None
-    """If the object is shared, this is the owner ID of the share."""
-    instanceId: str | None
-    """Nextcloud instance ID."""
-
-    def to_fs_node(self) -> FsNode:
-        """Returns usual :py:class:`~nc_py_api.files.FsNode` created from this class."""
-        user_path = os.path.join(self.directory, self.name).rstrip("/")
-        is_dir = bool(self.fileType.lower() == "dir")
-        if is_dir:
-            user_path += "/"
-        full_path = os.path.join(f"files/{self.userId}", user_path.lstrip("/"))
-        file_id = str(self.fileId).rjust(8, "0")
-
-        permissions = "S" if self.shareOwnerId else ""
-        permissions += permissions_to_str(self.permissions, is_dir)
-        return FsNode(
-            full_path,
-            etag=self.etag,
-            size=self.size,
-            content_length=0 if is_dir else self.size,
-            permissions=permissions,
-            favorite=bool(self.favorite.lower() == "true"),
-            file_id=file_id + self.instanceId if self.instanceId else file_id,
-            fileid=self.fileId,
-            last_modified=datetime.datetime.utcfromtimestamp(self.mtime).replace(tzinfo=datetime.timezone.utc),
-            mimetype=self.mime,
-        )
 
 
 class _UiFilesActionsAPI:

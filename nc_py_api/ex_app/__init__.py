@@ -1,6 +1,7 @@
 """All possible ExApp stuff for NextcloudApp that can be used."""
 
-from .defs import LogLvl
+from ..files import ActionFileInfo
+from .defs import FileSystemEventNotification, LogLvl
 from .integration_fastapi import (
     AppAPIAuthMiddleware,
     anc_app,
@@ -15,6 +16,9 @@ from .misc import (
     persistent_storage,
     verify_version,
 )
-from .ui.files_actions import UiActionFileInfo
 from .ui.settings import SettingsField, SettingsFieldType, SettingsForm
 from .uvicorn_fastapi import run_app
+
+
+class UiActionFileInfo(ActionFileInfo):
+    """``Deprecated``: use :py:class:`~nc_py_api.ex_app.ActionFileInfo` instead."""

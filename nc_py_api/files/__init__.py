@@ -4,7 +4,10 @@ import dataclasses
 import datetime
 import email.utils
 import enum
+import os
 import warnings
+
+from pydantic import BaseModel
 
 from .. import _misc
 
@@ -460,4 +463,59 @@ class Share:
         return (
             f"{self.share_type.name}: `{self.path}` with id={self.share_id}"
             f" from {self.share_owner} to {self.share_with}"
+        )
+
+
+class ActionFileInfo(BaseModel):
+    """Information Nextcloud sends to the External Application about File Nodes affected in action."""
+
+    fileId: int
+    """FileID without Nextcloud instance ID"""
+    name: str
+    """Name of the file/directory"""
+    directory: str
+    """Directory relative to the user's home directory"""
+    etag: str
+    mime: str
+    fileType: str
+    """**file** or **dir**"""
+    size: int
+    """size of file/directory"""
+    favorite: str
+    """**true** or **false**"""
+    permissions: int
+    """Combination of :py:class:`~nc_py_api.files.FilePermissions` values"""
+    mtime: int
+    """Last modified time"""
+    userId: str
+    """The ID of the user performing the action."""
+    shareOwner: str | None = None
+    """If the object is shared, this is a display name of the share owner."""
+    shareOwnerId: str | None = None
+    """If the object is shared, this is the owner ID of the share."""
+    instanceId: str | None = None
+    """Nextcloud instance ID."""
+
+    def to_fs_node(self) -> FsNode:
+        """Returns usual :py:class:`~nc_py_api.files.FsNode` created from this class."""
+        user_path = os.path.join(self.directory, self.name).rstrip("/")
+        is_dir = bool(self.fileType.lower() == "dir")
+        if is_dir:
+            user_path += "/"
+        full_path = os.path.join(f"files/{self.userId}", user_path.lstrip("/"))
+        file_id = str(self.fileId).rjust(8, "0")
+
+        permissions = "S" if self.shareOwnerId else ""
+        permissions += permissions_to_str(self.permissions, is_dir)
+        return FsNode(
+            full_path,
+            etag=self.etag,
+            size=self.size,
+            content_length=0 if is_dir else self.size,
+            permissions=permissions,
+            favorite=bool(self.favorite.lower() == "true"),
+            file_id=file_id + self.instanceId if self.instanceId else file_id,
+            fileid=self.fileId,
+            last_modified=datetime.datetime.utcfromtimestamp(self.mtime).replace(tzinfo=datetime.timezone.utc),
+            mimetype=self.mime,
         )

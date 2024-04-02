@@ -242,8 +242,8 @@ an empty response (which will be a status of 200) and in the background already 
 The last parameter is a structure describing the action and the file on which it needs to be performed,
 which is passed by the AppAPI when clicking on the drop-down context menu of the file.
 
-We use the built method :py:meth:`~nc_py_api.ex_app.ui.files_actions.UiActionFileInfo.to_fs_node` into the structure to convert it
-into a standard :py:class:`~nc_py_api.files.FsNode` class that describes the file and pass the FsNode class instance to the background task.
+We use the built-in ``to_fs_node`` method of :py:class:`~nc_py_api.files.ActionFileInfo` to get a standard
+:py:class:`~nc_py_api.files.FsNode` class that describes the file and pass the FsNode class instance to the background task.
 
 In the **convert_video_to_gif** function, a standard conversion using ``OpenCV`` from a video file to a GIF image occurs,
 and since this is not directly related to working with NextCloud, we will skip this for now.
@@ -261,7 +261,7 @@ This is a modified endpoint from ``to_gif`` example:
 
     @APP.post("/video_to_gif")
     async def video_to_gif(
-        file: UiFileActionHandlerInfo,
+        file: ActionFileInfo,
         nc: Annotated[NextcloudApp, Depends(nc_app)],
         background_tasks: BackgroundTasks,
     ):

@@ -14,9 +14,9 @@ from requests import Response
 
 from nc_py_api import FsNode, NextcloudApp
 from nc_py_api.ex_app import (
+    ActionFileInfo,
     AppAPIAuthMiddleware,
     LogLvl,
-    UiActionFileInfo,
     nc_app,
     run_app,
     set_handlers,
@@ -77,7 +77,7 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
 
 @APP.post("/video_to_gif")
 async def video_to_gif(
-    file: UiActionFileInfo,
+    file: ActionFileInfo,
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):

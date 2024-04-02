@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.12.0 - 2024-02-28]
+## [0.12.0 - 2024-04-02]
 
 Update with new features only for `NextcloudApp` class. #233
 
@@ -11,6 +11,10 @@ Update with new features only for `NextcloudApp` class. #233
 - `ex_app.get_computation_device` function for retrieving GPU type(only with AppAPI `2.4.0`+).
 - `ex_app.integration_fastapi.fetch_models_task` are now public function, added `progress_init_start_value` param.
 - Global authentication when used now sets `request.scope["username"]` for easy use.
+
+### Changed
+
+- `UiActionFileInfo` class marked as deprecated, instead `ActionFileInfo` class should be used.
 
 ## [0.11.0 - 2024-02-17]
 
