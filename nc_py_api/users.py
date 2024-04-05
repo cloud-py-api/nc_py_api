@@ -378,5 +378,5 @@ def _create(user_id: str, display_name: str | None, **kwargs) -> dict[str, typin
         if k in kwargs:
             data[k] = kwargs[k]
     if display_name is not None:
-        data["displayname"] = display_name
+        data["displayName"] = display_name
     return data
