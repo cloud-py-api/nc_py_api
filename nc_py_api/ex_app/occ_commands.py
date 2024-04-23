@@ -29,7 +29,7 @@ class OccCommand:
     @property
     def hidden(self) -> bool:
         """Flag determining ss command hidden or not."""
-        return self._raw_data["hidden"]
+        return bool(self._raw_data["hidden"])
 
     @property
     def arguments(self) -> dict:
@@ -77,7 +77,7 @@ class OccCommandsAPI:
             "name": name,
             "description": description,
             "arguments": arguments,
-            "hidden": hidden,
+            "hidden": int(hidden),
             "options": options,
             "usages": usages,
             "execute_handler": callback_url,
@@ -125,7 +125,7 @@ class AsyncOccCommandsAPI:
             "name": name,
             "description": description,
             "arguments": arguments,
-            "hidden": hidden,
+            "hidden": int(hidden),
             "options": options,
             "usages": usages,
             "execute_handler": callback_url,
