@@ -30,6 +30,7 @@ from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar import _CalendarAPI
 from .ex_app.defs import LogLvl
+from .ex_app.occ_commands import AsyncOccCommandsAPI, OccCommandsAPI
 from .ex_app.providers.providers import AsyncProvidersApi, ProvidersApi
 from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import AsyncFilesAPI, FilesAPI
@@ -304,6 +305,8 @@ class NextcloudApp(_NextcloudBasic):
     """Nextcloud UI API for ExApps"""
     providers: ProvidersApi
     """API for registering providers for Nextcloud"""
+    occ_commands: OccCommandsAPI
+    """API for registering OCC command from ExApp"""
 
     def __init__(self, **kwargs):
         """The parameters will be taken from the environment.
@@ -316,6 +319,7 @@ class NextcloudApp(_NextcloudBasic):
         self.preferences_ex = PreferencesExAPI(self._session)
         self.ui = UiApi(self._session)
         self.providers = ProvidersApi(self._session)
+        self.occ_commands = OccCommandsAPI(self._session)
 
     def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""
@@ -421,6 +425,8 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
     """Nextcloud UI API for ExApps"""
     providers: AsyncProvidersApi
     """API for registering providers for Nextcloud"""
+    occ_commands: AsyncOccCommandsAPI
+    """API for registering OCC command from ExApp"""
 
     def __init__(self, **kwargs):
         """The parameters will be taken from the environment.
@@ -433,6 +439,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         self.preferences_ex = AsyncPreferencesExAPI(self._session)
         self.ui = AsyncUiApi(self._session)
         self.providers = AsyncProvidersApi(self._session)
+        self.occ_commands = AsyncOccCommandsAPI(self._session)
 
     async def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""

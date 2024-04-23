@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.0 - 2024-04-xx]
+
+### Added
+
+- `occ` commands registration API(AppAPI 2.5.0+). #24
+
 ## [0.12.1 - 2024-04-05]
 
 ### Fixed
