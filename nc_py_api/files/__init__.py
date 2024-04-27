@@ -282,12 +282,13 @@ class FilePermissions(enum.IntFlag):
     """Access to re-share object(s)"""
 
 
-def permissions_to_str(permissions: int, is_dir: bool = False) -> str:
+def permissions_to_str(permissions: int | str, is_dir: bool = False) -> str:
     """Converts integer permissions to string permissions.
 
     :param permissions: concatenation of ``FilePermissions`` integer flags.
     :param is_dir: Flag indicating is permissions related to the directory object or not.
     """
+    permissions = int(permissions) if not isinstance(permissions, int) else permissions
     r = ""
     if permissions & FilePermissions.PERMISSION_SHARE:
         r += "R"
