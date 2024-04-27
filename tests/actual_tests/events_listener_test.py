@@ -23,6 +23,7 @@ def test_events_registration(nc_app):
     with pytest.raises(NextcloudExceptionNotFound):
         nc_app.events_listener.unregister(result.event_type, not_fail=False)
     nc_app.events_listener.unregister(result.event_type)
+    assert nc_app.events_listener.get_entry(result.event_type) is None
     assert str(result).find("event_type=") != -1
 
 
@@ -47,4 +48,5 @@ async def test_events_registration_async(anc_app):
     with pytest.raises(NextcloudExceptionNotFound):
         await anc_app.events_listener.unregister(result.event_type, not_fail=False)
     await anc_app.events_listener.unregister(result.event_type)
+    assert await anc_app.events_listener.get_entry(result.event_type) is None
     assert str(result).find("event_type=") != -1
