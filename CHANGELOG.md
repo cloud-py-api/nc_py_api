@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.0 - 2024-05-xx]
+
+### Added
+
+- NextcloudApp: `nc.ui.files_dropdown_menu.register_ex` to register new version of FileActions(AppAPI 2.6.0+)
+
 ## [0.13.0 - 2024-04-28]
 
 ### Added

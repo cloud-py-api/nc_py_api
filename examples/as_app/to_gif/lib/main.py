@@ -12,14 +12,8 @@ from fastapi import BackgroundTasks, Depends, FastAPI, responses
 from pygifsicle import optimize
 
 from nc_py_api import FsNode, NextcloudApp
-from nc_py_api.ex_app import (
-    ActionFileInfo,
-    AppAPIAuthMiddleware,
-    LogLvl,
-    nc_app,
-    run_app,
-    set_handlers,
-)
+from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, nc_app, run_app, set_handlers
+from nc_py_api.files import ActionFileInfoExtended
 
 
 @asynccontextmanager
@@ -76,12 +70,12 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
 
 @APP.post("/video_to_gif")
 async def video_to_gif(
-    file: ActionFileInfo,
+    files: ActionFileInfoExtended,
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):
-    # background_tasks.add_task(convert_video_to_gif, file.to_fs_node(), nc)
-    return responses.JSONResponse({"redirect_handle": "some_url"})
+    background_tasks.add_task(convert_video_to_gif, files.files[0].to_fs_node(), nc)
+    return responses.Response()
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:

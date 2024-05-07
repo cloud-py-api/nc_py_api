@@ -21,4 +21,4 @@ from .uvicorn_fastapi import run_app
 
 
 class UiActionFileInfo(ActionFileInfo):
-    """``Deprecated``: use :py:class:`~nc_py_api.ex_app.ActionFileInfo` instead."""
+    """``Deprecated``: use :py:class:`~nc_py_api.files.ActionFileInfo` instead."""
