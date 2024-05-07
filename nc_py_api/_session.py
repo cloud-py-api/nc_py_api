@@ -176,6 +176,11 @@ class NcSessionBase(ABC):
         """Return base url for the App Ecosystem endpoints."""
         return "/ocs/v1.php/apps/app_api/api/v1"
 
+    @property
+    def ae_url_v2(self) -> str:
+        """Return base url for the App Ecosystem endpoints(version 2)."""
+        return "/ocs/v1.php/apps/app_api/api/v2"
+
 
 class NcSessionBasic(NcSessionBase, ABC):
     adapter: Client
