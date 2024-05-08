@@ -74,7 +74,8 @@ async def video_to_gif(
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(convert_video_to_gif, files.files[0].to_fs_node(), nc)
+    for one_file in files.files:
+        background_tasks.add_task(convert_video_to_gif, one_file.to_fs_node(), nc)
     return responses.Response()
 
 

@@ -212,7 +212,7 @@ After that we extend the **enabled** handler and include there registration of t
     def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
         try:
             if enabled:
-                nc.ui.files_dropdown_menu.register("to_gif", "TO GIF", "/video_to_gif", mime="video")
+                nc.ui.files_dropdown_menu.register_ex("to_gif", "TO GIF", "/video_to_gif", mime="video")
             else:
                 nc.ui.files_dropdown_menu.unregister("to_gif")
         except Exception as e:
@@ -225,13 +225,15 @@ After that, let's define the **"/video_to_gif"** endpoint that we had registered
 
     @APP.post("/video_to_gif")
     async def video_to_gif(
-        file: UiFileActionHandlerInfo,
+        files: ActionFileInfoExtended,
+        nc: Annotated[NextcloudApp, Depends(nc_app)],
         background_tasks: BackgroundTasks,
     ):
-        background_tasks.add_task(convert_video_to_gif, file.actionFile.to_fs_node(), nc)
-        return Response()
+        for one_file in files.files:
+            background_tasks.add_task(convert_video_to_gif, one_file.to_fs_node(), nc)
+        return responses.Response()
 
-We see two parameters ``file`` and ``BackgroundTasks``, let's start with the last one, with **BackgroundTasks**:
+We see two parameters ``files`` and ``BackgroundTasks``, let's start with the last one, with **BackgroundTasks**:
 
 FastAPI `BackgroundTasks <https://fastapi.tiangolo.com/tutorial/background-tasks/?h=backgroundtasks#background-tasks>`_ documentation.
 
@@ -242,7 +244,7 @@ an empty response (which will be a status of 200) and in the background already 
 The last parameter is a structure describing the action and the file on which it needs to be performed,
 which is passed by the AppAPI when clicking on the drop-down context menu of the file.
 
-We use the built-in ``to_fs_node`` method of :py:class:`~nc_py_api.files.ActionFileInfo` to get a standard
+We use the built-in ``to_fs_node`` method of :py:class:`~nc_py_api.files.ActionFileInfoExtended` to get a standard
 :py:class:`~nc_py_api.files.FsNode` class that describes the file and pass the FsNode class instance to the background task.
 
 In the **convert_video_to_gif** function, a standard conversion using ``OpenCV`` from a video file to a GIF image occurs,
