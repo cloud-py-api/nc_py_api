@@ -1,6 +1,7 @@
 """Nextcloud API for working with drop-down file's menu."""
 
 import dataclasses
+import warnings
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
@@ -54,6 +55,11 @@ class UiFileActionEntry:
         """Relative ExApp url which will be called if user click on the entry."""
         return self._raw_data["action_handler"]
 
+    @property
+    def version(self) -> str:
+        """AppAPI `2.6.0` supports new version of UiActions(https://github.com/cloud-py-api/app_api/pull/284)."""
+        return self._raw_data.get("version", "1.0")
+
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name}, mime={self.mime}, handler={self.action_handler}>"
 
@@ -67,7 +73,12 @@ class _UiFilesActionsAPI:
         self._session = session
 
     def register(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
-        """Registers the files a dropdown menu element."""
+        """Registers the files dropdown menu element."""
+        warnings.warn(
+            "register() is deprecated and will be removed in a future version. Use register_ex() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         require_capabilities("app_api", self._session.capabilities)
         params = {
             "name": name,
@@ -79,6 +90,20 @@ class _UiFilesActionsAPI:
             "order": kwargs.get("order", 0),
         }
         self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+
+    def register_ex(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
+        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``)."""
+        require_capabilities("app_api", self._session.capabilities)
+        params = {
+            "name": name,
+            "displayName": display_name,
+            "actionHandler": callback_url,
+            "icon": kwargs.get("icon", ""),
+            "mime": kwargs.get("mime", "file"),
+            "permissions": kwargs.get("permissions", 31),
+            "order": kwargs.get("order", 0),
+        }
+        self._session.ocs("POST", f"{self._session.ae_url_v2}/{self._ep_suffix}", json=params)
 
     def unregister(self, name: str, not_fail=True) -> None:
         """Removes files dropdown menu element."""
@@ -110,6 +135,11 @@ class _AsyncUiFilesActionsAPI:
 
     async def register(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
         """Registers the files a dropdown menu element."""
+        warnings.warn(
+            "register() is deprecated and will be removed in a future version. Use register_ex() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         require_capabilities("app_api", await self._session.capabilities)
         params = {
             "name": name,
@@ -121,6 +151,20 @@ class _AsyncUiFilesActionsAPI:
             "order": kwargs.get("order", 0),
         }
         await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
+
+    async def register_ex(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
+        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``)."""
+        require_capabilities("app_api", await self._session.capabilities)
+        params = {
+            "name": name,
+            "displayName": display_name,
+            "actionHandler": callback_url,
+            "icon": kwargs.get("icon", ""),
+            "mime": kwargs.get("mime", "file"),
+            "permissions": kwargs.get("permissions", 31),
+            "order": kwargs.get("order", 0),
+        }
+        await self._session.ocs("POST", f"{self._session.ae_url_v2}/{self._ep_suffix}", json=params)
 
     async def unregister(self, name: str, not_fail=True) -> None:
         """Removes files dropdown menu element."""

@@ -520,3 +520,10 @@ class ActionFileInfo(BaseModel):
             last_modified=datetime.datetime.utcfromtimestamp(self.mtime).replace(tzinfo=datetime.timezone.utc),
             mimetype=self.mime,
         )
+
+
+class ActionFileInfoEx(BaseModel):
+    """New ``register_ex`` uses new data format which allowing receiving multiple NC Nodes in one request."""
+
+    files: list[ActionFileInfo]
+    """Always list of ``ActionFileInfo`` with one element minimum."""

@@ -8,19 +8,12 @@ from typing import Annotated
 import cv2
 import imageio
 import numpy
-from fastapi import BackgroundTasks, Depends, FastAPI
+from fastapi import BackgroundTasks, Depends, FastAPI, responses
 from pygifsicle import optimize
-from requests import Response
 
 from nc_py_api import FsNode, NextcloudApp
-from nc_py_api.ex_app import (
-    ActionFileInfo,
-    AppAPIAuthMiddleware,
-    LogLvl,
-    nc_app,
-    run_app,
-    set_handlers,
-)
+from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, nc_app, run_app, set_handlers
+from nc_py_api.files import ActionFileInfoEx
 
 
 @asynccontextmanager
@@ -77,19 +70,20 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
 
 @APP.post("/video_to_gif")
 async def video_to_gif(
-    file: ActionFileInfo,
+    files: ActionFileInfoEx,
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(convert_video_to_gif, file.to_fs_node(), nc)
-    return Response()
+    for one_file in files.files:
+        background_tasks.add_task(convert_video_to_gif, one_file.to_fs_node(), nc)
+    return responses.Response()
 
 
 def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled={enabled}")
     try:
         if enabled:
-            nc.ui.files_dropdown_menu.register(
+            nc.ui.files_dropdown_menu.register_ex(
                 "to_gif",
                 "TO GIF",
                 "/video_to_gif",

@@ -29,3 +29,6 @@ All File APIs are designed to work relative to the current user.
 
 .. autoclass:: nc_py_api.files.ActionFileInfo
     :members: fileId, name, directory, etag, mime, fileType, size, favorite, permissions, mtime, userId, instanceId, to_fs_node
+
+.. autoclass:: nc_py_api.files.ActionFileInfoEx
+    :members: files
