@@ -13,7 +13,7 @@ from pygifsicle import optimize
 
 from nc_py_api import FsNode, NextcloudApp
 from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, nc_app, run_app, set_handlers
-from nc_py_api.files import ActionFileInfoExtended
+from nc_py_api.files import ActionFileInfoEx
 
 
 @asynccontextmanager
@@ -70,7 +70,7 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
 
 @APP.post("/video_to_gif")
 async def video_to_gif(
-    files: ActionFileInfoExtended,
+    files: ActionFileInfoEx,
     nc: Annotated[NextcloudApp, Depends(nc_app)],
     background_tasks: BackgroundTasks,
 ):

@@ -92,7 +92,7 @@ class _UiFilesActionsAPI:
         self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
 
     def register_ex(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
-        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoExtended``)."""
+        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``)."""
         require_capabilities("app_api", self._session.capabilities)
         params = {
             "name": name,
@@ -153,7 +153,7 @@ class _AsyncUiFilesActionsAPI:
         await self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
 
     async def register_ex(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
-        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoExtended``)."""
+        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``)."""
         require_capabilities("app_api", await self._session.capabilities)
         params = {
             "name": name,

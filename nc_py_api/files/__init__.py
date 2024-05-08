@@ -522,7 +522,7 @@ class ActionFileInfo(BaseModel):
         )
 
 
-class ActionFileInfoExtended(BaseModel):
+class ActionFileInfoEx(BaseModel):
     """New ``register_ex`` uses new data format which allowing receiving multiple NC Nodes in one request."""
 
     files: list[ActionFileInfo]
