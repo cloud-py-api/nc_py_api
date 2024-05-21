@@ -15,11 +15,7 @@ MAX_TIMEOUT = 60 * 20
 
 @dataclass
 class LoginFlow:
-    """The Nextcloud Login flow v2 initialization response representation.
-
-    Contains properties for login URL, token for polling user authorization confirmation, and the
-    endpoint for polling.
-    """
+    """The Nextcloud Login flow v2 initialization response representation."""
 
     def __init__(self, raw_data: dict) -> None:
         self.raw_data = raw_data
@@ -80,7 +76,6 @@ class _LoginFlowV2API:
 
     _ep_init: str = "/index.php/login/v2"
     _ep_poll: str = "/login/v2/poll"
-    _ep_delete: str = "/ocs/v2.php/core/apppassword"
 
     def __init__(self, session: NcSession) -> None:
         self._session = session
@@ -98,7 +93,7 @@ class _LoginFlowV2API:
 
         :param token: Token for a polling for confirmation of user authorization.
         :param timeout: Maximum time to wait for polling in seconds, defaults to MAX_TIMEOUT.
-        :param step: Interval for polling ins seconds, defaults to 1.
+        :param step: Interval for polling in seconds, defaults to 1.
         :param overwrite_auth: If True current session will be overwritten with new credentials, defaults to True.
         :raises ValueError: If timeout more than 20 minutes.
         """
@@ -123,7 +118,6 @@ class _AsyncLoginFlowV2API:
 
     _ep_init: str = "/index.php/login/v2"
     _ep_poll: str = "/login/v2/poll"
-    _ep_delete: str = "/ocs/v2.php/core/apppassword"
 
     def __init__(self, session: AsyncNcSession) -> None:
         self._session = session
@@ -143,7 +137,7 @@ class _AsyncLoginFlowV2API:
 
         :param token: Token for a polling for confirmation of user authorization.
         :param timeout: Maximum time to wait for polling in seconds, defaults to MAX_TIMEOUT.
-        :param step: Interval for polling ins seconds, defaults to 1.
+        :param step: Interval for polling in seconds, defaults to 1.
         :param overwrite_auth: If True current session will be overwritten with new credentials, defaults to True.
         :raises ValueError: If timeout more than 20 minutes.
         """
