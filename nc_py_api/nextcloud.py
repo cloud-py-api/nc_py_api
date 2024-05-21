@@ -35,6 +35,7 @@ from .ex_app.occ_commands import AsyncOccCommandsAPI, OccCommandsAPI
 from .ex_app.providers.providers import AsyncProvidersApi, ProvidersApi
 from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import AsyncFilesAPI, FilesAPI
+from .loginflow_v2 import _AsyncLoginFlowV2API, _LoginFlowV2API
 from .notes import _AsyncNotesAPI, _NotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
 from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
@@ -246,15 +247,18 @@ class Nextcloud(_NextcloudBasic):
     """
 
     _session: NcSession
+    loginflow_v2: _LoginFlowV2API
+    """Nextcloud Login flow v2."""
 
     def __init__(self, **kwargs):
         """If the parameters are not specified, they will be taken from the environment.
 
         :param nextcloud_url: url of the nextcloud instance.
-        :param nc_auth_user: login username.
-        :param nc_auth_pass: password or app-password for the username.
+        :param nc_auth_user: login username. Optional.
+        :param nc_auth_pass: password or app-password for the username. Optional.
         """
         self._session = NcSession(**kwargs)
+        self.loginflow_v2 = _LoginFlowV2API(self._session)
         super().__init__(self._session)
 
     @property
@@ -270,15 +274,18 @@ class AsyncNextcloud(_AsyncNextcloudBasic):
     """
 
     _session: AsyncNcSession
+    loginflow_v2: _AsyncLoginFlowV2API
+    """Nextcloud Login flow v2."""
 
     def __init__(self, **kwargs):
         """If the parameters are not specified, they will be taken from the environment.
 
         :param nextcloud_url: url of the nextcloud instance.
-        :param nc_auth_user: login username.
-        :param nc_auth_pass: password or app-password for the username.
+        :param nc_auth_user: login username. Optional.
+        :param nc_auth_pass: password or app-password for the username. Optional.
         """
         self._session = AsyncNcSession(**kwargs)
+        self.loginflow_v2 = _AsyncLoginFlowV2API(self._session)
         super().__init__(self._session)
 
     @property
