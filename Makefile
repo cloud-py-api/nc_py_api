@@ -21,10 +21,12 @@ help:
 	@echo "  "
 	@echo "  register27          register nc_py_api for Nextcloud 27"
 	@echo "  register28          register nc_py_api for Nextcloud 28"
+	@echo "  register29          register nc_py_api for Nextcloud 29"
 	@echo "  register            register nc_py_api for Nextcloud Last"
 	@echo "  "
 	@echo "  tests27             run nc_py_api tests for Nextcloud 27"
 	@echo "  tests28             run nc_py_api tests for Nextcloud 28"
+	@echo "  tests29             run nc_py_api tests for Nextcloud 29"
 	@echo "  tests               run nc_py_api tests for Nextcloud Last"
 
 .PHONY: register27
@@ -34,6 +36,10 @@ register27:
 .PHONY: register28
 register28:
 	/bin/sh scripts/dev_register.sh master-stable28-1 stable28.local
+
+.PHONY: register29
+register29:
+	/bin/sh scripts/dev_register.sh master-stable29-1 stable28.local
 
 .PHONY: register
 register:
@@ -46,6 +52,10 @@ tests27:
 .PHONY: tests28
 tests28:
 	NEXTCLOUD_URL=http://stable28.local python3 -m pytest
+
+.PHONY: tests29
+tests29:
+	NEXTCLOUD_URL=http://stable29.local python3 -m pytest
 
 .PHONY: tests
 tests:
