@@ -75,7 +75,7 @@ class _LoginFlowV2API:
     """Class implementing Nextcloud Login flow v2."""
 
     _ep_init: str = "/index.php/login/v2"
-    _ep_poll: str = "/login/v2/poll"
+    _ep_poll: str = "/index.php/login/v2/poll"
 
     def __init__(self, session: NcSession) -> None:
         self._session = session
@@ -117,7 +117,7 @@ class _AsyncLoginFlowV2API:
     """Class implementing Async Nextcloud Login flow v2."""
 
     _ep_init: str = "/index.php/login/v2"
-    _ep_poll: str = "/login/v2/poll"
+    _ep_poll: str = "/index.php/login/v2/poll"
 
     def __init__(self, session: AsyncNcSession) -> None:
         self._session = session
@@ -158,4 +158,4 @@ class _AsyncLoginFlowV2API:
 
 def _res_to_json(response: httpx.Response) -> dict:
     check_error(response)
-    return json.loads(response.text) if response.status_code != 304 else {}
+    return json.loads(response.text)
