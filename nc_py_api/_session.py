@@ -103,7 +103,10 @@ class Config(BasicConfig):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.auth = (self._get_config_value("nc_auth_user", **kwargs), self._get_config_value("nc_auth_pass", **kwargs))
+        nc_auth_user = self._get_config_value("nc_auth_user", raise_not_found=False, **kwargs)
+        nc_auth_pass = self._get_config_value("nc_auth_pass", raise_not_found=False, **kwargs)
+        if nc_auth_user and nc_auth_pass:
+            self.auth = (nc_auth_user, nc_auth_pass)
 
 
 @dataclass
