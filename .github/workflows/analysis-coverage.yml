@@ -200,6 +200,7 @@ jobs:
             php-version: "8.2"
     env:
       NC_dbname: nextcloud_abz
+      DATABASE_PGSQL: 1
     timeout-minutes: 60
 
     services:
@@ -637,6 +638,7 @@ jobs:
         nextcloud: [ 'stable27', 'stable28', 'master' ]
     env:
       NC_dbname: nextcloud_abz
+      DATABASE_PGSQL: 1
     timeout-minutes: 60
 
     services:
