@@ -23,3 +23,6 @@ Internal
 .. autoclass:: NcSessionApp
     :members:
     :inherited-members:
+
+.. autoclass:: NcSession
+    :members:
