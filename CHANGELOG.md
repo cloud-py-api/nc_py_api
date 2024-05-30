@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - `LoginFlowV2` implementation by @blvdek #255
 - NextcloudApp: `nc.ui.files_dropdown_menu.register_ex` to register new version of FileActions(AppAPI 2.6.0+) #252
-- `files.get_tags` function to get all tags assigned to the file or directory. #258
+- `files.get_tags` function to get all tags assigned to the file or directory. #260
 
 ## [0.13.0 - 2024-04-28]
 
