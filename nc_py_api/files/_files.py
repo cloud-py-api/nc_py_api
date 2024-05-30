@@ -168,6 +168,19 @@ def build_list_tags_response(response: Response) -> list[SystemTag]:
     return result
 
 
+def build_tags_ids_for_object(url_to_fetch: str, response: Response) -> list[int]:
+    result = []
+    records = _webdav_response_to_records(response, "list_tags_ids")
+    for record in records:
+        prop_stat = record["d:propstat"]
+        if str(prop_stat.get("d:status", "")).find("200 OK") == -1:
+            continue
+        href_suffix = str(record["d:href"]).removeprefix(url_to_fetch).strip("/")
+        if href_suffix:
+            result.append(int(href_suffix))
+    return result
+
+
 def build_update_tag_req(
     name: str | None, user_visible: bool | None, user_assignable: bool | None
 ) -> ElementTree.Element:
