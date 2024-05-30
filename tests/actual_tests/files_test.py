@@ -12,7 +12,13 @@ from zlib import adler32
 
 import pytest
 
-from nc_py_api import FsNode, LockType, NextcloudException, NextcloudExceptionNotFound
+from nc_py_api import (
+    FsNode,
+    LockType,
+    NextcloudException,
+    NextcloudExceptionNotFound,
+    SystemTag,
+)
 
 
 class MyBytesIO(BytesIO):
@@ -1152,7 +1158,7 @@ async def test_create_update_delete_tag_async(anc_any):
         await anc_any.files.update_tag(tag)
 
 
-def test_assign_unassign_tag(nc_any):
+def test_get_assign_unassign_tag(nc_any):
     with contextlib.suppress(NextcloudExceptionNotFound):
         nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api"))
     with contextlib.suppress(NextcloudExceptionNotFound):
@@ -1167,8 +1173,10 @@ def test_assign_unassign_tag(nc_any):
     assert tag2.user_assignable is False
     new_file = nc_any.files.upload("/test_dir_tmp/tag_test.txt", content=b"")
     new_file = nc_any.files.by_id(new_file)
+    assert nc_any.files.get_tags(new_file) == []
     assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 0
     nc_any.files.assign_tag(new_file, tag1)
+    assert isinstance(nc_any.files.get_tags(new_file)[0], SystemTag)
     assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 1
     assert len(nc_any.files.list_by_criteria(["favorite"], tags=[tag1])) == 0
     assert len(nc_any.files.list_by_criteria(tags=[tag1, tag2.tag_id])) == 0
@@ -1182,7 +1190,7 @@ def test_assign_unassign_tag(nc_any):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_assign_unassign_tag_async(anc_any):
+async def test_get_assign_unassign_tag_async(anc_any):
     with contextlib.suppress(NextcloudExceptionNotFound):
         await anc_any.files.delete_tag(await anc_any.files.tag_by_name("test_nc_py_api"))
     with contextlib.suppress(NextcloudExceptionNotFound):
@@ -1197,8 +1205,10 @@ async def test_assign_unassign_tag_async(anc_any):
     assert tag2.user_assignable is False
     new_file = await anc_any.files.upload("/test_dir_tmp/tag_test.txt", content=b"")
     new_file = await anc_any.files.by_id(new_file)
+    assert await anc_any.files.get_tags(new_file) == []
     assert len(await anc_any.files.list_by_criteria(tags=[tag1])) == 0
     await anc_any.files.assign_tag(new_file, tag1)
+    assert isinstance((await anc_any.files.get_tags(new_file))[0], SystemTag)
     assert len(await anc_any.files.list_by_criteria(tags=[tag1])) == 1
     assert len(await anc_any.files.list_by_criteria(["favorite"], tags=[tag1])) == 0
     assert len(await anc_any.files.list_by_criteria(tags=[tag1, tag2.tag_id])) == 0
