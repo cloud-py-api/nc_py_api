@@ -61,13 +61,13 @@ class _TaskProcessingProviderAPI:
             if not not_fail:
                 raise e from None
 
-    def next_task(self, task_types: [str]):
+    def next_task(self, provider_ids: [str], task_types: [str]):
         """Get the next task processing task from Nextcloud"""
         with contextlib.suppress(NextcloudException):
             return self._session.ocs(
                 "GET",
                 "/ocs/v2.php/taskprocessing/tasks/next",
-                json={"taskTypeIds": task_types},
+                json={"providerIds": provider_ids, "taskTypeIds": task_types},
             )
 
     def report_result(self, task_id: int, output: [str, str] = None, error_message: str = None) -> None:
@@ -105,13 +105,13 @@ class _AsyncTaskProcessingProviderAPI:
             if not not_fail:
                 raise e from None
 
-    async def next_task(self, task_types: [str]):
+    async def next_task(self, provider_ids: [str], task_types: [str]):
         """Get the next task processing task from Nextcloud"""
         with contextlib.suppress(NextcloudException):
             return await self._session.ocs(
                 "GET",
                 "/ocs/v2.php/taskprocessing/tasks/next",
-                json={"taskTypeIds": task_types},
+                json={"providerIds": provider_ids, "taskTypeIds": task_types},
             )
 
     async def report_result(self, task_id: int, output: [str, str] = None, error_message: str = None) -> None:
