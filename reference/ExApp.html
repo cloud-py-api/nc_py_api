@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>External Application &mdash; NcPyApi 0.14.0.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9f29afe9"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/tabs.js?v=3ee01567"></script>
+        <script src="../_static/js/script.js?v=783f4f19"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Applications Management" href="Apps.html" />
+    <link rel="prev" title="Nextcloud" href="Nextcloud.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.14.0.dev0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudSysApp.html">Writing System Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">External Application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#constants">Constants</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.LogLvl"><code class="docutils literal notranslate"><span class="pre">LogLvl</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#special-functions">Special functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.persistent_storage"><code class="docutils literal notranslate"><span class="pre">persistent_storage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.verify_version"><code class="docutils literal notranslate"><span class="pre">verify_version()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#user-interface-ui">User Interface(UI)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.ui.UiApi"><code class="docutils literal notranslate"><span class="pre">UiApi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry"><code class="docutils literal notranslate"><span class="pre">UiFileActionEntry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI"><code class="docutils literal notranslate"><span class="pre">_UiFilesActionsAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry"><code class="docutils literal notranslate"><span class="pre">UiTopMenuEntry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI"><code class="docutils literal notranslate"><span class="pre">_UiTopMenuAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources._UiResources"><code class="docutils literal notranslate"><span class="pre">_UiResources</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources.UiInitState"><code class="docutils literal notranslate"><span class="pre">UiInitState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources.UiScript"><code class="docutils literal notranslate"><span class="pre">UiScript</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources.UiStyle"><code class="docutils literal notranslate"><span class="pre">UiStyle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsField"><code class="docutils literal notranslate"><span class="pre">SettingsField</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsForm"><code class="docutils literal notranslate"><span class="pre">SettingsForm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType"><code class="docutils literal notranslate"><span class="pre">SettingsFieldType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI"><code class="docutils literal notranslate"><span class="pre">_DeclarativeSettingsAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.providers.ProvidersApi"><code class="docutils literal notranslate"><span class="pre">ProvidersApi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider"><code class="docutils literal notranslate"><span class="pre">SpeechToTextProvider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI"><code class="docutils literal notranslate"><span class="pre">_SpeechToTextProviderAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider"><code class="docutils literal notranslate"><span class="pre">TextProcessingProvider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI"><code class="docutils literal notranslate"><span class="pre">_TextProcessingProviderAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider"><code class="docutils literal notranslate"><span class="pre">TranslationsProvider</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI"><code class="docutils literal notranslate"><span class="pre">_TranslationsProviderAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.events_listener.EventsListener"><code class="docutils literal notranslate"><span class="pre">EventsListener</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.events_listener.EventsListenerAPI"><code class="docutils literal notranslate"><span class="pre">EventsListenerAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.occ_commands.OccCommand"><code class="docutils literal notranslate"><span class="pre">OccCommand</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.ex_app.occ_commands.OccCommandsAPI"><code class="docutils literal notranslate"><span class="pre">OccCommandsAPI</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Apps.html">Applications Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files/index.html">Files API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginFlowV2.html">LoginFlow V2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+      <li class="breadcrumb-item active">External Application</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/ExApp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="external-application">
+<h1>External Application<a class="headerlink" href="#external-application" title="Link to this heading"></a></h1>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.LogLvl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.</span></span><span class="sig-name descname"><span class="pre">LogLvl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/defs.html#LogLvl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.LogLvl" title="Link to this definition"></a></dt>
+<dd><p>Log levels.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.LogLvl.DEBUG">
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#nc_py_api.ex_app.LogLvl.DEBUG" title="Link to this definition"></a></dt>
+<dd><p>Debug log level</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.LogLvl.INFO">
+<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#nc_py_api.ex_app.LogLvl.INFO" title="Link to this definition"></a></dt>
+<dd><p>Informational log level</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.LogLvl.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#nc_py_api.ex_app.LogLvl.WARNING" title="Link to this definition"></a></dt>
+<dd><p>Warning log level. <code class="docutils literal notranslate"><span class="pre">Default</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.LogLvl.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#nc_py_api.ex_app.LogLvl.ERROR" title="Link to this definition"></a></dt>
+<dd><p>Error log level</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.LogLvl.FATAL">
+<span class="sig-name descname"><span class="pre">FATAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#nc_py_api.ex_app.LogLvl.FATAL" title="Link to this definition"></a></dt>
+<dd><p>Fatal log level</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="special-functions">
+<h2>Special functions<a class="headerlink" href="#special-functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.persistent_storage">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.</span></span><span class="sig-name descname"><span class="pre">persistent_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/misc.html#persistent_storage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.persistent_storage" title="Link to this definition"></a></dt>
+<dd><p>Returns the path to directory, which is permanent storage and is not deleted when the application is updated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.verify_version">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.</span></span><span class="sig-name descname"><span class="pre">verify_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">finalize_update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/misc.html#verify_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.verify_version" title="Link to this definition"></a></dt>
+<dd><p>Returns tuple with an old version and new version or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there was no update taken.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>finalize_update</strong> – Flag indicating whether update information should be updated.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, all subsequent calls to this function will return that there is no update.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="user-interface-ui">
+<h2>User Interface(UI)<a class="headerlink" href="#user-interface-ui" title="Link to this heading"></a></h2>
+<p>UI methods should be accessed with the help of <a class="reference internal" href="Nextcloud.html#nc_py_api.nextcloud.NextcloudApp" title="nc_py_api.nextcloud.NextcloudApp"><code class="xref py py-class docutils literal notranslate"><span class="pre">NextcloudApp</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this is an example, in most cases you will get `NextcloudApp` class instance as input param.</span>
+<span class="n">nc</span> <span class="o">=</span> <span class="n">NextcloudApp</span><span class="p">()</span>
+<span class="n">nc</span><span class="o">.</span><span class="n">ex_app</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">files_dropdown_menu</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.ui.UiApi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.ui.</span></span><span class="sig-name descname"><span class="pre">UiApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/ui.html#UiApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.ui.UiApi" title="Link to this definition"></a></dt>
+<dd><p>Class that encapsulates all UI functionality.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.ui.UiApi.files_dropdown_menu">
+<span class="sig-name descname"><span class="pre">files_dropdown_menu</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI" title="nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI"><span class="pre">_UiFilesActionsAPI</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.ui.UiApi.files_dropdown_menu" title="Link to this definition"></a></dt>
+<dd><p>File dropdown menu API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.ui.UiApi.top_menu">
+<span class="sig-name descname"><span class="pre">top_menu</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI" title="nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI"><span class="pre">_UiTopMenuAPI</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.ui.UiApi.top_menu" title="Link to this definition"></a></dt>
+<dd><p>Top App menu API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.ui.UiApi.resources">
+<span class="sig-name descname"><span class="pre">resources</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.ui.resources._UiResources" title="nc_py_api.ex_app.ui.resources._UiResources"><span class="pre">_UiResources</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.ui.UiApi.resources" title="Link to this definition"></a></dt>
+<dd><p>Page(Template) resources API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.ui.UiApi.settings">
+<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI" title="nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI"><span class="pre">_DeclarativeSettingsAPI</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.ui.UiApi.settings" title="Link to this definition"></a></dt>
+<dd><p>API for ExApp settings UI</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-nc_py_api.ex_app.ui.files_actions">Nextcloud API for working with drop-down file’s menu.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.files_actions.</span></span><span class="sig-name descname"><span class="pre">UiFileActionEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/files_actions.html#UiFileActionEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry" title="Link to this definition"></a></dt>
+<dd><p>Files app, right click file action entry description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.appid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">appid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.appid" title="Link to this definition"></a></dt>
+<dd><p>App ID for which this entry is.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.name" title="Link to this definition"></a></dt>
+<dd><p>File action name, acts like ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.display_name" title="Link to this definition"></a></dt>
+<dd><p>Display name of the entry.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.mime">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mime</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.mime" title="Link to this definition"></a></dt>
+<dd><p>For which file types this entry applies.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.permissions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.permissions" title="Link to this definition"></a></dt>
+<dd><p>For which file permissions this entry applies.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.order">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.order" title="Link to this definition"></a></dt>
+<dd><p>Order of the entry in the file action list.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.icon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.icon" title="Link to this definition"></a></dt>
+<dd><p>Relative to the ExApp url with icon or empty value to use the default one icon.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.action_handler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.action_handler" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called if user click on the entry.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry.version" title="Link to this definition"></a></dt>
+<dd><p>AppAPI <cite>2.6.0</cite> supports new version of UiActions(<a class="reference external" href="https://github.com/cloud-py-api/app_api/pull/284">https://github.com/cloud-py-api/app_api/pull/284</a>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.files_actions.</span></span><span class="sig-name descname"><span class="pre">_UiFilesActionsAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/files_actions.html#_UiFilesActionsAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI" title="Link to this definition"></a></dt>
+<dd><p>API for the drop-down menu in Nextcloud <strong>Files app</strong>, avalaible as <strong>nc.ui.files_dropdown_menu.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/files_actions.html#_UiFilesActionsAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers the files dropdown menu element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.register_ex">
+<span class="sig-name descname"><span class="pre">register_ex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/files_actions.html#_UiFilesActionsAPI.register_ex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.register_ex" title="Link to this definition"></a></dt>
+<dd><p>Registers the files dropdown menu element(extended version that receives <code class="docutils literal notranslate"><span class="pre">ActionFileInfoEx</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/files_actions.html#_UiFilesActionsAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes files dropdown menu element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry" title="nc_py_api.ex_app.ui.files_actions.UiFileActionEntry"><span class="pre">UiFileActionEntry</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/files_actions.html#_UiFilesActionsAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the file action meny entry.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p id="module-nc_py_api.ex_app.ui.top_menu">Nextcloud API for working with Top App menu.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.top_menu.</span></span><span class="sig-name descname"><span class="pre">UiTopMenuEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/top_menu.html#UiTopMenuEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry" title="Link to this definition"></a></dt>
+<dd><p>App top menu entry description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.appid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">appid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.appid" title="Link to this definition"></a></dt>
+<dd><p>App ID for which this entry is.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.name" title="Link to this definition"></a></dt>
+<dd><p>Top Menu entry name, acts like ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.display_name" title="Link to this definition"></a></dt>
+<dd><p>Display name of the entry.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.icon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.icon" title="Link to this definition"></a></dt>
+<dd><p>Relative to the ExApp url with icon or empty value to use the default one icon.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.admin_required">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">admin_required</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry.admin_required" title="Link to this definition"></a></dt>
+<dd><p>Flag that determines whether the entry menu is displayed only for administrators.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.top_menu.</span></span><span class="sig-name descname"><span class="pre">_UiTopMenuAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/top_menu.html#_UiTopMenuAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI" title="Link to this definition"></a></dt>
+<dd><p>API for the top menu app nav bar in Nextcloud, avalaible as <strong>nc.ui.top_menu.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/top_menu.html#_UiTopMenuAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers or edit the App entry in Top Meny.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Unique name for the menu entry.</p></li>
+<li><p><strong>display_name</strong> – Display name of the menu entry.</p></li>
+<li><p><strong>icon</strong> – Optional, url relative to the ExApp, like: “img/icon.svg”</p></li>
+<li><p><strong>admin_required</strong> – Boolean value indicating should be Entry visible to all or only to admins.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/top_menu.html#_UiTopMenuAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes App entry in Top Menu.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry" title="nc_py_api.ex_app.ui.top_menu.UiTopMenuEntry"><span class="pre">UiTopMenuEntry</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/top_menu.html#_UiTopMenuAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.top_menu._UiTopMenuAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the top meny entry for current app.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.resources.</span></span><span class="sig-name descname"><span class="pre">_UiResources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources" title="Link to this definition"></a></dt>
+<dd><p>API for adding scripts, styles, initial-states to the pages, avalaible as <strong>nc.ui.resources.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.set_initial_state">
+<span class="sig-name descname"><span class="pre">set_initial_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.set_initial_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.set_initial_state" title="Link to this definition"></a></dt>
+<dd><p>Add or update initial state for the page(template).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.delete_initial_state">
+<span class="sig-name descname"><span class="pre">delete_initial_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.delete_initial_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.delete_initial_state" title="Link to this definition"></a></dt>
+<dd><p>Removes initial state for the page(template) by object name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.get_initial_state">
+<span class="sig-name descname"><span class="pre">get_initial_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources.UiInitState" title="nc_py_api.ex_app.ui.resources.UiInitState"><span class="pre">UiInitState</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.get_initial_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.get_initial_state" title="Link to this definition"></a></dt>
+<dd><p>Get information about initial state for the page(template) by object name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.set_script">
+<span class="sig-name descname"><span class="pre">set_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_app_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.set_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.set_script" title="Link to this definition"></a></dt>
+<dd><p>Add or update script for the page(template).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.delete_script">
+<span class="sig-name descname"><span class="pre">delete_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.delete_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.delete_script" title="Link to this definition"></a></dt>
+<dd><p>Removes script for the page(template) by object name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.get_script">
+<span class="sig-name descname"><span class="pre">get_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources.UiScript" title="nc_py_api.ex_app.ui.resources.UiScript"><span class="pre">UiScript</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.get_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.get_script" title="Link to this definition"></a></dt>
+<dd><p>Get information about script for the page(template) by object name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.set_style">
+<span class="sig-name descname"><span class="pre">set_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.set_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.set_style" title="Link to this definition"></a></dt>
+<dd><p>Add or update style(css) for the page(template).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.delete_style">
+<span class="sig-name descname"><span class="pre">delete_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.delete_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.delete_style" title="Link to this definition"></a></dt>
+<dd><p>Removes style(css) for the page(template) by object name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources._UiResources.get_style">
+<span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.resources.UiStyle" title="nc_py_api.ex_app.ui.resources.UiStyle"><span class="pre">UiStyle</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#_UiResources.get_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources._UiResources.get_style" title="Link to this definition"></a></dt>
+<dd><p>Get information about style(css) for the page(template) by object name.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiInitState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.resources.</span></span><span class="sig-name descname"><span class="pre">UiInitState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#UiInitState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiInitState" title="Link to this definition"></a></dt>
+<dd><p>One Initial State description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiInitState.key">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiInitState.key" title="Link to this definition"></a></dt>
+<dd><p>Name of the object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiInitState.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiInitState.value" title="Link to this definition"></a></dt>
+<dd><p>Object for the page(template).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiScript">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.resources.</span></span><span class="sig-name descname"><span class="pre">UiScript</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#UiScript"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiScript" title="Link to this definition"></a></dt>
+<dd><p>One Script description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiScript.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiScript.path" title="Link to this definition"></a></dt>
+<dd><p>Url to script relative to the ExApp.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiScript.after_app_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">after_app_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiScript.after_app_id" title="Link to this definition"></a></dt>
+<dd><p>Optional AppID after which script should be injected.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiStyle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.resources.</span></span><span class="sig-name descname"><span class="pre">UiStyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/resources.html#UiStyle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiStyle" title="Link to this definition"></a></dt>
+<dd><p>One Style description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.resources.UiStyle.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.ui.resources.UiStyle.path" title="Link to this definition"></a></dt>
+<dd><p>Url to style relative to the ExApp.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.settings.</span></span><span class="sig-name descname"><span class="pre">SettingsField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">id:</span> <span class="pre">str,</span> <span class="pre">title:</span> <span class="pre">str,</span> <span class="pre">type:</span> <span class="pre">~nc_py_api.ex_app.ui.settings.SettingsFieldType,</span> <span class="pre">default:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[bool</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">str]</span> <span class="pre">|</span> <span class="pre">dict[str,</span> <span class="pre">~typing.Any],</span> <span class="pre">options:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">description:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">placeholder:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsField" title="Link to this definition"></a></dt>
+<dd><p>Section field.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsField.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsField" title="nc_py_api.ex_app.ui.settings.SettingsField"><span class="pre">SettingsField</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsField.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsField.from_dict" title="Link to this definition"></a></dt>
+<dd><p>Creates instance of class from dict, ignoring unknown keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsField.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsField.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsField.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns data in format that is accepted by AppAPI.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.settings.</span></span><span class="sig-name descname"><span class="pre">SettingsForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_id:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields:</span> <span class="pre">list[~nc_py_api.ex_app.ui.settings.SettingsField]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc_url:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_type:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'personal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsForm" title="Link to this definition"></a></dt>
+<dd><p>Settings Form and Section.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsForm.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsForm" title="nc_py_api.ex_app.ui.settings.SettingsForm"><span class="pre">SettingsForm</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsForm.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsForm.from_dict" title="Link to this definition"></a></dt>
+<dd><p>Creates instance of class from dict, ignoring unknown keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsForm.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsForm.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsForm.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns data in format that is accepted by AppAPI.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.settings.</span></span><span class="sig-name descname"><span class="pre">SettingsFieldType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#SettingsFieldType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType" title="Link to this definition"></a></dt>
+<dd><p>Declarative Settings Field Type.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.TEXT">
+<span class="sig-name descname"><span class="pre">TEXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'text'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.TEXT" title="Link to this definition"></a></dt>
+<dd><p>NcInputField type text</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.PASSWORD">
+<span class="sig-name descname"><span class="pre">PASSWORD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'password'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.PASSWORD" title="Link to this definition"></a></dt>
+<dd><p>NcInputField type password</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.EMAIL">
+<span class="sig-name descname"><span class="pre">EMAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'email'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.EMAIL" title="Link to this definition"></a></dt>
+<dd><p>NcInputField type email</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.TEL">
+<span class="sig-name descname"><span class="pre">TEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tel'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.TEL" title="Link to this definition"></a></dt>
+<dd><p>NcInputField type tel</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.URL">
+<span class="sig-name descname"><span class="pre">URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'url'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.URL" title="Link to this definition"></a></dt>
+<dd><p>NcInputField type url</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.NUMBER">
+<span class="sig-name descname"><span class="pre">NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'number'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.NUMBER" title="Link to this definition"></a></dt>
+<dd><p>NcInputField type number</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.CHECKBOX">
+<span class="sig-name descname"><span class="pre">CHECKBOX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'checkbox'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.CHECKBOX" title="Link to this definition"></a></dt>
+<dd><p>NcCheckboxRadioSwitch type checkbox</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.MULTI_CHECKBOX">
+<span class="sig-name descname"><span class="pre">MULTI_CHECKBOX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'multi-checkbox'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.MULTI_CHECKBOX" title="Link to this definition"></a></dt>
+<dd><p>Multiple NcCheckboxRadioSwitch type checkbox representing a one config value (saved as JSON object)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.RADIO">
+<span class="sig-name descname"><span class="pre">RADIO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'radio'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.RADIO" title="Link to this definition"></a></dt>
+<dd><p>NcCheckboxRadioSwitch type radio</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.SELECT">
+<span class="sig-name descname"><span class="pre">SELECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'select'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.SELECT" title="Link to this definition"></a></dt>
+<dd><p>NcSelect</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings.SettingsFieldType.MULTI_SELECT">
+<span class="sig-name descname"><span class="pre">MULTI_SELECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'multi-select'</span></em><a class="headerlink" href="#nc_py_api.ex_app.ui.settings.SettingsFieldType.MULTI_SELECT" title="Link to this definition"></a></dt>
+<dd><p>Multiple NcSelect representing a one config value (saved as JSON array)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.ui.settings.</span></span><span class="sig-name descname"><span class="pre">_DeclarativeSettingsAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#_DeclarativeSettingsAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI" title="Link to this definition"></a></dt>
+<dd><p>Class providing API for creating UI for the ExApp settings, avalaible as <strong>nc.ui.settings.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI.register_form">
+<span class="sig-name descname"><span class="pre">register_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsForm" title="nc_py_api.ex_app.ui.settings.SettingsForm"><span class="pre">SettingsForm</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#_DeclarativeSettingsAPI.register_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI.register_form" title="Link to this definition"></a></dt>
+<dd><p>Registers or edit the Settings UI Form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI.unregister_form">
+<span class="sig-name descname"><span class="pre">unregister_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#_DeclarativeSettingsAPI.unregister_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI.unregister_form" title="Link to this definition"></a></dt>
+<dd><p>Removes Settings UI Form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.ui.settings.SettingsForm" title="nc_py_api.ex_app.ui.settings.SettingsForm"><span class="pre">SettingsForm</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/ui/settings.html#_DeclarativeSettingsAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.ui.settings._DeclarativeSettingsAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the Settings UI Form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.providers.ProvidersApi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.providers.</span></span><span class="sig-name descname"><span class="pre">ProvidersApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/providers.html#ProvidersApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.providers.ProvidersApi" title="Link to this definition"></a></dt>
+<dd><p>Class that encapsulates all AI Providers functionality.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.providers.ProvidersApi.speech_to_text">
+<span class="sig-name descname"><span class="pre">speech_to_text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI" title="nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI"><span class="pre">_SpeechToTextProviderAPI</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.providers.ProvidersApi.speech_to_text" title="Link to this definition"></a></dt>
+<dd><p>SpeechToText Provider API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.providers.ProvidersApi.text_processing">
+<span class="sig-name descname"><span class="pre">text_processing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI" title="nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI"><span class="pre">_TextProcessingProviderAPI</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.providers.ProvidersApi.text_processing" title="Link to this definition"></a></dt>
+<dd><p>TextProcessing Provider API.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.providers.ProvidersApi.translations">
+<span class="sig-name descname"><span class="pre">translations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI" title="nc_py_api.ex_app.providers.translations._TranslationsProviderAPI"><span class="pre">_TranslationsProviderAPI</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.providers.ProvidersApi.translations" title="Link to this definition"></a></dt>
+<dd><p>Translations Provider API.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.speech_to_text.</span></span><span class="sig-name descname"><span class="pre">SpeechToTextProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/speech_to_text.html#SpeechToTextProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider" title="Link to this definition"></a></dt>
+<dd><p>Speech2Text provider description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider.name" title="Link to this definition"></a></dt>
+<dd><p>Unique ID for the provider.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider.display_name" title="Link to this definition"></a></dt>
+<dd><p>Providers display name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider.action_handler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider.action_handler" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called by Nextcloud.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.speech_to_text.</span></span><span class="sig-name descname"><span class="pre">_SpeechToTextProviderAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/speech_to_text.html#_SpeechToTextProviderAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI" title="Link to this definition"></a></dt>
+<dd><p>API for Speech2Text providers, avalaible as <strong>nc.providers.text_processing.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/speech_to_text.html#_SpeechToTextProviderAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers or edit the SpeechToText provider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/speech_to_text.html#_SpeechToTextProviderAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes SpeechToText provider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider" title="nc_py_api.ex_app.providers.speech_to_text.SpeechToTextProvider"><span class="pre">SpeechToTextProvider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/speech_to_text.html#_SpeechToTextProviderAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the SpeechToText.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.report_result">
+<span class="sig-name descname"><span class="pre">report_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/speech_to_text.html#_SpeechToTextProviderAPI.report_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.speech_to_text._SpeechToTextProviderAPI.report_result" title="Link to this definition"></a></dt>
+<dd><p>Report results of speech to text task to Nextcloud.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing.TextProcessingProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.text_processing.</span></span><span class="sig-name descname"><span class="pre">TextProcessingProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/text_processing.html#TextProcessingProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider" title="Link to this definition"></a></dt>
+<dd><p>TextProcessing provider description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.name" title="Link to this definition"></a></dt>
+<dd><p>Unique ID for the provider.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.display_name" title="Link to this definition"></a></dt>
+<dd><p>Providers display name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.action_handler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.action_handler" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called by Nextcloud.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.task_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">task_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider.task_type" title="Link to this definition"></a></dt>
+<dd><p>The TaskType provided by this provider.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.text_processing.</span></span><span class="sig-name descname"><span class="pre">_TextProcessingProviderAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/text_processing.html#_TextProcessingProviderAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI" title="Link to this definition"></a></dt>
+<dd><p>API for TextProcessing providers, avalaible as <strong>nc.providers.speech_to_text.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/text_processing.html#_TextProcessingProviderAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers or edit the TextProcessing provider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/text_processing.html#_TextProcessingProviderAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes TextProcessing provider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.providers.text_processing.TextProcessingProvider" title="nc_py_api.ex_app.providers.text_processing.TextProcessingProvider"><span class="pre">TextProcessingProvider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/text_processing.html#_TextProcessingProviderAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the TextProcessing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.report_result">
+<span class="sig-name descname"><span class="pre">report_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/text_processing.html#_TextProcessingProviderAPI.report_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.text_processing._TextProcessingProviderAPI.report_result" title="Link to this definition"></a></dt>
+<dd><p>Report results of the text processing to Nextcloud.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.translations.</span></span><span class="sig-name descname"><span class="pre">TranslationsProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/translations.html#TranslationsProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider" title="Link to this definition"></a></dt>
+<dd><p>Translations provider description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider.name" title="Link to this definition"></a></dt>
+<dd><p>Unique ID for the provider.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider.display_name" title="Link to this definition"></a></dt>
+<dd><p>Providers display name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider.from_languages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_languages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider.from_languages" title="Link to this definition"></a></dt>
+<dd><p>Input languages supported by provider.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider.to_languages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_languages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider.to_languages" title="Link to this definition"></a></dt>
+<dd><p>Output languages supported by provider.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider.action_handler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider.action_handler" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called by Nextcloud.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations.TranslationsProvider.action_handler_detect_lang">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler_detect_lang</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider.action_handler_detect_lang" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called by Nextcloud to detect language.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations._TranslationsProviderAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.providers.translations.</span></span><span class="sig-name descname"><span class="pre">_TranslationsProviderAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/translations.html#_TranslationsProviderAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI" title="Link to this definition"></a></dt>
+<dd><p>API for Translations providers, avalaible as <strong>nc.providers.translations.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_languages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_languages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detect_lang_callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/translations.html#_TranslationsProviderAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers or edit the Translations provider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/translations.html#_TranslationsProviderAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes Translations provider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.providers.translations.TranslationsProvider" title="nc_py_api.ex_app.providers.translations.TranslationsProvider"><span class="pre">TranslationsProvider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/translations.html#_TranslationsProviderAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the TranslationsProvider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.report_result">
+<span class="sig-name descname"><span class="pre">report_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/providers/translations.html#_TranslationsProviderAPI.report_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.providers.translations._TranslationsProviderAPI.report_result" title="Link to this definition"></a></dt>
+<dd><p>Report results of translation task to Nextcloud.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListener">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.events_listener.</span></span><span class="sig-name descname"><span class="pre">EventsListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/events_listener.html#EventsListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListener" title="Link to this definition"></a></dt>
+<dd><p>EventsListener description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListener.event_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListener.event_type" title="Link to this definition"></a></dt>
+<dd><p>Main type of event, e.g. <code class="docutils literal notranslate"><span class="pre">node_event</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListener.event_subtypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_subtypes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListener.event_subtypes" title="Link to this definition"></a></dt>
+<dd><p>Subtypes for which fire event, e.g. <code class="docutils literal notranslate"><span class="pre">NodeCreatedEvent</span></code>, <code class="docutils literal notranslate"><span class="pre">NodeDeletedEvent</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListener.action_handler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListener.action_handler" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called by Nextcloud.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListenerAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.events_listener.</span></span><span class="sig-name descname"><span class="pre">EventsListenerAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/events_listener.html#EventsListenerAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListenerAPI" title="Link to this definition"></a></dt>
+<dd><p>API for registering Events listeners, avalaible as <strong>nc.events_handler.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListenerAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_subtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/events_listener.html#EventsListenerAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListenerAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers or edits the events listener.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListenerAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/events_listener.html#EventsListenerAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListenerAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes the events listener.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.events_listener.EventsListenerAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.events_listener.EventsListener" title="nc_py_api.ex_app.events_listener.EventsListener"><span class="pre">EventsListener</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/events_listener.html#EventsListenerAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.events_listener.EventsListenerAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information about the event listener.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.occ_commands.</span></span><span class="sig-name descname"><span class="pre">OccCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/occ_commands.html#OccCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand" title="Link to this definition"></a></dt>
+<dd><p>OccCommand description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.name" title="Link to this definition"></a></dt>
+<dd><p>Unique ID for the command.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.description" title="Link to this definition"></a></dt>
+<dd><p>Command description.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.hidden">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.hidden" title="Link to this definition"></a></dt>
+<dd><p>Flag determining ss command hidden or not.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.arguments">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.arguments" title="Link to this definition"></a></dt>
+<dd><p>Look at PHP Symfony framework for details.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.options">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">options</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.options" title="Link to this definition"></a></dt>
+<dd><p>Look at PHP Symfony framework for details.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.usages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">usages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.usages" title="Link to this definition"></a></dt>
+<dd><p>Look at PHP Symfony framework for details.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommand.action_handler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_handler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommand.action_handler" title="Link to this definition"></a></dt>
+<dd><p>Relative ExApp url which will be called by Nextcloud.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommandsAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.ex_app.occ_commands.</span></span><span class="sig-name descname"><span class="pre">OccCommandsAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionApp" title="nc_py_api._session.NcSessionApp"><span class="pre">NcSessionApp</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/ex_app/occ_commands.html#OccCommandsAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommandsAPI" title="Link to this definition"></a></dt>
+<dd><p>API for registering OCC commands, avalaible as <strong>nc.occ_command.&lt;method&gt;</strong>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommandsAPI.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/occ_commands.html#OccCommandsAPI.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommandsAPI.register" title="Link to this definition"></a></dt>
+<dd><p>Registers or edit the OCC command.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommandsAPI.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/occ_commands.html#OccCommandsAPI.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommandsAPI.unregister" title="Link to this definition"></a></dt>
+<dd><p>Removes the OCC command.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.ex_app.occ_commands.OccCommandsAPI.get_entry">
+<span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.ex_app.occ_commands.OccCommand" title="nc_py_api.ex_app.occ_commands.OccCommand"><span class="pre">OccCommand</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/ex_app/occ_commands.html#OccCommandsAPI.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.ex_app.occ_commands.OccCommandsAPI.get_entry" title="Link to this definition"></a></dt>
+<dd><p>Get information of the OCC command.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Nextcloud.html" class="btn btn-neutral float-left" title="Nextcloud" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Apps.html" class="btn btn-neutral float-right" title="Applications Management" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

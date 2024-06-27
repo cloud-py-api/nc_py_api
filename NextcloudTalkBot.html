@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nextcloud Talk Bot API in Applications &mdash; NcPyApi 0.14.0.dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=9f29afe9"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script src="_static/tabs.js?v=3ee01567"></script>
+        <script src="_static/js/script.js?v=783f4f19"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Talk Bot App with Transformers" href="NextcloudTalkBotTransformers.html" />
+    <link rel="prev" title="Writing a Nextcloud Application" href="NextcloudApp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.14.0.dev0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudSysApp.html">Writing System Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Nextcloud Talk Bot API in Applications</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/NextcloudTalkBot.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="nextcloud-talk-bot-api-in-applications">
+<h1>Nextcloud Talk Bot API in Applications<a class="headerlink" href="#nextcloud-talk-bot-api-in-applications" title="Link to this heading"></a></h1>
+<p>The AppAPI is an excellent choice for developing and deploying bots for Nextcloud Talk.</p>
+<p>Bots for Nextcloud Talk, in essence, don’t differ significantly from regular external applications.
+The functionality of an external application can include just the bot or provide additional functionalities as well.</p>
+<p>Let’s consider a simple example of how to transform the <cite>skeleton</cite> of an external application into a Nextcloud Talk bot.</p>
+<p>The first step is to add the <strong>TALK_BOT</strong> and <strong>TALK</strong> scopes to your <cite>info.xml</cite> file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;scopes&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value&gt;</span>TALK<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value&gt;</span>TALK_BOT<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/scopes&gt;</span>
+</pre></div>
+</div>
+<p>The TALK_BOT scope enables your application to register the bot within the Nextcloud system, while the TALK scope permits access to Talk’s endpoints.</p>
+<p>In the global <strong>enabled_handler</strong>, you should include a call to your bot’s enabled_handler, as shown in the bot example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">enabled_handler</span><span class="p">(</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">nc</span><span class="p">:</span> <span class="n">NextcloudApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">CURRENCY_BOT</span><span class="o">.</span><span class="n">enabled_handler</span><span class="p">(</span><span class="n">enabled</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>  <span class="c1"># registering/unregistering the bot&#39;s stuff.</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Afterward, using FastAPI, you can define endpoints that will be invoked by Talk:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@APP</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/currency_talk_bot&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">currency_talk_bot</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">talk_bot</span><span class="o">.</span><span class="n">TalkBotMessage</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">atalk_bot_msg</span><span class="p">)],</span>
+    <span class="n">background_tasks</span><span class="p">:</span> <span class="n">BackgroundTasks</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You must include to each endpoint your bot provides the <strong>Depends(nc_app)</strong>.</p>
+<p>Depending on <strong>nc_app</strong> serves as an automatic authentication handler for messages from the cloud.</p>
+</div>
+<p><strong>message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_app)]</strong> - returns the received message from Nextcloud upon successful authentication.</p>
+<p>Additionally, if your bot can provide quick and fixed execution times, you may not need to create background tasks.
+However, in most cases, it’s recommended to segregate functionality and perform operations in the background, while promptly returning an empty response to Nextcloud.</p>
+<p>An application can implement multiple bots concurrently, but each bot’s endpoints must be unique.</p>
+<p>All authentication is facilitated by the Python SDK, ensuring you needn’t concern yourself with anything other than writing useful functionality.</p>
+<p>Currently, bots have access only to three methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference/TalkBot.html#nc_py_api.talk_bot.TalkBot.send_message" title="nc_py_api.talk_bot.TalkBot.send_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send_message()</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/TalkBot.html#nc_py_api.talk_bot.TalkBot.react_to_message" title="nc_py_api.talk_bot.TalkBot.react_to_message"><code class="xref py py-meth docutils literal notranslate"><span class="pre">react_to_message()</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/TalkBot.html#nc_py_api.talk_bot.TalkBot.delete_reaction" title="nc_py_api.talk_bot.TalkBot.delete_reaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_reaction()</span></code></a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The usage of system application functionality for user impersonation in bot development is strongly discouraged</strong>.
+All bot messages should only be sent using the <code class="docutils literal notranslate"><span class="pre">send_message</span></code> method!</p>
+</div>
+<p>All other rules and algorithms remain consistent with regular external applications.</p>
+<p>Full source of bot example can be found here:
+<a class="reference external" href="https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/talk_bot/lib/main.py">TalkBot</a></p>
+<p>Wishing success with your Nextcloud bot integration! May the force be with you!</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="NextcloudApp.html" class="btn btn-neutral float-left" title="Writing a Nextcloud Application" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="NextcloudTalkBotTransformers.html" class="btn btn-neutral float-right" title="Talk Bot App with Transformers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
