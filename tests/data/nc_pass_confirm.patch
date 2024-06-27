@@ -1,11 +1,11 @@
 diff --git a/lib/private/AppFramework/Middleware/Security/PasswordConfirmationMiddleware.php b/lib/private/AppFramework/Middleware/Security/PasswordConfirmationMiddleware.php
-index a72a7a40016..c6738de65df 100644
+index 5ff9d7386da..04edf4e9991 100644
 --- a/lib/private/AppFramework/Middleware/Security/PasswordConfirmationMiddleware.php
 +++ b/lib/private/AppFramework/Middleware/Security/PasswordConfirmationMiddleware.php
-@@ -88,7 +88,7 @@ class PasswordConfirmationMiddleware extends Middleware {
+@@ -93,7 +93,7 @@ class PasswordConfirmationMiddleware extends Middleware {
 
  			$lastConfirm = (int) $this->session->get('last-password-confirm');
- 			// we can't check the password against a SAML backend, so skip password confirmation in this case
+ 			// TODO: confirm excludedUserBackEnds can go away and remove it
 -			if (!isset($this->excludedUserBackEnds[$backendClassName]) && $lastConfirm < ($this->timeFactory->getTime() - (30 * 60 + 15))) { // allow 15 seconds delay
 +			if (!isset($this->excludedUserBackEnds[$backendClassName]) && $lastConfirm < ($this->timeFactory->getTime() - 5)) { // allow 5 seconds delay
  				throw new NotConfirmedException();
