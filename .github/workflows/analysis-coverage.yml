@@ -46,14 +46,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - nextcloud: "27.1.4"
+          - nextcloud: "27.1.11"
             python: "3.10"
             php-version: "8.1"
     timeout-minutes: 60
 
     services:
       mariadb:
-        image: mariadb:11.3
+        image: mariadb:11.4
         env:
           MARIADB_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: nextcloud
@@ -195,7 +195,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - nextcloud: "27.1.4"
+          - nextcloud: "27.1.11"
             python: "3.11"
             php-version: "8.2"
     env:
@@ -461,7 +461,7 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb:11.3
+        image: mariadb:11.4
         env:
           MARIADB_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: nextcloud
