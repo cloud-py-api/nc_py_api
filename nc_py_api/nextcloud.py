@@ -1,5 +1,6 @@
 """Nextcloud class providing access to all API endpoints."""
 
+import contextlib
 import typing
 from abc import ABC
 
@@ -333,6 +334,13 @@ class NextcloudApp(_NextcloudBasic):
         self.events_listener = EventsListenerAPI(self._session)
         self.occ_commands = OccCommandsAPI(self._session)
 
+    @property
+    def enabled_state(self) -> bool:
+        """Returns ``True`` if ExApp is enabled, ``False`` otherwise."""
+        with contextlib.suppress(Exception):
+            return bool(self._session.ocs("GET", "/ocs/v1.php/apps/app_api/ex-app/state"))
+        return False
+
     def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""
         if self.check_capabilities("app_api"):
@@ -455,6 +463,13 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         self.providers = AsyncProvidersApi(self._session)
         self.events_listener = AsyncEventsListenerAPI(self._session)
         self.occ_commands = AsyncOccCommandsAPI(self._session)
+
+    @property
+    async def enabled_state(self) -> bool:
+        """Returns ``True`` if ExApp is enabled, ``False`` otherwise."""
+        with contextlib.suppress(Exception):
+            return bool(await self._session.ocs("GET", "/ocs/v1.php/apps/app_api/ex-app/state"))
+        return False
 
     async def log(self, log_lvl: LogLvl, content: str) -> None:
         """Writes log to the Nextcloud log file."""
