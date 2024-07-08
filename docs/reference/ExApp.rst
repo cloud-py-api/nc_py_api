@@ -87,6 +87,9 @@ UI methods should be accessed with the help of :class:`~nc_py_api.nextcloud.Next
 .. autoclass:: nc_py_api.ex_app.providers.translations._TranslationsProviderAPI
     :members:
 
+.. autoclass:: nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI
+    :members:
+
 .. autoclass:: nc_py_api.ex_app.events_listener.EventsListener
     :members:
 
