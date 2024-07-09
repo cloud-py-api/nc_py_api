@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 - `LoginFlowV2` implementation by @blvdek #255
 - `files.get_tags` function to get all tags assigned to the file or directory. #260
 - NextcloudApp: `nc.ui.files_dropdown_menu.register_ex` to register new version of FileActions(AppAPI 2.6.0+) #252
-- NextcloudApp: `enabled_state` property to check if current ExApp is disabled or enabled.
+- NextcloudApp: `enabled_state` property to check if the current ExApp is disabled or enabled. #268
+- NextcloudApp: support for the new AI API for the Nextcloud 30. #254
 
 ## [0.13.0 - 2024-04-28]
 

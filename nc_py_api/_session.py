@@ -197,13 +197,16 @@ class NcSessionBasic(NcSessionBase, ABC):
         content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
         json: dict | list | None = None,
         params: dict | None = None,
+        files: dict | None = None,
         **kwargs,
     ):
         self.init_adapter()
         info = f"request: {method} {path}"
         nested_req = kwargs.pop("nested_req", False)
         try:
-            response = self.adapter.request(method, path, content=content, json=json, params=params, **kwargs)
+            response = self.adapter.request(
+                method, path, content=content, json=json, params=params, files=files, **kwargs
+            )
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
@@ -315,13 +318,16 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
         content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
         json: dict | list | None = None,
         params: dict | None = None,
+        files: dict | None = None,
         **kwargs,
     ):
         self.init_adapter()
         info = f"request: {method} {path}"
         nested_req = kwargs.pop("nested_req", False)
         try:
-            response = await self.adapter.request(method, path, content=content, json=json, params=params, **kwargs)
+            response = await self.adapter.request(
+                method, path, content=content, json=json, params=params, files=files, **kwargs
+            )
         except ReadTimeout:
             raise NextcloudException(408, info=info) from None
 
