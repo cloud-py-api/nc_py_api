@@ -2,6 +2,7 @@
 
 import contextlib
 import dataclasses
+import typing
 
 from ..._exceptions import NextcloudException, NextcloudExceptionNotFound
 from ..._misc import require_capabilities
@@ -61,23 +62,54 @@ class _TaskProcessingProviderAPI:
             if not not_fail:
                 raise e from None
 
-    def next_task(self, provider_ids: [str], task_types: [str]):
-        """Get the next task processing task from Nextcloud"""
+    def next_task(self, provider_ids: list[str], task_types: list[str]) -> dict[str, typing.Any]:
+        """Get the next task processing task from Nextcloud."""
         with contextlib.suppress(NextcloudException):
-            return self._session.ocs(
+            if r := self._session.ocs(
                 "GET",
                 "/ocs/v2.php/taskprocessing/tasks_provider/next",
                 json={"providerIds": provider_ids, "taskTypeIds": task_types},
-            )
+            ):
+                return r
+        return {}
 
-    def report_result(self, task_id: int, output: [str, str] = None, error_message: str = None) -> None:
-        """Report results of the task processing to Nextcloud."""
+    def set_progress(self, task_id: int, progress: float) -> dict[str, typing.Any]:
+        """Report new progress value of the task to Nextcloud. Progress should be in range from 0.0 to 100.0."""
         with contextlib.suppress(NextcloudException):
-            return self._session.ocs(
+            if r := self._session.ocs(
+                "POST",
+                f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/progress",
+                json={"taskId": task_id, "progress": progress / 100.0},
+            ):
+                return r
+        return {}
+
+    def upload_result_file(self, task_id: int, file: bytes | str | typing.Any) -> int:
+        """Uploads file and returns fileID that should be used in the ``report_result`` function.
+
+        .. note:: ``file`` can be any file-like object.
+        """
+        return self._session.ocs(
+            "POST",
+            f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/file",
+            files={"file": file},
+        )["fileId"]
+
+    def report_result(
+        self,
+        task_id: int,
+        output: dict[str, typing.Any] | None = None,
+        error_message: str | None = None,
+    ) -> dict[str, typing.Any]:
+        """Report result of the task processing to Nextcloud."""
+        with contextlib.suppress(NextcloudException):
+            if r := self._session.ocs(
                 "POST",
                 f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/result",
                 json={"taskId": task_id, "output": output, "errorMessage": error_message},
-            )
+            ):
+                return r
+        return {}
 
 
 class _AsyncTaskProcessingProviderAPI:
@@ -105,21 +137,53 @@ class _AsyncTaskProcessingProviderAPI:
             if not not_fail:
                 raise e from None
 
-    async def next_task(self, provider_ids: [str], task_types: [str]):
-        """Get the next task processing task from Nextcloud"""
+    async def next_task(self, provider_ids: list[str], task_types: list[str]) -> dict[str, typing.Any]:
+        """Get the next task processing task from Nextcloud."""
         with contextlib.suppress(NextcloudException):
-            return await self._session.ocs(
+            if r := await self._session.ocs(
                 "GET",
                 "/ocs/v2.php/taskprocessing/tasks_provider/next",
                 json={"providerIds": provider_ids, "taskTypeIds": task_types},
-            )
+            ):
+                return r
+        return {}
 
-    async def report_result(self, task_id: int, output: [str, str] = None, error_message: str = None) -> None:
-        """Report results of the task processing to Nextcloud."""
-        require_capabilities("app_api", await self._session.capabilities)
+    async def set_progress(self, task_id: int, progress: float) -> dict[str, typing.Any]:
+        """Report new progress value of the task to Nextcloud. Progress should be in range from 0.0 to 100.0."""
         with contextlib.suppress(NextcloudException):
+            if r := await self._session.ocs(
+                "POST",
+                f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/progress",
+                json={"taskId": task_id, "progress": progress / 100.0},
+            ):
+                return r
+        return {}
+
+    async def upload_result_file(self, task_id: int, file: bytes | str | typing.Any) -> int:
+        """Uploads file and returns fileID that should be used in the ``report_result`` function.
+
+        .. note:: ``file`` can be any file-like object.
+        """
+        return (
             await self._session.ocs(
+                "POST",
+                f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/file",
+                files={"file": file},
+            )
+        )["fileId"]
+
+    async def report_result(
+        self,
+        task_id: int,
+        output: dict[str, typing.Any] | None = None,
+        error_message: str | None = None,
+    ) -> dict[str, typing.Any]:
+        """Report result of the task processing to Nextcloud."""
+        with contextlib.suppress(NextcloudException):
+            if r := await self._session.ocs(
                 "POST",
                 f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/result",
                 json={"taskId": task_id, "output": output, "errorMessage": error_message},
-            )
+            ):
+                return r
+        return {}
