@@ -20,6 +20,8 @@ env:
   APP_PORT: 9009
   NC_AUTH_USER: "admin"
   NC_AUTH_PASS: "adminpassword"
+  NEXTCLOUD_VERSION: 28.0.7
+  NEXTCLOUD_BRANCH: stable28
 
 jobs:
   analysis:
@@ -30,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
       - name: Install from source
         run: python3 -m pip install ".[dev]"
@@ -41,14 +43,7 @@ jobs:
   tests-maria:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • Maria
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - nextcloud: "27.1.11"
-            python: "3.10"
-            php-version: "8.1"
+    name: 28.X.X • 🐘8.1 • 🐍3.10 • Maria
     timeout-minutes: 60
 
     services:
@@ -69,31 +64,27 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: '8.1'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
-
-      - name: Stable27
-        if: ${{ startsWith(matrix.nextcloud, '27.') }}
-        run: echo "NC_BRANCH_NAME=stable27" >> $GITHUB_ENV
+          python-version: '3.10'
 
       - name: cache-nextcloud
         id: nextcloud_setup
         uses: actions/cache@v4
         with:
-          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
-          key: ${{ matrix.nextcloud }}
+          path: nextcloud-${{ env.NEXTCLOUD_VERSION }}.tar.bz2
+          key: ${{ env.NEXTCLOUD_VERSION }}
 
       - name: Download Nextcloud
         if: steps.nextcloud_setup.outputs.cache-hit != 'true'
-        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
+        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ env.NEXTCLOUD_VERSION }}.tar.bz2
 
       - name: Set up Nextcloud
         run: |
-          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
+          tar -xjf nextcloud-${{ env.NEXTCLOUD_VERSION }}.tar.bz2 --strip-components 1
           mkdir data
           php occ maintenance:install --verbose --database=mysql --database-name=nextcloud \
             --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
@@ -135,7 +126,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ env.NC_BRANCH_NAME }}
+          ref: ${{ env.NEXTCLOUD_BRANCH }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -170,34 +161,27 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          coverage combine && coverage xml -o coverage_maria_${{ env.NEXTCLOUD_VERSION }}_3.10_8.1.xml
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
-          path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          name: coverage_maria_${{ env.NEXTCLOUD_VERSION }}_3.10_8.1.xml
+          path: nc_py_api/coverage_maria_${{ env.NEXTCLOUD_VERSION }}_3.10_8.1.xml
           if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nc_log_maria_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          name: nc_log_maria_${{ env.NEXTCLOUD_VERSION }}_3.10_8.1
           path: data/nextcloud.log
           if-no-files-found: warn
 
   tests-pgsql:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐘${{ matrix.php-version }} • 🐍${{ matrix.python }} • PgSQL
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - nextcloud: "27.1.11"
-            python: "3.11"
-            php-version: "8.2"
+    name: 28.X.X • 🐘8.2 • 🐍3.11 • PgSQL
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -219,34 +203,30 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: Set up php ${{ matrix.php-version }}
+      - name: Set up php 8.2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
-
-      - name: Stable27
-        if: ${{ startsWith(matrix.nextcloud, '27.') }}
-        run: echo "NC_BRANCH_NAME=stable27" >> $GITHUB_ENV
+          python-version: '3.11'
 
       - name: cache-nextcloud
         id: nextcloud_setup
         uses: actions/cache@v4
         with:
-          path: nextcloud-${{ matrix.nextcloud }}.tar.bz2
-          key: ${{ matrix.nextcloud }}
+          path: nextcloud-${{ env.NEXTCLOUD_VERSION }}.tar.bz2
+          key: ${{ env.NEXTCLOUD_VERSION }}
 
       - name: Download Nextcloud
         if: steps.nextcloud_setup.outputs.cache-hit != 'true'
-        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ matrix.nextcloud }}.tar.bz2
+        run: wget -q https://download.nextcloud.com/server/releases/nextcloud-${{ env.NEXTCLOUD_VERSION }}.tar.bz2
 
       - name: Set up Nextcloud
         run: |
-          tar -xjf nextcloud-${{ matrix.nextcloud }}.tar.bz2 --strip-components 1
+          tar -xjf nextcloud-${{ env.NEXTCLOUD_VERSION }}.tar.bz2 --strip-components 1
           mkdir data
           php occ maintenance:install --verbose --database=pgsql --database-name=${{ env.NC_dbname }} \
             --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword \
@@ -288,7 +268,7 @@ jobs:
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ env.NC_BRANCH_NAME }}
+          ref: ${{ env.NEXTCLOUD_BRANCH }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -323,27 +303,27 @@ jobs:
           kill -15 $(cat /tmp/_install_models.pid)
           timeout 3m tail --pid=$(cat /tmp/_install_models.pid) -f /dev/null
           cd nc_py_api
-          coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          coverage combine && coverage xml -o coverage_pgsql_${{ env.NEXTCLOUD_VERSION }}_3.11_8.2.xml
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
-          path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}.xml
+          name: coverage_pgsql_${{ env.NEXTCLOUD_VERSION }}_3.11_8.2.xml
+          path: nc_py_api/coverage_pgsql_${{ env.NEXTCLOUD_VERSION }}_3.11_8.2.xml
           if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nc_log_pgsql_${{ matrix.nextcloud }}_${{ matrix.python }}_${{ matrix.php-version }}
+          name: nc_log_pgsql_${{ env.NEXTCLOUD_VERSION }}_3.11_8.2
           path: data/nextcloud.log
           if-no-files-found: warn
 
-  tests-stable27-oci:
+  tests-oci:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: stable27 • 🐘8.1 • 🐍3.11 • OCI
+    name: stable28 • 🐘8.1 • 🐍3.11 • OCI
     timeout-minutes: 60
 
     services:
@@ -378,13 +358,13 @@ jobs:
         with:
           submodules: true
           repository: nextcloud/server
-          ref: 'stable27'
+          ref: ${{ env.NEXTCLOUD_BRANCH }}
 
       - name: Checkout Notifications
         uses: actions/checkout@v4
         with:
           repository: nextcloud/notifications
-          ref: 'stable27'
+          ref: ${{ env.NEXTCLOUD_BRANCH }}
           path: apps/notifications
 
       - name: Set up Nextcloud
@@ -430,22 +410,22 @@ jobs:
         run: |
           coverage run --data-file=.coverage.ci -m pytest
           coverage run --data-file=.coverage.at_the_end -m pytest tests/_tests_at_the_end.py
-          coverage combine && coverage xml -o coverage_oci_stable27_3.11_8.1.xml
+          coverage combine && coverage xml -o coverage_oci_${{ env.NEXTCLOUD_BRANCH }}_3.11_8.1.xml
         env:
           SKIP_NC_CLIENT_TESTS: 1
 
       - name: Upload Codecov to artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage_oci_stable27_3.11_8.1.xml
-          path: nc_py_api/coverage_oci_stable27_3.11_8.1.xml
+          name: coverage_oci_${{ env.NEXTCLOUD_BRANCH }}_3.11_8.1.xml
+          path: nc_py_api/coverage_oci_${{ env.NEXTCLOUD_BRANCH }}_3.11_8.1.xml
           if-no-files-found: error
 
       - name: Upload NC logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nc_log_oci_stable27_3.11_8.1
+          name: nc_log_oci_${{ env.NEXTCLOUD_BRANCH }}_3.11_8.1
           path: data/nextcloud.log
           if-no-files-found: warn
 
@@ -456,7 +436,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable27', 'stable28', 'master' ]
+        nextcloud: [ 'stable28', 'stable29', 'master' ]
     timeout-minutes: 60
 
     services:
@@ -477,7 +457,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
 
       - uses: actions/setup-python@v5
@@ -635,7 +615,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable27', 'stable28', 'master' ]
+        nextcloud: [ 'stable28', 'stable29', 'master' ]
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -660,7 +640,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
       - uses: actions/setup-python@v5
@@ -807,7 +787,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable26', 'stable27', 'stable28', 'master' ]
+        nextcloud: [ 'stable27', 'stable28', 'stable29', 'master' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
     timeout-minutes: 60
@@ -816,12 +796,12 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: '8.1'
           extensions: mbstring, fileinfo, intl, sqlite, pdo_sqlite, zip, gd, curl
 
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: '3.12'
 
       - name: Checkout server
         uses: actions/checkout@v4
@@ -847,7 +827,7 @@ jobs:
 
       - name: Checkout Files Locking
         uses: actions/checkout@v4
-        if: ${{ !startsWith(matrix.nextcloud, 'stable26') && !startsWith(matrix.nextcloud, 'master') }}
+        if: ${{ !startsWith(matrix.nextcloud, 'stable27') && !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
@@ -871,7 +851,7 @@ jobs:
         run: ./occ app:enable notes
 
       - name: Enable Files Locking
-        if: ${{ !startsWith(matrix.nextcloud, 'stable26') && !startsWith(matrix.nextcloud, 'master') }}
+        if: ${{ !startsWith(matrix.nextcloud, 'stable27') && !startsWith(matrix.nextcloud, 'master') }}
         run: ./occ app:enable files_lock
 
       - name: Checkout NcPyApi
@@ -928,7 +908,7 @@ jobs:
           if-no-files-found: warn
 
   tests-upload-coverage:
-    needs: [tests-maria, tests-pgsql, tests-stable27-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
+    needs: [tests-maria, tests-pgsql, tests-oci, tests-latest-maria, test-latest-pgsql, tests-client-sqlite]
     permissions:
       contents: none
     runs-on: ubuntu-22.04

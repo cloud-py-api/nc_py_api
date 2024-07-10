@@ -204,7 +204,6 @@ async def test_set_predefined_async(anc, clear_at):
             assert r.status_clear_at == clear_at
 
 
-@pytest.mark.require_nc(major=27)
 def test_get_back_status_from_from_empty_user(nc_app):
     orig_user = nc_app._session.user
     nc_app._session.set_user("")
@@ -216,7 +215,6 @@ def test_get_back_status_from_from_empty_user(nc_app):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.require_nc(major=27)
 async def test_get_back_status_from_from_empty_user_async(anc_app):
     orig_user = await anc_app._session.user
     anc_app._session.set_user("")
@@ -227,23 +225,19 @@ async def test_get_back_status_from_from_empty_user_async(anc_app):
         anc_app._session.set_user(orig_user)
 
 
-@pytest.mark.require_nc(major=27)
 def test_get_back_status_from_from_non_exist_user(nc):
     assert nc.user_status.get_backup_status("mёm_m-m.l") is None
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.require_nc(major=27)
 async def test_get_back_status_from_from_non_exist_user_async(anc):
     assert await anc.user_status.get_backup_status("mёm_m-m.l") is None
 
 
-@pytest.mark.require_nc(major=27)
 def test_restore_from_non_existing_back_status(nc):
     assert nc.user_status.restore_backup_status("no such backup status") is None
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.require_nc(major=27)
 async def test_restore_from_non_existing_back_status_async(anc):
     assert await anc.user_status.restore_backup_status("no such backup status") is None

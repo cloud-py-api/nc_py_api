@@ -19,19 +19,15 @@ help:
 	@echo "  Next commands are only for dev environment with nextcloud-docker-dev!"
 	@echo "  They should run from the host you are developing on(with activated venv) and not in the container with Nextcloud!"
 	@echo "  "
-	@echo "  register27          register nc_py_api for Nextcloud 27"
 	@echo "  register28          register nc_py_api for Nextcloud 28"
 	@echo "  register29          register nc_py_api for Nextcloud 29"
+	@echo "  register30          register nc_py_api for Nextcloud 30"
 	@echo "  register            register nc_py_api for Nextcloud Last"
 	@echo "  "
-	@echo "  tests27             run nc_py_api tests for Nextcloud 27"
 	@echo "  tests28             run nc_py_api tests for Nextcloud 28"
 	@echo "  tests29             run nc_py_api tests for Nextcloud 29"
+	@echo "  tests30             run nc_py_api tests for Nextcloud 30"
 	@echo "  tests               run nc_py_api tests for Nextcloud Last"
-
-.PHONY: register27
-register27:
-	/bin/sh scripts/dev_register.sh master-stable27-1 stable27.local
 
 .PHONY: register28
 register28:
@@ -39,15 +35,15 @@ register28:
 
 .PHONY: register29
 register29:
-	/bin/sh scripts/dev_register.sh master-stable29-1 stable28.local
+	/bin/sh scripts/dev_register.sh master-stable29-1 stable29.local
+
+.PHONY: register30
+register30:
+	/bin/sh scripts/dev_register.sh master-stable30-1 stable30.local
 
 .PHONY: register
 register:
 	/bin/sh scripts/dev_register.sh master-nextcloud-1 nextcloud.local
-
-.PHONY: tests27
-tests27:
-	NEXTCLOUD_URL=http://stable27.local python3 -m pytest
 
 .PHONY: tests28
 tests28:
@@ -56,6 +52,10 @@ tests28:
 .PHONY: tests29
 tests29:
 	NEXTCLOUD_URL=http://stable29.local python3 -m pytest
+
+.PHONY: tests30
+tests30:
+	NEXTCLOUD_URL=http://stable30.local python3 -m pytest
 
 .PHONY: tests
 tests:

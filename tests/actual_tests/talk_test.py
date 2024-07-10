@@ -256,7 +256,6 @@ async def test_rename_description_favorite_get_conversation_async(anc_any):
         await anc_any.talk.delete_conversation(conversation)
 
 
-@pytest.mark.require_nc(major=27)
 def test_message_send_delete_reactions(nc_any):
     if nc_any.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
@@ -288,7 +287,6 @@ def test_message_send_delete_reactions(nc_any):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.require_nc(major=27)
 async def test_message_send_delete_reactions_async(anc_any):
     if await anc_any.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
@@ -446,7 +444,6 @@ async def test_vote_poll_async(anc_any):
         await anc_any.talk.delete_conversation(conversation)
 
 
-@pytest.mark.require_nc(major=27)
 def test_conversation_avatar(nc_any):
     if nc_any.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
@@ -477,7 +474,6 @@ def test_conversation_avatar(nc_any):
 
 
 @pytest.mark.asyncio(scope="session")
-@pytest.mark.require_nc(major=27)
 async def test_conversation_avatar_async(anc_any):
     if await anc_any.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
