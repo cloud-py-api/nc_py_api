@@ -43,13 +43,14 @@ class _TaskProcessingProviderAPI:
     def __init__(self, session: NcSessionApp):
         self._session = session
 
-    def register(self, name: str, display_name: str, task_type: str) -> None:
+    def register(self, name: str, display_name: str, task_type: str, custom_task_type: [str, any] = None) -> None:
         """Registers or edit the TaskProcessing provider."""
         require_capabilities("app_api", self._session.capabilities)
         params = {
             "name": name,
             "displayName": display_name,
             "taskType": task_type,
+            "customTaskType": custom_task_type,
         }
         self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
@@ -118,13 +119,14 @@ class _AsyncTaskProcessingProviderAPI:
     def __init__(self, session: AsyncNcSessionApp):
         self._session = session
 
-    async def register(self, name: str, display_name: str, task_type: str) -> None:
+    async def register(self, name: str, display_name: str, task_type: str, custom_task_type: [str, any] = None) -> None:
         """Registers or edit the TaskProcessing provider."""
         require_capabilities("app_api", await self._session.capabilities)
         params = {
             "name": name,
             "displayName": display_name,
             "taskType": task_type,
+            "customTaskType": custom_task_type,
         }
         await self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
