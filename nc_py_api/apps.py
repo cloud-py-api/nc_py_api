@@ -43,8 +43,8 @@ class ExAppInfo:
 
     @property
     def system(self) -> bool:
-        """Flag indicating if the application is a system application."""
-        return bool(self._raw_data["system"])
+        """**DEPRECATED** Flag indicating if the application is a system application."""
+        return True
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.app_id}, ver={self.version}>"
