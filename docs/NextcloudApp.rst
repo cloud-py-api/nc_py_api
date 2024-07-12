@@ -134,7 +134,7 @@ After launching your application, execute the following command in the Nextcloud
 .. code-block:: shell
 
     php occ app_api:app:register YOUR_APP_ID manual_install --json-info \
-        "{\"id\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":[\"ALL\"],\"port\":SELECTED_PORT,\"system\":0}" \
+        "{\"id\":\"YOUR_APP_ID\",\"name\":\"YOUR_APP_DISPLAY_NAME\",\"daemon_config_name\":\"manual_install\",\"version\":\"YOU_APP_VERSION\",\"secret\":\"YOUR_APP_SECRET\",\"scopes\":[\"ALL\"],\"port\":SELECTED_PORT}" \
         --force-scopes --wait-finish
 
 You can see how **nc_py_api** registers in ``scripts/dev_register.sh``.

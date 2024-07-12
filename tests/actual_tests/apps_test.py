@@ -122,9 +122,6 @@ def _test_ex_app_get_list(ex_apps: list[ExAppInfo], enabled_ex_apps: list[ExAppI
         assert isinstance(app.version, str)
         assert isinstance(app.enabled, bool)
         assert isinstance(app.last_check_time, datetime.datetime)
-        assert isinstance(app.system, bool)
-        if app.app_id == "nc_py_api":
-            assert app.system is True
         assert str(app).find("id=") != -1 and str(app).find("ver=") != -1
 
 

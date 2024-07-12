@@ -16,7 +16,7 @@
 	<bugs>https://github.com/cloud-py-api/nc_py_api/issues</bugs>
 	<repository type="git">https://github.com/cloud-py-api/nc_py_api</repository>
 	<dependencies>
-		<nextcloud min-version="27" max-version="29"/>
+		<nextcloud min-version="28" max-version="30"/>
 	</dependencies>
 	<external-app>
 		<docker-install>
@@ -28,6 +28,5 @@
 			<value>TALK</value>
 			<value>TALK_BOT</value>
 		</scopes>
-		<system>false</system>
 	</external-app>
 </info>

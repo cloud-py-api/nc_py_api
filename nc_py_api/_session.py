@@ -176,12 +176,12 @@ class NcSessionBase(ABC):
 
     @property
     def ae_url(self) -> str:
-        """Return base url for the App Ecosystem endpoints."""
+        """Return base url for the AppAPI endpoints."""
         return "/ocs/v1.php/apps/app_api/api/v1"
 
     @property
     def ae_url_v2(self) -> str:
-        """Return base url for the App Ecosystem endpoints(version 2)."""
+        """Return base url for the AppAPI endpoints(version 2)."""
         return "/ocs/v1.php/apps/app_api/api/v2"
 
 

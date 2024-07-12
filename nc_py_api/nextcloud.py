@@ -350,14 +350,14 @@ class NextcloudApp(_NextcloudBasic):
         self._session.ocs("POST", f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content})
 
     def users_list(self) -> list[str]:
-        """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
+        """Returns list of users on the Nextcloud instance."""
         return self._session.ocs("GET", f"{self._session.ae_url}/users")
 
     @property
     def user(self) -> str:
         """Property containing the current user ID.
 
-        **System Applications** can change user ID they impersonate with **set_user** method.
+        **ExApps** can change user ID they impersonate with **set_user** method.
         """
         return self._session.user
 
@@ -480,14 +480,14 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         await self._session.ocs("POST", f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content})
 
     async def users_list(self) -> list[str]:
-        """Returns list of users on the Nextcloud instance. **Available** only for ``System`` applications."""
+        """Returns list of users on the Nextcloud instance."""
         return await self._session.ocs("GET", f"{self._session.ae_url}/users")
 
     @property
     async def user(self) -> str:
         """Property containing the current user ID.
 
-        **System Applications** can change user ID they impersonate with **set_user** method.
+        **ExApps** can change user ID they impersonate with **set_user** method.
         """
         return await self._session.user
 
