@@ -5,7 +5,7 @@ import dataclasses
 import typing
 
 from ..._exceptions import NextcloudException, NextcloudExceptionNotFound
-from ..._misc import require_capabilities
+from ..._misc import clear_from_params_empty, require_capabilities
 from ..._session import AsyncNcSessionApp, NcSessionApp
 
 _EP_SUFFIX: str = "ai_provider/task_processing"
@@ -43,7 +43,9 @@ class _TaskProcessingProviderAPI:
     def __init__(self, session: NcSessionApp):
         self._session = session
 
-    def register(self, name: str, display_name: str, task_type: str, custom_task_type: [str, any] = None) -> None:
+    def register(
+        self, name: str, display_name: str, task_type: str, custom_task_type: dict[str, typing.Any] | None = None
+    ) -> None:
         """Registers or edit the TaskProcessing provider."""
         require_capabilities("app_api", self._session.capabilities)
         params = {
@@ -52,6 +54,7 @@ class _TaskProcessingProviderAPI:
             "taskType": task_type,
             "customTaskType": custom_task_type,
         }
+        clear_from_params_empty(["customTaskType"], params)
         self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
     def unregister(self, name: str, not_fail=True) -> None:
@@ -119,7 +122,9 @@ class _AsyncTaskProcessingProviderAPI:
     def __init__(self, session: AsyncNcSessionApp):
         self._session = session
 
-    async def register(self, name: str, display_name: str, task_type: str, custom_task_type: [str, any] = None) -> None:
+    async def register(
+        self, name: str, display_name: str, task_type: str, custom_task_type: dict[str, typing.Any] | None = None
+    ) -> None:
         """Registers or edit the TaskProcessing provider."""
         require_capabilities("app_api", await self._session.capabilities)
         params = {
@@ -128,6 +133,7 @@ class _AsyncTaskProcessingProviderAPI:
             "taskType": task_type,
             "customTaskType": custom_task_type,
         }
+        clear_from_params_empty(["customTaskType"], params)
         await self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
 
     async def unregister(self, name: str, not_fail=True) -> None:
