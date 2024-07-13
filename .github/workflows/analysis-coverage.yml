@@ -847,7 +847,7 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Enable Notes
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
+        if: ${{ !startsWith(matrix.nextcloud, 'stable27') && !startsWith(matrix.nextcloud, 'master') }}
         run: ./occ app:enable notes
 
       - name: Enable Files Locking
