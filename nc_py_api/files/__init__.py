@@ -203,9 +203,7 @@ class FsNode:
         )
 
     def __eq__(self, other):
-        if self.file_id and self.file_id == other.file_id:
-            return True
-        return False
+        return bool(self.file_id and self.file_id == other.file_id)
 
     @property
     def has_extra(self) -> bool:
