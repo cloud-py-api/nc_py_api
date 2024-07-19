@@ -26,7 +26,7 @@ class WebhookInfo:
     @property
     def user_id(self) -> str:
         """`UserID` if webhook was registered in user context."""
-        return self._raw_data["userId"]
+        return self._raw_data["userId"] if self._raw_data["userId"] else ""
 
     @property
     def http_method(self) -> str:
@@ -45,7 +45,7 @@ class WebhookInfo:
 
     @property
     def event_filter(self):
-        """Currently unknown."""
+        """Mongo filter to apply to the serialized data to decide if firing."""
         return self._raw_data["eventFilter"]
 
     @property
@@ -138,7 +138,7 @@ class _WebhooksAPI:
         return WebhookInfo(self._session.ocs("POST", f"{self._ep_base}/{webhook_id}", json=params))
 
     def unregister(self, webhook_id: int) -> bool:
-        return self._session.ocs("DELETE", f"{self._session.ae_url}/{webhook_id}")
+        return self._session.ocs("DELETE", f"{self._ep_base}/{webhook_id}")
 
 
 class _AsyncWebhooksAPI:
@@ -207,4 +207,4 @@ class _AsyncWebhooksAPI:
         return WebhookInfo(await self._session.ocs("POST", f"{self._ep_base}/{webhook_id}", json=params))
 
     async def unregister(self, webhook_id: int) -> bool:
-        return await self._session.ocs("DELETE", f"{self._session.ae_url}/{webhook_id}")
+        return await self._session.ocs("DELETE", f"{self._ep_base}/{webhook_id}")
