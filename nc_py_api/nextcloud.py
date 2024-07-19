@@ -44,6 +44,7 @@ from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
 from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
 from .weather_status import _AsyncWeatherStatusAPI, _WeatherStatusAPI
+from .webhooks import _AsyncWebhooksAPI, _WebhooksAPI
 
 
 class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
@@ -71,6 +72,8 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing users statuses"""
     weather_status: _WeatherStatusAPI
     """Nextcloud API for managing user weather statuses"""
+    webhooks: _WebhooksAPI
+    """Nextcloud API for managing webhooks"""
     _session: NcSessionBasic
 
     def __init__(self, session: NcSessionBasic):
@@ -86,6 +89,7 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.users_groups = _UsersGroupsAPI(session)
         self.user_status = _UserStatusAPI(session)
         self.weather_status = _WeatherStatusAPI(session)
+        self.webhooks = _WebhooksAPI(session)
 
     @property
     def capabilities(self) -> dict:
@@ -169,6 +173,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing users statuses"""
     weather_status: _AsyncWeatherStatusAPI
     """Nextcloud API for managing user weather statuses"""
+    webhooks: _AsyncWebhooksAPI
+    """Nextcloud API for managing webhooks"""
     _session: AsyncNcSessionBasic
 
     def __init__(self, session: AsyncNcSessionBasic):
@@ -184,6 +190,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.users_groups = _AsyncUsersGroupsAPI(session)
         self.user_status = _AsyncUserStatusAPI(session)
         self.weather_status = _AsyncWeatherStatusAPI(session)
+        self.webhooks = _AsyncWebhooksAPI(session)
 
     @property
     async def capabilities(self) -> dict:

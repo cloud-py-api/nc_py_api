@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.14.0 - 2024-07-0X]
+## [0.15.0 - 2024-07-19]
+
+### Added
+
+- Initial Webhooks API support for the upcoming Nextcloud 30. #272
+
+### Changed
+
+- NextcloudApp: `fetch_models_task` function now saves paths to downloaded models. #274 Thanks to @kyteinsky
+
+## [0.14.0 - 2024-07-09]
 
 ### Added
 
