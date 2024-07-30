@@ -150,7 +150,7 @@ class NcSessionBase(ABC):
         self.init_adapter()
         self.init_adapter_dav()
         self.response_headers = Headers()
-        self._ocs_regexp = re.compile(r"/ocs/v[12]\.php/")
+        self._ocs_regexp = re.compile(r"/ocs/v[12]\.php/|/apps/groupfolders/")
 
     def init_adapter(self, restart=False) -> None:
         if getattr(self, "adapter", None) is None or restart:
@@ -289,6 +289,7 @@ class NcSessionBasic(NcSessionBase, ABC):
         str_url = str(request.url)
         if re.search(self._ocs_regexp, str_url) is not None:  # this is OCS call
             request.url = request.url.copy_merge_params({"format": "json"})
+            request.headers["Accept"] = "application/json"
 
     def _response_event(self, response: Response) -> None:
         str_url = str(response.request.url)
@@ -412,6 +413,7 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
         str_url = str(request.url)
         if re.search(self._ocs_regexp, str_url) is not None:  # this is OCS call
             request.url = request.url.copy_merge_params({"format": "json"})
+            request.headers["Accept"] = "application/json"
 
     async def _response_event(self, response: Response) -> None:
         str_url = str(response.request.url)
