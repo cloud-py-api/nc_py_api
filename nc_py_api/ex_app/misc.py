@@ -54,4 +54,4 @@ def get_model_path(model_name: str) -> str:
 
 def get_computation_device() -> str:
     """Returns computation device(`ROCM` or `CUDA`) if it is defined in the environment variable."""
-    return os.environ.get("COMPUTE_DEVICE", "")
+    return str(os.environ.get("COMPUTE_DEVICE", "")).upper()
