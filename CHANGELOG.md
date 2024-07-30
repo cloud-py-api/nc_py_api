@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- NextcloudApp: `get_computation_device` function now correctly returns result in upper_case.
+- Corrected behaviour of `ocs` function for `Group Folders` app routes(they are not fully OCS API). #279
+- NextcloudApp: `get_computation_device` function now correctly returns result in upper_case. #278
 
 ## [0.15.0 - 2024-07-19]
 
