@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.16.0 - 2024-07-30]
+
+### Fixed
+
+- NextcloudApp: `get_computation_device` function now correctly returns result in upper_case.
+
 ## [0.15.0 - 2024-07-19]
 
 ### Added
