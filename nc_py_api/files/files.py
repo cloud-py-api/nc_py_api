@@ -174,7 +174,7 @@ class FilesAPI:
         path = path.lstrip("/")
         result = None
         for i in Path(path).parts:
-            _path = os.path.join(_path, i)
+            _path = f"{_path}/{i}"
             if not exist_ok:
                 result = self.mkdir(_path)
             else:

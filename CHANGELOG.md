@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.16.0 - 2024-08-xx]
+
+### Fixed
+
+- `nc.files.makedirs` not working properly on Windows. #280 Thanks to @Wuli6
+
 ## [0.15.1 - 2024-07-30]
 
 ### Fixed
