@@ -87,6 +87,21 @@ UI methods should be accessed with the help of :class:`~nc_py_api.nextcloud.Next
 .. autoclass:: nc_py_api.ex_app.providers.translations._TranslationsProviderAPI
     :members:
 
+.. autoclass:: nc_py_api.ex_app.providers.task_processing.ShapeType
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.task_processing.ShapeEnumValue
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.task_processing.ShapeDescriptor
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.task_processing.TaskType
+    :members:
+
+.. autoclass:: nc_py_api.ex_app.providers.task_processing.TaskProcessingProvider
+    :members:
+
 .. autoclass:: nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI
     :members:
 

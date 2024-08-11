@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.16.0 - 2024-08-xx]
+## [0.16.0 - 2024-08-12]
+
+### Changed
+
+- NextcloudApp: rework of TaskProcessing provider API. #284
 
 ### Fixed
 

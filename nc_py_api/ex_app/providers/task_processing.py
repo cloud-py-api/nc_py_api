@@ -25,12 +25,12 @@ class ShapeType(IntEnum):
     VIDEO = 4
     FILE = 5
     ENUM = 6
-    LISTOFNUMBERS = 10
-    LISTOFTEXTS = 11
-    LISTOFIMAGES = 12
-    LISTOFAUDIOS = 13
-    LISTOFVIDEOS = 14
-    LISTOFFILES = 15
+    LIST_OF_NUMBERS = 10
+    LIST_OF_TEXTS = 11
+    LIST_OF_IMAGES = 12
+    LIST_OF_AUDIOS = 13
+    LIST_OF_VIDEOS = 14
+    LIST_OF_FILES = 15
 
 
 @dataclass
@@ -73,9 +73,6 @@ class TaskType:
 
 @dataclass
 class TaskProcessingProvider:
-    """TaskProcessing provider description."""
-
-    # pylint: disable=too-many-instance-attributes
 
     id: str
     """Unique ID for the provider."""
@@ -114,18 +111,12 @@ class _TaskProcessingProviderAPI:
 
     def register(
         self,
-        name: str,
-        display_name: str,
-        task_type: str,
         provider: TaskProcessingProvider,
         custom_task_type: TaskType | None = None,
     ) -> None:
         """Registers or edit the TaskProcessing provider."""
         require_capabilities("app_api", self._session.capabilities)
         params = {
-            "name": name,
-            "displayName": display_name,
-            "taskType": task_type,
             "provider": RootModel(provider).model_dump(),
             **({"customTaskType": RootModel(custom_task_type).model_dump()} if custom_task_type else {}),
         }
@@ -198,18 +189,12 @@ class _AsyncTaskProcessingProviderAPI:
 
     async def register(
         self,
-        name: str,
-        display_name: str,
-        task_type: str,
         provider: TaskProcessingProvider,
         custom_task_type: TaskType | None = None,
     ) -> None:
         """Registers or edit the TaskProcessing provider."""
         require_capabilities("app_api", await self._session.capabilities)
         params = {
-            "name": name,
-            "displayName": display_name,
-            "taskType": task_type,
             "provider": RootModel(provider).model_dump(),
             **({"customTaskType": RootModel(custom_task_type).model_dump()} if custom_task_type else {}),
         }
