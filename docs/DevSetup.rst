@@ -5,7 +5,7 @@ We highly recommend to use `Julius Haertl docker setup <https://github.com/juliu
 
 Development of `nc-py-api` can be done on any OS as it is a **pure** Python package.
 
-Suggested IDE: **PyCharm**, but of course you can use any IDE you like for this like **VS Code** or **Vim**.
+.. note:: We suggest to use **PyCharm**, but of course you can use any IDE you like for this like **VS Code** or **Vim**.
 
 Steps to setup up the development environment:
 
@@ -39,7 +39,11 @@ Steps to setup up the development environment:
 
     pre-commit install
 
-#. If ``deploy daemon`` is registered for AppAPI, register **nc_py_api** as an application with :command:`shell`::
+#. Run `nc_py_api` with appropriate PyCharm configuration(``register_nc_py_api(xx)``) or if you are not using PyCharm execute this command in the :command:`shell`::
+
+    APP_ID=nc_py_api APP_PORT=9009 APP_SECRET=12345 APP_VERSION=1.0.0 NEXTCLOUD_URL=http://nextcloud.local APP_HOST=0.0.0.0 python3 tests/_install.py
+
+#. In a separate terminal while the ``nc_py_api`` **_install.py** script is running execute this command in the :command:`shell`::
 
     make register28
 
