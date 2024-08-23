@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.17.0 - 2024-0x-xx]
+
+### Changed
+
+- NextcloudApp: `TextProcessing`, `Speech2Text` and `Translation` AI Providers API was removed.
+
 ## [0.16.0 - 2024-08-12]
 
 ### Changed

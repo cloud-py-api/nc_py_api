@@ -24,23 +24,22 @@ Python library that provides a robust and well-documented API that allows develo
  * **Sync + Async**: Provides both sync and async APIs.
 
 ### Capabilities
-| **_Capability_**      | Nextcloud 27 | Nextcloud 28 | Nextcloud 29 | Nextcloud 30 |
-|-----------------------|:------------:|:------------:|:------------:|:------------:|
-| Calendar              |      ✅       |      ✅       |      ✅       |      ✅       |
-| File System & Tags    |      ✅       |      ✅       |      ✅       |      ✅       |
-| Nextcloud Talk        |      ✅       |      ✅       |      ✅       |      ✅       |
-| Notifications         |      ✅       |      ✅       |      ✅       |      ✅       |
-| Shares                |      ✅       |      ✅       |      ✅       |      ✅       |
-| Users & Groups        |      ✅       |      ✅       |      ✅       |      ✅       |
-| User & Weather status |      ✅       |      ✅       |      ✅       |      ✅       |
-| Other APIs***         |      ✅       |      ✅       |      ✅       |      ✅       |
-| Talk Bot API*         |      ✅       |      ✅       |      ✅       |      ✅       |
-| Settings UI API*      |     N/A      |     N/A      |      ✅       |      ✅       |
-| AI Providers API**    |     N/A      |     N/A      |      ✅       |      ✅       |
+| **_Capability_**             | Nextcloud 27 | Nextcloud 28 | Nextcloud 29 | Nextcloud 30 |
+|------------------------------|:------------:|:------------:|:------------:|:------------:|
+| Calendar                     |      ✅       |      ✅       |      ✅       |      ✅       |
+| File System & Tags           |      ✅       |      ✅       |      ✅       |      ✅       |
+| Nextcloud Talk               |      ✅       |      ✅       |      ✅       |      ✅       |
+| Notifications                |      ✅       |      ✅       |      ✅       |      ✅       |
+| Shares                       |      ✅       |      ✅       |      ✅       |      ✅       |
+| Users & Groups               |      ✅       |      ✅       |      ✅       |      ✅       |
+| User & Weather status        |      ✅       |      ✅       |      ✅       |      ✅       |
+| Other APIs**                 |      ✅       |      ✅       |      ✅       |      ✅       |
+| Talk Bot API*                |      ✅       |      ✅       |      ✅       |      ✅       |
+| Settings UI API*             |     N/A      |     N/A      |      ✅       |      ✅       |
+| TaskProcessing Provider API* |     N/A      |     N/A      |     N/A      |      ✅       |
 
 &ast;_available only for **NextcloudApp**_<br>
-&ast;&ast;_available only for **NextcloudApp**: SpeechToText, TextProcessing, Translation_<br>
-&ast;&ast;&ast;_Activity, Notes_
+&ast;&ast;_Activity, Notes_
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
