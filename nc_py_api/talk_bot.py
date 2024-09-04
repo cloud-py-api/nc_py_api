@@ -30,6 +30,11 @@ class TalkBotMessage:
         self._raw_data = raw_data
 
     @property
+    def message_type(self) -> str:
+        """The type of message like Join, Leave, Create, Activity, etc."""
+        return self._raw_data["type"]
+
+    @property
     def actor_id(self) -> str:
         """One of the attendee types followed by the ``/`` character and a unique identifier within the given type.
 
