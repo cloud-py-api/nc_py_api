@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- NextcloudApp: `nc.log` now suppresses all exceptions to safe call it anywhere in your app. #293
+- NextcloudApp: `nc.log` now suppresses all exceptions to safe call it anywhere(for example in exception handlers). #293
 
 ## [0.17.0 - 2024-09-05]
 
