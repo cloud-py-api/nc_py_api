@@ -125,3 +125,12 @@ def test_logging(nc_app):
     except Exception:  # noqa
         logger.exception("testing logger.exception")
     logger.removeHandler(log_handler)
+
+
+def test_recursive_logging(nc_app):
+    logging.getLogger("httpx").setLevel(logging.DEBUG)
+    log_handler = setup_nextcloud_logging()
+    logger = logging.getLogger()
+    logger.fatal("testing logging.fatal")
+    logger.removeHandler(log_handler)
+    logging.getLogger("httpx").setLevel(logging.ERROR)

@@ -15,24 +15,26 @@ LOGLVL_MAP = {
     logging.CRITICAL: LogLvl.FATAL,
 }
 
+THREAD_LOCAL = threading.local()
+
 
 class _NextcloudLogsHandler(logging.Handler):
     def __init__(self):
         super().__init__()
 
     def emit(self, record):
-        if threading.local().__dict__.get("nc_py_api.loghandler", False):
+        if THREAD_LOCAL.__dict__.get("nc_py_api.loghandler", False):
             return
 
         try:
-            threading.local().__dict__["nc_py_api.loghandler"] = True
+            THREAD_LOCAL.__dict__["nc_py_api.loghandler"] = True
             log_entry = self.format(record)
             log_level = record.levelno
             NextcloudApp().log(LOGLVL_MAP.get(log_level, LogLvl.FATAL), log_entry, fast_send=True)
         except Exception:  # noqa pylint: disable=broad-exception-caught
             self.handleError(record)
         finally:
-            threading.local().__dict__["nc_py_api.loghandler"] = False
+            THREAD_LOCAL.__dict__["nc_py_api.loghandler"] = False
 
 
 def setup_nextcloud_logging(logger_name: str | None = None, logging_level: int = logging.DEBUG):
