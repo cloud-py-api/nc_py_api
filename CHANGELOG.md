@@ -2,11 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.17.0 - 2024-0x-xx]
+## [0.17.0 - 2024-09-05]
+
+### Added
+
+- `message_type` property to TalkBotMessage. #292
 
 ### Changed
 
-- NextcloudApp: `TextProcessing`, `Speech2Text` and `Translation` AI Providers API was removed.
+- NextcloudApp: `TextProcessing`, `Speech2Text` and `Translation` AI Providers API was removed. #289
 
 ## [0.16.0 - 2024-08-12]
 
