@@ -1,7 +1,6 @@
 """Nextcloud API for working with applications."""
 
 import dataclasses
-import datetime
 
 from ._misc import require_capabilities
 from ._session import AsyncNcSessionBasic, NcSessionBasic
@@ -33,18 +32,6 @@ class ExAppInfo:
     def enabled(self) -> bool:
         """Flag indicating if the application enabled."""
         return bool(self._raw_data["enabled"])
-
-    @property
-    def last_check_time(self) -> datetime.datetime:
-        """Time of the last successful application check."""
-        return datetime.datetime.utcfromtimestamp(int(self._raw_data["last_check_time"])).replace(
-            tzinfo=datetime.timezone.utc
-        )
-
-    @property
-    def system(self) -> bool:
-        """**DEPRECATED** Flag indicating if the application is a system application."""
-        return True
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.app_id}, ver={self.version}>"

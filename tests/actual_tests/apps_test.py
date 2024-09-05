@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 
 from nc_py_api.apps import ExAppInfo
@@ -121,7 +119,6 @@ def _test_ex_app_get_list(ex_apps: list[ExAppInfo], enabled_ex_apps: list[ExAppI
         assert isinstance(app.name, str)
         assert isinstance(app.version, str)
         assert isinstance(app.enabled, bool)
-        assert isinstance(app.last_check_time, datetime.datetime)
         assert str(app).find("id=") != -1 and str(app).find("ver=") != -1
 
 
