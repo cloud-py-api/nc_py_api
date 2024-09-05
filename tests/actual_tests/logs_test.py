@@ -1,9 +1,10 @@
+import logging
 from copy import deepcopy
 from unittest import mock
 
 import pytest
 
-from nc_py_api.ex_app import LogLvl
+from nc_py_api.ex_app import LogLvl, setup_nextcloud_logging
 
 
 def test_loglvl_values():
@@ -113,3 +114,23 @@ async def test_log_without_app_api_async(anc_app):
     ):
         await anc_app.log(log_lvl, "will not be sent")
         ocs.assert_not_called()
+
+
+def test_logging(nc_app):
+    log_handler = setup_nextcloud_logging("my_logger")
+    logger = logging.getLogger("my_logger")
+    logger.fatal("testing logging.fatal")
+    try:
+        a = b  # noqa
+    except Exception:  # noqa
+        logger.exception("testing logger.exception")
+    logger.removeHandler(log_handler)
+
+
+def test_recursive_logging(nc_app):
+    logging.getLogger("httpx").setLevel(logging.DEBUG)
+    log_handler = setup_nextcloud_logging()
+    logger = logging.getLogger()
+    logger.fatal("testing logging.fatal")
+    logger.removeHandler(log_handler)
+    logging.getLogger("httpx").setLevel(logging.ERROR)

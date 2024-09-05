@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [0.17.1 - 2024-09-06]
 
+### Added
+
+- NextcloudApp: `setup_nextcloud_logging` function to support transparently sending logs to Nextcloud. #294
+
 ### Fixed
 
-- NextcloudApp: `nc.log` now suppresses all exceptions to safe call it anywhere in your app.
+- NextcloudApp: `nc.log` now suppresses all exceptions to safe call it anywhere in your app. #293
 
 ## [0.17.0 - 2024-09-05]
 
