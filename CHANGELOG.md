@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.17.1 - 2024-09-06]
+
+### Fixed
+
+- NextcloudApp: `nc.log` now suppresses all exceptions to safe call it anywhere in your app.
+
 ## [0.17.0 - 2024-09-05]
 
 ### Added

@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 
-from nc_py_api import NextcloudException
 from nc_py_api.ex_app import LogLvl
 
 
@@ -34,13 +33,13 @@ async def test_loglvl_str_async(anc_app):
 
 
 def test_invalid_log_level(nc_app):
-    with pytest.raises(NextcloudException):
+    with pytest.raises(ValueError):
         nc_app.log(5, "wrong log level")  # noqa
 
 
 @pytest.mark.asyncio(scope="session")
 async def test_invalid_log_level_async(anc_app):
-    with pytest.raises(NextcloudException):
+    with pytest.raises(ValueError):
         await anc_app.log(5, "wrong log level")  # noqa
 
 
