@@ -352,10 +352,13 @@ class NextcloudApp(_NextcloudBasic):
         """Writes log to the Nextcloud log file."""
         if self.check_capabilities("app_api"):
             return
-        if int(log_lvl) < self.capabilities["app_api"].get("loglevel", 0):
+        int_log_lvl = int(log_lvl)
+        if int_log_lvl < 0 or int_log_lvl > 4:
+            raise ValueError("Invalid `log_lvl` value")
+        if int_log_lvl < self.capabilities["app_api"].get("loglevel", 0):
             return
         with contextlib.suppress(Exception):
-            self._session.ocs("POST", f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content})
+            self._session.ocs("POST", f"{self._session.ae_url}/log", json={"level": int_log_lvl, "message": content})
 
     def users_list(self) -> list[str]:
         """Returns list of users on the Nextcloud instance."""
@@ -483,11 +486,14 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         """Writes log to the Nextcloud log file."""
         if await self.check_capabilities("app_api"):
             return
-        if int(log_lvl) < (await self.capabilities)["app_api"].get("loglevel", 0):
+        int_log_lvl = int(log_lvl)
+        if int_log_lvl < 0 or int_log_lvl > 4:
+            raise ValueError("Invalid `log_lvl` value")
+        if int_log_lvl < (await self.capabilities)["app_api"].get("loglevel", 0):
             return
         with contextlib.suppress(Exception):
             await self._session.ocs(
-                "POST", f"{self._session.ae_url}/log", json={"level": int(log_lvl), "message": content}
+                "POST", f"{self._session.ae_url}/log", json={"level": int_log_lvl, "message": content}
             )
 
     async def users_list(self) -> list[str]:
