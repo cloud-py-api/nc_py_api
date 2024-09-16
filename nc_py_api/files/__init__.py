@@ -12,9 +12,9 @@ from pydantic import BaseModel
 
 from .. import _misc
 
-user_regex = re.compile(r".*?files/([^/]+)/")
+user_regex = re.compile(r"files/([^/]+)/")
 """Regex for evaluating user from full path string; instantiated once on import."""
-user_path_regex = re.compile(r"files/([^/]+)/")
+user_path_regex = re.compile(r".*?files/([^/]+)/")
 """Regex for evaluating user path from full path string; instantiated once on import."""
 
 
