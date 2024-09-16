@@ -13,9 +13,9 @@ from pydantic import BaseModel
 from .. import _misc
 
 user_regex = re.compile(r".*?files/([^/]+)/")
-"""Regex for evaluating user from path string; instantiated once on import."""
+"""Regex for evaluating user from full path string; instantiated once on import."""
 user_path_regex = re.compile(r"files/([^/]+)/")
-"""Regex for evaluating user path from oath string; instantiated once on import."""
+"""Regex for evaluating user path from full path string; instantiated once on import."""
 
 
 class LockType(enum.IntEnum):
