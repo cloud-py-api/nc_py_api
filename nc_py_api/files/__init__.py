@@ -14,7 +14,7 @@ from .. import _misc
 
 user_regex = re.compile(r"(?:files|trashbin|versions)/([^/]+)/")
 """Regex for evaluating user from full path string; instantiated once on import."""
-user_path_regex = re.compile(r".*?(files|trashbini|versions)/([^/]+)/")
+user_path_regex = re.compile(r".*?(files|trashbin|versions)/([^/]+)/")
 """Regex for evaluating user path from full path string; instantiated once on import."""
 
 
