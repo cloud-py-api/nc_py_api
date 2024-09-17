@@ -5,11 +5,17 @@ import datetime
 import email.utils
 import enum
 import os
+import re
 import warnings
 
 from pydantic import BaseModel
 
 from .. import _misc
+
+user_regex = re.compile(r"(?:files|trashbin|versions)/([^/]+)/")
+"""Regex for evaluating user from full path string; instantiated once on import."""
+user_path_regex = re.compile(r".*?(files|trashbin|versions)/([^/]+)/")
+"""Regex for evaluating user path from full path string; instantiated once on import."""
 
 
 class LockType(enum.IntEnum):
@@ -218,12 +224,12 @@ class FsNode:
     @property
     def user(self) -> str:
         """Returns user ID extracted from the `full_path`."""
-        return self.full_path.lstrip("/").split("/", maxsplit=2)[1]
+        return user_regex.findall(self.full_path)[0]
 
     @property
     def user_path(self) -> str:
         """Returns path relative to the user's root directory."""
-        return self.full_path.lstrip("/").split("/", maxsplit=2)[-1]
+        return user_path_regex.sub("", self.full_path, count=1)
 
     @property
     def is_shared(self) -> bool:
