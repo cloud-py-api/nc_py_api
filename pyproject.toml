@@ -207,6 +207,7 @@ messages_control.disable = [
   "too-few-public-methods",
   "too-many-public-methods",
   "too-many-instance-attributes",
+  "too-many-positional-arguments",
 ]
 
 [tool.pytest.ini_options]
