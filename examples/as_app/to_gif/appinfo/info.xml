@@ -4,7 +4,7 @@
 	<name>ToGif</name>
 	<summary>Nextcloud To Gif Example</summary>
 	<description>
-	<![CDATA[Example of the Nextcloud application written in python]]>
+	<![CDATA[Example of a Nextcloud application written in Python]]>
 	</description>
 	<version>1.0.0</version>
 	<licence>MIT</licence>
@@ -16,7 +16,7 @@
 	<bugs>https://github.com/cloud-py-api/nc_py_api/issues</bugs>
 	<repository type="git">https://github.com/cloud-py-api/nc_py_api</repository>
 	<dependencies>
-		<nextcloud min-version="28" max-version="30"/>
+		<nextcloud min-version="28" max-version="31"/>
 	</dependencies>
 	<external-app>
 		<docker-install>
@@ -24,9 +24,13 @@
 			<image>cloud-py-api/to_gif</image>
 			<image-tag>latest</image-tag>
 		</docker-install>
-		<scopes>
-			<value>FILES</value>
-			<value>NOTIFICATIONS</value>
-		</scopes>
+		<routes>
+			<route>
+				<url>.*</url>
+				<verb>GET,POST,PUT,DELETE</verb>
+				<access_level>USER</access_level>
+				<headers_to_exclude>[]</headers_to_exclude>
+			</route>
+		</routes>
 	</external-app>
 </info>
