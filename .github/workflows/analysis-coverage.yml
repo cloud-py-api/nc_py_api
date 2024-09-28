@@ -106,7 +106,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: apps/app_api
-          repository: cloud-py-api/app_api
+          repository: nextcloud/app_api
+          ref: stable29
 
       - name: Install AppAPI
         run: |
@@ -248,7 +249,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: apps/app_api
-          repository: cloud-py-api/app_api
+          repository: nextcloud/app_api
+          ref: stable29
 
       - name: Install AppAPI
         run: |
@@ -390,7 +392,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: apps/app_api
-          repository: cloud-py-api/app_api
+          repository: nextcloud/app_api
+          ref: stable29
 
       - name: Install AppAPI
         run: |
@@ -525,10 +528,19 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
+        if: ${{ matrix.nextcloud != 'master' }}
         uses: actions/checkout@v4
         with:
           path: apps/app_api
-          repository: cloud-py-api/app_api
+          repository: nextcloud/app_api
+          ref: stable29
+
+      - name: Checkout AppAPI
+        if: ${{ matrix.nextcloud == 'master' }}
+        uses: actions/checkout@v4
+        with:
+          path: apps/app_api
+          repository: nextcloud/app_api
 
       - name: Install AppAPI
         run: |
@@ -692,10 +704,19 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
+        if: ${{ matrix.nextcloud != 'master' }}
         uses: actions/checkout@v4
         with:
           path: apps/app_api
-          repository: cloud-py-api/app_api
+          repository: nextcloud/app_api
+          ref: stable29
+
+      - name: Checkout AppAPI
+        if: ${{ matrix.nextcloud == 'master' }}
+        uses: actions/checkout@v4
+        with:
+          path: apps/app_api
+          repository: nextcloud/app_api
 
       - name: Install AppAPI
         run: |
