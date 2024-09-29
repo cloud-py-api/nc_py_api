@@ -13,7 +13,12 @@ async def test_available_async(anc):
 
 
 def test_get_set_location(nc_any):
-    nc_any.weather_status.set_location(longitude=0.0, latitude=0.0)
+    try:
+        nc_any.weather_status.set_location(longitude=0.0, latitude=0.0)
+    except NextcloudException as e:
+        if e.status_code in (408, 500, 996):
+            pytest.skip("Some network problem on the host")
+        raise e from None
     loc = nc_any.weather_status.get_location()
     assert loc.latitude == 0.0
     assert loc.longitude == 0.0
@@ -42,7 +47,12 @@ def test_get_set_location(nc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_get_set_location_async(anc_any):
-    await anc_any.weather_status.set_location(longitude=0.0, latitude=0.0)
+    try:
+        await anc_any.weather_status.set_location(longitude=0.0, latitude=0.0)
+    except NextcloudException as e:
+        if e.status_code in (408, 500, 996):
+            pytest.skip("Some network problem on the host")
+        raise e from None
     loc = await anc_any.weather_status.get_location()
     assert loc.latitude == 0.0
     assert loc.longitude == 0.0

@@ -119,9 +119,14 @@ class AsyncFilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         result_path = local_path if local_path else os.path.basename(path)
         with open(result_path, "wb") as fp:
-            await self._session.download2fp(
-                "/index.php/apps/files/ajax/download.php", fp, dav=False, params={"dir": path}, **kwargs
-            )
+            if (await self._session.nc_version)["major"] >= 31:
+                full_path = dav_get_obj_path(await self._session.user, path)
+                accept_header = f"application/{kwargs.get('format', 'zip')}"
+                await self._session.download2fp(quote(full_path), fp, dav=True, headers={"Accept": accept_header})
+            else:
+                await self._session.download2fp(
+                    "/index.php/apps/files/ajax/download.php", fp, dav=False, params={"dir": path}, **kwargs
+                )
         return Path(result_path)
 
     async def upload(self, path: str | FsNode, content: bytes | str) -> FsNode:

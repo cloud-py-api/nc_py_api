@@ -85,7 +85,7 @@ def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
         if enabled:
             nc.ui.files_dropdown_menu.register_ex(
                 "to_gif",
-                "TO GIF",
+                "To GIF",
                 "/video_to_gif",
                 mime="video",
                 icon="img/icon.svg",
