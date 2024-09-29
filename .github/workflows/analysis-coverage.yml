@@ -190,7 +190,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: rootpassword
@@ -635,7 +635,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: rootpassword
