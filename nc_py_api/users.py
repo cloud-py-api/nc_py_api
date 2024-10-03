@@ -369,8 +369,8 @@ class _AsyncUsersAPI:
 
 
 def _create(user_id: str, display_name: str | None, **kwargs) -> dict[str, typing.Any]:
-    password = kwargs.get("password", None)
-    email = kwargs.get("email", None)
+    password = kwargs.get("password")
+    email = kwargs.get("email")
     if not password and not email:
         raise ValueError("Either password or email must be set")
     data = {"userid": user_id}
