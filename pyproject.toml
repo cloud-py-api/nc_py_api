@@ -77,11 +77,11 @@ optional-dependencies.dev-min = [
 optional-dependencies.docs = [
   "autodoc-pydantic>=2.0.1",
   "nc-py-api[app,calendar]",
-  "sphinx>=6.2",
+  "sphinx<8",
   "sphinx-copybutton",
   "sphinx-inline-tabs",
   "sphinx-issues>=3.0.1",
-  "sphinx-rtd-theme>=1",
+  "sphinx-rtd-theme<3",
 ]
 urls.Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md"
 urls.Documentation = "https://cloud-py-api.github.io/nc_py_api/"
