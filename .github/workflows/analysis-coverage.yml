@@ -537,6 +537,7 @@ jobs:
         with:
           path: apps/app_api
           repository: nextcloud/app_api
+          ref: stable30
 
       - name: Install AppAPI
         run: |
@@ -705,6 +706,7 @@ jobs:
         with:
           path: apps/app_api
           repository: nextcloud/app_api
+          ref: stable30
 
       - name: Install AppAPI
         run: |
@@ -863,13 +865,6 @@ jobs:
       - name: Install NcPyApi
         working-directory: nc_py_api
         run: python3 -m pip -v install . pytest pytest-asyncio coverage pillow
-
-      - name: Install Talk
-        working-directory: apps/spreed
-        run: make dev-setup
-
-      - name: Enable Talk
-        run: php occ app:enable spreed
 
       - name: Generate coverage report
         working-directory: nc_py_api
