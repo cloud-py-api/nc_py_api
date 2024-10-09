@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Files: `user` and `user_path` properties in `FSNode` when Nextcloud located in in sub-path. #297 Thanks to @vwbusguy
+- Files: `user` and `user_path` properties in `FSNode` when Nextcloud located in the sub-path. #297 Thanks to @vwbusguy
 - `files.download_directory_as_zip` method now supports upcoming Nextcloud 31. #304
 
 ## [0.17.1 - 2024-09-06]
