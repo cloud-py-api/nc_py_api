@@ -3,7 +3,7 @@
 import dataclasses
 
 from ._misc import clear_from_params_empty  # , require_capabilities
-from ._session import AsyncNcSessionBasic, NcSessionBasic
+from ._session import AppConfig, AsyncNcSessionBasic, NcSessionBasic
 
 
 @dataclasses.dataclass
@@ -140,6 +140,13 @@ class _WebhooksAPI:
     def unregister(self, webhook_id: int) -> bool:
         return self._session.ocs("DELETE", f"{self._ep_base}/{webhook_id}")
 
+    def unregister_all(self, appid: str = "") -> int:
+        if not appid and isinstance(self._session.cfg, AppConfig):
+            appid = self._session.cfg.app_name
+        else:
+            raise ValueError("The `appid` parameter cannot be empty for non-ExApp use.")
+        return self._session.ocs("DELETE", f"{self._ep_base}/byappid/{appid}")
+
 
 class _AsyncWebhooksAPI:
     """The class provides the async application management API on the Nextcloud server."""
@@ -208,3 +215,10 @@ class _AsyncWebhooksAPI:
 
     async def unregister(self, webhook_id: int) -> bool:
         return await self._session.ocs("DELETE", f"{self._ep_base}/{webhook_id}")
+
+    async def unregister_all(self, appid: str = "") -> int:
+        if not appid and isinstance(self._session.cfg, AppConfig):
+            appid = self._session.cfg.app_name
+        else:
+            raise ValueError("The `appid` parameter cannot be empty for non-ExApp use.")
+        return await self._session.ocs("DELETE", f"{self._ep_base}/byappid/{appid}")

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.18.0 - 2024-10-09]
+
+### Added
+
+- New `webhooks.unregister_all` method.
+
 ## [0.17.1 - 2024-09-06]
 
 ### Added
