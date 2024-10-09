@@ -439,7 +439,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable28', 'stable29', 'master' ]
+        nextcloud: [ 'stable28', 'stable29', 'stable30' ]
     timeout-minutes: 60
 
     services:
@@ -483,7 +483,6 @@ jobs:
 
       - name: Checkout Notes
         uses: actions/checkout@v4
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/notes
           ref: "main"
@@ -491,7 +490,6 @@ jobs:
 
       - name: Checkout Files Locking
         uses: actions/checkout@v4
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         with:
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
@@ -511,11 +509,9 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Enable Files Locking
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         run: ./occ app:enable files_lock
 
       - name: Enable Notes
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
         run: ./occ app:enable notes
 
       - name: Checkout NcPyApi
@@ -528,7 +524,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        if: ${{ matrix.nextcloud != 'master' }}
+        if: ${{ matrix.nextcloud != 'stable30' }}
         uses: actions/checkout@v4
         with:
           path: apps/app_api
@@ -536,7 +532,7 @@ jobs:
           ref: stable29
 
       - name: Checkout AppAPI
-        if: ${{ matrix.nextcloud == 'master' }}
+        if: ${{ matrix.nextcloud == 'stable30' }}
         uses: actions/checkout@v4
         with:
           path: apps/app_api
@@ -555,20 +551,12 @@ jobs:
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
-      - name: Talk Branch Main
-        if: ${{ startsWith(matrix.nextcloud, 'master') }}
-        run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
-
-      - name: Talk Branch Other
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
-        run: echo "TALK_BRANCH_NAME=${{ matrix.nextcloud }}" >> $GITHUB_ENV
-
       - name: Checkout Talk
         uses: actions/checkout@v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ env.TALK_BRANCH_NAME }}
+          ref: ${{ matrix.nextcloud }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -627,7 +615,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable28', 'stable29', 'master' ]
+        nextcloud: [ 'stable28', 'stable29', 'stable30' ]
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -704,7 +692,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        if: ${{ matrix.nextcloud != 'master' }}
+        if: ${{ matrix.nextcloud != 'stable30' }}
         uses: actions/checkout@v4
         with:
           path: apps/app_api
@@ -712,7 +700,7 @@ jobs:
           ref: stable29
 
       - name: Checkout AppAPI
-        if: ${{ matrix.nextcloud == 'master' }}
+        if: ${{ matrix.nextcloud == 'stable30' }}
         uses: actions/checkout@v4
         with:
           path: apps/app_api
@@ -731,20 +719,12 @@ jobs:
           kill -15 $(cat /tmp/_install.pid)
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
-      - name: Talk Branch Main
-        if: ${{ startsWith(matrix.nextcloud, 'master') }}
-        run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
-
-      - name: Talk Branch Other
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
-        run: echo "TALK_BRANCH_NAME=${{ matrix.nextcloud }}" >> $GITHUB_ENV
-
       - name: Checkout Talk
         uses: actions/checkout@v4
         with:
           path: apps/spreed
           repository: nextcloud/spreed
-          ref: ${{ env.TALK_BRANCH_NAME }}
+          ref: ${{ matrix.nextcloud }}
 
       - name: Install Talk
         working-directory: apps/spreed
@@ -808,7 +788,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable27', 'stable28', 'stable29', 'master' ]
+        nextcloud: [ 'stable27', 'stable28', 'stable29', 'stable30', 'master' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
     timeout-minutes: 60
@@ -883,21 +863,6 @@ jobs:
       - name: Install NcPyApi
         working-directory: nc_py_api
         run: python3 -m pip -v install . pytest pytest-asyncio coverage pillow
-
-      - name: Talk Branch Main
-        if: ${{ startsWith(matrix.nextcloud, 'master') }}
-        run: echo "TALK_BRANCH_NAME=main" >> $GITHUB_ENV
-
-      - name: Talk Branch Other
-        if: ${{ !startsWith(matrix.nextcloud, 'master') }}
-        run: echo "TALK_BRANCH_NAME=${{ matrix.nextcloud }}" >> $GITHUB_ENV
-
-      - name: Checkout Talk
-        uses: actions/checkout@v4
-        with:
-          path: apps/spreed
-          repository: nextcloud/spreed
-          ref: ${{ env.TALK_BRANCH_NAME }}
 
       - name: Install Talk
         working-directory: apps/spreed
