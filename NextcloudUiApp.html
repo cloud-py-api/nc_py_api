@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing Nextcloud App with UI &mdash; NcPyApi 0.18.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ba2e7b09"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script src="_static/tabs.js?v=3ee01567"></script>
+        <script src="_static/js/script.js?v=783f4f19"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Options" href="Options.html" />
+    <link rel="prev" title="Talk Bot App with Transformers" href="NextcloudTalkBotTransformers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.18.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing Nextcloud App with UI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#backend">Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#frontend">Frontend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#important-notes">Important notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Writing Nextcloud App with UI</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/NextcloudUiApp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="writing-nextcloud-app-with-ui">
+<h1>Writing Nextcloud App with UI<a class="headerlink" href="#writing-nextcloud-app-with-ui" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is advisable to have experience writing PHP applications for Nextcloud,
+since the UI of applications not written in PHP is exactly the same.</p>
+</div>
+<p>One of the most interesting features is the ability to register a page in the Nextcloud Top Menu.</p>
+<p>Full source of UI example can be found here:
+<a class="reference external" href="https://github.com/cloud-py-api/ui_example/blob/main/lib/main.py">UiExample</a></p>
+<p>Here we will simply describe in detail what happens in the example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">set_initial_state</span><span class="p">(</span>
+        <span class="s2">&quot;top_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;first_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;ui_example_state&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;initial_value&quot;</span><span class="p">:</span> <span class="s2">&quot;test init value&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">set_script</span><span class="p">(</span><span class="s2">&quot;top_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;first_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;js/ui_example-main&quot;</span><span class="p">)</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">top_menu</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;first_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;UI example&quot;</span><span class="p">,</span> <span class="s2">&quot;img/icon.svg&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nc</span><span class="o">.</span><span class="n">srv_version</span><span class="p">[</span><span class="s2">&quot;major&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">29</span><span class="p">:</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">register_form</span><span class="p">(</span><span class="n">SETTINGS_EXAMPLE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>set_initial_state</strong> is analogue of PHP <code class="docutils literal notranslate"><span class="pre">OCP\AppFramework\Services\IInitialState::provideInitialState</span></code></p>
+<p><strong>set_script</strong> is analogue of PHP <code class="docutils literal notranslate"><span class="pre">Util::addScript</span></code></p>
+<p>There is also <strong>set_style</strong> (<code class="docutils literal notranslate"><span class="pre">Util::addStyle</span></code>) that can be used for CSS files and works the same way as <strong>set_script</strong>.</p>
+<p>Starting with Nextcloud <strong>29</strong> AppAPI supports declaring Settings UI, with very simple and robust API.</p>
+<p>Settings values you declare will be saved to <code class="docutils literal notranslate"><span class="pre">preferences_ex</span></code> or <code class="docutils literal notranslate"><span class="pre">appconfig_ex</span></code> tables and can be retrieved using
+<a class="reference internal" href="reference/Apps.html#nc_py_api._preferences_ex.PreferencesExAPI" title="nc_py_api._preferences_ex.PreferencesExAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">nc_py_api._preferences_ex.PreferencesExAPI</span></code></a> or <a class="reference internal" href="reference/Apps.html#nc_py_api._preferences_ex.AppConfigExAPI" title="nc_py_api._preferences_ex.AppConfigExAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">nc_py_api._preferences_ex.AppConfigExAPI</span></code></a> APIs.</p>
+<section id="backend">
+<h2>Backend<a class="headerlink" href="#backend" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Button1Format</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">initial_value</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@APP</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/verify_initial_value&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">verify_initial_value</span><span class="p">(</span>
+    <span class="n">input1</span><span class="p">:</span> <span class="n">Button1Format</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Old value: &quot;</span><span class="p">,</span> <span class="n">input1</span><span class="o">.</span><span class="n">initial_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;initial_value&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">))},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FileInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">getlastmodified</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">getetag</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">getcontenttype</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">fileid</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">permissions</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">getcontentlength</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">favorite</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="nd">@APP</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/nextcloud_file&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">nextcloud_file</span><span class="p">(</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;file_info&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here is defining two endpoints for test purposes.</p>
+<p>The first is to get the current initial state of the page when the button is clicked.</p>
+<p>Second one is receiving a default information about file in the Nextcloud.</p>
+</section>
+<section id="frontend">
+<h2>Frontend<a class="headerlink" href="#frontend" title="Link to this heading"></a></h2>
+<p>The frontend part is the same as the default Nextcloud apps, with slightly different URL generation since all requests are sent through the AppAPI.</p>
+<p>JS Frontend part is covered by AppAPI documentation: <code class="docutils literal notranslate"><span class="pre">to_do</span></code></p>
+</section>
+<section id="important-notes">
+<h2>Important notes<a class="headerlink" href="#important-notes" title="Link to this heading"></a></h2>
+<p>We do not call <code class="docutils literal notranslate"><span class="pre">top_menu.unregister</span></code> or <code class="docutils literal notranslate"><span class="pre">resources.delete_script</span></code> as during uninstalling of application <strong>AppAPI</strong> will automatically remove this.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Recommended way is to manually clean all stuff and probably if it was not an example, we would call all unregister and cleanup stuff during <code class="docutils literal notranslate"><span class="pre">disabling</span></code>.</p>
+</div>
+<p>All resources of ExApp should be avalaible and mounted to webserver(<strong>FastAPI</strong> + <strong>uvicorn</strong> are used by default for this).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is in case you have custom folders that Nextcloud instance should have access.</p>
+</div>
+<p><em>P.S.: If you are missing some required stuff for the UI part, please inform us, and we will consider adding it.</em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="NextcloudTalkBotTransformers.html" class="btn btn-neutral float-left" title="Talk Bot App with Transformers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Options.html" class="btn btn-neutral float-right" title="Options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
