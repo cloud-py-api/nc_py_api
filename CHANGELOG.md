@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.18.0 - 2024-10-09]
+
+### Added
+
+- New `webhooks.unregister_all` method. #309
+
+### Fixed
+
+- Files: `user` and `user_path` properties in `FSNode` when Nextcloud located in in sub-path. #297 Thanks to @vwbusguy
+- `files.download_directory_as_zip` method now supports upcoming Nextcloud 31. #304
+
 ## [0.17.1 - 2024-09-06]
 
 ### Added
