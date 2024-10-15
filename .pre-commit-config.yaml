@@ -24,7 +24,7 @@ repos:
             )
 
 -   repo: https://github.com/psf/black
-    rev: 24.8.0
+    rev: 24.10.0
     hooks:
     -   id: black
         files: >-
@@ -36,7 +36,7 @@ repos:
             )
 
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 2.2.4
+    rev: 2.3.0
     hooks:
     -   id: pyproject-fmt
 
