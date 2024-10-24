@@ -248,11 +248,3 @@ exclude_lines = [
   "DeprecationWarning",
   "DEPRECATED",
 ]
-
-[tool.mypy]
-ignore_missing_imports = false
-warn_unreachable = true
-warn_no_return = true
-strict_optional = true
-check_untyped_defs = true
-show_error_codes = true

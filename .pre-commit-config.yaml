@@ -45,13 +45,6 @@ repos:
     hooks:
     -   id: ruff
 
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.12.1
-    hooks:
-     -  id: mypy
-        files: nc_py_api/
-        additional_dependencies: [pytest]
-
 -   repo: local
     hooks:
     -   id: pylint
