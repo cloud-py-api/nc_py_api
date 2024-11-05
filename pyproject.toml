@@ -61,7 +61,7 @@ optional-dependencies.bench = [
   "py-cpuinfo",
 ]
 optional-dependencies.calendar = [
-  "caldav==1.4.0",
+  "caldav==1.4",
 ]
 optional-dependencies.dev = [
   "nc-py-api[bench,calendar,dev-min]",
