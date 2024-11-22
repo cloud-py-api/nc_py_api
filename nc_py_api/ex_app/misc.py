@@ -33,7 +33,7 @@ def verify_version(finalize_update: bool = True) -> tuple[str, str] | None:
     """
     version_file_path = os.path.join(persistent_storage(), "_version.info")
     r = None
-    with open(version_file_path, "a+t", encoding="UTF-8") as version_file:
+    with open(version_file_path, "a+", encoding="UTF-8") as version_file:
         version_file.seek(0)
         old_version = version_file.read()
         if old_version != os.environ["APP_VERSION"]:
