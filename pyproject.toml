@@ -82,7 +82,7 @@ optional-dependencies.docs = [
   "sphinx-copybutton",
   "sphinx-inline-tabs",
   "sphinx-issues>=3.0.1",
-  "sphinx-rtd-theme<3",
+  "sphinx-rtd-theme<4",
 ]
 urls.Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md"
 urls.Documentation = "https://cloud-py-api.github.io/nc_py_api/"
