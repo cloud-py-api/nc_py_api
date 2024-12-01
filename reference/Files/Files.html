@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File System &mdash; NcPyApi 0.18.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ba2e7b09"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File Sharing" href="Shares.html" />
+    <link rel="prev" title="Files API" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.18.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Apps.html">Applications Management</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Files API</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">File System</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.files.FilesAPI"><code class="docutils literal notranslate"><span class="pre">FilesAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.FsNodeInfo"><code class="docutils literal notranslate"><span class="pre">FsNodeInfo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.FsNode"><code class="docutils literal notranslate"><span class="pre">FsNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.FilePermissions"><code class="docutils literal notranslate"><span class="pre">FilePermissions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.SystemTag"><code class="docutils literal notranslate"><span class="pre">SystemTag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.LockType"><code class="docutils literal notranslate"><span class="pre">LockType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.FsNodeLockInfo"><code class="docutils literal notranslate"><span class="pre">FsNodeLockInfo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.ActionFileInfo"><code class="docutils literal notranslate"><span class="pre">ActionFileInfo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.files.ActionFileInfoEx"><code class="docutils literal notranslate"><span class="pre">ActionFileInfoEx</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Shares.html">File Sharing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Files API</a></li>
+      <li class="breadcrumb-item active">File System</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/Files/Files.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-system">
+<h1>File System<a class="headerlink" href="#file-system" title="Link to this heading"></a></h1>
+<p>The Files API is universal for both modes and provides all the necessary methods for working with the Nextcloud file system.
+Refer to the <a class="reference external" href="https://github.com/cloud-py-api/nc_py_api/tree/main/examples/as_client/files">Files examples</a> to see how to use them nicely.</p>
+<p>All File APIs are designed to work relative to the current user.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.files.</span></span><span class="sig-name descname"><span class="pre">FilesAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Session.html#nc_py_api._session.NcSessionBasic" title="nc_py_api._session.NcSessionBasic"><span class="pre">NcSessionBasic</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI" title="Link to this definition"></a></dt>
+<dd><p>Class that encapsulates file system and file sharing API, avalaible as <strong>nc.files.&lt;method&gt;</strong>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.sharing">
+<span class="sig-name descname"><span class="pre">sharing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Shares.html#nc_py_api.files.sharing._FilesSharingAPI" title="nc_py_api.files.sharing._FilesSharingAPI"><span class="pre">_FilesSharingAPI</span></a></em><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.sharing" title="Link to this definition"></a></dt>
+<dd><p>API for managing Files Shares</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.listdir">
+<span class="sig-name descname"><span class="pre">listdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_self</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.listdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.listdir" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of all entries in the specified directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to the directory to get the list.</p></li>
+<li><p><strong>depth</strong> – how many directory levels should be included in output. Default = <strong>1</strong> (only specified directory)</p></li>
+<li><p><strong>exclude_self</strong> – boolean value indicating whether the <cite>path</cite> itself should be excluded from the list or not.
+Default = <strong>True</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.by_id">
+<span class="sig-name descname"><span class="pre">by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.by_id" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">FsNode</span></code></a> by file_id if any.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_id</strong> – can be full file ID with Nextcloud instance ID or only clear file ID.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.by_path">
+<span class="sig-name descname"><span class="pre">by_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.by_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.by_path" title="Link to this definition"></a></dt>
+<dd><p>Returns <a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">FsNode</span></code></a> by exact path if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.find" title="Link to this definition"></a></dt>
+<dd><p>Searches a directory for a file or subdirectory with a name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>req</strong> – list of conditions to search for. Detailed description here…</p></li>
+<li><p><strong>path</strong> – path where to search from. Default = <strong>“”</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.download" title="Link to this definition"></a></dt>
+<dd><p>Downloads and returns the content of a file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.download2stream">
+<span class="sig-name descname"><span class="pre">download2stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.download2stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.download2stream" title="Link to this definition"></a></dt>
+<dd><p>Downloads file to the given <cite>fp</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to download file.</p></li>
+<li><p><strong>fp</strong> – filename (string), pathlib.Path object or a file object.
+The object must implement the <code class="docutils literal notranslate"><span class="pre">file.write</span></code> method and be able to write binary data.</p></li>
+<li><p><strong>kwargs</strong> – <strong>chunk_size</strong> an int value specifying chunk size to write. Default = <strong>5Mb</strong></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.download_directory_as_zip">
+<span class="sig-name descname"><span class="pre">download_directory_as_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.download_directory_as_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.download_directory_as_zip" title="Link to this definition"></a></dt>
+<dd><p>Downloads a remote directory as zip archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to directory to download.</p></li>
+<li><p><strong>local_path</strong> – relative or absolute file path to save zip file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the saved zip archive.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This works only for directories, you should not use this to download a file.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.upload">
+<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.upload" title="Link to this definition"></a></dt>
+<dd><p>Creates a file with the specified content at the specified path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – file’s upload path.</p></li>
+<li><p><strong>content</strong> – content to create the file. If it is a string, it will be encoded into bytes using UTF-8.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.upload_stream">
+<span class="sig-name descname"><span class="pre">upload_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.upload_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.upload_stream" title="Link to this definition"></a></dt>
+<dd><p>Creates a file with content provided by <cite>fp</cite> object at the specified path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – file’s upload path.</p></li>
+<li><p><strong>fp</strong> – filename (string), pathlib.Path object or a file object.
+The object must implement the <code class="docutils literal notranslate"><span class="pre">file.read</span></code> method providing data with str or bytes type.</p></li>
+<li><p><strong>kwargs</strong> – <strong>chunk_size</strong> an int value specifying chunk size to read. Default = <strong>5Mb</strong></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.mkdir">
+<span class="sig-name descname"><span class="pre">mkdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.mkdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.mkdir" title="Link to this definition"></a></dt>
+<dd><p>Creates a new directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – path of the directory to be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.makedirs">
+<span class="sig-name descname"><span class="pre">makedirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.makedirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.makedirs" title="Link to this definition"></a></dt>
+<dd><p>Creates a new directory and subdirectories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path of the directories to be created.</p></li>
+<li><p><strong>exist_ok</strong> – ignore error if any of pathname components already exists.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>FsNode</cite> if directory was created or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it was already created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.delete" title="Link to this definition"></a></dt>
+<dd><p>Deletes a file/directory (moves to trash if trash is enabled).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to delete.</p></li>
+<li><p><strong>not_fail</strong> – if set to <code class="docutils literal notranslate"><span class="pre">True</span></code> and the object is not found, it does not raise an exception.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.move" title="Link to this definition"></a></dt>
+<dd><p>Moves an existing file or a directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_src</strong> – path of an existing file/directory.</p></li>
+<li><p><strong>path_dest</strong> – name of the new one.</p></li>
+<li><p><strong>overwrite</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code> and the destination object already exists, it gets overwritten.
+Default = <strong>False</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.copy" title="Link to this definition"></a></dt>
+<dd><p>Copies an existing file/directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_src</strong> – path of an existing file/directory.</p></li>
+<li><p><strong>path_dest</strong> – name of the new one.</p></li>
+<li><p><strong>overwrite</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code> and the destination object already exists, it gets overwritten.
+Default = <strong>False</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.list_by_criteria">
+<span class="sig-name descname"><span class="pre">list_by_criteria</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.list_by_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.list_by_criteria" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of all files/directories for the current user filtered by the specified values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>properties</strong> – List of <code class="docutils literal notranslate"><span class="pre">properties</span></code> that should have been set for the file.
+Supported values: <strong>favorite</strong></p></li>
+<li><p><strong>tags</strong> – List of <code class="docutils literal notranslate"><span class="pre">tags</span> <span class="pre">ids</span></code> or <code class="docutils literal notranslate"><span class="pre">SystemTag</span></code> that should have been set for the file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.setfav">
+<span class="sig-name descname"><span class="pre">setfav</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.setfav"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.setfav" title="Link to this definition"></a></dt>
+<dd><p>Sets or unsets favourite flag for specific file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to the object to set the state.</p></li>
+<li><p><strong>value</strong> – value to set for the <code class="docutils literal notranslate"><span class="pre">favourite</span></code> state.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.trashbin_list">
+<span class="sig-name descname"><span class="pre">trashbin_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.trashbin_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.trashbin_list" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of all entries in the TrashBin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.trashbin_restore">
+<span class="sig-name descname"><span class="pre">trashbin_restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.trashbin_restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.trashbin_restore" title="Link to this definition"></a></dt>
+<dd><p>Restore a file/directory from the TrashBin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – path to delete, e.g., the <code class="docutils literal notranslate"><span class="pre">user_path</span></code> field from <code class="docutils literal notranslate"><span class="pre">FsNode</span></code> or the <strong>FsNode</strong> class itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.trashbin_delete">
+<span class="sig-name descname"><span class="pre">trashbin_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_fail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.trashbin_delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.trashbin_delete" title="Link to this definition"></a></dt>
+<dd><p>Deletes a file/directory permanently from the TrashBin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to delete, e.g., the <code class="docutils literal notranslate"><span class="pre">user_path</span></code> field from <code class="docutils literal notranslate"><span class="pre">FsNode</span></code> or the <strong>FsNode</strong> class itself.</p></li>
+<li><p><strong>not_fail</strong> – if set to <code class="docutils literal notranslate"><span class="pre">True</span></code> and the object is not found, it does not raise an exception.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.trashbin_cleanup">
+<span class="sig-name descname"><span class="pre">trashbin_cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.trashbin_cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.trashbin_cleanup" title="Link to this definition"></a></dt>
+<dd><p>Empties the TrashBin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.get_versions">
+<span class="sig-name descname"><span class="pre">get_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.get_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.get_versions" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of all file versions if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.restore_version">
+<span class="sig-name descname"><span class="pre">restore_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.restore_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.restore_version" title="Link to this definition"></a></dt>
+<dd><p>Restore a file with specified version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_object</strong> – The <strong>FsNode</strong> class from <a class="reference internal" href="#nc_py_api.files.files.FilesAPI.get_versions" title="nc_py_api.files.files.FilesAPI.get_versions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_versions()</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.list_tags">
+<span class="sig-name descname"><span class="pre">list_tags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.list_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.list_tags" title="Link to this definition"></a></dt>
+<dd><p>Returns list of the avalaible Tags.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.get_tags">
+<span class="sig-name descname"><span class="pre">get_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.get_tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.get_tags" title="Link to this definition"></a></dt>
+<dd><p>Returns list of Tags assigned to the File or Directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.create_tag">
+<span class="sig-name descname"><span class="pre">create_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_assignable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.create_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.create_tag" title="Link to this definition"></a></dt>
+<dd><p>Creates a new Tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the tag.</p></li>
+<li><p><strong>user_visible</strong> – Should be Tag visible in the UI.</p></li>
+<li><p><strong>user_assignable</strong> – Can Tag be assigned from the UI.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.update_tag">
+<span class="sig-name descname"><span class="pre">update_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_assignable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.update_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.update_tag" title="Link to this definition"></a></dt>
+<dd><p>Updates the Tag information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.delete_tag">
+<span class="sig-name descname"><span class="pre">delete_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.delete_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.delete_tag" title="Link to this definition"></a></dt>
+<dd><p>Deletes the tag.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.tag_by_name">
+<span class="sig-name descname"><span class="pre">tag_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.tag_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.tag_by_name" title="Link to this definition"></a></dt>
+<dd><p>Returns Tag info by its name if found or <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.assign_tag">
+<span class="sig-name descname"><span class="pre">assign_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.assign_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.assign_tag" title="Link to this definition"></a></dt>
+<dd><p>Assigns Tag to a file/directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.unassign_tag">
+<span class="sig-name descname"><span class="pre">unassign_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.SystemTag" title="nc_py_api.files.SystemTag"><span class="pre">SystemTag</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.unassign_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.unassign_tag" title="Link to this definition"></a></dt>
+<dd><p>Removes Tag from a file/directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.lock">
+<span class="sig-name descname"><span class="pre">lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.LockType" title="nc_py_api.files.LockType"><span class="pre">LockType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LockType.MANUAL_LOCK</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.lock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.lock" title="Link to this definition"></a></dt>
+<dd><p>Locks the file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Exception codes: 423 - existing lock present.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.files.FilesAPI.unlock">
+<span class="sig-name descname"><span class="pre">unlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files/files.html#FilesAPI.unlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.files.FilesAPI.unlock" title="Link to this definition"></a></dt>
+<dd><p>Unlocks the file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Exception codes: 412 - the file is not locked, 423 - the lock is owned by another user.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">FsNodeInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#FsNodeInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.FsNodeInfo" title="Link to this definition"></a></dt>
+<dd><p>Extra FS object attributes from Nextcloud.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.favorite">
+<span class="sig-name descname"><span class="pre">favorite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.favorite" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating if the object is marked as favorite.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.is_version">
+<span class="sig-name descname"><span class="pre">is_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.is_version" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating if the object is File Version representation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.fileid">
+<span class="sig-name descname"><span class="pre">fileid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.fileid" title="Link to this definition"></a></dt>
+<dd><p>Clear file ID without Nextcloud instance ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.content_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">content_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.content_length" title="Link to this definition"></a></dt>
+<dd><p>Length of file in bytes, zero for directories.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.size" title="Link to this definition"></a></dt>
+<dd><p>In the case of directories it is the size of all content, for files it is equal to <code class="docutils literal notranslate"><span class="pre">content_length</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.mimetype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mimetype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.mimetype" title="Link to this definition"></a></dt>
+<dd><p>Mimetype of a file. Empty for the directories.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.permissions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.permissions" title="Link to this definition"></a></dt>
+<dd><p>Permissions for the object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.last_modified">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_modified</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><span class="pre">datetime</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.last_modified" title="Link to this definition"></a></dt>
+<dd><p>Time when the object was last modified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ETag is a more preferable way to check if the object was changed.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.in_trash">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">in_trash</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.in_trash" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the object is in trash.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.trashbin_filename">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trashbin_filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.trashbin_filename" title="Link to this definition"></a></dt>
+<dd><p>Returns the name of the object in the trashbin.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.trashbin_original_location">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trashbin_original_location</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.trashbin_original_location" title="Link to this definition"></a></dt>
+<dd><p>Returns the original path of the object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeInfo.trashbin_deletion_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trashbin_deletion_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeInfo.trashbin_deletion_time" title="Link to this definition"></a></dt>
+<dd><p>Returns deletion time of the object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">FsNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#FsNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.FsNode" title="Link to this definition"></a></dt>
+<dd><p>A class that represents a Nextcloud file object.</p>
+<p>Acceptable itself as a <code class="docutils literal notranslate"><span class="pre">path</span></code> parameter for the most file APIs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.full_path">
+<span class="sig-name descname"><span class="pre">full_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.full_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the object, including the username. Does not include <cite>dav</cite> prefix</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.file_id">
+<span class="sig-name descname"><span class="pre">file_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.file_id" title="Link to this definition"></a></dt>
+<dd><p>File ID + NC instance ID</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.etag">
+<span class="sig-name descname"><span class="pre">etag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.etag" title="Link to this definition"></a></dt>
+<dd><p>An entity tag (ETag) of the object</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.info">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNodeInfo" title="nc_py_api.files.FsNodeInfo"><span class="pre">FsNodeInfo</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.info" title="Link to this definition"></a></dt>
+<dd><p>Additional extra information for the object</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.lock_info">
+<span class="sig-name descname"><span class="pre">lock_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.FsNodeLockInfo" title="nc_py_api.files.FsNodeLockInfo"><span class="pre">FsNodeLockInfo</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.lock_info" title="Link to this definition"></a></dt>
+<dd><p>Class describing <cite>lock</cite> information if any.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_dir" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> for the directories, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.has_extra">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_extra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.has_extra" title="Link to this definition"></a></dt>
+<dd><p>Flag showing that this “FsNode” originates from the mkdir/upload methods and lacks extended information.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.name" title="Link to this definition"></a></dt>
+<dd><p>Returns last <code class="docutils literal notranslate"><span class="pre">pathname</span></code> component.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.user" title="Link to this definition"></a></dt>
+<dd><p>Returns user ID extracted from the <cite>full_path</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.user_path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.user_path" title="Link to this definition"></a></dt>
+<dd><p>Returns path relative to the user’s root directory.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_shared">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_shared</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_shared" title="Link to this definition"></a></dt>
+<dd><p>Check if a file or folder is shared.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_shareable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_shareable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_shareable" title="Link to this definition"></a></dt>
+<dd><p>Check if a file or folder can be shared.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_mounted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_mounted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_mounted" title="Link to this definition"></a></dt>
+<dd><p>Check if a file or folder is mounted.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_readable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_readable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_readable" title="Link to this definition"></a></dt>
+<dd><p>Check if the file or folder is readable.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_deletable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_deletable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_deletable" title="Link to this definition"></a></dt>
+<dd><p>Check if a file or folder can be deleted.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_updatable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_updatable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_updatable" title="Link to this definition"></a></dt>
+<dd><p>Check if file/directory is writable.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNode.is_creatable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_creatable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNode.is_creatable" title="Link to this definition"></a></dt>
+<dd><p>Check whether new files or folders can be created inside this folder.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.FilePermissions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">FilePermissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#FilePermissions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.FilePermissions" title="Link to this definition"></a></dt>
+<dd><p>List of available permissions for files/directories.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FilePermissions.PERMISSION_READ">
+<span class="sig-name descname"><span class="pre">PERMISSION_READ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#nc_py_api.files.FilePermissions.PERMISSION_READ" title="Link to this definition"></a></dt>
+<dd><p>Access to read</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FilePermissions.PERMISSION_UPDATE">
+<span class="sig-name descname"><span class="pre">PERMISSION_UPDATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#nc_py_api.files.FilePermissions.PERMISSION_UPDATE" title="Link to this definition"></a></dt>
+<dd><p>Access to write</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FilePermissions.PERMISSION_CREATE">
+<span class="sig-name descname"><span class="pre">PERMISSION_CREATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#nc_py_api.files.FilePermissions.PERMISSION_CREATE" title="Link to this definition"></a></dt>
+<dd><p>Access to create new objects in the directory</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FilePermissions.PERMISSION_DELETE">
+<span class="sig-name descname"><span class="pre">PERMISSION_DELETE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#nc_py_api.files.FilePermissions.PERMISSION_DELETE" title="Link to this definition"></a></dt>
+<dd><p>Access to remove object(s)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.files.FilePermissions.PERMISSION_SHARE">
+<span class="sig-name descname"><span class="pre">PERMISSION_SHARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#nc_py_api.files.FilePermissions.PERMISSION_SHARE" title="Link to this definition"></a></dt>
+<dd><p>Access to re-share object(s)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.SystemTag">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">SystemTag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#SystemTag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.SystemTag" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud System Tag.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.SystemTag.tag_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tag_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.SystemTag.tag_id" title="Link to this definition"></a></dt>
+<dd><p>Unique numeric identifier of the Tag.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.SystemTag.display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.SystemTag.display_name" title="Link to this definition"></a></dt>
+<dd><p>The visible Tag name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.SystemTag.user_visible">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_visible</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.SystemTag.user_visible" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating if the Tag is visible in the UI.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.SystemTag.user_assignable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_assignable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.SystemTag.user_assignable" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating if User can assign this Tag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.LockType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">LockType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#LockType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.LockType" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud File Locks types.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">FsNodeLockInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#FsNodeLockInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo" title="Link to this definition"></a></dt>
+<dd><p>File Lock information if Nextcloud <cite>files_lock</cite> is enabled.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.is_locked">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_locked</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.is_locked" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the file is locked, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.files.LockType" title="nc_py_api.files.LockType"><span class="pre">LockType</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.type" title="Link to this definition"></a></dt>
+<dd><p>Type of the lock.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.owner">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.owner" title="Link to this definition"></a></dt>
+<dd><p>User id of the lock owner.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.owner_display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">owner_display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.owner_display_name" title="Link to this definition"></a></dt>
+<dd><p>Display name of the lock owner.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.owner_editor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">owner_editor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.owner_editor" title="Link to this definition"></a></dt>
+<dd><p>App id of an app owned lock to allow clients to suggest joining the collaborative editing session.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.lock_creation_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lock_creation_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><span class="pre">datetime</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.lock_creation_time" title="Link to this definition"></a></dt>
+<dd><p>Lock creation time.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.files.FsNodeLockInfo.lock_ttl">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lock_ttl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.files.FsNodeLockInfo.lock_ttl" title="Link to this definition"></a></dt>
+<dd><p>TTL of the lock in seconds staring from the creation time. A value of 0 means the timeout is infinite.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">ActionFileInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">etag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">favorite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">userId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shareOwner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shareOwnerId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instanceId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#ActionFileInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.ActionFileInfo" title="Link to this definition"></a></dt>
+<dd><p>Information Nextcloud sends to the External Application about File Nodes affected in action.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.fileId">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fileId</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.fileId" title="Link to this definition"></a></dt>
+<dd><p>FileID without Nextcloud instance ID</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.name" title="Link to this definition"></a></dt>
+<dd><p>Name of the file/directory</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.directory">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.directory" title="Link to this definition"></a></dt>
+<dd><p>Directory relative to the user’s home directory</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.fileType">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fileType</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.fileType" title="Link to this definition"></a></dt>
+<dd><p><strong>file</strong> or <strong>dir</strong></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.size">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.size" title="Link to this definition"></a></dt>
+<dd><p>size of file/directory</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.favorite">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">favorite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.favorite" title="Link to this definition"></a></dt>
+<dd><p><strong>true</strong> or <strong>false</strong></p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.permissions">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">permissions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.permissions" title="Link to this definition"></a></dt>
+<dd><p>Combination of <a class="reference internal" href="#nc_py_api.files.FilePermissions" title="nc_py_api.files.FilePermissions"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilePermissions</span></code></a> values</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.mtime">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mtime</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.mtime" title="Link to this definition"></a></dt>
+<dd><p>Last modified time</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.userId">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">userId</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.userId" title="Link to this definition"></a></dt>
+<dd><p>The ID of the user performing the action.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.instanceId">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instanceId</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.instanceId" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud instance ID.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfo.to_fs_node">
+<span class="sig-name descname"><span class="pre">to_fs_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><span class="pre">FsNode</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/files.html#ActionFileInfo.to_fs_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.ActionFileInfo.to_fs_node" title="Link to this definition"></a></dt>
+<dd><p>Returns usual <a class="reference internal" href="#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">FsNode</span></code></a> created from this class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfoEx">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.files.</span></span><span class="sig-name descname"><span class="pre">ActionFileInfoEx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.ActionFileInfo" title="nc_py_api.files.ActionFileInfo"><span class="pre">ActionFileInfo</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/files.html#ActionFileInfoEx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.files.ActionFileInfoEx" title="Link to this definition"></a></dt>
+<dd><p>New <code class="docutils literal notranslate"><span class="pre">register_ex</span></code> uses new data format which allowing receiving multiple NC Nodes in one request.</p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="nc_py_api.files.ActionFileInfoEx.files">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.files.ActionFileInfo" title="nc_py_api.files.ActionFileInfo"><span class="pre">ActionFileInfo</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#nc_py_api.files.ActionFileInfoEx.files" title="Link to this definition"></a></dt>
+<dd><p>Always list of <code class="docutils literal notranslate"><span class="pre">ActionFileInfo</span></code> with one element minimum.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Files API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Shares.html" class="btn btn-neutral float-right" title="File Sharing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
