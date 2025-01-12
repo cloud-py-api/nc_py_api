@@ -485,7 +485,8 @@ class FilesAPI:
             response = self._session.adapter_dav.request("MKCOL", _dav_path)
         check_error(response)
         try:
-            start_bytes = end_bytes = chunk_number = 0
+            start_bytes = end_bytes = 0
+            chunk_number = 1
             while True:
                 piece = fp.read(chunk_size)
                 if not piece:
