@@ -78,7 +78,7 @@ optional-dependencies.dev-min = [
 optional-dependencies.docs = [
   "autodoc-pydantic>=2.0.1",
   "nc-py-api[app,calendar]",
-  "sphinx<8",
+  "sphinx<9",
   "sphinx-copybutton",
   "sphinx-inline-tabs",
   "sphinx-issues>=3.0.1",
