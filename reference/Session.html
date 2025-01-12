@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session Structures &mdash; NcPyApi 0.18.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ba2e7b09"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/tabs.js?v=3ee01567"></script>
+        <script src="../_static/js/script.js?v=783f4f19"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LoginFlow V2" href="LoginFlowV2.html" />
+    <link rel="prev" title="Notes API" href="Notes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.18.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Apps.html">Applications Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files/index.html">Files API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Notes.html">Notes API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Session Structures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api._session.ServerVersion"><code class="docutils literal notranslate"><span class="pre">ServerVersion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.ServerVersion.major"><code class="docutils literal notranslate"><span class="pre">ServerVersion.major</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.ServerVersion.minor"><code class="docutils literal notranslate"><span class="pre">ServerVersion.minor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.ServerVersion.micro"><code class="docutils literal notranslate"><span class="pre">ServerVersion.micro</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.ServerVersion.string"><code class="docutils literal notranslate"><span class="pre">ServerVersion.string</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.ServerVersion.extended_support"><code class="docutils literal notranslate"><span class="pre">ServerVersion.extended_support</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api._theming.ThemingInfo"><code class="docutils literal notranslate"><span class="pre">ThemingInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._theming.ThemingInfo.name"><code class="docutils literal notranslate"><span class="pre">ThemingInfo.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._theming.ThemingInfo.url"><code class="docutils literal notranslate"><span class="pre">ThemingInfo.url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._theming.ThemingInfo.slogan"><code class="docutils literal notranslate"><span class="pre">ThemingInfo.slogan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._theming.ThemingInfo.logo"><code class="docutils literal notranslate"><span class="pre">ThemingInfo.logo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._theming.ThemingInfo.background"><code class="docutils literal notranslate"><span class="pre">ThemingInfo.background</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api._session.AppConfig"><code class="docutils literal notranslate"><span class="pre">AppConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.AppConfig.aa_version"><code class="docutils literal notranslate"><span class="pre">AppConfig.aa_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.AppConfig.app_name"><code class="docutils literal notranslate"><span class="pre">AppConfig.app_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.AppConfig.app_version"><code class="docutils literal notranslate"><span class="pre">AppConfig.app_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.AppConfig.app_secret"><code class="docutils literal notranslate"><span class="pre">AppConfig.app_secret</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#internal">Internal</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.NcSessionBasic"><code class="docutils literal notranslate"><span class="pre">NcSessionBasic</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.NcSessionApp"><code class="docutils literal notranslate"><span class="pre">NcSessionApp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api._session.NcSession"><code class="docutils literal notranslate"><span class="pre">NcSession</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+      <li class="breadcrumb-item active">Session Structures</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/Session.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="session-structures">
+<h1>Session Structures<a class="headerlink" href="#session-structures" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api._session.ServerVersion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api._session.</span></span><span class="sig-name descname"><span class="pre">ServerVersion</span></span><a class="reference internal" href="../_modules/nc_py_api/_session.html#ServerVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api._session.ServerVersion" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud version information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.ServerVersion.major">
+<span class="sig-name descname"><span class="pre">major</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api._session.ServerVersion.major" title="Link to this definition"></a></dt>
+<dd><p>Major version</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.ServerVersion.minor">
+<span class="sig-name descname"><span class="pre">minor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api._session.ServerVersion.minor" title="Link to this definition"></a></dt>
+<dd><p>Minor version</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.ServerVersion.micro">
+<span class="sig-name descname"><span class="pre">micro</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api._session.ServerVersion.micro" title="Link to this definition"></a></dt>
+<dd><p>Micro version</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.ServerVersion.string">
+<span class="sig-name descname"><span class="pre">string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.ServerVersion.string" title="Link to this definition"></a></dt>
+<dd><p>Full version in string format</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.ServerVersion.extended_support">
+<span class="sig-name descname"><span class="pre">extended_support</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api._session.ServerVersion.extended_support" title="Link to this definition"></a></dt>
+<dd><p>Indicates if the subscription has extended support</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api._theming.ThemingInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api._theming.</span></span><span class="sig-name descname"><span class="pre">ThemingInfo</span></span><a class="reference internal" href="../_modules/nc_py_api/_theming.html#ThemingInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api._theming.ThemingInfo" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Theme information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._theming.ThemingInfo.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._theming.ThemingInfo.name" title="Link to this definition"></a></dt>
+<dd><p>Name of the Nextcloud instance</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._theming.ThemingInfo.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._theming.ThemingInfo.url" title="Link to this definition"></a></dt>
+<dd><p>Url that set in Theme app</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._theming.ThemingInfo.slogan">
+<span class="sig-name descname"><span class="pre">slogan</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._theming.ThemingInfo.slogan" title="Link to this definition"></a></dt>
+<dd><p>Slogan, e.g. ‘a safe home for all your data’</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._theming.ThemingInfo.logo">
+<span class="sig-name descname"><span class="pre">logo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._theming.ThemingInfo.logo" title="Link to this definition"></a></dt>
+<dd><p>Url of the instance’s logo</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._theming.ThemingInfo.background">
+<span class="sig-name descname"><span class="pre">background</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._theming.ThemingInfo.background" title="Link to this definition"></a></dt>
+<dd><p>Either an URL of the background image or a hex color value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api._session.AppConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api._session.</span></span><span class="sig-name descname"><span class="pre">AppConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/_session.html#AppConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api._session.AppConfig" title="Link to this definition"></a></dt>
+<dd><p>Application configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.AppConfig.aa_version">
+<span class="sig-name descname"><span class="pre">aa_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.AppConfig.aa_version" title="Link to this definition"></a></dt>
+<dd><p>AppAPI version</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.AppConfig.app_name">
+<span class="sig-name descname"><span class="pre">app_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.AppConfig.app_name" title="Link to this definition"></a></dt>
+<dd><p>Application ID</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.AppConfig.app_version">
+<span class="sig-name descname"><span class="pre">app_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.AppConfig.app_version" title="Link to this definition"></a></dt>
+<dd><p>Application version</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api._session.AppConfig.app_secret">
+<span class="sig-name descname"><span class="pre">app_secret</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.AppConfig.app_secret" title="Link to this definition"></a></dt>
+<dd><p>Application authentication secret</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="internal">
+<h2>Internal<a class="headerlink" href="#internal" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Session API is currently private and subject to change without deprecation.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSessionBasic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api._session.</span></span><span class="sig-name descname"><span class="pre">NcSessionBasic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/_session.html#NcSessionBasic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api._session.NcSessionBasic" title="Link to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSessionBasic.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.NcSessionBasic.user" title="Link to this definition"></a></dt>
+<dd><p>Current user ID. Can be different from the login name.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSessionApp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api._session.</span></span><span class="sig-name descname"><span class="pre">NcSessionApp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/_session.html#NcSessionApp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api._session.NcSessionApp" title="Link to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSessionApp.ae_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ae_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.NcSessionApp.ae_url" title="Link to this definition"></a></dt>
+<dd><p>Return base url for the AppAPI endpoints.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSessionApp.ae_url_v2">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ae_url_v2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.NcSessionApp.ae_url_v2" title="Link to this definition"></a></dt>
+<dd><p>Return base url for the AppAPI endpoints(version 2).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSessionApp.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api._session.NcSessionApp.user" title="Link to this definition"></a></dt>
+<dd><p>Current user ID. Can be different from the login name.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api._session.NcSession">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api._session.</span></span><span class="sig-name descname"><span class="pre">NcSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/_session.html#NcSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api._session.NcSession" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Notes.html" class="btn btn-neutral float-left" title="Notes API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="LoginFlowV2.html" class="btn btn-neutral float-right" title="LoginFlow V2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
