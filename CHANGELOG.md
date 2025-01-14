@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.18.1 - 2025-01-14]
+
+### Fixed
+
+- Chunked Upload V2 not working on Nextcloud 30 and later. #324 Thanks to @DrZoidberg09
+
 ## [0.18.0 - 2024-10-09]
 
 ### Added
