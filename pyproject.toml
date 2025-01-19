@@ -50,6 +50,7 @@ dependencies = [
   "pydantic>=2.1.1",
   "python-dotenv>=1",
   "xmltodict>=0.13",
+  "truststore==0.10.0",
 ]
 optional-dependencies.app = [
   "uvicorn[standard]>=0.23.2",

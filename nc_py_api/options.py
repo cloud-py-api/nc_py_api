@@ -33,11 +33,21 @@ NPA_NC_CERT: bool | str
 SSL certificates (a.k.a CA bundle) used to  verify the identity of requested hosts. Either **True** (default CA bundle),
 a path to an SSL certificate file, or **False** (which will disable verification)."""
 str_val = environ.get("NPA_NC_CERT", "True")
-NPA_NC_CERT = True
+# https://github.com/encode/httpx/issues/302
+# when "httpx" will switch to use "truststore" by default - uncomment next line
+# NPA_NC_CERT = True
 if str_val.lower() in ("false", "0"):
     NPA_NC_CERT = False
 elif str_val.lower() not in ("true", "1"):
     NPA_NC_CERT = str_val
+else:
+    # Temporary workaround, see comment above.
+    # Use system certificate stores
+
+    import ssl
+    import truststore
+
+    NPA_NC_CERT = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 
 CHUNKED_UPLOAD_V2 = environ.get("CHUNKED_UPLOAD_V2", True)
 """Option to enable/disable **version 2** chunked upload(better Object Storages support).
