@@ -49,6 +49,7 @@ dependencies = [
   "httpx>=0.25.2",
   "pydantic>=2.1.1",
   "python-dotenv>=1",
+  "truststore==0.10",
   "xmltodict>=0.13",
 ]
 optional-dependencies.app = [
