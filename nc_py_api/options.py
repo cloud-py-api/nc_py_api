@@ -45,6 +45,7 @@ else:
     # Use system certificate stores
 
     import ssl
+
     import truststore
 
     NPA_NC_CERT = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
