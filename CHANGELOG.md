@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.18.2 - 2025-01-19]
+
+### Changed
+
+- Default "User-Agent" for ExApps now set to `ExApp/appid/version (httpx/version)`. #329
+- `System Trust Store` from now are used by default. #328
+
 ## [0.18.1 - 2025-01-14]
 
 ### Fixed
