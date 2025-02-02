@@ -84,10 +84,18 @@ def test_create_permissions(nc_any):
     new_share = nc_any.files.sharing.create("test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_CREATE)
     nc_any.files.sharing.delete(new_share)
     assert (new_share.permissions & FilePermissions.PERMISSION_CREATE) == FilePermissions.PERMISSION_CREATE
-    new_share = nc_any.files.sharing.create("test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE)
+    new_share = nc_any.files.sharing.create(
+        "test_empty_dir",
+        ShareType.TYPE_LINK,
+        FilePermissions.PERMISSION_CREATE + FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_DELETE,
+    )
     nc_any.files.sharing.delete(new_share)
     assert (new_share.permissions & FilePermissions.PERMISSION_DELETE) == FilePermissions.PERMISSION_DELETE
-    new_share = nc_any.files.sharing.create("test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE)
+    new_share = nc_any.files.sharing.create(
+        "test_empty_dir",
+        ShareType.TYPE_LINK,
+        FilePermissions.PERMISSION_CREATE + FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_UPDATE,
+    )
     nc_any.files.sharing.delete(new_share)
     assert (new_share.permissions & FilePermissions.PERMISSION_UPDATE) == FilePermissions.PERMISSION_UPDATE
 
@@ -100,12 +108,16 @@ async def test_create_permissions_async(anc_any):
     await anc_any.files.sharing.delete(new_share)
     assert (new_share.permissions & FilePermissions.PERMISSION_CREATE) == FilePermissions.PERMISSION_CREATE
     new_share = await anc_any.files.sharing.create(
-        "test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE
+        "test_empty_dir",
+        ShareType.TYPE_LINK,
+        FilePermissions.PERMISSION_CREATE + FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_DELETE,
     )
     await anc_any.files.sharing.delete(new_share)
     assert (new_share.permissions & FilePermissions.PERMISSION_DELETE) == FilePermissions.PERMISSION_DELETE
     new_share = await anc_any.files.sharing.create(
-        "test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE
+        "test_empty_dir",
+        ShareType.TYPE_LINK,
+        FilePermissions.PERMISSION_CREATE + FilePermissions.PERMISSION_READ + FilePermissions.PERMISSION_UPDATE,
     )
     await anc_any.files.sharing.delete(new_share)
     assert (new_share.permissions & FilePermissions.PERMISSION_UPDATE) == FilePermissions.PERMISSION_UPDATE
