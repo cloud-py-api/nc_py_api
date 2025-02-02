@@ -1,4 +1,4 @@
-.. py:currentmodule:: nc_py_api.calendar
+.. py:currentmodule:: nc_py_api.calendar_api
 
 Calendar API
 ============
