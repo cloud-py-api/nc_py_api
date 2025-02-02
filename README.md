@@ -8,7 +8,7 @@
 [![Docs](https://github.com/cloud-py-api/nc_py_api/actions/workflows/docs.yml/badge.svg)](https://cloud-py-api.github.io/nc_py_api/)
 [![codecov](https://codecov.io/github/cloud-py-api/nc_py_api/branch/main/graph/badge.svg?token=C91PL3FYDQ)](https://codecov.io/github/cloud-py-api/nc_py_api)
 
-![NextcloudVersion](https://img.shields.io/badge/Nextcloud-27%20%7C%2028%20%7C%2029%20%7C%2030-blue)
+![NextcloudVersion](https://img.shields.io/badge/Nextcloud-%2028%20%7C%2029%20%7C%2030%20%7C%2031-blue)
 ![PythonVersion](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![impl](https://img.shields.io/pypi/implementation/nc_py_api)
 ![pypi](https://img.shields.io/pypi/v/nc_py_api.svg)
@@ -16,30 +16,13 @@
 Python library that provides a robust and well-documented API that allows developers to interact with and extend Nextcloud's functionality.
 
 ### The key features are:
+
  * **Fast**: High performance, and as low-latency as possible.
  * **Intuitive**: Fast to code, easy to use.
  * **Reliable**: Minimum number of incompatible changes.
  * **Robust**: All code is covered with tests as much as possible.
  * **Easy**: Designed to be easy to use with excellent documentation.
  * **Sync + Async**: Provides both sync and async APIs.
-
-### Capabilities
-| **_Capability_**             | Nextcloud 27 | Nextcloud 28 | Nextcloud 29 | Nextcloud 30 |
-|------------------------------|:------------:|:------------:|:------------:|:------------:|
-| Calendar                     |      ✅       |      ✅       |      ✅       |      ✅       |
-| File System & Tags           |      ✅       |      ✅       |      ✅       |      ✅       |
-| Nextcloud Talk               |      ✅       |      ✅       |      ✅       |      ✅       |
-| Notifications                |      ✅       |      ✅       |      ✅       |      ✅       |
-| Shares                       |      ✅       |      ✅       |      ✅       |      ✅       |
-| Users & Groups               |      ✅       |      ✅       |      ✅       |      ✅       |
-| User & Weather status        |      ✅       |      ✅       |      ✅       |      ✅       |
-| Other APIs**                 |      ✅       |      ✅       |      ✅       |      ✅       |
-| Talk Bot API*                |      ✅       |      ✅       |      ✅       |      ✅       |
-| Settings UI API*             |     N/A      |     N/A      |      ✅       |      ✅       |
-| TaskProcessing Provider API* |     N/A      |     N/A      |     N/A      |      ✅       |
-
-&ast;_available only for **NextcloudApp**_<br>
-&ast;&ast;_Activity, Notes_
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
@@ -56,8 +39,6 @@ but NextcloudApp has a broader selection since applications typically require ac
 
 Any code written for the Nextcloud class can easily be adapted for use with the NextcloudApp class,
 as long as it doesn't involve calls that require user password verification.
-
-**NextcloudApp** avalaible only from Nextcloud 27.1.2 and greater version with installed **AppAPI**.
 
 ### Nextcloud skeleton app in Python
 
