@@ -12,6 +12,7 @@ from json import loads
 from os import environ
 
 from httpx import AsyncClient, Client, Headers, Limits, ReadTimeout, Request, Response
+from httpx import __version__ as httpx_version
 from starlette.requests import HTTPConnection
 
 from . import options
@@ -511,6 +512,7 @@ class NcSessionApp(NcSessionAppBasic, NcSessionBasic):
                 "AA-VERSION": self.cfg.aa_version,
                 "EX-APP-ID": self.cfg.app_name,
                 "EX-APP-VERSION": self.cfg.app_version,
+                "user-agent": f"ExApp/{self.cfg.app_name}/{self.cfg.app_version} (httpx/{httpx_version})",
             },
         )
 
@@ -535,6 +537,7 @@ class AsyncNcSessionApp(NcSessionAppBasic, AsyncNcSessionBasic):
                 "AA-VERSION": self.cfg.aa_version,
                 "EX-APP-ID": self.cfg.app_name,
                 "EX-APP-VERSION": self.cfg.app_version,
+                "User-Agent": f"ExApp/{self.cfg.app_name}/{self.cfg.app_version} (httpx/{httpx_version})",
             },
         )
 

@@ -1159,6 +1159,7 @@ async def test_create_update_delete_tag_async(anc_any):
 
 
 def test_get_assign_unassign_tag(nc_any):
+
     with contextlib.suppress(NextcloudExceptionNotFound):
         nc_any.files.delete_tag(nc_any.files.tag_by_name("test_nc_py_api"))
     with contextlib.suppress(NextcloudExceptionNotFound):
@@ -1174,6 +1175,10 @@ def test_get_assign_unassign_tag(nc_any):
     new_file = nc_any.files.upload("/test_dir_tmp/tag_test.txt", content=b"")
     new_file = nc_any.files.by_id(new_file)
     assert nc_any.files.get_tags(new_file) == []
+
+    if nc_any.srv_version["major"] > 30:
+        pytest.skip("Skip temporary on master branch")
+
     assert len(nc_any.files.list_by_criteria(tags=[tag1])) == 0
     nc_any.files.assign_tag(new_file, tag1)
     assert isinstance(nc_any.files.get_tags(new_file)[0], SystemTag)
@@ -1206,6 +1211,10 @@ async def test_get_assign_unassign_tag_async(anc_any):
     new_file = await anc_any.files.upload("/test_dir_tmp/tag_test.txt", content=b"")
     new_file = await anc_any.files.by_id(new_file)
     assert await anc_any.files.get_tags(new_file) == []
+
+    if (await anc_any.srv_version)["major"] > 30:
+        pytest.skip("Skip temporary on master branch")
+
     assert len(await anc_any.files.list_by_criteria(tags=[tag1])) == 0
     await anc_any.files.assign_tag(new_file, tag1)
     assert isinstance((await anc_any.files.get_tags(new_file))[0], SystemTag)

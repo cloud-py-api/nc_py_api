@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.18.2 - 2025-01-19]
+
+### Changed
+
+- Default "User-Agent" for ExApps now set to `ExApp/appid/version (httpx/version)`. #329
+- `System Trust Store` from now are used by default. #328
+
+## [0.18.1 - 2025-01-14]
+
+### Fixed
+
+- Chunked Upload V2 not working on Nextcloud 30 and later. #324 Thanks to @DrZoidberg09
+
 ## [0.18.0 - 2024-10-09]
 
 ### Added
