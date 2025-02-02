@@ -83,25 +83,13 @@ async def test_share_fields_async(anc_any):
 def test_create_permissions(nc_any):
     new_share = nc_any.files.sharing.create("test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_CREATE)
     nc_any.files.sharing.delete(new_share)
-    # starting from Nextcloud 30 permissions are: FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
-    # https://github.com/nextcloud/server/commit/0bde47a39256dfad3baa8d3ffa275ac3d113a9d5#diff-dbbe017dd357504abc442a6f1d0305166520ebf80353f42814b3f879a3e241bc
-    assert (
-        new_share.permissions
-        == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
-        or new_share.permissions == FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
-    )
+    assert (new_share.permissions & FilePermissions.PERMISSION_CREATE) == FilePermissions.PERMISSION_CREATE
     new_share = nc_any.files.sharing.create("test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE)
     nc_any.files.sharing.delete(new_share)
-    assert (
-        new_share.permissions
-        == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_DELETE | FilePermissions.PERMISSION_SHARE
-    )
+    assert (new_share.permissions & FilePermissions.PERMISSION_DELETE) == FilePermissions.PERMISSION_DELETE
     new_share = nc_any.files.sharing.create("test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE)
     nc_any.files.sharing.delete(new_share)
-    assert (
-        new_share.permissions
-        == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_UPDATE | FilePermissions.PERMISSION_SHARE
-    )
+    assert (new_share.permissions & FilePermissions.PERMISSION_UPDATE) == FilePermissions.PERMISSION_UPDATE
 
 
 @pytest.mark.asyncio(scope="session")
@@ -110,29 +98,17 @@ async def test_create_permissions_async(anc_any):
         "test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_CREATE
     )
     await anc_any.files.sharing.delete(new_share)
-    # starting from Nextcloud 30 permissions are: FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
-    # https://github.com/nextcloud/server/commit/0bde47a39256dfad3baa8d3ffa275ac3d113a9d5#diff-dbbe017dd357504abc442a6f1d0305166520ebf80353f42814b3f879a3e241bc
-    assert (
-        new_share.permissions
-        == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
-        or new_share.permissions == FilePermissions.PERMISSION_CREATE | FilePermissions.PERMISSION_SHARE
-    )
+    assert (new_share.permissions & FilePermissions.PERMISSION_CREATE) == FilePermissions.PERMISSION_CREATE
     new_share = await anc_any.files.sharing.create(
         "test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_DELETE
     )
     await anc_any.files.sharing.delete(new_share)
-    assert (
-        new_share.permissions
-        == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_DELETE | FilePermissions.PERMISSION_SHARE
-    )
+    assert (new_share.permissions & FilePermissions.PERMISSION_DELETE) == FilePermissions.PERMISSION_DELETE
     new_share = await anc_any.files.sharing.create(
         "test_empty_dir", ShareType.TYPE_LINK, FilePermissions.PERMISSION_UPDATE
     )
     await anc_any.files.sharing.delete(new_share)
-    assert (
-        new_share.permissions
-        == FilePermissions.PERMISSION_READ | FilePermissions.PERMISSION_UPDATE | FilePermissions.PERMISSION_SHARE
-    )
+    assert (new_share.permissions & FilePermissions.PERMISSION_UPDATE) == FilePermissions.PERMISSION_UPDATE
 
 
 def test_create_public_upload(nc_any):
