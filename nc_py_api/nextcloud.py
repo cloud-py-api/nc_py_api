@@ -29,7 +29,7 @@ from ._talk_api import _AsyncTalkAPI, _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
-from .calendar import _CalendarAPI
+from .calendar_api import _CalendarAPI
 from .ex_app.defs import LogLvl
 from .ex_app.events_listener import AsyncEventsListenerAPI, EventsListenerAPI
 from .ex_app.occ_commands import AsyncOccCommandsAPI, OccCommandsAPI

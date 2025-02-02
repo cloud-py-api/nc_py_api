@@ -10,7 +10,7 @@ from .integration_fastapi import (
     set_handlers,
     talk_bot_msg,
 )
-from .logging import setup_nextcloud_logging
+from .logger import setup_nextcloud_logging
 from .misc import (
     get_computation_device,
     get_model_path,
