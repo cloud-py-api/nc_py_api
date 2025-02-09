@@ -16,6 +16,7 @@ from . import FsNode, SystemTag
 PROPFIND_PROPERTIES = [
     "d:resourcetype",
     "d:getlastmodified",
+    "d:creationdate",
     "d:getcontentlength",
     "d:getcontenttype",
     "d:getetag",
@@ -45,6 +46,7 @@ SEARCH_PROPERTIES_MAP = {
     "name": "d:displayname",  # like, eq
     "mime": "d:getcontenttype",  # like, eq
     "last_modified": "d:getlastmodified",  # gt, eq, lt
+    "creation_date": "d:creationdate",  # gt, eq, lt
     "size": "oc:size",  # gt, gte, eq, lt
     "favorite": "oc:favorite",  # eq
     "fileid": "oc:fileid",  # eq
@@ -286,6 +288,8 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pyl
             fs_node_args["etag"] = prop["d:getetag"]
         if "d:getlastmodified" in prop_keys:
             fs_node_args["last_modified"] = prop["d:getlastmodified"]
+        if "d:creationdate" in prop_keys:
+            fs_node_args["creation_date"] = prop["d:creationdate"]
         if "d:getcontenttype" in prop_keys:
             fs_node_args["mimetype"] = prop["d:getcontenttype"]
         if "oc:permissions" in prop_keys:
