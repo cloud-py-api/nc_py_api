@@ -478,7 +478,6 @@ class NcSessionAppBasic(ABC):
 
     def sign_check(self, request: HTTPConnection) -> str:
         headers = {
-            "AA-VERSION": request.headers.get("AA-VERSION", ""),
             "EX-APP-ID": request.headers.get("EX-APP-ID", ""),
             "EX-APP-VERSION": request.headers.get("EX-APP-VERSION", ""),
             "AUTHORIZATION-APP-API": request.headers.get("AUTHORIZATION-APP-API", ""),
