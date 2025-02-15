@@ -104,9 +104,9 @@ class FsNodeInfo:
         except (ValueError, TypeError):
             self.last_modified = datetime.datetime(1970, 1, 1)
         try:
-            self._creation_date = kwargs.get("creation_date", datetime.datetime(1970, 1, 1))
+            self.creation_date = kwargs.get("creation_date", datetime.datetime(1970, 1, 1))
         except (ValueError, TypeError):
-            self._creation_date = datetime.datetime(1970, 1, 1)
+            self.creation_date = datetime.datetime(1970, 1, 1)
         self._trashbin: dict[str, str | int] = {}
         for i in ("trashbin_filename", "trashbin_original_location", "trashbin_deletion_time"):
             if i in kwargs:
