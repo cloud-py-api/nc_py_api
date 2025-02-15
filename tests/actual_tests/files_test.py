@@ -827,6 +827,7 @@ def test_fs_node_fields(nc_any):
         assert res_by_id.user == res_by_path.user == result.user
         assert res_by_id.etag == res_by_path.etag == result.etag
         assert res_by_id.info.last_modified == res_by_path.info.last_modified == result.info.last_modified
+        assert res_by_id.info.creation_date == res_by_path.info.creation_date == result.info.creation_date
 
 
 def test_makedirs(nc_any):
@@ -959,6 +960,15 @@ def test_fs_node_last_modified_time():
     assert fs_node.info.last_modified == datetime(2023, 7, 29, 11, 56, 31)
     fs_node = FsNode("", last_modified=datetime(2022, 4, 5, 1, 2, 3))
     assert fs_node.info.last_modified == datetime(2022, 4, 5, 1, 2, 3)
+
+
+def test_fs_node_creation_date_time():
+    fs_node = FsNode("", creation_date="wrong time")
+    assert fs_node.info.creation_date == datetime(1970, 1, 1)
+    fs_node = FsNode("", creation_date="Sat, 29 Jul 2023 11:56:31")
+    assert fs_node.info.creation_date == datetime(2023, 7, 29, 11, 56, 31)
+    fs_node = FsNode("", creation_date=datetime(2022, 4, 5, 1, 2, 3))
+    assert fs_node.info.creation_date == datetime(2022, 4, 5, 1, 2, 3)
 
 
 @pytest.mark.parametrize(
