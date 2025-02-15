@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Status &mdash; NcPyApi 0.19.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=cbfb3150"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Notifications" href="Notifications.html" />
+    <link rel="prev" title="User Groups Management" href="UsersGroups.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.19.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Apps.html">Applications Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Files/index.html">Files API</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Users API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Users.html">User Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="UsersGroups.html">User Groups Management</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">User Status</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.user_status._UserStatusAPI"><code class="docutils literal notranslate"><span class="pre">_UserStatusAPI</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.user_status.CurrentUserStatus"><code class="docutils literal notranslate"><span class="pre">CurrentUserStatus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.user_status.UserStatus"><code class="docutils literal notranslate"><span class="pre">UserStatus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.user_status.PredefinedStatus"><code class="docutils literal notranslate"><span class="pre">PredefinedStatus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.user_status.ClearAt"><code class="docutils literal notranslate"><span class="pre">ClearAt</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Notifications.html">Notifications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="WeatherStatus.html">Weather Status</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Users API</a></li>
+      <li class="breadcrumb-item active">User Status</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/Users/UsersStatus.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-status">
+<h1>User Status<a class="headerlink" href="#user-status" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.user_status.</span></span><span class="sig-name descname"><span class="pre">_UserStatusAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Session.html#nc_py_api._session.NcSessionBasic" title="nc_py_api._session.NcSessionBasic"><span class="pre">NcSessionBasic</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI" title="Link to this definition"></a></dt>
+<dd><p>Class providing the user status management API on the Nextcloud server.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.available">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.available" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the Nextcloud instance supports this feature, False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.get_list">
+<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.user_status.UserStatus" title="nc_py_api.user_status.UserStatus"><span class="pre">UserStatus</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.get_list" title="Link to this definition"></a></dt>
+<dd><p>Returns statuses for all users.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.get_current">
+<span class="sig-name descname"><span class="pre">get_current</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.user_status.CurrentUserStatus" title="nc_py_api.user_status.CurrentUserStatus"><span class="pre">CurrentUserStatus</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.get_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.get_current" title="Link to this definition"></a></dt>
+<dd><p>Returns the current user status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.user_status.UserStatus" title="nc_py_api.user_status.UserStatus"><span class="pre">UserStatus</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.get" title="Link to this definition"></a></dt>
+<dd><p>Returns the user status for the specified user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.get_predefined">
+<span class="sig-name descname"><span class="pre">get_predefined</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.user_status.PredefinedStatus" title="nc_py_api.user_status.PredefinedStatus"><span class="pre">PredefinedStatus</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.get_predefined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.get_predefined" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of predefined statuses available for installation on this Nextcloud instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.set_predefined">
+<span class="sig-name descname"><span class="pre">set_predefined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.set_predefined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.set_predefined" title="Link to this definition"></a></dt>
+<dd><p>Set predefined status for the current user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status_id</strong> – <code class="docutils literal notranslate"><span class="pre">predefined</span></code> status ID.</p></li>
+<li><p><strong>clear_at</strong> – <em>optional</em> time in seconds before the status is cleared.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.set_status_type">
+<span class="sig-name descname"><span class="pre">set_status_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'online'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'away'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dnd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'invisible'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'offline'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.set_status_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.set_status_type" title="Link to this definition"></a></dt>
+<dd><p>Sets the status type for the current user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.set_status">
+<span class="sig-name descname"><span class="pre">set_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_icon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.set_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.set_status" title="Link to this definition"></a></dt>
+<dd><p>Sets current user status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – Message text to set in the status.</p></li>
+<li><p><strong>clear_at</strong> – Unix Timestamp, representing the time to clear the status.</p></li>
+<li><p><strong>status_icon</strong> – The icon picked by the user (must be one emoji)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.get_backup_status">
+<span class="sig-name descname"><span class="pre">get_backup_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.user_status.UserStatus" title="nc_py_api.user_status.UserStatus"><span class="pre">UserStatus</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.get_backup_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.get_backup_status" title="Link to this definition"></a></dt>
+<dd><p>Get the backup status of the user if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.user_status._UserStatusAPI.restore_backup_status">
+<span class="sig-name descname"><span class="pre">restore_backup_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nc_py_api.user_status.CurrentUserStatus" title="nc_py_api.user_status.CurrentUserStatus"><span class="pre">CurrentUserStatus</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#_UserStatusAPI.restore_backup_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status._UserStatusAPI.restore_backup_status" title="Link to this definition"></a></dt>
+<dd><p>Restores the backup state as current for the current user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.user_status.CurrentUserStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.user_status.</span></span><span class="sig-name descname"><span class="pre">CurrentUserStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#CurrentUserStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status.CurrentUserStatus" title="Link to this definition"></a></dt>
+<dd><p>Information about current user status.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.CurrentUserStatus.status_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#nc_py_api.user_status.CurrentUserStatus.status_id" title="Link to this definition"></a></dt>
+<dd><p>ID of the predefined status.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.CurrentUserStatus.message_predefined">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_predefined</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.user_status.CurrentUserStatus.message_predefined" title="Link to this definition"></a></dt>
+<dd><p><em>True</em> if the status is predefined, <em>False</em> otherwise.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.CurrentUserStatus.status_type_defined">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_type_defined</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.user_status.CurrentUserStatus.status_type_defined" title="Link to this definition"></a></dt>
+<dd><p><em>True</em> if <a class="reference internal" href="#nc_py_api.user_status.UserStatus.status_type" title="nc_py_api.user_status.UserStatus.status_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">UserStatus.status_type</span></code></a> is set by user, <em>False</em> otherwise.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.user_status.UserStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.user_status.</span></span><span class="sig-name descname"><span class="pre">UserStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#UserStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status.UserStatus" title="Link to this definition"></a></dt>
+<dd><p>Information about user status.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.UserStatus.user_id">
+<span class="sig-name descname"><span class="pre">user_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.UserStatus.user_id" title="Link to this definition"></a></dt>
+<dd><p>The ID of the user this status is for</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.UserStatus.status_message">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.UserStatus.status_message" title="Link to this definition"></a></dt>
+<dd><p>Message of the status.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.UserStatus.status_icon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.UserStatus.status_icon" title="Link to this definition"></a></dt>
+<dd><p>The icon picked by the user (must be one emoji).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.UserStatus.status_clear_at">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_clear_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#nc_py_api.user_status.UserStatus.status_clear_at" title="Link to this definition"></a></dt>
+<dd><p>Unix Timestamp representing the time to clear the status.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.user_status.UserStatus.status_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.UserStatus.status_type" title="Link to this definition"></a></dt>
+<dd><p>Status type, on of the: online, away, dnd, invisible, offline.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.user_status.PredefinedStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.user_status.</span></span><span class="sig-name descname"><span class="pre">PredefinedStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#PredefinedStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status.PredefinedStatus" title="Link to this definition"></a></dt>
+<dd><p>Definition of the predefined status.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.PredefinedStatus.status_id">
+<span class="sig-name descname"><span class="pre">status_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.PredefinedStatus.status_id" title="Link to this definition"></a></dt>
+<dd><p>ID of the predefined status</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.PredefinedStatus.icon">
+<span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.PredefinedStatus.icon" title="Link to this definition"></a></dt>
+<dd><p>Icon in string(UTF) format</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.PredefinedStatus.message">
+<span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.PredefinedStatus.message" title="Link to this definition"></a></dt>
+<dd><p>The message defined for this status. It is translated, so it depends on the user’s language setting.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.PredefinedStatus.clear_at">
+<span class="sig-name descname"><span class="pre">clear_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.user_status.ClearAt" title="nc_py_api.user_status.ClearAt"><span class="pre">ClearAt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#nc_py_api.user_status.PredefinedStatus.clear_at" title="Link to this definition"></a></dt>
+<dd><p>When the default, if not override, the predefined status will be cleared.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.user_status.ClearAt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.user_status.</span></span><span class="sig-name descname"><span class="pre">ClearAt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nc_py_api/user_status.html#ClearAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.user_status.ClearAt" title="Link to this definition"></a></dt>
+<dd><p>Determination when a user’s predefined status will be cleared.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.ClearAt.clear_type">
+<span class="sig-name descname"><span class="pre">clear_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.user_status.ClearAt.clear_type" title="Link to this definition"></a></dt>
+<dd><p>Possible values: <code class="docutils literal notranslate"><span class="pre">period</span></code>, <code class="docutils literal notranslate"><span class="pre">end-of</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.user_status.ClearAt.time">
+<span class="sig-name descname"><span class="pre">time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.user_status.ClearAt.time" title="Link to this definition"></a></dt>
+<dd><p>Depending of <code class="docutils literal notranslate"><span class="pre">type</span></code> it can be number of seconds relative to <code class="docutils literal notranslate"><span class="pre">now</span></code> or one of the next values: <code class="docutils literal notranslate"><span class="pre">day</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="UsersGroups.html" class="btn btn-neutral float-left" title="User Groups Management" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Notifications.html" class="btn btn-neutral float-right" title="Notifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

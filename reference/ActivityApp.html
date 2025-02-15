@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity App &mdash; NcPyApi 0.19.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=cbfb3150"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/tabs.js?v=3ee01567"></script>
+        <script src="../_static/js/script.js?v=783f4f19"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Notes API" href="Notes.html" />
+    <link rel="prev" title="Calendar API" href="Calendar.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.19.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Apps.html">Applications Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files/index.html">Files API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Calendar.html">Calendar API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Activity App</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.activity.ActivityFilter"><code class="docutils literal notranslate"><span class="pre">ActivityFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.ActivityFilter.icon"><code class="docutils literal notranslate"><span class="pre">ActivityFilter.icon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.ActivityFilter.filter_id"><code class="docutils literal notranslate"><span class="pre">ActivityFilter.filter_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.ActivityFilter.name"><code class="docutils literal notranslate"><span class="pre">ActivityFilter.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.ActivityFilter.priority"><code class="docutils literal notranslate"><span class="pre">ActivityFilter.priority</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.activity.Activity"><code class="docutils literal notranslate"><span class="pre">Activity</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.activity_id"><code class="docutils literal notranslate"><span class="pre">Activity.activity_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.app"><code class="docutils literal notranslate"><span class="pre">Activity.app</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.activity_type"><code class="docutils literal notranslate"><span class="pre">Activity.activity_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.actor_id"><code class="docutils literal notranslate"><span class="pre">Activity.actor_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.subject"><code class="docutils literal notranslate"><span class="pre">Activity.subject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.subject_rich"><code class="docutils literal notranslate"><span class="pre">Activity.subject_rich</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.message"><code class="docutils literal notranslate"><span class="pre">Activity.message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.message_rich"><code class="docutils literal notranslate"><span class="pre">Activity.message_rich</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.object_type"><code class="docutils literal notranslate"><span class="pre">Activity.object_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.object_id"><code class="docutils literal notranslate"><span class="pre">Activity.object_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.object_name"><code class="docutils literal notranslate"><span class="pre">Activity.object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.objects"><code class="docutils literal notranslate"><span class="pre">Activity.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.link"><code class="docutils literal notranslate"><span class="pre">Activity.link</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.icon"><code class="docutils literal notranslate"><span class="pre">Activity.icon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity.Activity.time"><code class="docutils literal notranslate"><span class="pre">Activity.time</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.activity._ActivityAPI"><code class="docutils literal notranslate"><span class="pre">_ActivityAPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity._ActivityAPI.last_given"><code class="docutils literal notranslate"><span class="pre">_ActivityAPI.last_given</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity._ActivityAPI.available"><code class="docutils literal notranslate"><span class="pre">_ActivityAPI.available</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity._ActivityAPI.get_activities"><code class="docutils literal notranslate"><span class="pre">_ActivityAPI.get_activities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.activity._ActivityAPI.get_filters"><code class="docutils literal notranslate"><span class="pre">_ActivityAPI.get_filters()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+      <li class="breadcrumb-item active">Activity App</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/ActivityApp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="activity-app">
+<h1>Activity App<a class="headerlink" href="#activity-app" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.activity.ActivityFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.activity.</span></span><span class="sig-name descname"><span class="pre">ActivityFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/activity.html#ActivityFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.activity.ActivityFilter" title="Link to this definition"></a></dt>
+<dd><p>Activity filter description.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.ActivityFilter.icon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.ActivityFilter.icon" title="Link to this definition"></a></dt>
+<dd><p>Icon for filter.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.ActivityFilter.filter_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.ActivityFilter.filter_id" title="Link to this definition"></a></dt>
+<dd><p>Filter ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.ActivityFilter.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.ActivityFilter.name" title="Link to this definition"></a></dt>
+<dd><p>Filter name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.ActivityFilter.priority">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.activity.ActivityFilter.priority" title="Link to this definition"></a></dt>
+<dd><p>Arrangement priority in ascending order. Values from 0 to 99.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.activity.</span></span><span class="sig-name descname"><span class="pre">Activity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/activity.html#Activity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.activity.Activity" title="Link to this definition"></a></dt>
+<dd><p>Description of one activity.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.activity_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">activity_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.activity_id" title="Link to this definition"></a></dt>
+<dd><p>Unique for one Nextcloud instance activity ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.app">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.app" title="Link to this definition"></a></dt>
+<dd><p>App that created the activity (e.g. ‘files’, ‘files_sharing’, etc.).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.activity_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">activity_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.activity_type" title="Link to this definition"></a></dt>
+<dd><p>String describing the activity type, depends on the <strong>app</strong> field.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.actor_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actor_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.actor_id" title="Link to this definition"></a></dt>
+<dd><p>User ID of the user that triggered/created this activity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Can be empty in case of public link/remote share action.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.subject">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.subject" title="Link to this definition"></a></dt>
+<dd><p>Translated simple subject without markup, ready for use (e.g. ‘You created hello.jpg’).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.subject_rich">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject_rich</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.subject_rich" title="Link to this definition"></a></dt>
+<dd><p><cite>0</cite> is the string subject including placeholders, <cite>1</cite> is an array with the placeholders.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.message">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.message" title="Link to this definition"></a></dt>
+<dd><p>Translated message without markup, ready for use (longer text, unused by core apps).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.message_rich">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_rich</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.message_rich" title="Link to this definition"></a></dt>
+<dd><p>See description of <strong>subject_rich</strong>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.object_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.object_type" title="Link to this definition"></a></dt>
+<dd><p>The Type of the object this activity is about (e.g. ‘files’ is used for files and folders).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.object_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.object_id" title="Link to this definition"></a></dt>
+<dd><p>ID of the object this activity is about (e.g., ID in the file cache is used for files and folders).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.object_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.object_name" title="Link to this definition"></a></dt>
+<dd><p>The name of the object this activity is about (e.g., for files it’s the relative path to the user’s root).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.objects">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.objects" title="Link to this definition"></a></dt>
+<dd><p>Contains the objects involved in multi-object activities, like editing multiple files in a folder.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>They are stored in objects as key-value pairs of the object_id and the object_name:
+{ object_id: object_name}</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.link">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">link</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.link" title="Link to this definition"></a></dt>
+<dd><p>A full URL pointing to a suitable location (e.g. ‘<a class="reference external" href="http://localhost/apps/files/?dir=%2Ffolder">http://localhost/apps/files/?dir=%2Ffolder</a>’ for folder).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.icon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.icon" title="Link to this definition"></a></dt>
+<dd><p>URL of the icon.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity.Activity.time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><span class="pre">datetime</span></a></em><a class="headerlink" href="#nc_py_api.activity.Activity.time" title="Link to this definition"></a></dt>
+<dd><p>Time when the activity occurred.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.activity._ActivityAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.activity.</span></span><span class="sig-name descname"><span class="pre">_ActivityAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Session.html#nc_py_api._session.NcSessionBasic" title="nc_py_api._session.NcSessionBasic"><span class="pre">NcSessionBasic</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/activity.html#_ActivityAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.activity._ActivityAPI" title="Link to this definition"></a></dt>
+<dd><p>The class provides the Activity Application API.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.activity._ActivityAPI.last_given">
+<span class="sig-name descname"><span class="pre">last_given</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.activity._ActivityAPI.last_given" title="Link to this definition"></a></dt>
+<dd><p>Used by <code class="docutils literal notranslate"><span class="pre">get_activities</span></code>, when <strong>since</strong> param is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.activity._ActivityAPI.available">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.activity._ActivityAPI.available" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the Nextcloud instance supports this feature, False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.activity._ActivityAPI.get_activities">
+<span class="sig-name descname"><span class="pre">get_activities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nc_py_api.activity.ActivityFilter" title="nc_py_api.activity.ActivityFilter"><span class="pre">ActivityFilter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">since</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'desc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.activity.Activity" title="nc_py_api.activity.Activity"><span class="pre">Activity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nc_py_api/activity.html#_ActivityAPI.get_activities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.activity._ActivityAPI.get_activities" title="Link to this definition"></a></dt>
+<dd><p>Returns activities for the current user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter_id</strong> – Filter to apply, if needed.</p></li>
+<li><p><strong>since</strong> – Last activity ID you have seen. When specified, only activities after provided are returned.
+Can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to automatically use last <code class="docutils literal notranslate"><span class="pre">last_given</span></code> from previous calls. Default = <strong>0</strong>.</p></li>
+<li><p><strong>limit</strong> – Max number of activities to be returned.</p></li>
+<li><p><strong>object_type</strong> – Filter the activities to a given object.</p></li>
+<li><p><strong>object_id</strong> – Filter the activities to a given object.</p></li>
+<li><p><strong>sort</strong> – Sort activities ascending or descending. Default is <code class="docutils literal notranslate"><span class="pre">desc</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">object_type</span></code> and <code class="docutils literal notranslate"><span class="pre">object_id</span></code> should only appear together with <code class="docutils literal notranslate"><span class="pre">filter_id</span></code> unset.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.activity._ActivityAPI.get_filters">
+<span class="sig-name descname"><span class="pre">get_filters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nc_py_api.activity.ActivityFilter" title="nc_py_api.activity.ActivityFilter"><span class="pre">ActivityFilter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nc_py_api/activity.html#_ActivityAPI.get_filters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.activity._ActivityAPI.get_filters" title="Link to this definition"></a></dt>
+<dd><p>Returns avalaible activity filters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Calendar.html" class="btn btn-neutral float-left" title="Calendar API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Notes.html" class="btn btn-neutral float-right" title="Notes API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

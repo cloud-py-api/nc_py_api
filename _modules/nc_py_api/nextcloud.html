@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nc_py_api.nextcloud &mdash; NcPyApi 0.19.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=cbfb3150"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.19.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nc_py_api.nextcloud</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nc_py_api.nextcloud</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Nextcloud class providing access to all API endpoints.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">httpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NextcloudExceptionNotFound</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_capabilities</span><span class="p">,</span> <span class="n">require_capabilities</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._preferences</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncPreferencesAPI</span><span class="p">,</span> <span class="n">PreferencesAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._preferences_ex</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AppConfigExAPI</span><span class="p">,</span>
+    <span class="n">AsyncAppConfigExAPI</span><span class="p">,</span>
+    <span class="n">AsyncPreferencesExAPI</span><span class="p">,</span>
+    <span class="n">PreferencesExAPI</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._session</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AppConfig</span><span class="p">,</span>
+    <span class="n">AsyncNcSession</span><span class="p">,</span>
+    <span class="n">AsyncNcSessionApp</span><span class="p">,</span>
+    <span class="n">AsyncNcSessionBasic</span><span class="p">,</span>
+    <span class="n">NcSession</span><span class="p">,</span>
+    <span class="n">NcSessionApp</span><span class="p">,</span>
+    <span class="n">NcSessionBasic</span><span class="p">,</span>
+    <span class="n">ServerVersion</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._talk_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncTalkAPI</span><span class="p">,</span> <span class="n">_TalkAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._theming</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThemingInfo</span><span class="p">,</span> <span class="n">get_parsed_theme</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.activity</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ActivityAPI</span><span class="p">,</span> <span class="n">_AsyncActivityAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AppsAPI</span><span class="p">,</span> <span class="n">_AsyncAppsAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.calendar_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CalendarAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ex_app.defs</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogLvl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ex_app.events_listener</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncEventsListenerAPI</span><span class="p">,</span> <span class="n">EventsListenerAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ex_app.occ_commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncOccCommandsAPI</span><span class="p">,</span> <span class="n">OccCommandsAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ex_app.providers.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncProvidersApi</span><span class="p">,</span> <span class="n">ProvidersApi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ex_app.ui.ui</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncUiApi</span><span class="p">,</span> <span class="n">UiApi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.files.files</span><span class="w"> </span><span class="kn">import</span> <span class="n">FilesAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.files.files_async</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncFilesAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.loginflow_v2</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncLoginFlowV2API</span><span class="p">,</span> <span class="n">_LoginFlowV2API</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.notes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncNotesAPI</span><span class="p">,</span> <span class="n">_NotesAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.notifications</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncNotificationsAPI</span><span class="p">,</span> <span class="n">_NotificationsAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.user_status</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncUserStatusAPI</span><span class="p">,</span> <span class="n">_UserStatusAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.users</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncUsersAPI</span><span class="p">,</span> <span class="n">_UsersAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.users_groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncUsersGroupsAPI</span><span class="p">,</span> <span class="n">_UsersGroupsAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.weather_status</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncWeatherStatusAPI</span><span class="p">,</span> <span class="n">_WeatherStatusAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.webhooks</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncWebhooksAPI</span><span class="p">,</span> <span class="n">_WebhooksAPI</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_NextcloudBasic</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+    <span class="n">apps</span><span class="p">:</span> <span class="n">_AppsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for App management&quot;&quot;&quot;</span>
+    <span class="n">activity</span><span class="p">:</span> <span class="n">_ActivityAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Activity Application API&quot;&quot;&quot;</span>
+    <span class="n">cal</span><span class="p">:</span> <span class="n">_CalendarAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Calendar API&quot;&quot;&quot;</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">FilesAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for File System and Files Sharing&quot;&quot;&quot;</span>
+    <span class="n">preferences</span><span class="p">:</span> <span class="n">PreferencesAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud User Preferences API&quot;&quot;&quot;</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="n">_NotesAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Notes API&quot;&quot;&quot;</span>
+    <span class="n">notifications</span><span class="p">:</span> <span class="n">_NotificationsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing user notifications&quot;&quot;&quot;</span>
+    <span class="n">talk</span><span class="p">:</span> <span class="n">_TalkAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Talk API&quot;&quot;&quot;</span>
+    <span class="n">users</span><span class="p">:</span> <span class="n">_UsersAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing users.&quot;&quot;&quot;</span>
+    <span class="n">users_groups</span><span class="p">:</span> <span class="n">_UsersGroupsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing user groups.&quot;&quot;&quot;</span>
+    <span class="n">user_status</span><span class="p">:</span> <span class="n">_UserStatusAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing users statuses&quot;&quot;&quot;</span>
+    <span class="n">weather_status</span><span class="p">:</span> <span class="n">_WeatherStatusAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing user weather statuses&quot;&quot;&quot;</span>
+    <span class="n">webhooks</span><span class="p">:</span> <span class="n">_WebhooksAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing webhooks&quot;&quot;&quot;</span>
+    <span class="n">_session</span><span class="p">:</span> <span class="n">NcSessionBasic</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">NcSessionBasic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apps</span> <span class="o">=</span> <span class="n">_AppsAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activity</span> <span class="o">=</span> <span class="n">_ActivityAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal</span> <span class="o">=</span> <span class="n">_CalendarAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="n">FilesAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferences</span> <span class="o">=</span> <span class="n">PreferencesAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">_NotesAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notifications</span> <span class="o">=</span> <span class="n">_NotificationsAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">talk</span> <span class="o">=</span> <span class="n">_TalkAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users</span> <span class="o">=</span> <span class="n">_UsersAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users_groups</span> <span class="o">=</span> <span class="n">_UsersGroupsAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_status</span> <span class="o">=</span> <span class="n">_UserStatusAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weather_status</span> <span class="o">=</span> <span class="n">_WeatherStatusAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">webhooks</span> <span class="o">=</span> <span class="n">_WebhooksAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the capabilities of the Nextcloud instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">srv_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerVersion</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns dictionary with the server version.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">nc_version</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capabilities</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list with missing capabilities if any.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">check_capabilities</span><span class="p">(</span><span class="n">capabilities</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_server_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the capabilities and the Nextcloud version.</span>
+
+<span class="sd">        *In normal cases, it is called automatically and there is no need to call it manually.*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">response_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Headers</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the `HTTPX headers &lt;https://www.python-httpx.org/api/#headers&gt;`_ from the last response.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">response_headers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">theme</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThemingInfo</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns Theme information.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">get_parsed_theme</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">[</span><span class="s2">&quot;theming&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;theming&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform_login</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs login into Nextcloud if not already logged in; manual invocation of this method is unnecessary.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa pylint: disable=broad-exception-caught</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ocs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">AsyncIterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs OCS call and returns OCS response payload data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads Nextcloud log file. Requires Admin privileges.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">download2stream</span><span class="p">(</span><span class="s2">&quot;/index.php/settings/admin/log/download&quot;</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_AsyncNextcloudBasic</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+    <span class="n">apps</span><span class="p">:</span> <span class="n">_AsyncAppsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for App management&quot;&quot;&quot;</span>
+    <span class="n">activity</span><span class="p">:</span> <span class="n">_AsyncActivityAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Activity Application API&quot;&quot;&quot;</span>
+    <span class="c1"># cal: _CalendarAPI</span>
+    <span class="c1"># &quot;&quot;&quot;Nextcloud Calendar API&quot;&quot;&quot;</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">AsyncFilesAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for File System and Files Sharing&quot;&quot;&quot;</span>
+    <span class="n">preferences</span><span class="p">:</span> <span class="n">AsyncPreferencesAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud User Preferences API&quot;&quot;&quot;</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="n">_AsyncNotesAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Notes API&quot;&quot;&quot;</span>
+    <span class="n">notifications</span><span class="p">:</span> <span class="n">_AsyncNotificationsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing user notifications&quot;&quot;&quot;</span>
+    <span class="n">talk</span><span class="p">:</span> <span class="n">_AsyncTalkAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Talk API&quot;&quot;&quot;</span>
+    <span class="n">users</span><span class="p">:</span> <span class="n">_AsyncUsersAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing users.&quot;&quot;&quot;</span>
+    <span class="n">users_groups</span><span class="p">:</span> <span class="n">_AsyncUsersGroupsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing user groups.&quot;&quot;&quot;</span>
+    <span class="n">user_status</span><span class="p">:</span> <span class="n">_AsyncUserStatusAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing users statuses&quot;&quot;&quot;</span>
+    <span class="n">weather_status</span><span class="p">:</span> <span class="n">_AsyncWeatherStatusAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing user weather statuses&quot;&quot;&quot;</span>
+    <span class="n">webhooks</span><span class="p">:</span> <span class="n">_AsyncWebhooksAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud API for managing webhooks&quot;&quot;&quot;</span>
+    <span class="n">_session</span><span class="p">:</span> <span class="n">AsyncNcSessionBasic</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">AsyncNcSessionBasic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apps</span> <span class="o">=</span> <span class="n">_AsyncAppsAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activity</span> <span class="o">=</span> <span class="n">_AsyncActivityAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="c1"># self.cal = _CalendarAPI(session)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="n">AsyncFilesAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferences</span> <span class="o">=</span> <span class="n">AsyncPreferencesAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">_AsyncNotesAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notifications</span> <span class="o">=</span> <span class="n">_AsyncNotificationsAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">talk</span> <span class="o">=</span> <span class="n">_AsyncTalkAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users</span> <span class="o">=</span> <span class="n">_AsyncUsersAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users_groups</span> <span class="o">=</span> <span class="n">_AsyncUsersGroupsAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_status</span> <span class="o">=</span> <span class="n">_AsyncUserStatusAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weather_status</span> <span class="o">=</span> <span class="n">_AsyncWeatherStatusAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">webhooks</span> <span class="o">=</span> <span class="n">_AsyncWebhooksAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the capabilities of the Nextcloud instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">srv_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerVersion</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns dictionary with the server version.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">nc_version</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capabilities</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list with missing capabilities if any.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">check_capabilities</span><span class="p">(</span><span class="n">capabilities</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_server_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the capabilities and the Nextcloud version.</span>
+
+<span class="sd">        *In normal cases, it is called automatically and there is no need to call it manually.*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">response_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Headers</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the `HTTPX headers &lt;https://www.python-httpx.org/api/#headers&gt;`_ from the last response.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">response_headers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">theme</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThemingInfo</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns Theme information.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">get_parsed_theme</span><span class="p">((</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)[</span><span class="s2">&quot;theming&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;theming&quot;</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">perform_login</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs login into Nextcloud if not already logged in; manual invocation of this method is unnecessary.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa pylint: disable=broad-exception-caught</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ocs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">AsyncIterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs OCS call and returns OCS response payload data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads Nextcloud log file. Requires Admin privileges.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">download2stream</span><span class="p">(</span><span class="s2">&quot;/index.php/settings/admin/log/download&quot;</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Nextcloud">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.Nextcloud">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Nextcloud</span><span class="p">(</span><span class="n">_NextcloudBasic</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud client class.</span>
+
+<span class="sd">    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_session</span><span class="p">:</span> <span class="n">NcSession</span>
+    <span class="n">loginflow_v2</span><span class="p">:</span> <span class="n">_LoginFlowV2API</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Login flow v2.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Nextcloud.__init__">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.Nextcloud.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If the parameters are not specified, they will be taken from the environment.</span>
+
+<span class="sd">        :param nextcloud_url: url of the nextcloud instance.</span>
+<span class="sd">        :param nc_auth_user: login username. Optional.</span>
+<span class="sd">        :param nc_auth_pass: password or app-password for the username. Optional.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">NcSession</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loginflow_v2</span> <span class="o">=</span> <span class="n">_LoginFlowV2API</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns current user ID.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncNextcloud</span><span class="p">(</span><span class="n">_AsyncNextcloudBasic</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async Nextcloud client class.</span>
+
+<span class="sd">    Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_session</span><span class="p">:</span> <span class="n">AsyncNcSession</span>
+    <span class="n">loginflow_v2</span><span class="p">:</span> <span class="n">_AsyncLoginFlowV2API</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud Login flow v2.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If the parameters are not specified, they will be taken from the environment.</span>
+
+<span class="sd">        :param nextcloud_url: url of the nextcloud instance.</span>
+<span class="sd">        :param nc_auth_user: login username. Optional.</span>
+<span class="sd">        :param nc_auth_pass: password or app-password for the username. Optional.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">AsyncNcSession</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loginflow_v2</span> <span class="o">=</span> <span class="n">_AsyncLoginFlowV2API</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns current user ID.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span>
+
+
+<div class="viewcode-block" id="NextcloudApp">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NextcloudApp</span><span class="p">(</span><span class="n">_NextcloudBasic</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for communication with Nextcloud in Nextcloud applications.</span>
+
+<span class="sd">    Provides additional API required for applications such as user impersonation,</span>
+<span class="sd">    endpoint registration, new authentication method, etc.</span>
+
+<span class="sd">    .. note:: Instance of this class should not be created directly in ``normal`` applications,</span>
+<span class="sd">        it will be provided for each app endpoint call.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_session</span><span class="p">:</span> <span class="n">NcSessionApp</span>
+    <span class="n">appconfig_ex</span><span class="p">:</span> <span class="n">AppConfigExAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud App Preferences API for ExApps&quot;&quot;&quot;</span>
+    <span class="n">preferences_ex</span><span class="p">:</span> <span class="n">PreferencesExAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud User Preferences API for ExApps&quot;&quot;&quot;</span>
+    <span class="n">ui</span><span class="p">:</span> <span class="n">UiApi</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud UI API for ExApps&quot;&quot;&quot;</span>
+    <span class="n">providers</span><span class="p">:</span> <span class="n">ProvidersApi</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for registering providers for Nextcloud&quot;&quot;&quot;</span>
+    <span class="n">events_listener</span><span class="p">:</span> <span class="n">EventsListenerAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for registering Events listeners for ExApps&quot;&quot;&quot;</span>
+    <span class="n">occ_commands</span><span class="p">:</span> <span class="n">OccCommandsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for registering OCC command for ExApps&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The parameters will be taken from the environment.</span>
+
+<span class="sd">        They can be overridden by specifying them in **kwargs**, but this behavior is highly discouraged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">NcSessionApp</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appconfig_ex</span> <span class="o">=</span> <span class="n">AppConfigExAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferences_ex</span> <span class="o">=</span> <span class="n">PreferencesExAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">UiApi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">providers</span> <span class="o">=</span> <span class="n">ProvidersApi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events_listener</span> <span class="o">=</span> <span class="n">EventsListenerAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">occ_commands</span> <span class="o">=</span> <span class="n">OccCommandsAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enabled_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns ``True`` if ExApp is enabled, ``False`` otherwise.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/apps/app_api/ex-app/state&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="NextcloudApp.log">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp.log">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_lvl</span><span class="p">:</span> <span class="n">LogLvl</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fast_send</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes log to the Nextcloud log file.&quot;&quot;&quot;</span>
+        <span class="n">int_log_lvl</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">int_log_lvl</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">int_log_lvl</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid `log_lvl` value&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fast_send</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">):</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">int_log_lvl</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">[</span><span class="s2">&quot;app_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loglevel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">return</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/log&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">int_log_lvl</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="NextcloudApp.users_list">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp.users_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">users_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of users on the Nextcloud instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/users&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property containing the current user ID.</span>
+
+<span class="sd">        **ExApps** can change user ID they impersonate with **set_user** method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span>
+
+<div class="viewcode-block" id="NextcloudApp.set_user">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp.set_user">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Changes current User ID.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span> <span class="o">!=</span> <span class="n">user_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">set_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="o">.</span><span class="n">config_sha</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="o">.</span><span class="n">modified_since</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">last_given</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">last_etag</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">app_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns deploy config, with AppAPI version, Application version and name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span>
+
+<div class="viewcode-block" id="NextcloudApp.register_talk_bot">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp.register_talk_bot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_talk_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers Talk BOT.</span>
+
+<span class="sd">        .. note:: AppAPI will add a record in a case of successful registration to the ``appconfig_ex`` table.</span>
+
+<span class="sd">        :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.</span>
+<span class="sd">        :param display_name: The name under which the messages will be posted.</span>
+<span class="sd">        :param description: Optional description shown in the admin settings.</span>
+<span class="sd">        :return: Tuple with ID and the secret used for signing requests.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;spreed.features.bots-v1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/talk_bot&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="NextcloudApp.unregister_talk_bot">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp.unregister_talk_bot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister_talk_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unregisters Talk BOT.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;spreed.features.bots-v1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/talk_bot&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="NextcloudApp.set_init_status">
+<a class="viewcode-back" href="../../reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp.set_init_status">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_init_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets state of the app initialization.</span>
+
+<span class="sd">        :param progress: a number from ``0`` to ``100`` indicating the percentage of application readiness for work.</span>
+<span class="sd">            After sending ``100`` AppAPI will enable the application.</span>
+<span class="sd">        :param error: if non-empty, signals to AppAPI that the application cannot be initialized successfully.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+            <span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;/ocs/v1.php/apps/app_api/apps/status/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="n">progress</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">error</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncNextcloudApp</span><span class="p">(</span><span class="n">_AsyncNextcloudBasic</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for communication with Nextcloud in Async Nextcloud applications.</span>
+
+<span class="sd">    Provides additional API required for applications such as user impersonation,</span>
+<span class="sd">    endpoint registration, new authentication method, etc.</span>
+
+<span class="sd">    .. note:: Instance of this class should not be created directly in ``normal`` applications,</span>
+<span class="sd">        it will be provided for each app endpoint call.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_session</span><span class="p">:</span> <span class="n">AsyncNcSessionApp</span>
+    <span class="n">appconfig_ex</span><span class="p">:</span> <span class="n">AsyncAppConfigExAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud App Preferences API for ExApps&quot;&quot;&quot;</span>
+    <span class="n">preferences_ex</span><span class="p">:</span> <span class="n">AsyncPreferencesExAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud User Preferences API for ExApps&quot;&quot;&quot;</span>
+    <span class="n">ui</span><span class="p">:</span> <span class="n">AsyncUiApi</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud UI API for ExApps&quot;&quot;&quot;</span>
+    <span class="n">providers</span><span class="p">:</span> <span class="n">AsyncProvidersApi</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for registering providers for Nextcloud&quot;&quot;&quot;</span>
+    <span class="n">events_listener</span><span class="p">:</span> <span class="n">AsyncEventsListenerAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for registering Events listeners for ExApps&quot;&quot;&quot;</span>
+    <span class="n">occ_commands</span><span class="p">:</span> <span class="n">AsyncOccCommandsAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for registering OCC command for ExApps&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The parameters will be taken from the environment.</span>
+
+<span class="sd">        They can be overridden by specifying them in **kwargs**, but this behavior is highly discouraged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">AsyncNcSessionApp</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appconfig_ex</span> <span class="o">=</span> <span class="n">AsyncAppConfigExAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preferences_ex</span> <span class="o">=</span> <span class="n">AsyncPreferencesExAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">AsyncUiApi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">providers</span> <span class="o">=</span> <span class="n">AsyncProvidersApi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events_listener</span> <span class="o">=</span> <span class="n">AsyncEventsListenerAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">occ_commands</span> <span class="o">=</span> <span class="n">AsyncOccCommandsAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">enabled_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns ``True`` if ExApp is enabled, ``False`` otherwise.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/apps/app_api/ex-app/state&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_lvl</span><span class="p">:</span> <span class="n">LogLvl</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fast_send</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes log to the Nextcloud log file.&quot;&quot;&quot;</span>
+        <span class="n">int_log_lvl</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">int_log_lvl</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">int_log_lvl</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid `log_lvl` value&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fast_send</span><span class="p">:</span>
+            <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">):</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">int_log_lvl</span> <span class="o">&lt;</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)[</span><span class="s2">&quot;app_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loglevel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">return</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/log&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">int_log_lvl</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">content</span><span class="p">}</span>
+            <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">users_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of users on the Nextcloud instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/users&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property containing the current user ID.</span>
+
+<span class="sd">        **ExApps** can change user ID they impersonate with **set_user** method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Changes current User ID.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span> <span class="o">!=</span> <span class="n">user_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">set_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="o">.</span><span class="n">config_sha</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">talk</span><span class="o">.</span><span class="n">modified_since</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">activity</span><span class="o">.</span><span class="n">last_given</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">last_etag</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">app_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns deploy config, with AppAPI version, Application version and name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">register_talk_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers Talk BOT.</span>
+
+<span class="sd">        .. note:: AppAPI will add a record in a case of successful registration to the ``appconfig_ex`` table.</span>
+
+<span class="sd">        :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.</span>
+<span class="sd">        :param display_name: The name under which the messages will be posted.</span>
+<span class="sd">        :param description: Optional description shown in the admin settings.</span>
+<span class="sd">        :return: Tuple with ID and the secret used for signing requests.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;spreed.features.bots-v1&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/talk_bot&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unregister_talk_bot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unregisters Talk BOT.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;spreed.features.bots-v1&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;route&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/talk_bot&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set_init_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets state of the app initialization.</span>
+
+<span class="sd">        :param progress: a number from ``0`` to ``100`` indicating the percentage of application readiness for work.</span>
+<span class="sd">            After sending ``100`` AppAPI will enable the application.</span>
+<span class="sd">        :param error: if non-empty, signals to AppAPI that the application cannot be initialized successfully.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+            <span class="s2">&quot;PUT&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;/ocs/v1.php/apps/app_api/apps/status/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="n">progress</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">error</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
