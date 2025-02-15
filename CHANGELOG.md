@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.0 - 2025-02-15]
+
+### Added
+
+- Files: `FSNode` now have `creation_date` property. #335 Thanks to @SunnyFarmDay
+
+### Changed
+
+- ExApps: no longer require the `AA-VERSION` header. (Nextcloud 32+) #336
+- ExApps: `AppAPIAuthMiddleware` now secures the `websocket` connection. (Nextcloud 32+) #338
+
 ## [0.18.2 - 2025-01-19]
 
 ### Changed
