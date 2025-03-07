@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk Bot API &mdash; NcPyApi 0.19.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=6f83b549"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/tabs.js?v=3ee01567"></script>
+        <script src="../_static/js/script.js?v=783f4f19"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Calendar API" href="Calendar.html" />
+    <link rel="prev" title="Talk API" href="Talk.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.19.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Apps.html">Applications Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files/index.html">Files API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Talk.html">Talk API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Talk Bot API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.message_type"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.message_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.actor_id"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.actor_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.actor_display_name"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.actor_display_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.object_id"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.object_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.object_name"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.object_content"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.object_content</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.object_media_type"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.object_media_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.conversation_token"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.conversation_token</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage.conversation_name"><code class="docutils literal notranslate"><span class="pre">TalkBotMessage.conversation_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBot"><code class="docutils literal notranslate"><span class="pre">TalkBot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBot.enabled_handler"><code class="docutils literal notranslate"><span class="pre">TalkBot.enabled_handler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBot.send_message"><code class="docutils literal notranslate"><span class="pre">TalkBot.send_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBot.react_to_message"><code class="docutils literal notranslate"><span class="pre">TalkBot.react_to_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.TalkBot.delete_reaction"><code class="docutils literal notranslate"><span class="pre">TalkBot.delete_reaction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.talk_bot.ObjectContent"><code class="docutils literal notranslate"><span class="pre">ObjectContent</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.ObjectContent.message"><code class="docutils literal notranslate"><span class="pre">ObjectContent.message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.talk_bot.ObjectContent.parameters"><code class="docutils literal notranslate"><span class="pre">ObjectContent.parameters</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.talk_bot.get_bot_secret"><code class="docutils literal notranslate"><span class="pre">get_bot_secret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+      <li class="breadcrumb-item active">Talk Bot API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/TalkBot.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="talk-bot-api">
+<h1>Talk Bot API<a class="headerlink" href="#talk-bot-api" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.talk_bot.</span></span><span class="sig-name descname"><span class="pre">TalkBotMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#TalkBotMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage" title="Link to this definition"></a></dt>
+<dd><p>Talk message received by bots.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.message_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.message_type" title="Link to this definition"></a></dt>
+<dd><p>The type of message like Join, Leave, Create, Activity, etc.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.actor_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actor_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.actor_id" title="Link to this definition"></a></dt>
+<dd><p>One of the attendee types followed by the <code class="docutils literal notranslate"><span class="pre">/</span></code> character and a unique identifier within the given type.</p>
+<p>For the users it is the Nextcloud user ID, for guests a <strong>sha1</strong> value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.actor_display_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actor_display_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.actor_display_name" title="Link to this definition"></a></dt>
+<dd><p>The display name of the attendee sending the message.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.object_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.object_id" title="Link to this definition"></a></dt>
+<dd><p>The message ID of the given message on the origin server.</p>
+<p>It can be used to react or reply to the given message.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.object_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.object_name" title="Link to this definition"></a></dt>
+<dd><p>For normal written messages <code class="docutils literal notranslate"><span class="pre">message</span></code>, otherwise one of the known <code class="docutils literal notranslate"><span class="pre">system</span> <span class="pre">message</span> <span class="pre">identifiers</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.object_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_content</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.talk_bot.ObjectContent" title="nc_py_api.talk_bot.ObjectContent"><span class="pre">ObjectContent</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.object_content" title="Link to this definition"></a></dt>
+<dd><p>Dictionary with a <code class="docutils literal notranslate"><span class="pre">message</span></code> and <code class="docutils literal notranslate"><span class="pre">parameters</span></code> keys.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.object_media_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object_media_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.object_media_type" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">text/markdown</span></code> when the message should be interpreted as <strong>Markdown</strong>, otherwise <code class="docutils literal notranslate"><span class="pre">text/plain</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.conversation_token">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">conversation_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.conversation_token" title="Link to this definition"></a></dt>
+<dd><p>The token of the conversation in which the message was posted.</p>
+<p>It can be used to react or reply to the given message.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBotMessage.conversation_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">conversation_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.TalkBotMessage.conversation_name" title="Link to this definition"></a></dt>
+<dd><p>The name of the conversation in which the message was posted.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.talk_bot.</span></span><span class="sig-name descname"><span class="pre">TalkBot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#TalkBot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.TalkBot" title="Link to this definition"></a></dt>
+<dd><p>A class that implements the TalkBot functionality.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBot.enabled_handler">
+<span class="sig-name descname"><span class="pre">enabled_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="Nextcloud.html#nc_py_api.nextcloud.NextcloudApp" title="nc_py_api.nextcloud.NextcloudApp"><span class="pre">NextcloudApp</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#TalkBot.enabled_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.TalkBot.enabled_handler" title="Link to this definition"></a></dt>
+<dd><p>Handles the app <code class="docutils literal notranslate"><span class="pre">on</span></code>/<code class="docutils literal notranslate"><span class="pre">off</span></code> event in the context of the bot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> – Value that was passed to <code class="docutils literal notranslate"><span class="pre">/enabled</span></code> handler.</p></li>
+<li><p><strong>nc</strong> – <strong>NextcloudApp</strong> class that was passed <code class="docutils literal notranslate"><span class="pre">/enabled</span></code> handler.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBot.send_message">
+<span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reply_to_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><span class="pre">TalkBotMessage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Response</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#TalkBot.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.TalkBot.send_message" title="Link to this definition"></a></dt>
+<dd><p>Send a message and returns a “reference string” to identify the message again in a “get messages” request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – The message to say.</p></li>
+<li><p><strong>reply_to_message</strong> – <p>The message ID this message is a reply to.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only allowed when the message type is not <code class="docutils literal notranslate"><span class="pre">system</span></code> or <code class="docutils literal notranslate"><span class="pre">command</span></code>.</p>
+</div>
+</p></li>
+<li><p><strong>silent</strong> – Flag controlling if the message should create a chat notifications for the users.</p></li>
+<li><p><strong>token</strong> – Token of the conversation.
+Can be empty if <code class="docutils literal notranslate"><span class="pre">reply_to_message</span></code> is <a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple, where fist element is <code class="xref py py-class docutils literal notranslate"><span class="pre">httpx.Response</span></code> and second is a “reference string”.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – in case of an invalid usage.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – in case of a broken installation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBot.react_to_message">
+<span class="sig-name descname"><span class="pre">react_to_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><span class="pre">TalkBotMessage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#TalkBot.react_to_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.TalkBot.react_to_message" title="Link to this definition"></a></dt>
+<dd><p>React to a message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – Message ID or <a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a> to react to.</p></li>
+<li><p><strong>reaction</strong> – A single emoji.</p></li>
+<li><p><strong>token</strong> – Token of the conversation.
+Can be empty if <code class="docutils literal notranslate"><span class="pre">message</span></code> is <a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – in case of an invalid usage.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – in case of a broken installation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.TalkBot.delete_reaction">
+<span class="sig-name descname"><span class="pre">delete_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><span class="pre">TalkBotMessage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#TalkBot.delete_reaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.TalkBot.delete_reaction" title="Link to this definition"></a></dt>
+<dd><p>Removes reaction from a message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – Message ID or <a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a> to remove reaction from.</p></li>
+<li><p><strong>reaction</strong> – A single emoji.</p></li>
+<li><p><strong>token</strong> – Token of the conversation.
+Can be empty if <code class="docutils literal notranslate"><span class="pre">message</span></code> is <a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – in case of an invalid usage.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – in case of a broken installation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.ObjectContent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.talk_bot.</span></span><span class="sig-name descname"><span class="pre">ObjectContent</span></span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#ObjectContent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.ObjectContent" title="Link to this definition"></a></dt>
+<dd><p>Object content of <a class="reference internal" href="#nc_py_api.talk_bot.TalkBotMessage" title="nc_py_api.talk_bot.TalkBotMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TalkBotMessage</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.ObjectContent.message">
+<span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.ObjectContent.message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.ObjectContent.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></em><a class="headerlink" href="#nc_py_api.talk_bot.ObjectContent.parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nc_py_api.talk_bot.get_bot_secret">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.talk_bot.</span></span><span class="sig-name descname"><span class="pre">get_bot_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/talk_bot.html#get_bot_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.talk_bot.get_bot_secret" title="Link to this definition"></a></dt>
+<dd><p>Returns the bot’s secret from an environment variable or from the application’s configuration on the server.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Talk.html" class="btn btn-neutral float-left" title="Talk API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Calendar.html" class="btn btn-neutral float-right" title="Calendar API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

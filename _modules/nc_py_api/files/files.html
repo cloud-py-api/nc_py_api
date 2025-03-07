@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nc_py_api.files.files &mdash; NcPyApi 0.19.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=6f83b549"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.19.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../files.html">nc_py_api.files</a></li>
+      <li class="breadcrumb-item active">nc_py_api.files.files</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nc_py_api.files.files</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Nextcloud API for working with the file system.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">httpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NextcloudException</span><span class="p">,</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">,</span> <span class="n">check_error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_string</span><span class="p">,</span> <span class="n">require_capabilities</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._session</span><span class="w"> </span><span class="kn">import</span> <span class="n">NcSessionBasic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">LockType</span><span class="p">,</span> <span class="n">SystemTag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._files</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PROPFIND_PROPERTIES</span><span class="p">,</span>
+    <span class="n">PropFindType</span><span class="p">,</span>
+    <span class="n">build_find_request</span><span class="p">,</span>
+    <span class="n">build_list_by_criteria_req</span><span class="p">,</span>
+    <span class="n">build_list_tag_req</span><span class="p">,</span>
+    <span class="n">build_list_tags_response</span><span class="p">,</span>
+    <span class="n">build_listdir_req</span><span class="p">,</span>
+    <span class="n">build_listdir_response</span><span class="p">,</span>
+    <span class="n">build_setfav_req</span><span class="p">,</span>
+    <span class="n">build_tags_ids_for_object</span><span class="p">,</span>
+    <span class="n">build_update_tag_req</span><span class="p">,</span>
+    <span class="n">dav_get_obj_path</span><span class="p">,</span>
+    <span class="n">element_tree_as_str</span><span class="p">,</span>
+    <span class="n">etag_fileid_from_response</span><span class="p">,</span>
+    <span class="n">get_propfind_properties</span><span class="p">,</span>
+    <span class="n">lf_parse_webdav_response</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.sharing</span><span class="w"> </span><span class="kn">import</span> <span class="n">_FilesSharingAPI</span>
+
+
+<div class="viewcode-block" id="FilesAPI">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FilesAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that encapsulates file system and file sharing API, avalaible as **nc.files.&lt;method&gt;**.&quot;&quot;&quot;</span>
+
+    <span class="n">sharing</span><span class="p">:</span> <span class="n">_FilesSharingAPI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for managing Files Shares&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">NcSessionBasic</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sharing</span> <span class="o">=</span> <span class="n">_FilesSharingAPI</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FilesAPI.listdir">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.listdir">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">exclude_self</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FsNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all entries in the specified directory.</span>
+
+<span class="sd">        :param path: path to the directory to get the list.</span>
+<span class="sd">        :param depth: how many directory levels should be included in output. Default = **1** (only specified directory)</span>
+<span class="sd">        :param exclude_self: boolean value indicating whether the `path` itself should be excluded from the list or not.</span>
+<span class="sd">            Default = **True**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exclude_self</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">depth</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong input parameters, query will return nothing.&quot;</span><span class="p">)</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">get_propfind_properties</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">exclude_self</span><span class="o">=</span><span class="n">exclude_self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.by_id">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.by_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns :py:class:`~nc_py_api.files.FsNode` by file_id if any.</span>
+
+<span class="sd">        :param file_id: can be full file ID with Nextcloud instance ID or only clear file ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_id</span> <span class="o">=</span> <span class="n">file_id</span><span class="o">.</span><span class="n">file_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">file_id</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">req</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fileid&quot;</span><span class="p">,</span> <span class="n">file_id</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.by_path">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.by_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">by_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns :py:class:`~nc_py_api.files.FsNode` by exact path if any.&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">exclude_self</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.find">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.find">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FsNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Searches a directory for a file or subdirectory with a name.</span>
+
+<span class="sd">        :param req: list of conditions to search for. Detailed description here...</span>
+<span class="sd">        :param path: path where to search from. Default = **&quot;&quot;**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># `req` possible keys: &quot;name&quot;, &quot;mime&quot;, &quot;last_modified&quot;, &quot;size&quot;, &quot;favorite&quot;, &quot;fileid&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_find_request</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">webdav_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;SEARCH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">element_tree_as_str</span><span class="p">(</span><span class="n">root</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">request_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;find: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">req</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">lf_parse_webdav_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_url_suffix</span><span class="p">,</span> <span class="n">webdav_response</span><span class="p">,</span> <span class="n">request_info</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.download">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.download">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads and returns the content of a file.&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)))</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;download: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, path=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.download2stream">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.download2stream">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download2stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads file to the given `fp` object.</span>
+
+<span class="sd">        :param path: path to download file.</span>
+<span class="sd">        :param fp: filename (string), pathlib.Path object or a file object.</span>
+<span class="sd">            The object must implement the ``file.write`` method and be able to write binary data.</span>
+<span class="sd">        :param kwargs: **chunk_size** an int value specifying chunk size to write. Default = **5Mb**</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">download2stream</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.download_directory_as_zip">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.download_directory_as_zip">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_directory_as_zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads a remote directory as zip archive.</span>
+
+<span class="sd">        :param path: path to directory to download.</span>
+<span class="sd">        :param local_path: relative or absolute file path to save zip file.</span>
+<span class="sd">        :returns: Path to the saved zip archive.</span>
+
+<span class="sd">        .. note:: This works only for directories, you should not use this to download a file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">result_path</span> <span class="o">=</span> <span class="n">local_path</span> <span class="k">if</span> <span class="n">local_path</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">result_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">nc_version</span><span class="p">[</span><span class="s2">&quot;major&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">31</span><span class="p">:</span>
+                <span class="n">full_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="n">accept_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;application/</span><span class="si">{</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;zip&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">download2fp</span><span class="p">(</span><span class="n">quote</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="n">accept_header</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">download2fp</span><span class="p">(</span>
+                    <span class="s2">&quot;/index.php/apps/files/ajax/download.php&quot;</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">result_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.upload">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.upload">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a file with the specified content at the specified path.</span>
+
+<span class="sd">        :param path: file&#39;s upload path.</span>
+<span class="sd">        :param content: content to create the file. If it is a string, it will be encoded into bytes using UTF-8.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">quote</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;upload: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, path=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, size=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FsNode</span><span class="p">(</span><span class="n">full_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">etag_fileid_from_response</span><span class="p">(</span><span class="n">response</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.upload_stream">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.upload_stream">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upload_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a file with content provided by `fp` object at the specified path.</span>
+
+<span class="sd">        :param path: file&#39;s upload path.</span>
+<span class="sd">        :param fp: filename (string), pathlib.Path object or a file object.</span>
+<span class="sd">            The object must implement the ``file.read`` method providing data with str or bytes type.</span>
+<span class="sd">        :param kwargs: **chunk_size** an int value specifying chunk size to read. Default = **5Mb**</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__upload_stream</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__upload_stream</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`fp` must be a path to file or an object with `read` method.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.mkdir">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.mkdir">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new directory.</span>
+
+<span class="sd">        :param path: path of the directory to be created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;MKCOL&quot;</span><span class="p">,</span> <span class="n">quote</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">full_path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">full_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">FsNode</span><span class="p">(</span><span class="n">full_path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">etag_fileid_from_response</span><span class="p">(</span><span class="n">response</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.makedirs">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.makedirs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new directory and subdirectories.</span>
+
+<span class="sd">        :param path: path of the directories to be created.</span>
+<span class="sd">        :param exist_ok: ignore error if any of pathname components already exists.</span>
+<span class="sd">        :returns: `FsNode` if directory was created or ``None`` if it was already created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
+            <span class="n">_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exist_ok</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">_path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">NextcloudException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">405</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">e</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.delete">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">not_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes a file/directory (moves to trash if trash is enabled).</span>
+
+<span class="sd">        :param path: path to delete.</span>
+<span class="sd">        :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span> <span class="ow">and</span> <span class="n">not_fail</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.move">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.move">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_src</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">path_dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Moves an existing file or a directory.</span>
+
+<span class="sd">        :param path_src: path of an existing file/directory.</span>
+<span class="sd">        :param path_dest: name of the new one.</span>
+<span class="sd">        :param overwrite: if ``True`` and the destination object already exists, it gets overwritten.</span>
+<span class="sd">            Default = **False**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path_src</span> <span class="o">=</span> <span class="n">path_src</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_src</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path_src</span>
+        <span class="n">full_dest_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path_dest</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_dest</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path_dest</span>
+        <span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">full_dest_path</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">({</span><span class="s2">&quot;Destination&quot;</span><span class="p">:</span> <span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;Overwrite&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span><span class="p">},</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;MOVE&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path_src</span><span class="p">)),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;move: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, src=</span><span class="si">{</span><span class="n">path_src</span><span class="si">}</span><span class="s2">, dest=</span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">overwrite</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">req</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fileid&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;OC-FileId&quot;</span><span class="p">]])[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.copy">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_src</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">path_dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copies an existing file/directory.</span>
+
+<span class="sd">        :param path_src: path of an existing file/directory.</span>
+<span class="sd">        :param path_dest: name of the new one.</span>
+<span class="sd">        :param overwrite: if ``True`` and the destination object already exists, it gets overwritten.</span>
+<span class="sd">            Default = **False**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path_src</span> <span class="o">=</span> <span class="n">path_src</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_src</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path_src</span>
+        <span class="n">full_dest_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path_dest</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_dest</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path_dest</span>
+        <span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">full_dest_path</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">({</span><span class="s2">&quot;Destination&quot;</span><span class="p">:</span> <span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;Overwrite&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span><span class="p">},</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;COPY&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path_src</span><span class="p">)),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;copy: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, src=</span><span class="si">{</span><span class="n">path_src</span><span class="si">}</span><span class="s2">, dest=</span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">overwrite</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">req</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;fileid&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;OC-FileId&quot;</span><span class="p">]])[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.list_by_criteria">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.list_by_criteria">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_by_criteria</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="n">SystemTag</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FsNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all files/directories for the current user filtered by the specified values.</span>
+
+<span class="sd">        :param properties: List of ``properties`` that should have been set for the file.</span>
+<span class="sd">            Supported values: **favorite**</span>
+<span class="sd">        :param tags: List of ``tags ids`` or ``SystemTag`` that should have been set for the file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_list_by_criteria_req</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">webdav_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;REPORT&quot;</span><span class="p">,</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">),</span> <span class="n">content</span><span class="o">=</span><span class="n">element_tree_as_str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">request_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;list_files_by_criteria: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">webdav_response</span><span class="p">,</span> <span class="n">request_info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lf_parse_webdav_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_url_suffix</span><span class="p">,</span> <span class="n">webdav_response</span><span class="p">,</span> <span class="n">request_info</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.setfav">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.setfav">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setfav</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets or unsets favourite flag for specific file.</span>
+
+<span class="sd">        :param path: path to the object to set the state.</span>
+<span class="sd">        :param value: value to set for the ``favourite`` state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_setfav_req</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">webdav_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;PROPPATCH&quot;</span><span class="p">,</span> <span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)),</span> <span class="n">content</span><span class="o">=</span><span class="n">element_tree_as_str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">webdav_response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;setfav: path=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, value=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.trashbin_list">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.trashbin_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trashbin_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FsNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all entries in the TrashBin.&quot;&quot;&quot;</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">PROPFIND_PROPERTIES</span>
+        <span class="n">properties</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;nc:trashbin-filename&quot;</span><span class="p">,</span> <span class="s2">&quot;nc:trashbin-original-location&quot;</span><span class="p">,</span> <span class="s2">&quot;nc:trashbin-deletion-time&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listdir</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">exclude_self</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prop_type</span><span class="o">=</span><span class="n">PropFindType</span><span class="o">.</span><span class="n">TRASHBIN</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.trashbin_restore">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.trashbin_restore">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trashbin_restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore a file/directory from the TrashBin.</span>
+
+<span class="sd">        :param path: path to delete, e.g., the ``user_path`` field from ``FsNode`` or the **FsNode** class itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">restore_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+
+        <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/trashbin/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">/restore/</span><span class="si">{</span><span class="n">restore_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">({</span><span class="s2">&quot;Destination&quot;</span><span class="p">:</span> <span class="n">dest</span><span class="p">},</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;MOVE&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/trashbin/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;trashbin_restore: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, src=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, dest=</span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.trashbin_delete">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.trashbin_delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trashbin_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FsNode</span><span class="p">,</span> <span class="n">not_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes a file/directory permanently from the TrashBin.</span>
+
+<span class="sd">        :param path: path to delete, e.g., the ``user_path`` field from ``FsNode`` or the **FsNode** class itself.</span>
+<span class="sd">        :param not_fail: if set to ``True`` and the object is not found, it does not raise an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">quote</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/trashbin/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span> <span class="ow">and</span> <span class="n">not_fail</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.trashbin_cleanup">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.trashbin_cleanup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trashbin_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empties the TrashBin.&quot;&quot;&quot;</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/trashbin/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">/trash&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.get_versions">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.get_versions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_object</span><span class="p">:</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FsNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all file versions if any.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files.versioning&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listdir</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">fileid</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">fileid</span> <span class="k">else</span> <span class="n">file_object</span><span class="o">.</span><span class="n">file_id</span><span class="p">,</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">PROPFIND_PROPERTIES</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">exclude_self</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">prop_type</span><span class="o">=</span><span class="n">PropFindType</span><span class="o">.</span><span class="n">VERSIONS_FILEID</span> <span class="k">if</span> <span class="n">file_object</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">fileid</span> <span class="k">else</span> <span class="n">PropFindType</span><span class="o">.</span><span class="n">VERSIONS_FILE_ID</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.restore_version">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.restore_version">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">restore_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_object</span><span class="p">:</span> <span class="n">FsNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore a file with specified version.</span>
+
+<span class="sd">        :param file_object: The **FsNode** class from :py:meth:`~nc_py_api.files.files.FilesAPI.get_versions`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files.versioning&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/versions/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">/restore/</span><span class="si">{</span><span class="n">file_object</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">({</span><span class="s2">&quot;Destination&quot;</span><span class="p">:</span> <span class="n">dest</span><span class="p">},</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;MOVE&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/versions/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file_object</span><span class="o">.</span><span class="n">user_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;restore_version: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, src=</span><span class="si">{</span><span class="n">file_object</span><span class="o">.</span><span class="n">user_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.list_tags">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.list_tags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SystemTag</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of the avalaible Tags.&quot;&quot;&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_list_tag_req</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PROPFIND&quot;</span><span class="p">,</span> <span class="s2">&quot;/systemtags&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">element_tree_as_str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">build_list_tags_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.get_tags">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.get_tags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="p">:</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SystemTag</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns list of Tags assigned to the File or Directory.&quot;&quot;&quot;</span>
+        <span class="n">fs_object</span> <span class="o">=</span> <span class="n">file_id</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">fileid</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">file_id</span>
+        <span class="n">url_to_fetch</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/systemtags-relations/files/</span><span class="si">{</span><span class="n">fs_object</span><span class="si">}</span><span class="s2">/&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;PROPFIND&quot;</span><span class="p">,</span> <span class="n">url_to_fetch</span><span class="p">)</span>
+        <span class="n">object_tags_ids</span> <span class="o">=</span> <span class="n">build_tags_ids_for_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_url_suffix</span> <span class="o">+</span> <span class="n">url_to_fetch</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">object_tags_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">all_tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_tags</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">all_tags</span> <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">tag_id</span> <span class="ow">in</span> <span class="n">object_tags_ids</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.create_tag">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.create_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">user_assignable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new Tag.</span>
+
+<span class="sd">        :param name: Name of the tag.</span>
+<span class="sd">        :param user_visible: Should be Tag visible in the UI.</span>
+<span class="sd">        :param user_assignable: Can Tag be assigned from the UI.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="s2">&quot;/systemtags&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;userVisible&quot;</span><span class="p">:</span> <span class="n">user_visible</span><span class="p">,</span>
+                <span class="s2">&quot;userAssignable&quot;</span><span class="p">:</span> <span class="n">user_assignable</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create_tag(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.update_tag">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.update_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_tag</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">SystemTag</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">user_assignable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the Tag information.&quot;&quot;&quot;</span>
+        <span class="n">tag_id</span> <span class="o">=</span> <span class="n">tag_id</span><span class="o">.</span><span class="n">tag_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag_id</span><span class="p">,</span> <span class="n">SystemTag</span><span class="p">)</span> <span class="k">else</span> <span class="n">tag_id</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_update_tag_req</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">user_visible</span><span class="p">,</span> <span class="n">user_assignable</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;PROPPATCH&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/systemtags/</span><span class="si">{</span><span class="n">tag_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">element_tree_as_str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.delete_tag">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.delete_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">SystemTag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes the tag.&quot;&quot;&quot;</span>
+        <span class="n">tag_id</span> <span class="o">=</span> <span class="n">tag_id</span><span class="o">.</span><span class="n">tag_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag_id</span><span class="p">,</span> <span class="n">SystemTag</span><span class="p">)</span> <span class="k">else</span> <span class="n">tag_id</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/systemtags/</span><span class="si">{</span><span class="n">tag_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.tag_by_name">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.tag_by_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tag_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SystemTag</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns Tag info by its name if found or ``None`` otherwise.&quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_tags</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">display_name</span> <span class="o">==</span> <span class="n">tag_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tag with name=&#39;</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.assign_tag">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.assign_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assign_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="p">:</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="n">SystemTag</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assigns Tag to a file/directory.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_change_tag_state</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.unassign_tag">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.unassign_tag">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unassign_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="p">:</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="n">SystemTag</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes Tag from a file/directory.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_change_tag_state</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.lock">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.lock">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lock_type</span><span class="p">:</span> <span class="n">LockType</span> <span class="o">=</span> <span class="n">LockType</span><span class="o">.</span><span class="n">MANUAL_LOCK</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Locks the file.</span>
+
+<span class="sd">        .. note:: Exception codes: 423 - existing lock present.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files.locking&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;LOCK&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-User-Lock&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;X-User-Lock-Type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">lock_type</span><span class="o">.</span><span class="n">value</span><span class="p">)},</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;lock: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, path=</span><span class="si">{</span><span class="n">full_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FilesAPI.unlock">
+<a class="viewcode-back" href="../../../reference/Files/Files.html#nc_py_api.files.files.FilesAPI.unlock">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unlocks the file.</span>
+
+<span class="sd">        .. note:: Exception codes: 412 - the file is not locked, 423 - the lock is owned by another user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;files.locking&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">user_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;UNLOCK&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;X-User-Lock&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;unlock: user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, path=</span><span class="si">{</span><span class="n">full_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_file_change_tag_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="p">:</span> <span class="n">FsNode</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">:</span> <span class="n">SystemTag</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tag_state</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fs_object</span> <span class="o">=</span> <span class="n">file_id</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">fileid</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">FsNode</span><span class="p">)</span> <span class="k">else</span> <span class="n">file_id</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">tag_id</span><span class="o">.</span><span class="n">tag_id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag_id</span><span class="p">,</span> <span class="n">SystemTag</span><span class="p">)</span> <span class="k">else</span> <span class="n">tag_id</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;PUT&quot;</span> <span class="k">if</span> <span class="n">tag_state</span> <span class="k">else</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/systemtags-relations/files/</span><span class="si">{</span><span class="n">fs_object</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span>
+            <span class="n">response</span><span class="p">,</span>
+            <span class="n">info</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="s1">&#39;Adding&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tag_state</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Removing&#39;</span><span class="si">}</span><span class="s2"> `</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">` </span><span class="si">{</span><span class="s1">&#39;to&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tag_state</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;from&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">fs_object</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_listdir</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">exclude_self</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">prop_type</span><span class="p">:</span> <span class="n">PropFindType</span> <span class="o">=</span> <span class="n">PropFindType</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FsNode</span><span class="p">]:</span>
+        <span class="n">root</span><span class="p">,</span> <span class="n">dav_path</span> <span class="o">=</span> <span class="n">build_listdir_req</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">prop_type</span><span class="p">)</span>
+        <span class="n">webdav_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;PROPFIND&quot;</span><span class="p">,</span>
+            <span class="n">quote</span><span class="p">(</span><span class="n">dav_path</span><span class="p">),</span>
+            <span class="n">content</span><span class="o">=</span><span class="n">element_tree_as_str</span><span class="p">(</span><span class="n">root</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Depth&quot;</span><span class="p">:</span> <span class="s2">&quot;infinity&quot;</span> <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">depth</span><span class="p">)},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">build_listdir_response</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_url_suffix</span><span class="p">,</span> <span class="n">webdav_response</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">exclude_self</span><span class="p">,</span> <span class="n">prop_type</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__upload_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FsNode</span><span class="p">:</span>
+        <span class="n">_tmp_path</span> <span class="o">=</span> <span class="s2">&quot;nc-py-api-&quot;</span> <span class="o">+</span> <span class="n">random_string</span><span class="p">(</span><span class="mi">56</span><span class="p">)</span>
+        <span class="n">_dav_path</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">_tmp_path</span><span class="p">,</span> <span class="n">root_path</span><span class="o">=</span><span class="s2">&quot;/uploads&quot;</span><span class="p">))</span>
+        <span class="n">_v2</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">upload_chunk_v2</span> <span class="ow">and</span> <span class="n">chunk_size</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">dav_get_obj_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">({</span><span class="s2">&quot;Destination&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span> <span class="o">+</span> <span class="n">quote</span><span class="p">(</span><span class="n">full_path</span><span class="p">)},</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_v2</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;MKCOL&quot;</span><span class="p">,</span> <span class="n">_dav_path</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;MKCOL&quot;</span><span class="p">,</span> <span class="n">_dav_path</span><span class="p">)</span>
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start_bytes</span> <span class="o">=</span> <span class="n">end_bytes</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">chunk_number</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">piece</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">piece</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">end_bytes</span> <span class="o">=</span> <span class="n">start_bytes</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">_v2</span><span class="p">:</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                        <span class="n">_dav_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">chunk_number</span><span class="p">),</span> <span class="n">content</span><span class="o">=</span><span class="n">piece</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">start_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">end_bytes</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_dav_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">_filename</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">piece</span><span class="p">)</span>
+                <span class="n">check_error</span><span class="p">(</span>
+                    <span class="n">response</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;upload_stream(v=</span><span class="si">{</span><span class="n">_v2</span><span class="si">}</span><span class="s2">): user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, path=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, cur_size=</span><span class="si">{</span><span class="n">end_bytes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">start_bytes</span> <span class="o">=</span> <span class="n">end_bytes</span>
+                <span class="n">chunk_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="s2">&quot;MOVE&quot;</span><span class="p">,</span>
+                <span class="n">_dav_path</span> <span class="o">+</span> <span class="s2">&quot;/.file&quot;</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">check_error</span><span class="p">(</span>
+                <span class="n">response</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;upload_stream(v=</span><span class="si">{</span><span class="n">_v2</span><span class="si">}</span><span class="s2">): user=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">, path=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, total_size=</span><span class="si">{</span><span class="n">end_bytes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">FsNode</span><span class="p">(</span><span class="n">full_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">etag_fileid_from_response</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">_dav_path</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
