@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.1 - 2025-03-07]
+
+### Fixed
+
+- ExApps(NC32+): When using `HaRP`, use `unix-socket` instead of `host:port`.
+
 ## [0.19.0 - 2025-02-15]
 
 ### Added

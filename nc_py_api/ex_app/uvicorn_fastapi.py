@@ -22,4 +22,18 @@ def run_app(
     :param args: Any args to pass to **uvicorn.run**.
     :param kwargs: Any **kwargs** to pass to **uvicorn.run**, except ``host`` and ``port``.
     """
-    uvicorn.run(uvicorn_app, *args, host=environ.get("APP_HOST", "127.0.0.1"), port=int(environ["APP_PORT"]), **kwargs)
+    if environ.get("HP_SHARED_KEY"):
+        uvicorn.run(
+            uvicorn_app,
+            *args,
+            uds=environ.get("HP_EXAPP_SOCK", "/tmp/exapp.sock"),
+            **kwargs,
+        )
+    else:
+        uvicorn.run(
+            uvicorn_app,
+            *args,
+            host=environ.get("APP_HOST", "127.0.0.1"),
+            port=int(environ["APP_PORT"]),
+            **kwargs,
+        )

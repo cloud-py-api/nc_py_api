@@ -139,6 +139,7 @@ lint.extend-ignore = [
   "D401",
   "I001",
   "RUF100",
+  "S108",
 ]
 
 lint.per-file-ignores."nc_py_api/__init__.py" = [
