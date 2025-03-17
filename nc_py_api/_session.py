@@ -197,6 +197,7 @@ class NcSessionBasic(NcSessionBase, ABC):
         *,
         content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
         json: dict | list | None = None,
+        response_type: str | None = None,
         params: dict | None = None,
         files: dict | None = None,
         **kwargs,
@@ -215,6 +216,8 @@ class NcSessionBasic(NcSessionBase, ABC):
         if response.status_code == 204:  # NO_CONTENT
             return []
         response_data = loads(response.text)
+        if response_type == "json":
+            return response_data
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
             if (
@@ -319,6 +322,7 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
         *,
         content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
         json: dict | list | None = None,
+        response_type: str | None = None,
         params: dict | None = None,
         files: dict | None = None,
         **kwargs,
@@ -337,6 +341,8 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
         if response.status_code == 204:  # NO_CONTENT
             return []
         response_data = loads(response.text)
+        if response_type == "json":
+            return response_data
         ocs_meta = response_data["ocs"]["meta"]
         if ocs_meta["status"] != "ok":
             if (

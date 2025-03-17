@@ -137,11 +137,14 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         *,
         content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
         json: dict | list | None = None,
+        response_type: str | None = None,
         params: dict | None = None,
         **kwargs,
     ):
         """Performs OCS call and returns OCS response payload data."""
-        return self._session.ocs(method, path, content=content, json=json, params=params, **kwargs)
+        return self._session.ocs(
+            method, path, content=content, json=json, response_type=response_type, params=params, **kwargs
+        )
 
     def download_log(self, fp) -> None:
         """Downloads Nextcloud log file. Requires Admin privileges."""
@@ -238,11 +241,14 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         *,
         content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
         json: dict | list | None = None,
+        response_type: str | None = None,
         params: dict | None = None,
         **kwargs,
     ):
         """Performs OCS call and returns OCS response payload data."""
-        return await self._session.ocs(method, path, content=content, json=json, params=params, **kwargs)
+        return await self._session.ocs(
+            method, path, content=content, json=json, response_type=response_type, params=params, **kwargs
+        )
 
     async def download_log(self, fp) -> None:
         """Downloads Nextcloud log file. Requires Admin privileges."""
