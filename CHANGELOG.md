@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.2 - 2025-03-17]
+
+### Added
+
+- Optional `response_type` parameter of `nextcloud.ocs` method for calling OCS endpoints that return raw data. #341 Thanks to @janepie
+
 ## [0.19.1 - 2025-03-07]
 
 ### Fixed
