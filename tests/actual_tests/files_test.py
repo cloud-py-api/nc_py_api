@@ -224,7 +224,7 @@ async def test_file_download2file_async(anc_any, rand_bytes):
 def test_file_download2stream_invalid_type(nc_any):
     for test_type in (
         b"13",
-        int(55),
+        55,
     ):
         with pytest.raises(TypeError):
             nc_any.files.download2stream("xxx", test_type)
@@ -234,7 +234,7 @@ def test_file_download2stream_invalid_type(nc_any):
 async def test_file_download2stream_invalid_type_async(anc_any):
     for test_type in (
         b"13",
-        int(55),
+        55,
     ):
         with pytest.raises(TypeError):
             await anc_any.files.download2stream("xxx", test_type)
@@ -243,7 +243,7 @@ async def test_file_download2stream_invalid_type_async(anc_any):
 def test_file_upload_stream_invalid_type(nc_any):
     for test_type in (
         b"13",
-        int(55),
+        55,
     ):
         with pytest.raises(TypeError):
             nc_any.files.upload_stream("xxx", test_type)
@@ -253,7 +253,7 @@ def test_file_upload_stream_invalid_type(nc_any):
 async def test_file_upload_stream_invalid_type_async(anc_any):
     for test_type in (
         b"13",
-        int(55),
+        55,
     ):
         with pytest.raises(TypeError):
             await anc_any.files.upload_stream("xxx", test_type)
