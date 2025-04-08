@@ -82,9 +82,9 @@ class TaskProcessingProvider:
     """The TaskType provided by this provider."""
     expected_runtime: int = dataclasses.field(default=0)
     """Expected runtime of the task in seconds."""
-    optional_input_shape: list[ShapeDescriptor] = dataclasses.field(default_factory=list)
+    optional_input_shape: dict[str, ShapeDescriptor] = dataclasses.field(default_factory=dict)
     """Optional input shape of the task."""
-    optional_output_shape: list[ShapeDescriptor] = dataclasses.field(default_factory=list)
+    optional_output_shape: dict[str, ShapeDescriptor] = dataclasses.field(default_factory=dict)
     """Optional output shape of the task."""
     input_shape_enum_values: dict[str, list[ShapeEnumValue]] = dataclasses.field(default_factory=dict)
     """The option dict for each input shape ENUM slot."""
