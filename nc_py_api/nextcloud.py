@@ -31,7 +31,6 @@ from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar_api import _CalendarAPI
 from .ex_app.defs import LogLvl
-from .ex_app.events_listener import AsyncEventsListenerAPI, EventsListenerAPI
 from .ex_app.occ_commands import AsyncOccCommandsAPI, OccCommandsAPI
 from .ex_app.providers.providers import AsyncProvidersApi, ProvidersApi
 from .ex_app.ui.ui import AsyncUiApi, UiApi
@@ -327,8 +326,6 @@ class NextcloudApp(_NextcloudBasic):
     ui: UiApi
     """Nextcloud UI API for ExApps"""
     providers: ProvidersApi
-    """API for registering providers for Nextcloud"""
-    events_listener: EventsListenerAPI
     """API for registering Events listeners for ExApps"""
     occ_commands: OccCommandsAPI
     """API for registering OCC command for ExApps"""
@@ -344,7 +341,6 @@ class NextcloudApp(_NextcloudBasic):
         self.preferences_ex = PreferencesExAPI(self._session)
         self.ui = UiApi(self._session)
         self.providers = ProvidersApi(self._session)
-        self.events_listener = EventsListenerAPI(self._session)
         self.occ_commands = OccCommandsAPI(self._session)
 
     @property
@@ -462,8 +458,6 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
     ui: AsyncUiApi
     """Nextcloud UI API for ExApps"""
     providers: AsyncProvidersApi
-    """API for registering providers for Nextcloud"""
-    events_listener: AsyncEventsListenerAPI
     """API for registering Events listeners for ExApps"""
     occ_commands: AsyncOccCommandsAPI
     """API for registering OCC command for ExApps"""
@@ -479,7 +473,6 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         self.preferences_ex = AsyncPreferencesExAPI(self._session)
         self.ui = AsyncUiApi(self._session)
         self.providers = AsyncProvidersApi(self._session)
-        self.events_listener = AsyncEventsListenerAPI(self._session)
         self.occ_commands = AsyncOccCommandsAPI(self._session)
 
     @property
