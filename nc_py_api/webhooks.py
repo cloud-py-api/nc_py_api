@@ -2,6 +2,7 @@
 
 import dataclasses
 
+from ._exceptions import NextcloudExceptionNotFound
 from ._misc import clear_from_params_empty  # , require_capabilities
 from ._session import AppConfig, AsyncNcSessionBasic, NcSessionBasic
 
@@ -51,7 +52,7 @@ class WebhookInfo:
     @property
     def user_id_filter(self) -> str:
         """Currently unknown."""
-        return self._raw_data["userIdFilter"]
+        return "" if self._raw_data["userIdFilter"] is None else self._raw_data["userIdFilter"]
 
     @property
     def headers(self) -> dict:
@@ -84,8 +85,11 @@ class _WebhooksAPI:
         params = {"uri": uri_filter} if uri_filter else {}
         return [WebhookInfo(i) for i in self._session.ocs("GET", f"{self._ep_base}", params=params)]
 
-    def get_entry(self, webhook_id: int) -> WebhookInfo:
-        return WebhookInfo(self._session.ocs("GET", f"{self._ep_base}/{webhook_id}"))
+    def get_entry(self, webhook_id: int) -> WebhookInfo | None:
+        try:
+            return WebhookInfo(self._session.ocs("GET", f"{self._ep_base}/{webhook_id}"))
+        except NextcloudExceptionNotFound:
+            return None
 
     def register(
         self,
@@ -151,7 +155,7 @@ class _WebhooksAPI:
 class _AsyncWebhooksAPI:
     """The class provides the async application management API on the Nextcloud server."""
 
-    _ep_base: str = "/ocs/v1.php/webhooks"
+    _ep_base: str = "/ocs/v1.php/apps/webhook_listeners/api/v1/webhooks"
 
     def __init__(self, session: AsyncNcSessionBasic):
         self._session = session
@@ -160,8 +164,11 @@ class _AsyncWebhooksAPI:
         params = {"uri": uri_filter} if uri_filter else {}
         return [WebhookInfo(i) for i in await self._session.ocs("GET", f"{self._ep_base}", params=params)]
 
-    async def get_entry(self, webhook_id: int) -> WebhookInfo:
-        return WebhookInfo(await self._session.ocs("GET", f"{self._ep_base}/{webhook_id}"))
+    async def get_entry(self, webhook_id: int) -> WebhookInfo | None:
+        try:
+            return WebhookInfo(await self._session.ocs("GET", f"{self._ep_base}/{webhook_id}"))
+        except NextcloudExceptionNotFound:
+            return None
 
     async def register(
         self,
