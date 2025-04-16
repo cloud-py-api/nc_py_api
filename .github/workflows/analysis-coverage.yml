@@ -94,6 +94,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           php occ config:system:set loglevel --value=1 --type=integer
           php occ config:system:set debug --value=true --type=boolean
+          php occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
@@ -222,6 +223,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
+          ./occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
           ./occ app:enable notifications
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
@@ -387,6 +389,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
+          ./occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
           ./occ app:enable notifications
           ./occ app:enable activity
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
@@ -543,6 +546,7 @@ jobs:
             --admin-user admin --admin-pass ${{ env.NC_AUTH_PASS }}
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
+          ./occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
           ./occ app:enable activity
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
