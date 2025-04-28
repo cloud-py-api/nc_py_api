@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.3 - 2025-04-28]
+
+### Fixed
+
+- Method `download2stream` not working correctly when Nextcloud returns compressed content. #352 Thanks to @PatrickPromitzer for reporting this.
+
 ## [0.19.2 - 2025-03-17]
 
 ### Added
