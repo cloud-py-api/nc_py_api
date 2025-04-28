@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.19.3 - 2025-04-28]
+## [0.20.0 - 2025-04-28]
+
+### Changed
+
+- ExApps: `nc_py_api.ex_app.events_listener.EventsListener` was removed in favor of `nc_py_api.webhooks`. #348
 
 ### Fixed
 
