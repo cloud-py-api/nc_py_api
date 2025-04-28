@@ -307,7 +307,7 @@ class NcSessionBasic(NcSessionBase, ABC):
         adapter = self.adapter_dav if dav else self.adapter
         with adapter.stream("GET", url_path, params=params, headers=kwargs.get("headers")) as response:
             check_error(response)
-            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
+            for data_chunk in response.iter_bytes(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
 
 
@@ -434,7 +434,7 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
         adapter = self.adapter_dav if dav else self.adapter
         async with adapter.stream("GET", url_path, params=params, headers=kwargs.get("headers")) as response:
             check_error(response)
-            async for data_chunk in response.aiter_raw(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
+            async for data_chunk in response.aiter_bytes(chunk_size=kwargs.get("chunk_size", 5 * 1024 * 1024)):
                 fp.write(data_chunk)
 
 
