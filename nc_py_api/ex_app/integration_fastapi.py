@@ -247,7 +247,7 @@ class AppAPIAuthMiddleware:
 
         conn = HTTPConnection(scope)
         url_path = conn.url.path.lstrip("/")
-        if not fnmatch.filter(self._disable_for, url_path):
+        if not any(fnmatch.fnmatch(url_path, i) for i in self._disable_for):
             try:
                 scope["username"] = _request_sign_check(conn, AsyncNextcloudApp())
             except HTTPException as exc:
