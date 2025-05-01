@@ -2,7 +2,7 @@ import contextlib
 import math
 import os
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 from pathlib import Path
 from random import choice, randbytes
@@ -751,6 +751,15 @@ def test_find_files_listdir_depth(nc_any):
     assert not nc_any.files.find(["like", "name", "no%such%file"], path="test_dir")
     result = nc_any.files.find(["like", "mime", "text/%"], path="test_dir")
     assert len(result) == 4
+
+
+def test_find_files_datetime(nc_any):
+    time_in_past = datetime.now() - timedelta(days=1)
+    time_in_future = datetime.now() + timedelta(days=1)
+    assert len(nc_any.files.find(["gt", "last_modified", time_in_past], "/test_dir/subdir/"))
+    assert not len(nc_any.files.find(["gt", "last_modified", time_in_future], "/test_dir/subdir/"))
+    assert not len(nc_any.files.find(["lt", "last_modified", time_in_past], "/test_dir/subdir/"))
+    assert len(nc_any.files.find(["lt", "last_modified", time_in_future], "/test_dir/subdir/"))
 
 
 def test_listdir_depth(nc_any):
