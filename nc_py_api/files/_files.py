@@ -1,8 +1,10 @@
 """Helper functions for **FilesAPI** and **AsyncFilesAPI** classes."""
 
 import enum
+from datetime import datetime, timezone
 from io import BytesIO
 from json import dumps, loads
+from typing import Any
 from urllib.parse import unquote
 from xml.etree import ElementTree
 
@@ -69,6 +71,16 @@ def get_propfind_properties(capabilities: dict) -> list:
     return r
 
 
+def _dav_literal(val: Any) -> str:
+    """Return a string suitable for <d:literal>."""
+    if isinstance(val, datetime):
+        # make timezone-aware, force UTC, second precision
+        dt = val if val.tzinfo else val.replace(tzinfo=timezone.utc)
+        dt = dt.astimezone(timezone.utc).replace(microsecond=0)
+        return dt.isoformat().replace("+00:00", "Z")  # 2025-03-10T12:34:56Z
+    return str(val)
+
+
 def build_find_request(req: list, path: str | FsNode, user: str, capabilities: dict) -> ElementTree.Element:
     path = path.user_path if isinstance(path, FsNode) else path
     root = ElementTree.Element(
@@ -126,7 +138,7 @@ def build_search_req(xml_element_where, req: list) -> None:
         ElementTree.SubElement(_, SEARCH_PROPERTIES_MAP[req.pop(0)])
         _ = ElementTree.SubElement(_root, "d:literal")
         value = req.pop(0)
-        _.text = value if isinstance(value, str) else str(value)
+        _.text = _dav_literal(value)
 
     while len(req):
         where_part = req.pop(0)
