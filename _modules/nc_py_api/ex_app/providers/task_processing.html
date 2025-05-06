@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nc_py_api.ex_app.providers.task_processing &mdash; NcPyApi 0.20.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=1154e574"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.20.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nc_py_api.ex_app.providers.task_processing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nc_py_api.ex_app.providers.task_processing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Nextcloud API for declaring TaskProcessing provider.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntEnum</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">RootModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NextcloudException</span><span class="p">,</span> <span class="n">NextcloudExceptionNotFound</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_capabilities</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._session</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncNcSessionApp</span><span class="p">,</span> <span class="n">NcSessionApp</span>
+
+<span class="n">_EP_SUFFIX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ai_provider/task_processing&quot;</span>
+
+
+<div class="viewcode-block" id="ShapeType">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing.ShapeType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShapeType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum for shape types.&quot;&quot;&quot;</span>
+
+    <span class="n">NUMBER</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">TEXT</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">IMAGE</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">AUDIO</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">VIDEO</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">FILE</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">ENUM</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">LIST_OF_NUMBERS</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">LIST_OF_TEXTS</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">LIST_OF_IMAGES</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">LIST_OF_AUDIOS</span> <span class="o">=</span> <span class="mi">13</span>
+    <span class="n">LIST_OF_VIDEOS</span> <span class="o">=</span> <span class="mi">14</span>
+    <span class="n">LIST_OF_FILES</span> <span class="o">=</span> <span class="mi">15</span></div>
+
+
+
+<div class="viewcode-block" id="ShapeEnumValue">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing.ShapeEnumValue">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShapeEnumValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data object for input output shape enum slot value.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Name of the enum slot value which will be displayed in the UI&quot;&quot;&quot;</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Value of the enum slot value&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ShapeDescriptor">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing.ShapeDescriptor">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShapeDescriptor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data object for input output shape entries.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Name of the shape entry&quot;&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Description of the shape entry&quot;&quot;&quot;</span>
+    <span class="n">shape_type</span><span class="p">:</span> <span class="n">ShapeType</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of the shape entry&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TaskType">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing.TaskType">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TaskType description for the provider.&quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The unique ID for the task type.&quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The localized name of the task type.&quot;&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The localized description of the task type.&quot;&quot;&quot;</span>
+    <span class="n">input_shape</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeDescriptor</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The input shape of the task.&quot;&quot;&quot;</span>
+    <span class="n">output_shape</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeDescriptor</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The output shape of the task.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TaskProcessingProvider">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing.TaskProcessingProvider">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskProcessingProvider</span><span class="p">:</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unique ID for the provider.&quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The localized name of this provider&quot;&quot;&quot;</span>
+    <span class="n">task_type</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The TaskType provided by this provider.&quot;&quot;&quot;</span>
+    <span class="n">expected_runtime</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected runtime of the task in seconds.&quot;&quot;&quot;</span>
+    <span class="n">optional_input_shape</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeDescriptor</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional input shape of the task.&quot;&quot;&quot;</span>
+    <span class="n">optional_output_shape</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeDescriptor</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional output shape of the task.&quot;&quot;&quot;</span>
+    <span class="n">input_shape_enum_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeEnumValue</span><span class="p">]]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The option dict for each input shape ENUM slot.&quot;&quot;&quot;</span>
+    <span class="n">input_shape_defaults</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The default values for input shape slots.&quot;&quot;&quot;</span>
+    <span class="n">optional_input_shape_enum_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeEnumValue</span><span class="p">]]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The option list for each optional input shape ENUM slot.&quot;&quot;&quot;</span>
+    <span class="n">optional_input_shape_defaults</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The default values for optional input shape slots.&quot;&quot;&quot;</span>
+    <span class="n">output_shape_enum_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeEnumValue</span><span class="p">]]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The option list for each output shape ENUM slot.&quot;&quot;&quot;</span>
+    <span class="n">optional_output_shape_enum_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShapeEnumValue</span><span class="p">]]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The option list for each optional output shape ENUM slot.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">task_type</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_TaskProcessingProviderAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for TaskProcessing providers, available as **nc.providers.task_processing.&lt;method&gt;**.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">NcSessionApp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI.register">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI.register">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">provider</span><span class="p">:</span> <span class="n">TaskProcessingProvider</span><span class="p">,</span>
+        <span class="n">custom_task_type</span><span class="p">:</span> <span class="n">TaskType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers or edit the TaskProcessing provider.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="n">RootModel</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+            <span class="o">**</span><span class="p">({</span><span class="s2">&quot;customTaskType&quot;</span><span class="p">:</span> <span class="n">RootModel</span><span class="p">(</span><span class="n">custom_task_type</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()}</span> <span class="k">if</span> <span class="n">custom_task_type</span> <span class="k">else</span> <span class="p">{}),</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">_EP_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI.unregister">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI.unregister">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">not_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes TaskProcessing provider.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">_EP_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">not_fail</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI.next_task">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI.next_task">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">task_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the next task processing task from Nextcloud.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NextcloudException</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/next&quot;</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;providerIds&quot;</span><span class="p">:</span> <span class="n">provider_ids</span><span class="p">,</span> <span class="s2">&quot;taskTypeIds&quot;</span><span class="p">:</span> <span class="n">task_types</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI.set_progress">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI.set_progress">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">progress</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report new progress value of the task to Nextcloud. Progress should be in range from 0.0 to 100.0.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NextcloudException</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/progress&quot;</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;taskId&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="n">progress</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI.upload_result_file">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI.upload_result_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upload_result_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Uploads file and returns fileID that should be used in the ``report_result`` function.</span>
+
+<span class="sd">        .. note:: ``file`` can be any file-like object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+            <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/file&quot;</span><span class="p">,</span>
+            <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="n">file</span><span class="p">},</span>
+        <span class="p">)[</span><span class="s2">&quot;fileId&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_TaskProcessingProviderAPI.report_result">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.providers.task_processing._TaskProcessingProviderAPI.report_result">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report result of the task processing to Nextcloud.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NextcloudException</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/result&quot;</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;taskId&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">,</span> <span class="s2">&quot;errorMessage&quot;</span><span class="p">:</span> <span class="n">error_message</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_AsyncTaskProcessingProviderAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async API for TaskProcessing providers.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">AsyncNcSessionApp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">provider</span><span class="p">:</span> <span class="n">TaskProcessingProvider</span><span class="p">,</span>
+        <span class="n">custom_task_type</span><span class="p">:</span> <span class="n">TaskType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers or edit the TaskProcessing provider.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="n">RootModel</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+            <span class="o">**</span><span class="p">({</span><span class="s2">&quot;customTaskType&quot;</span><span class="p">:</span> <span class="n">RootModel</span><span class="p">(</span><span class="n">custom_task_type</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()}</span> <span class="k">if</span> <span class="n">custom_task_type</span> <span class="k">else</span> <span class="p">{}),</span>
+        <span class="p">}</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">_EP_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">not_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes TaskProcessing provider.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">_EP_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">not_fail</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">next_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">task_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the next task processing task from Nextcloud.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NextcloudException</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/next&quot;</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;providerIds&quot;</span><span class="p">:</span> <span class="n">provider_ids</span><span class="p">,</span> <span class="s2">&quot;taskTypeIds&quot;</span><span class="p">:</span> <span class="n">task_types</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">progress</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report new progress value of the task to Nextcloud. Progress should be in range from 0.0 to 100.0.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NextcloudException</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/progress&quot;</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;taskId&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="n">progress</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_result_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Uploads file and returns fileID that should be used in the ``report_result`` function.</span>
+
+<span class="sd">        .. note:: ``file`` can be any file-like object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/file&quot;</span><span class="p">,</span>
+                <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="n">file</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)[</span><span class="s2">&quot;fileId&quot;</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">report_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report result of the task processing to Nextcloud.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">NextcloudException</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;/ocs/v2.php/taskprocessing/tasks_provider/</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/result&quot;</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;taskId&quot;</span><span class="p">:</span> <span class="n">task_id</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output</span><span class="p">,</span> <span class="s2">&quot;errorMessage&quot;</span><span class="p">:</span> <span class="n">error_message</span><span class="p">},</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
