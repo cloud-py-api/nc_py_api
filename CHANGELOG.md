@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.20.1 - 2025-05-06]
+
+### Fixed
+
+- ExApps: `AppAPIAuthMiddleware`: correct handling of `disable_for` parameter. #357 Thanks to @BerengarWLehr
+
 ## [0.20.0 - 2025-04-28]
 
 ### Changed
