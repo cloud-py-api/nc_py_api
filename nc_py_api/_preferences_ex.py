@@ -61,6 +61,21 @@ class _BasicAppCfgPref:
             if not not_fail:
                 raise e from None
 
+    def set_value(self, key: str, value: str, sensitive: bool | None = None) -> None:
+        """Sets a value and if specified the sensitive flag for a key.
+
+        .. note:: A sensitive flag ensures key value are encrypted and truncated in Nextcloud logs.
+            Default for new records is ``False`` when sensitive is *unspecified*, if changes existing record and
+            sensitive is *unspecified* it will not change the existing `sensitive` flag.
+        """
+        if not key:
+            raise ValueError("`key` parameter can not be empty")
+        require_capabilities("app_api", self._session.capabilities)
+        params: dict = {"configKey": key, "configValue": value}
+        if sensitive is not None:
+            params["sensitive"] = sensitive
+        self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
+
 
 class _AsyncBasicAppCfgPref:
     _url_suffix: str
@@ -104,19 +119,26 @@ class _AsyncBasicAppCfgPref:
             if not not_fail:
                 raise e from None
 
+    async def set_value(self, key: str, value: str, sensitive: bool | None = None) -> None:
+        """Sets a value and if specified the sensitive flag for a key.
 
-class PreferencesExAPI(_BasicAppCfgPref):
-    """User specific preferences API, avalaible as **nc.preferences_ex.<method>**."""
-
-    _url_suffix = "ex-app/preference"
-
-    def set_value(self, key: str, value: str, sensitive: bool = False) -> None:
-        """Sets a value for a key."""
+        .. note:: A sensitive flag ensures key value are encrypted and truncated in Nextcloud logs.
+            Default for new records is ``False`` when sensitive is *unspecified*, if changes existing record and
+            sensitive is *unspecified* it will not change the existing `sensitive` flag.
+        """
         if not key:
             raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_api", self._session.capabilities)
-        params = {"configKey": key, "configValue": value, "sensitive": sensitive}
-        self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
+        require_capabilities("app_api", await self._session.capabilities)
+        params: dict = {"configKey": key, "configValue": value}
+        if sensitive is not None:
+            params["sensitive"] = sensitive
+        await self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
+
+
+class PreferencesExAPI(_BasicAppCfgPref):
+    """User specific preferences API, available as **nc.preferences_ex.<method>**."""
+
+    _url_suffix = "ex-app/preference"
 
 
 class AsyncPreferencesExAPI(_AsyncBasicAppCfgPref):
@@ -124,52 +146,14 @@ class AsyncPreferencesExAPI(_AsyncBasicAppCfgPref):
 
     _url_suffix = "ex-app/preference"
 
-    async def set_value(self, key: str, value: str, sensitive: bool = False) -> None:
-        """Sets a value for a key."""
-        if not key:
-            raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_api", await self._session.capabilities)
-        params = {"configKey": key, "configValue": value, "sensitive": sensitive}
-        await self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
-
 
 class AppConfigExAPI(_BasicAppCfgPref):
-    """Non-user(App) specific preferences API, avalaible as **nc.appconfig_ex.<method>**."""
+    """Non-user(App) specific preferences API, available as **nc.appconfig_ex.<method>**."""
 
     _url_suffix = "ex-app/config"
-
-    def set_value(self, key: str, value: str, sensitive: bool | None = None) -> None:
-        """Sets a value and if specified the sensitive flag for a key.
-
-        .. note:: A sensitive flag ensures key values are truncated in Nextcloud logs.
-            Default for new records is ``False`` when sensitive is *unspecified*, if changes existing record and
-            sensitive is *unspecified* it will not change the existing `sensitive` flag.
-        """
-        if not key:
-            raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_api", self._session.capabilities)
-        params: dict = {"configKey": key, "configValue": value}
-        if sensitive is not None:
-            params["sensitive"] = sensitive
-        self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
 
 
 class AsyncAppConfigExAPI(_AsyncBasicAppCfgPref):
     """Non-user(App) specific preferences API."""
 
     _url_suffix = "ex-app/config"
-
-    async def set_value(self, key: str, value: str, sensitive: bool | None = None) -> None:
-        """Sets a value and if specified the sensitive flag for a key.
-
-        .. note:: A sensitive flag ensures key values are truncated in Nextcloud logs.
-            Default for new records is ``False`` when sensitive is *unspecified*, if changes existing record and
-            sensitive is *unspecified* it will not change the existing `sensitive` flag.
-        """
-        if not key:
-            raise ValueError("`key` parameter can not be empty")
-        require_capabilities("app_api", await self._session.capabilities)
-        params: dict = {"configKey": key, "configValue": value}
-        if sensitive is not None:
-            params["sensitive"] = sensitive
-        await self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
