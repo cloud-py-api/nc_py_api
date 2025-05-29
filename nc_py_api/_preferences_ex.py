@@ -110,12 +110,12 @@ class PreferencesExAPI(_BasicAppCfgPref):
 
     _url_suffix = "ex-app/preference"
 
-    def set_value(self, key: str, value: str) -> None:
+    def set_value(self, key: str, value: str, sensitive: bool = False) -> None:
         """Sets a value for a key."""
         if not key:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_api", self._session.capabilities)
-        params = {"configKey": key, "configValue": value}
+        params = {"configKey": key, "configValue": value, "sensitive": sensitive}
         self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
 
 
@@ -124,12 +124,12 @@ class AsyncPreferencesExAPI(_AsyncBasicAppCfgPref):
 
     _url_suffix = "ex-app/preference"
 
-    async def set_value(self, key: str, value: str) -> None:
+    async def set_value(self, key: str, value: str, sensitive: bool = False) -> None:
         """Sets a value for a key."""
         if not key:
             raise ValueError("`key` parameter can not be empty")
         require_capabilities("app_api", await self._session.capabilities)
-        params = {"configKey": key, "configValue": value}
+        params = {"configKey": key, "configValue": value, "sensitive": sensitive}
         await self._session.ocs("POST", f"{self._session.ae_url}/{self._url_suffix}", json=params)
 
 
