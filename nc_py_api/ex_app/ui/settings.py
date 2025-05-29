@@ -48,6 +48,7 @@ class SettingsField:
     description: str = ""
     placeholder: str = ""
     label: str = ""
+    sensitive: bool = False
     notify = False  # to be supported in future
 
     @classmethod
@@ -74,6 +75,7 @@ class SettingsField:
             "placeholder": self.placeholder,
             "label": self.label,
             "notify": self.notify,
+            "sensitive": self.sensitive,
         }
 
 
