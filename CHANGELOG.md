@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.20.2 - 2025-05-28]
+
+### Added
+
+- ExApps(NC32+): field `sensitive` to the `SettingsField` class (Declarative Settings) and to the `PreferencesExAPI` class. #357
+
 ## [0.20.1 - 2025-05-06]
 
 ### Fixed
