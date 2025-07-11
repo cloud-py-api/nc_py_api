@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nc_py_api._session &mdash; NcPyApi 0.20.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=26ac6f1e"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.20.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nc_py_api._session</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nc_py_api._session</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Session represents one connection to Nextcloud. All related stuff for these live here.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">base64</span><span class="w"> </span><span class="kn">import</span> <span class="n">b64encode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntEnum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">httpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncClient</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">Limits</span><span class="p">,</span> <span class="n">ReadTimeout</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">httpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">httpx_version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">starlette.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPConnection</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">options</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">NextcloudException</span><span class="p">,</span>
+    <span class="n">NextcloudExceptionNotFound</span><span class="p">,</span>
+    <span class="n">NextcloudExceptionNotModified</span><span class="p">,</span>
+    <span class="n">check_error</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_username_secret_from_headers</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OCSRespond</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Special Nextcloud respond statuses for OCS calls.&quot;&quot;&quot;</span>
+
+    <span class="n">RESPOND_SERVER_ERROR</span> <span class="o">=</span> <span class="mi">996</span>
+    <span class="n">RESPOND_UNAUTHORISED</span> <span class="o">=</span> <span class="mi">997</span>
+    <span class="n">RESPOND_NOT_FOUND</span> <span class="o">=</span> <span class="mi">998</span>
+    <span class="n">RESPOND_UNKNOWN_ERROR</span> <span class="o">=</span> <span class="mi">999</span>
+
+
+<div class="viewcode-block" id="ServerVersion">
+<a class="viewcode-back" href="../../reference/Session.html#nc_py_api._session.ServerVersion">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServerVersion</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nextcloud version information.&quot;&quot;&quot;</span>
+
+    <span class="n">major</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Major version&quot;&quot;&quot;</span>
+    <span class="n">minor</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minor version&quot;&quot;&quot;</span>
+    <span class="n">micro</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Micro version&quot;&quot;&quot;</span>
+    <span class="n">string</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Full version in string format&quot;&quot;&quot;</span>
+    <span class="n">extended_support</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Indicates if the subscription has extended support&quot;&quot;&quot;</span></div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RuntimeOptions</span><span class="p">:</span>
+    <span class="n">xdebug_session</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">timeout_dav</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">_nc_cert</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span>
+    <span class="n">upload_chunk_v2</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xdebug_session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xdebug_session&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">XDEBUG_SESSION</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npa_timeout&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">NPA_TIMEOUT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_dav</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npa_timeout_dav&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">NPA_TIMEOUT_DAV</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nc_cert</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npa_nc_cert&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">NPA_NC_CERT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_chunk_v2</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunked_upload_v2&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">CHUNKED_UPLOAD_V2</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nc_cert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nc_cert</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicConfig</span><span class="p">:</span>
+    <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">dav_endpoint</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">dav_url_suffix</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">RuntimeOptions</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">full_nc_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;nextcloud_url&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">=</span> <span class="n">full_nc_url</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">&quot;/index.php&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dav_url_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;dav_url_suffix&quot;</span><span class="p">,</span> <span class="n">raise_not_found</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dav_url_suffix</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dav_url_suffix</span> <span class="o">=</span> <span class="s2">&quot;remote.php/dav&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dav_url_suffix</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dav_url_suffix</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dav_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dav_url_suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">RuntimeOptions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_config_value</span><span class="p">(</span><span class="n">value_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_not_found</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value_name</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">value_name</span><span class="p">]</span>
+        <span class="n">value_name_upper</span> <span class="o">=</span> <span class="n">value_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value_name_upper</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">environ</span><span class="p">[</span><span class="n">value_name_upper</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">raise_not_found</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">value_name</span><span class="si">}</span><span class="s2">` is not found.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">(</span><span class="n">BasicConfig</span><span class="p">):</span>
+    <span class="n">auth</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">nc_auth_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;nc_auth_user&quot;</span><span class="p">,</span> <span class="n">raise_not_found</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">nc_auth_pass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;nc_auth_pass&quot;</span><span class="p">,</span> <span class="n">raise_not_found</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nc_auth_user</span> <span class="ow">and</span> <span class="n">nc_auth_pass</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">nc_auth_user</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AppConfig">
+<a class="viewcode-back" href="../../reference/Session.html#nc_py_api._session.AppConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppConfig</span><span class="p">(</span><span class="n">BasicConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Application configuration.&quot;&quot;&quot;</span>
+
+    <span class="n">aa_version</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;AppAPI version&quot;&quot;&quot;</span>
+    <span class="n">app_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Application ID&quot;&quot;&quot;</span>
+    <span class="n">app_version</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Application version&quot;&quot;&quot;</span>
+    <span class="n">app_secret</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Application authentication secret&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aa_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;aa_version&quot;</span><span class="p">,</span> <span class="n">raise_not_found</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">aa_version</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aa_version</span> <span class="o">=</span> <span class="s2">&quot;2.2.0&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;app_id&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;app_version&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_value</span><span class="p">(</span><span class="s2">&quot;app_secret&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NcSessionBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">adapter</span><span class="p">:</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span>
+    <span class="n">adapter_dav</span><span class="p">:</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">BasicConfig</span>
+    <span class="n">custom_headers</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="n">response_headers</span><span class="p">:</span> <span class="n">Headers</span>
+    <span class="n">_user</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">_capabilities</span><span class="p">:</span> <span class="nb">dict</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_headers</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits</span> <span class="o">=</span> <span class="n">Limits</span><span class="p">(</span><span class="n">max_keepalive_connections</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">max_connections</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">keepalive_expiry</span><span class="o">=</span><span class="mf">60.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_adapter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_adapter_dav</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ocs_regexp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ocs/v[12]\.php/|/apps/groupfolders/&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;adapter&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">restart</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_adapter</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;OCS-APIRequest&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_headers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_headers</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">XDEBUG_SESSION</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;XDEBUG_SESSION&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">XDEBUG_SESSION</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_adapter_dav</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;adapter_dav&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">restart</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adapter_dav</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_adapter</span><span class="p">(</span><span class="n">dav</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_headers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_headers</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">XDEBUG_SESSION</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adapter_dav</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;XDEBUG_SESSION&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">XDEBUG_SESSION</span><span class="p">)</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># pragma: no cover</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ae_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return base url for the AppAPI endpoints.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;/ocs/v1.php/apps/app_api/api/v1&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ae_url_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return base url for the AppAPI endpoints(version 2).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;/ocs/v1.php/apps/app_api/api/v2&quot;</span>
+
+
+<div class="viewcode-block" id="NcSessionBasic">
+<a class="viewcode-back" href="../../reference/Session.html#nc_py_api._session.NcSessionBasic">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NcSessionBasic</span><span class="p">(</span><span class="n">NcSessionBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="n">adapter</span><span class="p">:</span> <span class="n">Client</span>
+    <span class="n">adapter_dav</span><span class="p">:</span> <span class="n">Client</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ocs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">AsyncIterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">response_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_adapter</span><span class="p">()</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;request: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">nested_req</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nested_req&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">ReadTimeout</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NextcloudException</span><span class="p">(</span><span class="mi">408</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>  <span class="c1"># NO_CONTENT</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">response_data</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response_data</span>
+        <span class="n">ocs_meta</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;ocs&quot;</span><span class="p">][</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ok&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">nested_req</span>
+                <span class="ow">and</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">403</span>
+                <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;password confirmation is required&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_adapter</span><span class="p">(</span><span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">nested_req</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="n">OCSRespond</span><span class="o">.</span><span class="n">RESPOND_NOT_FOUND</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">304</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NextcloudExceptionNotModified</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NextcloudException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">],</span> <span class="n">reason</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;ocs&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_server_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/cloud/capabilities&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">[</span><span class="s2">&quot;capabilities&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nc_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerVersion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ServerVersion</span><span class="p">(</span>
+            <span class="n">major</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;major&quot;</span><span class="p">],</span>
+            <span class="n">minor</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;minor&quot;</span><span class="p">],</span>
+            <span class="n">micro</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;micro&quot;</span><span class="p">],</span>
+            <span class="n">string</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">],</span>
+            <span class="n">extended_support</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;extendedSupport&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current user ID. Can be different from the login name.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">NcSession</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="p">:</span>  <span class="c1"># do not trigger for NextcloudApp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/cloud/user&quot;</span><span class="p">)[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user</span> <span class="o">=</span> <span class="n">user_id</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">download2stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">download2fp</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">dav</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download2fp</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`fp` must be a path to file or an object with `write` method.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_adapter_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">dav</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span><span class="p">,</span>
+                <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timeout_dav</span><span class="p">,</span>
+                <span class="s2">&quot;event_hooks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_response_event</span><span class="p">]},</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="s2">&quot;event_hooks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_event_ocs</span><span class="p">],</span> <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_response_event</span><span class="p">]},</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_request_event_ocs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">str_url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ocs_regexp</span><span class="p">,</span> <span class="n">str_url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># this is OCS call</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">copy_merge_params</span><span class="p">({</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">})</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Accept&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_response_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">str_url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="c1"># we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;/ocs/v1.php/cloud/capabilities?format=json&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/cloud/user?format=json&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">str_url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_headers</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">download2fp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">adapter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter_dav</span> <span class="k">if</span> <span class="n">dav</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span>
+        <span class="k">with</span> <span class="n">adapter</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url_path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">data_chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_bytes</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)):</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data_chunk</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncNcSessionBasic</span><span class="p">(</span><span class="n">NcSessionBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="n">adapter</span><span class="p">:</span> <span class="n">AsyncClient</span>
+    <span class="n">adapter_dav</span><span class="p">:</span> <span class="n">AsyncClient</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ocs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">AsyncIterable</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">json</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">response_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_adapter</span><span class="p">()</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;request: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">nested_req</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nested_req&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">ReadTimeout</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NextcloudException</span><span class="p">(</span><span class="mi">408</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+        <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">204</span><span class="p">:</span>  <span class="c1"># NO_CONTENT</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">response_data</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response_data</span>
+        <span class="n">ocs_meta</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;ocs&quot;</span><span class="p">][</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ok&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">nested_req</span>
+                <span class="ow">and</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">403</span>
+                <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;password confirmation is required&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">):</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_adapter</span><span class="p">(</span><span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span>
+                    <span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">nested_req</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="n">OCSRespond</span><span class="o">.</span><span class="n">RESPOND_NOT_FOUND</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">304</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NextcloudExceptionNotModified</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NextcloudException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;statuscode&quot;</span><span class="p">],</span> <span class="n">reason</span><span class="o">=</span><span class="n">ocs_meta</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;ocs&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_server_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/cloud/capabilities&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">[</span><span class="s2">&quot;capabilities&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">nc_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerVersion</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_server_info</span><span class="p">()</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ServerVersion</span><span class="p">(</span>
+            <span class="n">major</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;major&quot;</span><span class="p">],</span>
+            <span class="n">minor</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;minor&quot;</span><span class="p">],</span>
+            <span class="n">micro</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;micro&quot;</span><span class="p">],</span>
+            <span class="n">string</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">],</span>
+            <span class="n">extended_support</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;extendedSupport&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current user ID. Can be different from the login name.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">AsyncNcSession</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="p">:</span>  <span class="c1"># do not trigger for NextcloudApp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_user</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/cloud/user&quot;</span><span class="p">))[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user</span> <span class="o">=</span> <span class="n">user</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download2stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">builtins</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">download2fp</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">dav</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">):</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">download2fp</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`fp` must be a path to file or an object with `write` method.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_adapter_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">dav</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dav_endpoint</span><span class="p">,</span>
+                <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timeout_dav</span><span class="p">,</span>
+                <span class="s2">&quot;event_hooks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_response_event</span><span class="p">]},</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;base_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="s2">&quot;event_hooks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_event_ocs</span><span class="p">],</span> <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_response_event</span><span class="p">]},</span>
+        <span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_request_event_ocs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">str_url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ocs_regexp</span><span class="p">,</span> <span class="n">str_url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># this is OCS call</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">copy_merge_params</span><span class="p">({</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">})</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Accept&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;application/json&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_response_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">str_url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="c1"># we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;/ocs/v1.php/cloud/capabilities?format=json&quot;</span><span class="p">,</span> <span class="s2">&quot;/ocs/v1.php/cloud/user?format=json&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">str_url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_headers</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download2fp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">adapter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter_dav</span> <span class="k">if</span> <span class="n">dav</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapter</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">adapter</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url_path</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">check_error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">data_chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">aiter_bytes</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chunk_size&quot;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)):</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data_chunk</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NcSession">
+<a class="viewcode-back" href="../../reference/Session.html#nc_py_api._session.NcSession">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NcSession</span><span class="p">(</span><span class="n">NcSessionBasic</span><span class="p">):</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">Config</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span>
+            <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">limits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">limits</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nc_cert</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_adapter_kwargs</span><span class="p">(</span><span class="n">dav</span><span class="p">),</span>
+            <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncNcSession</span><span class="p">(</span><span class="n">AsyncNcSessionBasic</span><span class="p">):</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">Config</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AsyncClient</span><span class="p">(</span>
+            <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">limits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">limits</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nc_cert</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_adapter_kwargs</span><span class="p">(</span><span class="n">dav</span><span class="p">),</span>
+            <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NcSessionAppBasic</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">AppConfig</span>
+    <span class="n">_user</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">adapter</span><span class="p">:</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span>
+    <span class="n">adapter_dav</span><span class="p">:</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">AppConfig</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sign_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">HTTPConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;EX-APP-ID&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EX-APP-ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;EX-APP-VERSION&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EX-APP-VERSION&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;AUTHORIZATION-APP-API&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AUTHORIZATION-APP-API&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">empty_headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">empty_headers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required headers:</span><span class="si">{</span><span class="n">empty_headers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;EX-APP-ID&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid EX-APP-ID:</span><span class="si">{</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;EX-APP-ID&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">username</span><span class="p">,</span> <span class="n">app_secret</span> <span class="o">=</span> <span class="n">get_username_secret_from_headers</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">app_secret</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_secret</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid App secret:</span><span class="si">{</span><span class="n">app_secret</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_secret</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">username</span>
+
+
+<div class="viewcode-block" id="NcSessionApp">
+<a class="viewcode-back" href="../../reference/Session.html#nc_py_api._session.NcSessionApp">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NcSessionApp</span><span class="p">(</span><span class="n">NcSessionAppBasic</span><span class="p">,</span> <span class="n">NcSessionBasic</span><span class="p">):</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">AppConfig</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_adapter_kwargs</span><span class="p">(</span><span class="n">dav</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;event_hooks&quot;</span><span class="p">][</span><span class="s2">&quot;request&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_auth</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span>
+            <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">limits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">limits</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nc_cert</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">r</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;AA-VERSION&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">aa_version</span><span class="p">,</span>
+                <span class="s2">&quot;EX-APP-ID&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span>
+                <span class="s2">&quot;EX-APP-VERSION&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_version</span><span class="p">,</span>
+                <span class="s2">&quot;user-agent&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ExApp/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_version</span><span class="si">}</span><span class="s2"> (httpx/</span><span class="si">{</span><span class="n">httpx_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_auth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;AUTHORIZATION-APP-API&quot;</span><span class="p">:</span> <span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_secret</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF=8&quot;</span><span class="p">))}</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncNcSessionApp</span><span class="p">(</span><span class="n">NcSessionAppBasic</span><span class="p">,</span> <span class="n">AsyncNcSessionBasic</span><span class="p">):</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="n">AppConfig</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_adapter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncClient</span> <span class="o">|</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_adapter_kwargs</span><span class="p">(</span><span class="n">dav</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;event_hooks&quot;</span><span class="p">][</span><span class="s2">&quot;request&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_auth</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AsyncClient</span><span class="p">(</span>
+            <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">limits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">limits</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">nc_cert</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">r</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;AA-VERSION&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">aa_version</span><span class="p">,</span>
+                <span class="s2">&quot;EX-APP-ID&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span>
+                <span class="s2">&quot;EX-APP-VERSION&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_version</span><span class="p">,</span>
+                <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ExApp/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_version</span><span class="si">}</span><span class="s2"> (httpx/</span><span class="si">{</span><span class="n">httpx_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_add_auth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;AUTHORIZATION-APP-API&quot;</span><span class="p">:</span> <span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">app_secret</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF=8&quot;</span><span class="p">))}</span>
+        <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
