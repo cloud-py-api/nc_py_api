@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Files API &mdash; NcPyApi 0.20.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=26ac6f1e"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="File System" href="Files.html" />
+    <link rel="prev" title="Applications Management" href="../Apps.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.20.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Nextcloud.html">Nextcloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Apps.html">Applications Management</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Files API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Files.html">File System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shares.html">File Sharing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+      <li class="breadcrumb-item active">Files API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/Files/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="files-api">
+<h1>Files API<a class="headerlink" href="#files-api" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Files.html">File System</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.files.FilesAPI"><code class="docutils literal notranslate"><span class="pre">FilesAPI</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.FsNodeInfo"><code class="docutils literal notranslate"><span class="pre">FsNodeInfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.FsNode"><code class="docutils literal notranslate"><span class="pre">FsNode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.FilePermissions"><code class="docutils literal notranslate"><span class="pre">FilePermissions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.SystemTag"><code class="docutils literal notranslate"><span class="pre">SystemTag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.LockType"><code class="docutils literal notranslate"><span class="pre">LockType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.FsNodeLockInfo"><code class="docutils literal notranslate"><span class="pre">FsNodeLockInfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.ActionFileInfo"><code class="docutils literal notranslate"><span class="pre">ActionFileInfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files.html#nc_py_api.files.ActionFileInfoEx"><code class="docutils literal notranslate"><span class="pre">ActionFileInfoEx</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Shares.html">File Sharing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Shares.html#nc_py_api.files.sharing._FilesSharingAPI"><code class="docutils literal notranslate"><span class="pre">_FilesSharingAPI</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Shares.html#nc_py_api.files.sharing.Share"><code class="docutils literal notranslate"><span class="pre">Share</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Shares.html#nc_py_api.files.sharing.ShareType"><code class="docutils literal notranslate"><span class="pre">ShareType</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../Apps.html" class="btn btn-neutral float-left" title="Applications Management" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Files.html" class="btn btn-neutral float-right" title="File System" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
