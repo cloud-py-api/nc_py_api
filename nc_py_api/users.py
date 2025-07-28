@@ -206,6 +206,10 @@ class _UsersAPI:
     def disable(self, user_id: str) -> None:
         """Disables user on the Nextcloud server."""
         self._session.ocs("PUT", f"{self._ep_base}/{user_id}/disable")
+    
+    def wipe(self, user_id: str) -> None:
+        """Disconnects user from the Nextcloud server and deletes all local data stored on the user's devices."""
+        self._session.ocs("POST", f"/ocs/v2.php/cloud/users/{user_id}/wipe")
 
     def resend_welcome_email(self, user_id: str) -> None:
         """Send welcome email for specified user again."""
