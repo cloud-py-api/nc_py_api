@@ -23,7 +23,7 @@ try:
             if body:
                 body = body.replace(b"\n", b"\r\n").replace(b"\r\r\n", b"\r\n")
             r = self._session.adapter_dav.request(
-                method, url if isinstance(url, str) else str(url), content=body, headers=headers
+                method, url if isinstance(url, str) else str(url), data=body, headers=headers
             )
             return DAVResponse(r)
 

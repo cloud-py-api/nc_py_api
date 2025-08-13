@@ -7,7 +7,7 @@ import json
 import os
 import typing
 
-import httpx
+import niquests
 
 from . import options
 from ._misc import random_string
@@ -117,7 +117,7 @@ class TalkBot:
 
     def send_message(
         self, message: str, reply_to_message: int | TalkBotMessage, silent: bool = False, token: str = ""
-    ) -> tuple[httpx.Response, str]:
+    ) -> tuple[niquests.Response, str]:
         """Send a message and returns a "reference string" to identify the message again in a "get messages" request.
 
         :param message: The message to say.
@@ -127,7 +127,7 @@ class TalkBot:
         :param silent: Flag controlling if the message should create a chat notifications for the users.
         :param token: Token of the conversation.
             Can be empty if ``reply_to_message`` is :py:class:`~nc_py_api.talk_bot.TalkBotMessage`.
-        :returns: Tuple, where fist element is :py:class:`httpx.Response` and second is a "reference string".
+        :returns: Tuple, where fist element is :py:class:`niquests.Response` and second is a "reference string".
         :raises ValueError: in case of an invalid usage.
         :raises RuntimeError: in case of a broken installation.
         """
@@ -143,7 +143,7 @@ class TalkBot:
         }
         return self._sign_send_request("POST", f"/{token}/message", params, message), reference_id
 
-    def react_to_message(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> httpx.Response:
+    def react_to_message(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> niquests.Response:
         """React to a message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to react to.
@@ -162,7 +162,7 @@ class TalkBot:
         }
         return self._sign_send_request("POST", f"/{token}/reaction/{message_id}", params, reaction)
 
-    def delete_reaction(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> httpx.Response:
+    def delete_reaction(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> niquests.Response:
         """Removes reaction from a message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to remove reaction from.
@@ -181,7 +181,7 @@ class TalkBot:
         }
         return self._sign_send_request("DELETE", f"/{token}/reaction/{message_id}", params, reaction)
 
-    def _sign_send_request(self, method: str, url_suffix: str, data: dict, data_to_sign: str) -> httpx.Response:
+    def _sign_send_request(self, method: str, url_suffix: str, data: dict, data_to_sign: str) -> niquests.Response:
         secret = get_bot_secret(self.callback_url)
         if secret is None:
             raise RuntimeError("Can't find the 'secret' of the bot. Has the bot been installed?")
@@ -189,7 +189,8 @@ class TalkBot:
         hmac_sign = hmac.new(secret, talk_bot_random.encode("UTF-8"), digestmod=hashlib.sha256)
         hmac_sign.update(data_to_sign.encode("UTF-8"))
         nc_app_cfg = BasicConfig()
-        with httpx.Client(verify=nc_app_cfg.options.nc_cert) as client:
+        with niquests.Session() as client:
+            client.verify = nc_app_cfg.options.nc_cert
             return client.request(
                 method,
                 url=nc_app_cfg.endpoint + "/ocs/v2.php/apps/spreed/api/v1/bot" + url_suffix,
@@ -234,7 +235,7 @@ class AsyncTalkBot:
 
     async def send_message(
         self, message: str, reply_to_message: int | TalkBotMessage, silent: bool = False, token: str = ""
-    ) -> tuple[httpx.Response, str]:
+    ) -> tuple[niquests.Response, str]:
         """Send a message and returns a "reference string" to identify the message again in a "get messages" request.
 
         :param message: The message to say.
@@ -244,7 +245,7 @@ class AsyncTalkBot:
         :param silent: Flag controlling if the message should create a chat notifications for the users.
         :param token: Token of the conversation.
             Can be empty if ``reply_to_message`` is :py:class:`~nc_py_api.talk_bot.TalkBotMessage`.
-        :returns: Tuple, where fist element is :py:class:`httpx.Response` and second is a "reference string".
+        :returns: Tuple, where fist element is :py:class:`niquests.Response` and second is a "reference string".
         :raises ValueError: in case of an invalid usage.
         :raises RuntimeError: in case of a broken installation.
         """
@@ -260,7 +261,9 @@ class AsyncTalkBot:
         }
         return await self._sign_send_request("POST", f"/{token}/message", params, message), reference_id
 
-    async def react_to_message(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> httpx.Response:
+    async def react_to_message(
+        self, message: int | TalkBotMessage, reaction: str, token: str = ""
+    ) -> niquests.Response:
         """React to a message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to react to.
@@ -279,7 +282,7 @@ class AsyncTalkBot:
         }
         return await self._sign_send_request("POST", f"/{token}/reaction/{message_id}", params, reaction)
 
-    async def delete_reaction(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> httpx.Response:
+    async def delete_reaction(self, message: int | TalkBotMessage, reaction: str, token: str = "") -> niquests.Response:
         """Removes reaction from a message.
 
         :param message: Message ID or :py:class:`~nc_py_api.talk_bot.TalkBotMessage` to remove reaction from.
@@ -298,7 +301,9 @@ class AsyncTalkBot:
         }
         return await self._sign_send_request("DELETE", f"/{token}/reaction/{message_id}", params, reaction)
 
-    async def _sign_send_request(self, method: str, url_suffix: str, data: dict, data_to_sign: str) -> httpx.Response:
+    async def _sign_send_request(
+        self, method: str, url_suffix: str, data: dict, data_to_sign: str
+    ) -> niquests.Response:
         secret = await aget_bot_secret(self.callback_url)
         if secret is None:
             raise RuntimeError("Can't find the 'secret' of the bot. Has the bot been installed?")
@@ -306,7 +311,9 @@ class AsyncTalkBot:
         hmac_sign = hmac.new(secret, talk_bot_random.encode("UTF-8"), digestmod=hashlib.sha256)
         hmac_sign.update(data_to_sign.encode("UTF-8"))
         nc_app_cfg = BasicConfig()
-        async with httpx.AsyncClient(verify=nc_app_cfg.options.nc_cert) as aclient:
+        async with niquests.AsyncSession() as aclient:
+            aclient.verify = nc_app_cfg.options.nc_cert
+
             return await aclient.request(
                 method,
                 url=nc_app_cfg.endpoint + "/ocs/v2.php/apps/spreed/api/v1/bot" + url_suffix,

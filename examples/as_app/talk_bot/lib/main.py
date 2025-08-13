@@ -4,7 +4,7 @@ import re
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-import httpx
+import niquests
 from fastapi import BackgroundTasks, Depends, FastAPI, Response
 
 from nc_py_api import NextcloudApp, talk_bot
@@ -32,7 +32,7 @@ def convert_currency(amount, from_currency, to_currency):
     base_url = "https://api.exchangerate-api.com/v4/latest/"
 
     # Fetch latest exchange rates
-    response = httpx.get(base_url + from_currency, timeout=60)
+    response = niquests.get(base_url + from_currency, timeout=60)
     data = response.json()
 
     if "rates" in data:

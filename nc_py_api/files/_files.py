@@ -9,7 +9,7 @@ from urllib.parse import unquote
 from xml.etree import ElementTree
 
 import xmltodict
-from httpx import Response
+from niquests import Response
 
 from .._exceptions import NextcloudException, check_error
 from .._misc import check_capabilities, clear_from_params_empty

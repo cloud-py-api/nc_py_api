@@ -70,7 +70,7 @@ nitpick_ignore_regex = [
     (r"py:class", r"ComputedFieldInfo"),
     (r"py:class", r"FieldInfo"),
     (r"py:class", r"ConfigDict"),
-    (r"py:.*", r"httpx.*"),
+    (r"py:.*", r"niquests.*"),
 ]
 
 autodoc_member_order = "bysource"

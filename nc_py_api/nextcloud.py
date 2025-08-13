@@ -4,7 +4,7 @@ import contextlib
 import typing
 from abc import ABC
 
-from httpx import Headers
+from niquests.structures import CaseInsensitiveDict
 
 from ._exceptions import NextcloudExceptionNotFound
 from ._misc import check_capabilities, require_capabilities
@@ -112,8 +112,8 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self._session.update_server_info()
 
     @property
-    def response_headers(self) -> Headers:
-        """Returns the `HTTPX headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
+    def response_headers(self) -> CaseInsensitiveDict:
+        """Returns the `Niquests headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
         return self._session.response_headers
 
     @property
@@ -216,8 +216,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         await self._session.update_server_info()
 
     @property
-    def response_headers(self) -> Headers:
-        """Returns the `HTTPX headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
+    def response_headers(self) -> CaseInsensitiveDict:
+        """Returns the `Niquests headers <https://www.python-httpx.org/api/#headers>`_ from the last response."""
         return self._session.response_headers
 
     @property

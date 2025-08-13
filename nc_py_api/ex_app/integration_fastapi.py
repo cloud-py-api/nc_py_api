@@ -9,7 +9,7 @@ import os
 import typing
 from urllib.parse import urlparse
 
-import httpx
+import niquests
 from fastapi import (
     BackgroundTasks,
     Depends,
@@ -143,7 +143,8 @@ def __fetch_model_as_file(
 ) -> str | None:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
     try:
-        with httpx.stream("GET", model_path, follow_redirects=True) as response:
+
+        with niquests.get("GET", model_path, stream=True) as response:
             if not response.is_success:
                 nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' returned {response.status_code} status.")
                 return None
@@ -171,7 +172,7 @@ def __fetch_model_as_file(
 
             with builtins.open(result_path, "wb") as file:
                 last_progress = current_progress
-                for chunk in response.iter_bytes(5 * 1024 * 1024):
+                for chunk in response.iter_raw(-1):
                     downloaded_size += file.write(chunk)
                     if total_size:
                         new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)

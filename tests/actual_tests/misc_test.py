@@ -3,7 +3,7 @@ import io
 import os
 
 import pytest
-from httpx import Request, Response
+from niquests import PreparedRequest, Response
 
 from nc_py_api import (
     AsyncNextcloud,
@@ -21,11 +21,18 @@ from nc_py_api._session import BasicConfig  # noqa
 
 @pytest.mark.parametrize("code", (995, 996, 997, 998, 999, 1000))
 def test_check_error(code):
+    resp = Response()
+
+    resp.status_code = code
+    resp.request = PreparedRequest()
+    resp.request.url = "https://example"
+    resp.request.method = "GET"
+
     if 996 <= code <= 999:
         with pytest.raises(NextcloudException):
-            check_error(Response(code, request=Request(method="GET", url="https://example")))
+            check_error(resp)
     else:
-        check_error(Response(code, request=Request(method="GET", url="https://example")))
+        check_error(resp)
 
 
 def test_nc_exception_to_str():

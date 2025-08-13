@@ -1,6 +1,6 @@
 """Exceptions for the Nextcloud API."""
 
-from httpx import Response, codes
+from niquests import HTTPError, Response
 
 
 class NextcloudException(Exception):
@@ -60,6 +60,8 @@ def check_error(response: Response, info: str = ""):
         else:
             phrase = "Unknown error"
         raise NextcloudException(status_code, reason=phrase, info=info)
-    if not codes.is_error(status_code):
-        return
-    raise NextcloudException(status_code, reason=codes(status_code).phrase, info=info)
+
+    try:
+        response.raise_for_status()
+    except HTTPError as e:
+        raise NextcloudException(status_code, reason=response.reason, info=info) from e

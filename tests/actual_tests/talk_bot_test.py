@@ -1,6 +1,6 @@
 from os import environ
 
-import httpx
+import niquests
 import pytest
 
 from nc_py_api import talk, talk_bot
@@ -88,7 +88,7 @@ async def test_list_bots_async(anc, anc_app):
 def test_chat_bot_receive_message(nc_app):
     if nc_app.talk.bots_available is False:
         pytest.skip("Need Talk bots support")
-    httpx.delete(f"{'http'}://{environ.get('APP_HOST', '127.0.0.1')}:{environ['APP_PORT']}/reset_bot_secret")
+    niquests.delete(f"{'http'}://{environ.get('APP_HOST', '127.0.0.1')}:{environ['APP_PORT']}/reset_bot_secret")
     talk_bot_inst = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
     talk_bot_inst.enabled_handler(True, nc_app)
     conversation = nc_app.talk.create_conversation(talk.ConversationType.GROUP, "admin")
@@ -136,7 +136,7 @@ def test_chat_bot_receive_message(nc_app):
 async def test_chat_bot_receive_message_async(anc_app):
     if await anc_app.talk.bots_available is False:
         pytest.skip("Need Talk bots support")
-    httpx.delete(f"{'http'}://{environ.get('APP_HOST', '127.0.0.1')}:{environ['APP_PORT']}/reset_bot_secret")
+    niquests.delete(f"{'http'}://{environ.get('APP_HOST', '127.0.0.1')}:{environ['APP_PORT']}/reset_bot_secret")
     talk_bot_inst = talk_bot.AsyncTalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
     await talk_bot_inst.enabled_handler(True, anc_app)
     conversation = await anc_app.talk.create_conversation(talk.ConversationType.GROUP, "admin")

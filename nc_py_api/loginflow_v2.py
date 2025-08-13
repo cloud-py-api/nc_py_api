@@ -5,7 +5,7 @@ import json
 import time
 from dataclasses import dataclass
 
-import httpx
+import niquests
 
 from ._exceptions import check_error
 from ._session import AsyncNcSession, NcSession
@@ -156,6 +156,6 @@ class _AsyncLoginFlowV2API:
         return r_model
 
 
-def _res_to_json(response: httpx.Response) -> dict:
+def _res_to_json(response: niquests.Response) -> dict:
     check_error(response)
     return json.loads(response.text)

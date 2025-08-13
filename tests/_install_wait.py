@@ -2,7 +2,7 @@ import re
 from sys import argv
 from time import sleep
 
-from requests import get
+from niquests import get
 
 
 def check_heartbeat(url: str, regexp: str, n_tries: int, wait_interval: float) -> int:
