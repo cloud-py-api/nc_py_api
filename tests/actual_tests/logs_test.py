@@ -128,9 +128,9 @@ def test_logging(nc_app):
 
 
 def test_recursive_logging(nc_app):
-    logging.getLogger("httpx").setLevel(logging.DEBUG)
+    logging.getLogger("niquests").setLevel(logging.DEBUG)
     log_handler = setup_nextcloud_logging()
     logger = logging.getLogger()
     logger.fatal("testing logging.fatal")
     logger.removeHandler(log_handler)
-    logging.getLogger("httpx").setLevel(logging.ERROR)
+    logging.getLogger("niquests").setLevel(logging.ERROR)

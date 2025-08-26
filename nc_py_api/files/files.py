@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from urllib.parse import quote
 
-from httpx import Headers
+from niquests.structures import CaseInsensitiveDict
 
 from .._exceptions import NextcloudException, NextcloudExceptionNotFound, check_error
 from .._misc import random_string, require_capabilities
@@ -80,7 +80,7 @@ class FilesAPI:
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
         root = build_find_request(req, path, self._session.user, self._session.capabilities)
         webdav_response = self._session.adapter_dav.request(
-            "SEARCH", "", content=element_tree_as_str(root), headers={"Content-Type": "text/xml"}
+            "SEARCH", "", data=element_tree_as_str(root), headers={"Content-Type": "text/xml"}
         )
         request_info = f"find: {self._session.user}, {req}, {path}"
         return lf_parse_webdav_response(self._session.cfg.dav_url_suffix, webdav_response, request_info)
@@ -133,7 +133,7 @@ class FilesAPI:
         """
         path = path.user_path if isinstance(path, FsNode) else path
         full_path = dav_get_obj_path(self._session.user, path)
-        response = self._session.adapter_dav.put(quote(full_path), content=content)
+        response = self._session.adapter_dav.put(quote(full_path), data=content)
         check_error(response, f"upload: user={self._session.user}, path={path}, size={len(content)}")
         return FsNode(full_path.strip("/"), **etag_fileid_from_response(response))
 
@@ -215,7 +215,7 @@ class FilesAPI:
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
         dest = self._session.cfg.dav_endpoint + quote(full_dest_path)
-        headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
+        headers = CaseInsensitiveDict({"Destination": dest.encode("utf-8"), "Overwrite": "T" if overwrite else "F"})
         response = self._session.adapter_dav.request(
             "MOVE",
             quote(dav_get_obj_path(self._session.user, path_src)),
@@ -237,7 +237,7 @@ class FilesAPI:
             self._session.user, path_dest.user_path if isinstance(path_dest, FsNode) else path_dest
         )
         dest = self._session.cfg.dav_endpoint + quote(full_dest_path)
-        headers = Headers({"Destination": dest, "Overwrite": "T" if overwrite else "F"}, encoding="utf-8")
+        headers = CaseInsensitiveDict({"Destination": dest.encode("utf-8"), "Overwrite": "T" if overwrite else "F"})
         response = self._session.adapter_dav.request(
             "COPY",
             quote(dav_get_obj_path(self._session.user, path_src)),
@@ -257,7 +257,7 @@ class FilesAPI:
         """
         root = build_list_by_criteria_req(properties, tags, self._session.capabilities)
         webdav_response = self._session.adapter_dav.request(
-            "REPORT", dav_get_obj_path(self._session.user), content=element_tree_as_str(root)
+            "REPORT", dav_get_obj_path(self._session.user), data=element_tree_as_str(root)
         )
         request_info = f"list_files_by_criteria: {self._session.user}"
         check_error(webdav_response, request_info)
@@ -272,7 +272,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
         root = build_setfav_req(value)
         webdav_response = self._session.adapter_dav.request(
-            "PROPPATCH", quote(dav_get_obj_path(self._session.user, path)), content=element_tree_as_str(root)
+            "PROPPATCH", quote(dav_get_obj_path(self._session.user, path)), data=element_tree_as_str(root)
         )
         check_error(webdav_response, f"setfav: path={path}, value={value}")
 
@@ -293,7 +293,7 @@ class FilesAPI:
         path = path.user_path if isinstance(path, FsNode) else path
 
         dest = self._session.cfg.dav_endpoint + f"/trashbin/{self._session.user}/restore/{restore_name}"
-        headers = Headers({"Destination": dest}, encoding="utf-8")
+        headers = CaseInsensitiveDict({"Destination": dest.encode("utf-8")})
         response = self._session.adapter_dav.request(
             "MOVE",
             quote(f"/trashbin/{self._session.user}/{path}"),
@@ -336,7 +336,7 @@ class FilesAPI:
         """
         require_capabilities("files.versioning", self._session.capabilities)
         dest = self._session.cfg.dav_endpoint + f"/versions/{self._session.user}/restore/{file_object.name}"
-        headers = Headers({"Destination": dest}, encoding="utf-8")
+        headers = CaseInsensitiveDict({"Destination": dest.encode("utf-8")})
         response = self._session.adapter_dav.request(
             "MOVE",
             quote(f"/versions/{self._session.user}/{file_object.user_path}"),
@@ -347,7 +347,7 @@ class FilesAPI:
     def list_tags(self) -> list[SystemTag]:
         """Returns list of the avalaible Tags."""
         root = build_list_tag_req()
-        response = self._session.adapter_dav.request("PROPFIND", "/systemtags", content=element_tree_as_str(root))
+        response = self._session.adapter_dav.request("PROPFIND", "/systemtags", data=element_tree_as_str(root))
         return build_list_tags_response(response)
 
     def get_tags(self, file_id: FsNode | int) -> list[SystemTag]:
@@ -389,7 +389,7 @@ class FilesAPI:
         tag_id = tag_id.tag_id if isinstance(tag_id, SystemTag) else tag_id
         root = build_update_tag_req(name, user_visible, user_assignable)
         response = self._session.adapter_dav.request(
-            "PROPPATCH", f"/systemtags/{tag_id}", content=element_tree_as_str(root)
+            "PROPPATCH", f"/systemtags/{tag_id}", data=element_tree_as_str(root)
         )
         check_error(response)
 
@@ -466,7 +466,7 @@ class FilesAPI:
         webdav_response = self._session.adapter_dav.request(
             "PROPFIND",
             quote(dav_path),
-            content=element_tree_as_str(root),
+            data=element_tree_as_str(root),
             headers={"Depth": "infinity" if depth == -1 else str(depth)},
         )
         return build_listdir_response(
@@ -478,7 +478,9 @@ class FilesAPI:
         _dav_path = quote(dav_get_obj_path(self._session.user, _tmp_path, root_path="/uploads"))
         _v2 = bool(self._session.cfg.options.upload_chunk_v2 and chunk_size >= 5 * 1024 * 1024)
         full_path = dav_get_obj_path(self._session.user, path)
-        headers = Headers({"Destination": self._session.cfg.dav_endpoint + quote(full_path)}, encoding="utf-8")
+        headers = CaseInsensitiveDict(
+            {"Destination": (self._session.cfg.dav_endpoint + quote(full_path)).encode("utf-8")}
+        )
         if _v2:
             response = self._session.adapter_dav.request("MKCOL", _dav_path, headers=headers)
         else:
@@ -494,11 +496,11 @@ class FilesAPI:
                 end_bytes = start_bytes + len(piece)
                 if _v2:
                     response = self._session.adapter_dav.put(
-                        _dav_path + "/" + str(chunk_number), content=piece, headers=headers
+                        _dav_path + "/" + str(chunk_number), data=piece, headers=headers
                     )
                 else:
                     _filename = str(start_bytes).rjust(15, "0") + "-" + str(end_bytes).rjust(15, "0")
-                    response = self._session.adapter_dav.put(_dav_path + "/" + _filename, content=piece)
+                    response = self._session.adapter_dav.put(_dav_path + "/" + _filename, data=piece)
                 check_error(
                     response,
                     f"upload_stream(v={_v2}): user={self._session.user}, path={path}, cur_size={end_bytes}",
