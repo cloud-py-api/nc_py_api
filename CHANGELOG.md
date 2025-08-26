@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.21.0 - 2025-08-26]
+
+### Added
+
+- Added wipe method to UsersAPI. #368 Thanks to @MrAalen
+
+### Changed
+
+- Switch from `httpx` library to the `niquests` library. #375 Thanks to @Ousret
+
 ## [0.20.2 - 2025-05-28]
 
 ### Added
