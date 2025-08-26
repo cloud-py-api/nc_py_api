@@ -5,7 +5,7 @@ import datetime
 import json
 import typing
 
-import httpx
+import niquests
 
 from ._exceptions import check_error
 from ._misc import check_capabilities, clear_from_params_empty, require_capabilities
@@ -367,6 +367,6 @@ class _AsyncNotesAPI:
         check_error(await self._session.adapter.put(self._ep_base + "/settings", json=params))
 
 
-def _res_to_json(response: httpx.Response) -> dict:
+def _res_to_json(response: niquests.Response) -> dict:
     check_error(response)
     return json.loads(response.text) if response.status_code != 304 else {}
