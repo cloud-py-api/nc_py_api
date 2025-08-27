@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import typing
+from traceback import format_exc
 from urllib.parse import urlparse
 
 import niquests
@@ -22,10 +23,10 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+from .._exceptions import ModelFetchError
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import AsyncNextcloudApp, NextcloudApp
 from ..talk_bot import TalkBotMessage
-from .defs import LogLvl
 from .misc import persistent_storage
 
 
@@ -70,9 +71,24 @@ def set_handlers(
 
         .. note:: When this parameter is ``False``, the provision of ``models_to_fetch`` is not allowed.
 
-    :param models_to_fetch: Dictionary describing which models should be downloaded during `init`.
+    :param models_to_fetch: Dictionary describing which models should be downloaded during `init` of the form:
+        .. code-block:: python
+            {
+                "model_url_1": {
+                    "save_path": "path_or_filename_to_save_the_model_to",
+                },
+                "huggingface_model_name_1": {
+                    "max_workers": 4,
+                    "cache_dir": "path_to_cache_dir",
+                    "revision": "revision_to_fetch",
+                    ...
+                },
+                ...
+            }
+
 
         .. note:: ``huggingface_hub`` package should be present for automatic models fetching.
+                  All model options are optional and can be left empty.
 
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
@@ -121,74 +137,98 @@ def __map_app_static_folders(fast_api_app: FastAPI):
 
 
 def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_start_value: int) -> None:
-    """Use for cases when you want to define custom `/init` but still need to easy download models."""
+    """Use for cases when you want to define custom `/init` but still need to easy download models.
+
+    :param nc: NextcloudApp instance.
+    :param models_to_fetch: Dictionary describing which models should be downloaded of the form:
+        .. code-block:: python
+            {
+                "model_url_1": {
+                    "save_path": "path_or_filename_to_save_the_model_to",
+                },
+                "huggingface_model_name_1": {
+                    "max_workers": 4,
+                    "cache_dir": "path_to_cache_dir",
+                    "revision": "revision_to_fetch",
+                    ...
+                },
+                ...
+            }
+
+        .. note:: ``huggingface_hub`` package should be present for automatic models fetching.
+                  All model options are optional and can be left empty.
+
+    :param progress_init_start_value: Integer value defining from which percent the progress should start.
+
+    :raises ModelFetchError: in case of a model download error.
+    :raises NextcloudException: in case of a network error reaching the Nextcloud server.
+    """
     if models:
         current_progress = progress_init_start_value
         percent_for_each = min(int((100 - progress_init_start_value) / len(models)), 99)
         for model in models:
-            if model.startswith(("http://", "https://")):
-                models[model]["path"] = __fetch_model_as_file(
-                    current_progress, percent_for_each, nc, model, models[model]
-                )
-            else:
-                models[model]["path"] = __fetch_model_as_snapshot(
-                    current_progress, percent_for_each, nc, model, models[model]
-                )
-            current_progress += percent_for_each
+            try:
+                if model.startswith(("http://", "https://")):
+                    models[model]["path"] = __fetch_model_as_file(
+                        current_progress, percent_for_each, nc, model, models[model]
+                    )
+                else:
+                    models[model]["path"] = __fetch_model_as_snapshot(
+                        current_progress, percent_for_each, nc, model, models[model]
+                    )
+                current_progress += percent_for_each
+            except BaseException as e:  # noqa pylint: disable=broad-exception-caught
+                nc.set_init_status(current_progress, f"Downloading of '{model}' failed: {e}: {format_exc()}")
+                raise ModelFetchError(f"Downloading of '{model}' failed.") from e
     nc.set_init_status(100)
 
 
 def __fetch_model_as_file(
     current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
-) -> str | None:
+) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
-    try:
+    with niquests.get(model_path, stream=True) as response:
+        if not response.ok:
+            raise ModelFetchError(
+                f"Downloading of '{model_path}' failed, returned ({response.status_code}) {response.text}"
+            )
+        downloaded_size = 0
+        linked_etag = ""
+        for each_history in response.history:
+            linked_etag = each_history.headers.get("X-Linked-ETag", "")
+            if linked_etag:
+                break
+        if not linked_etag:
+            linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
+        total_size = int(response.headers.get("Content-Length"))
+        try:
+            existing_size = os.path.getsize(result_path)
+        except OSError:
+            existing_size = 0
+        if linked_etag and total_size == existing_size:
+            with builtins.open(result_path, "rb") as file:
+                sha256_hash = hashlib.sha256()
+                for byte_block in iter(lambda: file.read(4096), b""):
+                    sha256_hash.update(byte_block)
+                if f'"{sha256_hash.hexdigest()}"' == linked_etag:
+                    nc.set_init_status(min(current_progress + progress_for_task, 99))
+                    return result_path
 
-        with niquests.get("GET", model_path, stream=True) as response:
-            if not response.is_success:
-                nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' returned {response.status_code} status.")
-                return None
-            downloaded_size = 0
-            linked_etag = ""
-            for each_history in response.history:
-                linked_etag = each_history.headers.get("X-Linked-ETag", "")
-                if linked_etag:
-                    break
-            if not linked_etag:
-                linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
-            total_size = int(response.headers.get("Content-Length"))
-            try:
-                existing_size = os.path.getsize(result_path)
-            except OSError:
-                existing_size = 0
-            if linked_etag and total_size == existing_size:
-                with builtins.open(result_path, "rb") as file:
-                    sha256_hash = hashlib.sha256()
-                    for byte_block in iter(lambda: file.read(4096), b""):
-                        sha256_hash.update(byte_block)
-                    if f'"{sha256_hash.hexdigest()}"' == linked_etag:
-                        nc.set_init_status(min(current_progress + progress_for_task, 99))
-                        return None
+        with builtins.open(result_path, "wb") as file:
+            last_progress = current_progress
+            for chunk in response.iter_raw(-1):
+                downloaded_size += file.write(chunk)
+                if total_size:
+                    new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
+                    if new_progress != last_progress:
+                        nc.set_init_status(new_progress)
+                        last_progress = new_progress
 
-            with builtins.open(result_path, "wb") as file:
-                last_progress = current_progress
-                for chunk in response.iter_raw(-1):
-                    downloaded_size += file.write(chunk)
-                    if total_size:
-                        new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
-                        if new_progress != last_progress:
-                            nc.set_init_status(new_progress)
-                            last_progress = new_progress
-
-        return result_path
-    except Exception as e:  # noqa pylint: disable=broad-exception-caught
-        nc.log(LogLvl.ERROR, f"Downloading of '{model_path}' raised an exception: {e}")
-
-    return None
+    return result_path
 
 
 def __fetch_model_as_snapshot(
-    current_progress: int, progress_for_task, nc: NextcloudApp, mode_name: str, download_options: dict
+    current_progress: int, progress_for_task, nc: NextcloudApp, model_name: str, download_options: dict
 ) -> str:
     from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
     from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
@@ -201,7 +241,7 @@ def __fetch_model_as_snapshot(
     workers = download_options.pop("max_workers", 2)
     cache = download_options.pop("cache_dir", persistent_storage())
     return snapshot_download(
-        mode_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache
+        model_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache
     )
 
 

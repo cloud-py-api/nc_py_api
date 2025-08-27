@@ -65,3 +65,7 @@ def check_error(response: Response, info: str = ""):
         response.raise_for_status()
     except HTTPError as e:
         raise NextcloudException(status_code, reason=response.reason, info=info) from e
+
+
+class ModelFetchError(Exception):
+    """Exception raised when model fetching fails."""
