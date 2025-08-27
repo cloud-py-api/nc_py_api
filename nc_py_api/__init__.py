@@ -2,6 +2,7 @@
 
 from . import ex_app, options
 from ._exceptions import (
+    ModelFetchError,
     NextcloudException,
     NextcloudExceptionNotFound,
     NextcloudMissingCapabilities,

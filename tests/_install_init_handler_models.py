@@ -5,11 +5,9 @@ from fastapi import FastAPI
 
 from nc_py_api import NextcloudApp, ex_app
 
-INVALID_URL = "https://invalid_url"
-MODEL_NAME1 = "MBZUAI/LaMini-T5-61M"
+# TO-DO: add tests when ExApp fails to initialize due to invalid model fetch
 MODEL_NAME2 = "https://huggingface.co/MBZUAI/LaMini-T5-61M/resolve/main/pytorch_model.bin"
 MODEL_NAME2_http = "http://huggingface.co/MBZUAI/LaMini-T5-61M/resolve/main/pytorch_model.bin"
-INVALID_PATH = "https://huggingface.co/invalid_path"
 SOME_FILE = "https://raw.githubusercontent.com/cloud-py-api/nc_py_api/main/README.md"
 
 
@@ -19,11 +17,8 @@ async def lifespan(_app: FastAPI):
         APP,
         enabled_handler,
         models_to_fetch={
-            INVALID_URL: {},
-            MODEL_NAME1: {},
             MODEL_NAME2: {},
             MODEL_NAME2_http: {},
-            INVALID_PATH: {},
             SOME_FILE: {},
         },
     )
@@ -35,10 +30,7 @@ APP = FastAPI(lifespan=lifespan)
 
 def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
     if enabled:
-        try:
-            assert ex_app.get_model_path(MODEL_NAME1)
-        except Exception:  # noqa
-            return "model1 not found"
+        assert ex_app.get_model_path(MODEL_NAME2)
         assert Path("pytorch_model.bin").is_file()
     return ""
 
