@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.21.1 - 2025-08-27]
+
+### Changed
+
+- ExApps: Now exception is raised during model download if there was error to prevent incorrect ExApp installation. #376
+
+### Fixed
+
+- ExApps: Broken models download ue a typo in the previous PRs. #376
+
 ## [0.21.0 - 2025-08-26]
 
 ### Added
