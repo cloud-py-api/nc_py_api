@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nc_py_api.ex_app.ui.files_actions &mdash; NcPyApi 0.21.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=6081af2d"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+        <script src="../../../../_static/tabs.js?v=3ee01567"></script>
+        <script src="../../../../_static/js/script.js?v=783f4f19"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.21.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nc_py_api.ex_app.ui.files_actions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nc_py_api.ex_app.ui.files_actions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Nextcloud API for working with drop-down file&#39;s menu.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NextcloudExceptionNotFound</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_capabilities</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..._session</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncNcSessionApp</span><span class="p">,</span> <span class="n">NcSessionApp</span>
+
+
+<div class="viewcode-block" id="UiFileActionEntry">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.ui.files_actions.UiFileActionEntry">[docs]</a>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UiFileActionEntry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Files app, right click file action entry description.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="n">raw_data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">appid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;App ID for which this entry is.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;appid&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;File action name, acts like ID.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display name of the entry.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;display_name&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For which file types this entry applies.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;mime&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For which file permissions this entry applies.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;permissions&quot;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Order of the entry in the file action list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">icon</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Relative to the ExApp url with icon or empty value to use the default one icon.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;icon&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;icon&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">action_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Relative ExApp url which will be called if user click on the entry.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">[</span><span class="s2">&quot;action_handler&quot;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;AppAPI `2.6.0` supports new version of UiActions(https://github.com/cloud-py-api/app_api/pull/284).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, mime=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mime</span><span class="si">}</span><span class="s2">, handler=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action_handler</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="_UiFilesActionsAPI">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_UiFilesActionsAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API for the drop-down menu in Nextcloud **Files app**, avalaible as **nc.ui.files_dropdown_menu.&lt;method&gt;**.&quot;&quot;&quot;</span>
+
+    <span class="n">_ep_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ui/files-actions-menu&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">NcSessionApp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+<div class="viewcode-block" id="_UiFilesActionsAPI.register">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.register">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers the files dropdown menu element.&quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;register() is deprecated and will be removed in a future version. Use register_ex() instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;actionHandler&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;icon&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mime&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mime&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="mi">31</span><span class="p">),</span>
+            <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_UiFilesActionsAPI.register_ex">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.register_ex">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``).&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;actionHandler&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;icon&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mime&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mime&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="mi">31</span><span class="p">),</span>
+            <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url_v2</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_UiFilesActionsAPI.unregister">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.unregister">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">not_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes files dropdown menu element.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">not_fail</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="_UiFilesActionsAPI.get_entry">
+<a class="viewcode-back" href="../../../../reference/ExApp.html#nc_py_api.ex_app.ui.files_actions._UiFilesActionsAPI.get_entry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UiFileActionEntry</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get information of the file action meny entry.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UiFileActionEntry</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_AsyncUiFilesActionsAPI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async API for the drop-down menu in Nextcloud **Files app**.&quot;&quot;&quot;</span>
+
+    <span class="n">_ep_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ui/files-actions-menu&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">AsyncNcSessionApp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers the files a dropdown menu element.&quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;register() is deprecated and will be removed in a future version. Use register_ex() instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;actionHandler&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;icon&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mime&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mime&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="mi">31</span><span class="p">),</span>
+            <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">register_ex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">callback_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``).&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="n">display_name</span><span class="p">,</span>
+            <span class="s2">&quot;actionHandler&quot;</span><span class="p">:</span> <span class="n">callback_url</span><span class="p">,</span>
+            <span class="s2">&quot;icon&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;icon&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mime&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mime&quot;</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">,</span> <span class="mi">31</span><span class="p">),</span>
+            <span class="s2">&quot;order&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url_v2</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">not_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes files dropdown menu element.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">not_fail</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UiFileActionEntry</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get information of the file action meny entry for current app.&quot;&quot;&quot;</span>
+        <span class="n">require_capabilities</span><span class="p">(</span><span class="s2">&quot;app_api&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UiFileActionEntry</span><span class="p">(</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ocs</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">ae_url</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_ep_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">NextcloudExceptionNotFound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

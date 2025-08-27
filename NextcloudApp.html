@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing a Nextcloud Application &mdash; NcPyApi 0.21.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=6081af2d"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script src="_static/tabs.js?v=3ee01567"></script>
+        <script src="_static/js/script.js?v=783f4f19"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Packaging 3rd party software as a Nextcloud Application" href="NextcloudApp3rdParty.html" />
+    <link rel="prev" title="More APIs" href="MoreAPIs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.21.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing a Nextcloud Application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#skeleton">Skeleton</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dockerfile">Dockerfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pack-deploy">Pack &amp; Deploy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-deploy-daemon">Docker Deploy Daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#from-skeleton-to-togif">From skeleton to ToGif</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#life-wo-appapiauthmiddleware">Life wo AppAPIAuthMiddleware</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Writing a Nextcloud Application</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/NextcloudApp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="writing-a-nextcloud-application">
+<h1>Writing a Nextcloud Application<a class="headerlink" href="#writing-a-nextcloud-application" title="Link to this heading"></a></h1>
+<p>This chapter assumes that you are already familiar with the <a class="reference external" href="https://cloud-py-api.github.io/app_api/Concepts.html">concepts</a> of the AppAPI.</p>
+<p>As a first step, let’s take a look at the structure of a basic Python application.</p>
+<section id="skeleton">
+<h2>Skeleton<a class="headerlink" href="#skeleton" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nc_py_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">NextcloudApp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">nc_py_api.ex_app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppAPIAuthMiddleware</span><span class="p">,</span> <span class="n">LogLvl</span><span class="p">,</span> <span class="n">run_app</span><span class="p">,</span> <span class="n">set_handlers</span>
+
+
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+    <span class="n">set_handlers</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">enabled_handler</span><span class="p">)</span>
+    <span class="k">yield</span>
+
+
+<span class="n">APP</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
+<span class="n">APP</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">AppAPIAuthMiddleware</span><span class="p">)</span>  <span class="c1"># set global AppAPI authentication middleware</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">enabled_handler</span><span class="p">(</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">nc</span><span class="p">:</span> <span class="n">NextcloudApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># This will be called each time application is `enabled` or `disabled`</span>
+    <span class="c1"># NOTE: `user` is unavailable on this step, so all NC API calls that require it will fail as unauthorized.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;enabled=</span><span class="si">{</span><span class="n">enabled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">LogLvl</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Hello from </span><span class="si">{</span><span class="n">nc</span><span class="o">.</span><span class="n">app_cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2"> :)&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">LogLvl</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Bye bye from </span><span class="si">{</span><span class="n">nc</span><span class="o">.</span><span class="n">app_cfg</span><span class="o">.</span><span class="n">app_name</span><span class="si">}</span><span class="s2"> :(&quot;</span><span class="p">)</span>
+    <span class="c1"># In case of an error, a non-empty short string should be returned, which will be shown to the NC administrator.</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Wrapper around `uvicorn.run`.</span>
+    <span class="c1"># You are free to call it directly, with just using the `APP_HOST` and `APP_PORT` variables from the environment.</span>
+    <span class="n">run_app</span><span class="p">(</span><span class="s2">&quot;main:APP&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;trace&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What’s going on in the skeleton?</p>
+<p>In <a class="reference external" href="https://fastapi.tiangolo.com/advanced/events/?h=lifespan#lifespan">FastAPI lifespan</a> we call the <code class="docutils literal notranslate"><span class="pre">set_handlers</span></code> function to further process the application installation logic.</p>
+<p>Since this is a simple skeleton application, we only define the <code class="docutils literal notranslate"><span class="pre">/enable</span></code> endpoint.</p>
+<p>When the application receives a request at the endpoint <code class="docutils literal notranslate"><span class="pre">/enable</span></code>,
+it should register all its functionalities in the cloud and wait for requests from Nextcloud.</p>
+<p>So, defining:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+    <span class="n">set_handlers</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">enabled_handler</span><span class="p">)</span>
+    <span class="k">yield</span>
+</pre></div>
+</div>
+<p>will register an <strong>enabled_handler</strong> that will be called <strong>both when the application is enabled and disabled</strong>.</p>
+<p>During the enablement process, you should register all the functionalities that your application offers
+in the <strong>enabled_handler</strong> and remove them during the disablement process.</p>
+<p>The AppAPI APIs is designed so that you don’t have to check whether an endpoint is already registered
+(e.g., in case of a malfunction or if the administrator manually altered something in the Nextcloud database).
+The AppAPI APIs will not fail, and in such cases, it will simply re-register without error.</p>
+<p>If any error prevents your application from functioning, you should provide a brief description in the return instead
+of an empty string, and log comprehensive information that will assist the administrator in addressing the issue.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">APP</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">)</span>
+<span class="n">APP</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">AppAPIAuthMiddleware</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With help of <code class="docutils literal notranslate"><span class="pre">AppAPIAuthMiddleware</span></code> you can add <strong>global</strong> AppAPI authentication for all future endpoints you will define.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">AppAPIAuthMiddleware</span></code> supports <strong>disable_for</strong> optional argument, where you can list all routes for which authentication should be skipped.</p>
+</div>
+<p>Repository with the skeleton sources can be found here: <a class="reference external" href="https://github.com/cloud-py-api/app-skeleton-python">app-skeleton-python</a></p>
+</section>
+<section id="dockerfile">
+<h2>Dockerfile<a class="headerlink" href="#dockerfile" title="Link to this heading"></a></h2>
+<p>We decided to keep all the examples and applications in the same format as the usual PHP applications for Nextcloud.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADD</span> <span class="n">cs</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">css</span>
+<span class="n">ADD</span> <span class="n">im</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">img</span>
+<span class="n">ADD</span> <span class="n">j</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">js</span>
+<span class="n">ADD</span> <span class="n">l10</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">l10n</span>
+<span class="n">ADD</span> <span class="n">li</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">lib</span>
+</pre></div>
+</div>
+<p>This code from dockerfile copies folders of app if they exists to the docker container.</p>
+<p><strong>nc_py_api</strong> will automatically mount <code class="docutils literal notranslate"><span class="pre">css</span></code>, <code class="docutils literal notranslate"><span class="pre">img</span></code>, <code class="docutils literal notranslate"><span class="pre">js</span></code>, <code class="docutils literal notranslate"><span class="pre">l10n</span></code> folders to the FastAPI.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you do not want automatic mount happen, pass <code class="docutils literal notranslate"><span class="pre">map_app_static=False</span></code> to <code class="docutils literal notranslate"><span class="pre">set_handlers</span></code>.</p>
+</div>
+</section>
+<section id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
+<p>Debugging an application within Docker and rebuilding it from scratch each time can be cumbersome.
+Therefore, a manual deployment option has been specifically designed for this purpose.</p>
+<p>First register <code class="docutils literal notranslate"><span class="pre">manual_install</span></code> daemon:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>php<span class="w"> </span>occ<span class="w"> </span>app_api:daemon:register<span class="w"> </span>manual_install<span class="w"> </span><span class="s2">&quot;Manual Install&quot;</span><span class="w"> </span>manual-install<span class="w"> </span>http<span class="w"> </span>host.docker.internal<span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+<p>Then, launch your application. Since this is a manual deployment, it’s your responsibility to set minimum of the environment variables.
+Here they are:</p>
+<ul class="simple">
+<li><p>APP_ID - ID of the application.</p></li>
+<li><p>APP_PORT - Port on which application listen for the requests from the Nextcloud.</p></li>
+<li><p>APP_HOST - “0.0.0.0”/”127.0.0.1”/other host value.</p></li>
+<li><p>APP_SECRET - Shared secret between Nextcloud and Application.</p></li>
+<li><p>APP_VERSION - Version of the application.</p></li>
+<li><p>AA_VERSION - Version of the AppAPI.</p></li>
+<li><p>NEXTCLOUD_URL - URL at which the application can access the Nextcloud API.</p></li>
+</ul>
+<p>You can find values for these environment variables in the <strong>Skeleton</strong> or <strong>ToGif</strong> run configurations.</p>
+<p>After launching your application, execute the following command in the Nextcloud container:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>php<span class="w"> </span>occ<span class="w"> </span>app_api:app:register<span class="w"> </span>YOUR_APP_ID<span class="w"> </span>manual_install<span class="w"> </span>--json-info<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">&quot;{\&quot;id\&quot;:\&quot;YOUR_APP_ID\&quot;,\&quot;name\&quot;:\&quot;YOUR_APP_DISPLAY_NAME\&quot;,\&quot;daemon_config_name\&quot;:\&quot;manual_install\&quot;,\&quot;version\&quot;:\&quot;YOU_APP_VERSION\&quot;,\&quot;secret\&quot;:\&quot;YOUR_APP_SECRET\&quot;,\&quot;scopes\&quot;:[\&quot;ALL\&quot;],\&quot;port\&quot;:SELECTED_PORT}&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--force-scopes<span class="w"> </span>--wait-finish
+</pre></div>
+</div>
+<p>You can see how <strong>nc_py_api</strong> registers in <code class="docutils literal notranslate"><span class="pre">scripts/dev_register.sh</span></code>.</p>
+<p>It’s advisable to write these steps as commands in a Makefile for quick use.</p>
+<p>Examples for such Makefiles can be found in this repository:
+<a class="reference external" href="https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/skeleton/Makefile">Skeleton</a> ,
+<a class="reference external" href="https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/Makefile">ToGif</a> ,
+<a class="reference external" href="https://github.com/cloud-py-api/talk_bot_ai_example/blob/main/Makefile">TalkBot</a> ,
+<a class="reference external" href="https://github.com/cloud-py-api/ui_example/blob/main/Makefile">UiExample</a></p>
+<p>During the execution of <cite>php occ app_api:app:register</cite>, the <strong>enabled_handler</strong> will be called</p>
+<p>This is likely all you need to start debugging and developing an application for Nextcloud.</p>
+</section>
+<section id="pack-deploy">
+<h2>Pack &amp; Deploy<a class="headerlink" href="#pack-deploy" title="Link to this heading"></a></h2>
+<p>Before reading this chapter, please review the basic information about deployment
+and the currently supported types of
+<a class="reference external" href="https://cloud-py-api.github.io/app_api/DeployConfigurations.html">deployments configurations</a> in the AppAPI documentation.</p>
+<section id="docker-deploy-daemon">
+<h3>Docker Deploy Daemon<a class="headerlink" href="#docker-deploy-daemon" title="Link to this heading"></a></h3>
+<p>Docker images with the application can be deployed both on Docker Hub or on GitHub.
+All examples in this repository use GitHub for deployment.</p>
+<p>To build the application locally, if you do not have a Mac with Apple Silicon, you will need to install QEMU, to be able
+to build image for both <strong>aarch64</strong> and <strong>x64</strong> architectures. Of course it is always your choice and you can support only one type
+of CPU and not both, but it is <strong>highly recommended to support both</strong> of them.</p>
+<p>First login to preferred docker registry:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>login<span class="w"> </span>ghcr.io
+</pre></div>
+</div>
+<p>After that build and push images to it:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--push<span class="w"> </span>--platform<span class="w"> </span>linux/arm64/v8,linux/amd64<span class="w"> </span>--tag<span class="w"> </span>ghcr.io/REPOSITORY_OWNER/APP_ID:N_VERSION<span class="w"> </span>.
+</pre></div>
+</div>
+<p>Where APP_ID can be repository name, and it is up to you to decide.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is not recommended to use only the <code class="docutils literal notranslate"><span class="pre">latest</span></code> tag for the application’s image, as increasing the version
+of your application will overwrite the previous version, in this case, use several tags to leave the possibility
+of installing previous versions of your application.</p>
+</div>
+</section>
+</section>
+<section id="from-skeleton-to-togif">
+<h2>From skeleton to ToGif<a class="headerlink" href="#from-skeleton-to-togif" title="Link to this heading"></a></h2>
+<p>Now it’s time to move on to something more complex than just the application skeleton.</p>
+<p>Let’s consider an example of an application that performs an action with a file when
+you click on the drop-down context menu and reports on the work done using notification.</p>
+<p>First of all, we modernize info.ixml, add the API groups we need for this to work with <strong>Files</strong> and <strong>Notifications</strong>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;scopes&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value&gt;</span>FILES<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value&gt;</span>NOTIFICATIONS<span class="nt">&lt;/value&gt;</span>
+<span class="nt">&lt;/scopes&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Full list of avalaible API scopes can be found <a class="reference external" href="https://cloud-py-api.github.io/app_api/tech_details/ApiScopes.html">here</a>.</p>
+</div>
+<p>After that we extend the <strong>enabled</strong> handler and include there registration of the drop-down list element:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enabled_handler</span><span class="p">(</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">nc</span><span class="p">:</span> <span class="n">NextcloudApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
+            <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">files_dropdown_menu</span><span class="o">.</span><span class="n">register_ex</span><span class="p">(</span><span class="s2">&quot;to_gif&quot;</span><span class="p">,</span> <span class="s2">&quot;TO GIF&quot;</span><span class="p">,</span> <span class="s2">&quot;/video_to_gif&quot;</span><span class="p">,</span> <span class="n">mime</span><span class="o">=</span><span class="s2">&quot;video&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">files_dropdown_menu</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="s2">&quot;to_gif&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+</pre></div>
+</div>
+<p>After that, let’s define the <strong>“/video_to_gif”</strong> endpoint that we had registered in previous step:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@APP</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/video_to_gif&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">video_to_gif</span><span class="p">(</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">ActionFileInfoEx</span><span class="p">,</span>
+    <span class="n">nc</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">NextcloudApp</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">nc_app</span><span class="p">)],</span>
+    <span class="n">background_tasks</span><span class="p">:</span> <span class="n">BackgroundTasks</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">for</span> <span class="n">one_file</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+        <span class="n">background_tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">convert_video_to_gif</span><span class="p">,</span> <span class="n">one_file</span><span class="o">.</span><span class="n">to_fs_node</span><span class="p">(),</span> <span class="n">nc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We see two parameters <code class="docutils literal notranslate"><span class="pre">files</span></code> and <code class="docutils literal notranslate"><span class="pre">BackgroundTasks</span></code>, let’s start with the last one, with <strong>BackgroundTasks</strong>:</p>
+<p>FastAPI <a class="reference external" href="https://fastapi.tiangolo.com/tutorial/background-tasks/?h=backgroundtasks#background-tasks">BackgroundTasks</a> documentation.</p>
+<p>Since in most cases, the tasks that the application will perform will depend either on additional network calls or
+heavy calculations and we cannot guarantee a fast completion time, it is recommended to always try to return
+an empty response (which will be a status of 200) and in the background already slowly perform operations.</p>
+<p>The last parameter is a structure describing the action and the file on which it needs to be performed,
+which is passed by the AppAPI when clicking on the drop-down context menu of the file.</p>
+<p>We use the built-in <code class="docutils literal notranslate"><span class="pre">to_fs_node</span></code> method of <a class="reference internal" href="reference/Files/Files.html#nc_py_api.files.ActionFileInfo" title="nc_py_api.files.ActionFileInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ActionFileInfo</span></code></a> to get a standard
+<a class="reference internal" href="reference/Files/Files.html#nc_py_api.files.FsNode" title="nc_py_api.files.FsNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">FsNode</span></code></a> class that describes the file and pass the FsNode class instance to the background task.</p>
+<p>In the <strong>convert_video_to_gif</strong> function, a standard conversion using <code class="docutils literal notranslate"><span class="pre">OpenCV</span></code> from a video file to a GIF image occurs,
+and since this is not directly related to working with NextCloud, we will skip this for now.</p>
+<p><strong>ToGif</strong> example <a class="reference external" href="https://github.com/cloud-py-api/nc_py_api/blob/main/examples/as_app/to_gif/lib/main.py">full source</a> code.</p>
+</section>
+<section id="life-wo-appapiauthmiddleware">
+<h2>Life wo AppAPIAuthMiddleware<a class="headerlink" href="#life-wo-appapiauthmiddleware" title="Link to this heading"></a></h2>
+<p>If for some reason you do not want to use global AppAPI authentication <strong>nc_py_api</strong> provides a FastAPI Dependency for authentication your endpoints.</p>
+<p>This is a modified endpoint from <code class="docutils literal notranslate"><span class="pre">to_gif</span></code> example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@APP</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/video_to_gif&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">video_to_gif</span><span class="p">(</span>
+    <span class="n">file</span><span class="p">:</span> <span class="n">ActionFileInfo</span><span class="p">,</span>
+    <span class="n">nc</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">NextcloudApp</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">nc_app</span><span class="p">)],</span>
+    <span class="n">background_tasks</span><span class="p">:</span> <span class="n">BackgroundTasks</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">background_tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">convert_video_to_gif</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">actionFile</span><span class="o">.</span><span class="n">to_fs_node</span><span class="p">(),</span> <span class="n">nc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here we see: <strong>nc: Annotated[NextcloudApp, Depends(nc_app)]</strong></p>
+<p>For those who already know how FastAPI works, everything should be clear by now,
+and for those who have not, it is very important to understand that:</p>
+<blockquote>
+<div><p>It is a declaration of FastAPI <a class="reference external" href="https://fastapi.tiangolo.com/tutorial/dependencies/#dependencies">dependency</a> to be executed
+before the code of <strong>video_to_gif</strong> starts execution.</p>
+</div></blockquote>
+<p>And this required dependency handles authentication and returns an instance of the <a class="reference internal" href="reference/Nextcloud.html#nc_py_api.nextcloud.NextcloudApp" title="nc_py_api.nextcloud.NextcloudApp"><code class="xref py py-class docutils literal notranslate"><span class="pre">NextcloudApp</span></code></a>
+class that allows you to make requests to Nextcloud.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>NcPyAPI is clever enough to detect whether global authentication handler is enabled, and not perform authentication twice for performance reasons.</p>
+</div>
+<p>This chapter ends here, but the next topics are even more intriguing.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="MoreAPIs.html" class="btn btn-neutral float-left" title="More APIs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="NextcloudApp3rdParty.html" class="btn btn-neutral float-right" title="Packaging 3rd party software as a Nextcloud Application" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
