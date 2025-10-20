@@ -4,6 +4,8 @@ Each setting only affects newly created instances of **Nextcloud**/**NextcloudAp
 Specifying options in **kwargs** has higher priority than this.
 """
 
+# pylint: disable=invalid-name
+
 from os import environ
 
 from dotenv import load_dotenv
