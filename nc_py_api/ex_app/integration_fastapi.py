@@ -61,6 +61,7 @@ def set_handlers(
     default_init: bool = True,
     models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
+    trigger_handler: typing.Callable[[str], typing.Awaitable[None] | None] | None = None,
 ):
     """Defines handlers for the application.
 
@@ -93,6 +94,8 @@ def set_handlers(
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
+
+    :param trigger_handler: callback that is called for task processing `trigger` events with the id of the provider.
     """
     if models_to_fetch is not None and default_init is False:
         raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
@@ -124,6 +127,21 @@ def set_handlers(
 
     if map_app_static:
         __map_app_static_folders(fast_api_app)
+
+    if trigger_handler:
+        if asyncio.iscoroutinefunction(trigger_handler):
+
+            @fast_api_app.post("/trigger")
+            async def trigger_callback(providerId: str):# pylint: disable=invalid-name
+                await trigger_handler(providerId)
+                return JSONResponse(content={})
+
+        else:
+
+            @fast_api_app.post("/trigger")
+            def trigger_callback(providerId: str):# pylint: disable=invalid-name
+                trigger_handler(providerId)
+                return JSONResponse(content={})
 
 
 def __map_app_static_folders(fast_api_app: FastAPI):
