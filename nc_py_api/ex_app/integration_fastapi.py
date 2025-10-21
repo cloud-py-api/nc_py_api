@@ -132,14 +132,14 @@ def set_handlers(
         if asyncio.iscoroutinefunction(trigger_handler):
 
             @fast_api_app.post("/trigger")
-            async def trigger_callback(providerId: str):# pylint: disable=invalid-name
+            async def trigger_callback(providerId: str):  # pylint: disable=invalid-name
                 await trigger_handler(providerId)
                 return JSONResponse(content={})
 
         else:
 
             @fast_api_app.post("/trigger")
-            def trigger_callback(providerId: str):# pylint: disable=invalid-name
+            def trigger_callback(providerId: str):  # pylint: disable=invalid-name
                 trigger_handler(providerId)
                 return JSONResponse(content={})
 
