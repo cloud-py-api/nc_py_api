@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First steps &mdash; NcPyApi 0.22.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5686f5df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script src="_static/tabs.js?v=3ee01567"></script>
+        <script src="_static/js/script.js?v=783f4f19"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="More APIs" href="MoreAPIs.html" />
+    <link rel="prev" title="Installation" href="Installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.22.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">First steps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basics">Basics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-nextcloud-client-class">Creating Nextcloud client class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-nextcloud-capabilities">Checking Nextcloud capabilities</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#files">Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-list-of-files-of-user">Getting list of files of User</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uploading-a-single-file">Uploading a single file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#downloading-a-single-file">Downloading a single file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#searching-for-a-file">Searching for a file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">First steps</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/FirstSteps.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="first-steps">
+<span id="id1"></span><h1>First steps<a class="headerlink" href="#first-steps" title="Link to this heading"></a></h1>
+<p>For this part, you will need an environment with <strong>nc_py_api</strong> installed and Nextcloud version 26 or higher.</p>
+<p>Full support is only available from version <code class="docutils literal notranslate"><span class="pre">27.1</span></code> of Nextcloud.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In many cases, even if you want to develop an application,
+it’s a good idea to first debug and develop part of it as a client.</p>
+</div>
+<section id="basics">
+<h2>Basics<a class="headerlink" href="#basics" title="Link to this heading"></a></h2>
+<section id="creating-nextcloud-client-class">
+<h3>Creating Nextcloud client class<a class="headerlink" href="#creating-nextcloud-client-class" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">nc_py_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Nextcloud</span>
+
+
+<span class="n">nc</span> <span class="o">=</span> <span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">nc_auth_pass</span></code> can be usual Nextcloud application password.</p>
+<p>To test if this works, let’s print the capabilities of the Nextcloud instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">dumps</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nc_py_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Nextcloud</span>
+
+
+<span class="n">nc</span> <span class="o">=</span> <span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+<span class="n">pretty_capabilities</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">(</span><span class="n">nc</span><span class="o">.</span><span class="n">capabilities</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pretty_capabilities</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="checking-nextcloud-capabilities">
+<h3>Checking Nextcloud capabilities<a class="headerlink" href="#checking-nextcloud-capabilities" title="Link to this heading"></a></h3>
+<p>In most cases, APIs perform capability checks before invoking them and raise a <a class="reference internal" href="reference/Exceptions.html#nc_py_api._exceptions.NextcloudMissingCapabilities" title="nc_py_api._exceptions.NextcloudMissingCapabilities"><code class="xref py py-class docutils literal notranslate"><span class="pre">NextcloudMissingCapabilities</span></code></a>
+exception if the Nextcloud instance lacks the requisite capability.
+However, there are situations where this approach might not be the most convenient,
+and you may wish to earlier whether a certain capability is available and active.</p>
+<p>To address this need, the <code class="docutils literal notranslate"><span class="pre">check_capabilities</span></code> method is provided.
+This method offers a straightforward way to proactively check for the existence and status of a particular capability.</p>
+<p>Using this method is quite simple:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">nc_py_api</span>
+
+
+<span class="n">nc</span> <span class="o">=</span> <span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">nc</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing&quot;</span><span class="p">):</span>  <span class="c1"># check one capability</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sharing API is not present.&quot;</span><span class="p">)</span>
+
+<span class="c1"># check child values in the same call</span>
+<span class="k">if</span> <span class="n">nc</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">(</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sharing API is present, but is not enabled.&quot;</span><span class="p">)</span>
+
+<span class="c1"># check multiply capabilities at one</span>
+<span class="n">missing_cap</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">check_capabilities</span><span class="p">([</span><span class="s2">&quot;files_sharing.api_enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;user_status.enabled&quot;</span><span class="p">])</span>
+<span class="k">if</span> <span class="n">missing_cap</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing capabilities: </span><span class="si">{</span><span class="n">missing_cap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="files">
+<h2>Files<a class="headerlink" href="#files" title="Link to this heading"></a></h2>
+<section id="getting-list-of-files-of-user">
+<h3>Getting list of files of User<a class="headerlink" href="#getting-list-of-files-of-user" title="Link to this heading"></a></h3>
+<p>This is a hard way to get list of all files recursively:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">nc_py_api</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># create Nextcloud client instance class</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">nc_py_api</span><span class="o">.</span><span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+        <span class="c1"># usual recursive traversing over directories</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_dir</span><span class="p">:</span>
+                <span class="n">list_dir</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">user_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Files on the instance for the selected user:&quot;</span><span class="p">)</span>
+    <span class="n">list_dir</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code do the same in one DAV call, but prints <strong>directories</strong> in addition to files:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">nc_py_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Nextcloud</span>
+
+
+<span class="n">nc</span> <span class="o">=</span> <span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Files &amp; folders on the instance for the selected user:&quot;</span><span class="p">)</span>
+<span class="n">all_files_folders</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">all_files_folders</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">user_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To print only files, you can use list comprehension:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Files on the instance for the selected user:&quot;</span><span class="p">)</span>
+<span class="n">all_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">is_dir</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">all_files</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">user_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="uploading-a-single-file">
+<h3>Uploading a single file<a class="headerlink" href="#uploading-a-single-file" title="Link to this heading"></a></h3>
+<p>It is always better to use <code class="docutils literal notranslate"><span class="pre">upload_stream</span></code> instead of <code class="docutils literal notranslate"><span class="pre">upload</span></code> as it works
+with chunks and <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">future</span></code> will support <strong>multi threaded</strong> upload.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>  <span class="c1"># this example requires `pillow` to be installed</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">nc_py_api</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">nc_py_api</span><span class="o">.</span><span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">Image</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="s2">&quot;RGB&quot;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="n">Image</span><span class="o">.</span><span class="n">linear_gradient</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">),</span>
+            <span class="n">Image</span><span class="o">.</span><span class="n">linear_gradient</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">ROTATE_90</span><span class="p">),</span>
+            <span class="n">Image</span><span class="o">.</span><span class="n">linear_gradient</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">ROTATE_180</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;PNG&quot;</span>
+    <span class="p">)</span>  <span class="c1"># saving image to the buffer</span>
+    <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># setting the pointer to the start of buffer</span>
+    <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">upload_stream</span><span class="p">(</span><span class="s2">&quot;RGB.png&quot;</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>  <span class="c1"># uploading file from the memory to the user&#39;s root folder</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="downloading-a-single-file">
+<h3>Downloading a single file<a class="headerlink" href="#downloading-a-single-file" title="Link to this heading"></a></h3>
+<p>A very simple example of downloading an image as one piece of data to memory and displaying it.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For big files, it is always better to use <code class="docutils literal notranslate"><span class="pre">download2stream</span></code> method, as it uses chunks.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>  <span class="c1"># this example requires `pillow` to be installed</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">nc_py_api</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># run this example after ``files_upload.py`` or adjust the image file path.</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">nc_py_api</span><span class="o">.</span><span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+    <span class="n">rgb_image</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;RGB.png&quot;</span><span class="p">)</span>
+    <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">rgb_image</span><span class="p">))</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># wrap `bytes` into BytesIO for Pillow</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="searching-for-a-file">
+<h3>Searching for a file<a class="headerlink" href="#searching-for-a-file" title="Link to this heading"></a></h3>
+<p>Example of using <code class="docutils literal notranslate"><span class="pre">file.find()</span></code> to search for file objects.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We welcome the idea of how to make the definition of search queries more friendly.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">nc_py_api</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># create Nextcloud client instance class</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">nc_py_api</span><span class="o">.</span><span class="n">Nextcloud</span><span class="p">(</span><span class="n">nextcloud_url</span><span class="o">=</span><span class="s2">&quot;http://nextcloud.local&quot;</span><span class="p">,</span> <span class="n">nc_auth_user</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">nc_auth_pass</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for all files which names ends with `.txt`:&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">find</span><span class="p">([</span><span class="s2">&quot;like&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;%.txt&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for all files which name is equal to `Nextcloud_Server_Administration_Manual.pdf`:&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">find</span><span class="p">([</span><span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;Nextcloud_Server_Administration_Manual.pdf&quot;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<p>Once you have a good understanding of working with files, you can move on to more APIs.</p>
+<p>You don’t have to learn them all at the same time, but it’s good to at least have a general idea, so let’s go with
+<a class="reference internal" href="MoreAPIs.html#more-apis"><span class="std std-ref">More APIs</span></a>!</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="MoreAPIs.html" class="btn btn-neutral float-right" title="More APIs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

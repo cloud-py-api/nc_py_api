@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Options &mdash; NcPyApi 0.22.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5686f5df"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script src="_static/tabs.js?v=3ee01567"></script>
+        <script src="_static/js/script.js?v=783f4f19"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference/index.html" />
+    <link rel="prev" title="Writing Nextcloud App with UI" href="NextcloudUiApp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.22.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Options</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nc_py_api.options.XDEBUG_SESSION"><code class="docutils literal notranslate"><span class="pre">XDEBUG_SESSION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nc_py_api.options.NPA_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">NPA_TIMEOUT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nc_py_api.options.NPA_TIMEOUT_DAV"><code class="docutils literal notranslate"><span class="pre">NPA_TIMEOUT_DAV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nc_py_api.options.NPA_NC_CERT"><code class="docutils literal notranslate"><span class="pre">NPA_NC_CERT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nc_py_api.options.CHUNKED_UPLOAD_V2"><code class="docutils literal notranslate"><span class="pre">CHUNKED_UPLOAD_V2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-examples">Usage examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-kwargs">Using kwargs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#with-env">With .env</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-at-module-level">Modifying at module level</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Options</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Options.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="options">
+<span id="id1"></span><h1>Options<a class="headerlink" href="#options" title="Link to this heading"></a></h1>
+<p id="module-nc_py_api.options">Options to change nc_py_api’s runtime behavior.</p>
+<p>Each setting only affects newly created instances of <strong>Nextcloud</strong>/<strong>NextcloudApp</strong> class, unless otherwise specified.
+Specifying options in <strong>kwargs</strong> has higher priority than this.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="nc_py_api.options.XDEBUG_SESSION">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.options.</span></span><span class="sig-name descname"><span class="pre">XDEBUG_SESSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#nc_py_api.options.XDEBUG_SESSION" title="Link to this definition"></a></dt>
+<dd><p>Dev option, for debugging PHP code.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nc_py_api.options.NPA_TIMEOUT">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.options.</span></span><span class="sig-name descname"><span class="pre">NPA_TIMEOUT</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#nc_py_api.options.NPA_TIMEOUT" title="Link to this definition"></a></dt>
+<dd><p>Default timeout for OCS API calls. Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable timeouts for development.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nc_py_api.options.NPA_TIMEOUT_DAV">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.options.</span></span><span class="sig-name descname"><span class="pre">NPA_TIMEOUT_DAV</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">90</span></em><a class="headerlink" href="#nc_py_api.options.NPA_TIMEOUT_DAV" title="Link to this definition"></a></dt>
+<dd><p>File operations timeout, usually it is OCS timeout multiplied by 3.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nc_py_api.options.NPA_NC_CERT">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.options.</span></span><span class="sig-name descname"><span class="pre">NPA_NC_CERT</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#nc_py_api.options.NPA_NC_CERT" title="Link to this definition"></a></dt>
+<dd><p>Option to enable/disable Nextcloud certificate verification.</p>
+<p>SSL certificates (a.k.a CA bundle) used to  verify the identity of requested hosts. Either <strong>True</strong> (default CA bundle),
+a path to an SSL certificate file, or <strong>False</strong> (which will disable verification).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nc_py_api.options.CHUNKED_UPLOAD_V2">
+<span class="sig-prename descclassname"><span class="pre">nc_py_api.options.</span></span><span class="sig-name descname"><span class="pre">CHUNKED_UPLOAD_V2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#nc_py_api.options.CHUNKED_UPLOAD_V2" title="Link to this definition"></a></dt>
+<dd><p>Option to enable/disable <strong>version 2</strong> chunked upload(better Object Storages support).</p>
+<p>Additional information can be found in Nextcloud documentation:
+<a class="reference external" href="https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/chunking.html#chunked-upload-v2">Chunked file upload V2</a></p>
+</dd></dl>
+
+<section id="usage-examples">
+<h2>Usage examples<a class="headerlink" href="#usage-examples" title="Link to this heading"></a></h2>
+<section id="using-kwargs">
+<h3>Using kwargs<a class="headerlink" href="#using-kwargs" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The names of the options if you wish to specify it in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> is <strong>lowercase</strong>.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nc_client</span> <span class="o">=</span> <span class="n">Nextcloud</span><span class="p">(</span><span class="n">xdebug_session</span><span class="o">=</span><span class="s2">&quot;PHPSTORM&quot;</span><span class="p">,</span> <span class="n">npa_nc_cert</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Will set <cite>XDEBUG_SESSION</cite> to <code class="docutils literal notranslate"><span class="pre">&quot;PHPSTORM&quot;</span></code> and <cite>NPA_NC_CERT</cite> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</section>
+<section id="with-env">
+<h3>With .env<a class="headerlink" href="#with-env" title="Link to this heading"></a></h3>
+<p>Place <strong>.env</strong> file in your project’s directory, and it will be automatically loaded using <a class="reference external" href="https://github.com/theskumar/python-dotenv">dotenv</a></p>
+<p><cite>Loading occurs only once, when “nc_py_api” is imported into the Python interpreter.</cite></p>
+</section>
+<section id="modifying-at-module-level">
+<h3>Modifying at module level<a class="headerlink" href="#modifying-at-module-level" title="Link to this heading"></a></h3>
+<p>Import <strong>nc_py_api</strong> and modify options by setting values you need directly in <strong>nc_py_api.options</strong>,
+and all newly created classes will respect that.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">nc_py_api</span>
+
+<span class="n">nc_py_api</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">NPA_TIMEOUT</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">nc_py_api</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">NPA_TIMEOUT_DAV</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case you debugging PHP code it is always a good idea to set <strong>Timeouts</strong> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="NextcloudUiApp.html" class="btn btn-neutral float-left" title="Writing Nextcloud App with UI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference/index.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
