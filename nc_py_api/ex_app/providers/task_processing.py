@@ -142,7 +142,9 @@ class _TaskProcessingProviderAPI:
                 return r
         return {}
 
-    def next_task_batch(self, provider_ids: list[str], task_types: list[str], number_of_tasks: int) -> dict[str, typing.Any]:
+    def next_task_batch(
+        self, provider_ids: list[str], task_types: list[str], number_of_tasks: int
+    ) -> dict[str, typing.Any]:
         """
         Get the next n task processing tasks from Nextcloud.
         Available starting with Nextcloud 33
@@ -235,7 +237,9 @@ class _AsyncTaskProcessingProviderAPI:
                 return r
         return {}
 
-    async def next_task_batch(self, provider_ids: list[str], task_types: list[str], number_of_tasks: int) -> dict[str, typing.Any]:
+    async def next_task_batch(
+        self, provider_ids: list[str], task_types: list[str], number_of_tasks: int
+    ) -> dict[str, typing.Any]:
         """
         Get the next n task processing tasks from Nextcloud.
         Available starting with Nextcloud 33
