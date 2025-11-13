@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nextcloud &mdash; NcPyApi 0.22.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5686f5df"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/tabs.js?v=3ee01567"></script>
+        <script src="../_static/js/script.js?v=783f4f19"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="External Application" href="ExApp.html" />
+    <link rel="prev" title="Reference" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.22.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudApp3rdParty.html">Packaging 3rd party software as a Nextcloud Application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Nextcloud</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud"><code class="docutils literal notranslate"><span class="pre">Nextcloud</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.__init__"><code class="docutils literal notranslate"><span class="pre">Nextcloud.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.capabilities"><code class="docutils literal notranslate"><span class="pre">Nextcloud.capabilities</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.check_capabilities"><code class="docutils literal notranslate"><span class="pre">Nextcloud.check_capabilities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.download_log"><code class="docutils literal notranslate"><span class="pre">Nextcloud.download_log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.ocs"><code class="docutils literal notranslate"><span class="pre">Nextcloud.ocs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.perform_login"><code class="docutils literal notranslate"><span class="pre">Nextcloud.perform_login()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.response_headers"><code class="docutils literal notranslate"><span class="pre">Nextcloud.response_headers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.srv_version"><code class="docutils literal notranslate"><span class="pre">Nextcloud.srv_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.theme"><code class="docutils literal notranslate"><span class="pre">Nextcloud.theme</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.update_server_info"><code class="docutils literal notranslate"><span class="pre">Nextcloud.update_server_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.apps"><code class="docutils literal notranslate"><span class="pre">Nextcloud.apps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.activity"><code class="docutils literal notranslate"><span class="pre">Nextcloud.activity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.cal"><code class="docutils literal notranslate"><span class="pre">Nextcloud.cal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.files"><code class="docutils literal notranslate"><span class="pre">Nextcloud.files</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.preferences"><code class="docutils literal notranslate"><span class="pre">Nextcloud.preferences</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.notes"><code class="docutils literal notranslate"><span class="pre">Nextcloud.notes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.notifications"><code class="docutils literal notranslate"><span class="pre">Nextcloud.notifications</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.talk"><code class="docutils literal notranslate"><span class="pre">Nextcloud.talk</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.users"><code class="docutils literal notranslate"><span class="pre">Nextcloud.users</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.users_groups"><code class="docutils literal notranslate"><span class="pre">Nextcloud.users_groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.user_status"><code class="docutils literal notranslate"><span class="pre">Nextcloud.user_status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.weather_status"><code class="docutils literal notranslate"><span class="pre">Nextcloud.weather_status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.webhooks"><code class="docutils literal notranslate"><span class="pre">Nextcloud.webhooks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.loginflow_v2"><code class="docutils literal notranslate"><span class="pre">Nextcloud.loginflow_v2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.Nextcloud.user"><code class="docutils literal notranslate"><span class="pre">Nextcloud.user</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp"><code class="docutils literal notranslate"><span class="pre">NextcloudApp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.capabilities"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.capabilities</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.check_capabilities"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.check_capabilities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.download_log"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.download_log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.ocs"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.ocs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.perform_login"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.perform_login()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.response_headers"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.response_headers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.srv_version"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.srv_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.theme"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.theme</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.update_server_info"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.update_server_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.apps"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.apps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.activity"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.activity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.cal"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.cal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.files"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.files</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.preferences"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.preferences</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.notes"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.notes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.notifications"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.notifications</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.talk"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.talk</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.users"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.users</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.users_groups"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.users_groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.user_status"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.user_status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.weather_status"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.weather_status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.webhooks"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.webhooks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.appconfig_ex"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.appconfig_ex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.preferences_ex"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.preferences_ex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.ui"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.ui</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.providers"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.providers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.occ_commands"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.occ_commands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.enabled_state"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.enabled_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.log"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.users_list"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.users_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.user"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.user</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.set_user"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.set_user()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.app_cfg"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.app_cfg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.register_talk_bot"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.register_talk_bot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.unregister_talk_bot"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.unregister_talk_bot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nc_py_api.nextcloud.NextcloudApp.set_init_status"><code class="docutils literal notranslate"><span class="pre">NextcloudApp.set_init_status()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ExApp.html">External Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Apps.html">Applications Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Files/index.html">Files API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Users/index.html">Users API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Talk.html">Talk API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TalkBot.html">Talk Bot API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Calendar.html">Calendar API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ActivityApp.html">Activity App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Notes.html">Notes API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Session.html">Session Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LoginFlowV2.html">LoginFlow V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Webhooks.html">Webhooks API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+      <li class="breadcrumb-item active">Nextcloud</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/Nextcloud.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="nextcloud">
+<h1>Nextcloud<a class="headerlink" href="#nextcloud" title="Link to this heading"></a></h1>
+<p>Two base classes for working with Nextcloud. The first for working as a client, the second as an application.</p>
+<p>All required functionality is incorporated in them, they contains all other classes required to work with the Nextcloud.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.nextcloud.</span></span><span class="sig-name descname"><span class="pre">Nextcloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#Nextcloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud client class.</p>
+<p>Allows you to connect to Nextcloud and perform operations on files, shares, users, and everything else.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#Nextcloud.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.__init__" title="Link to this definition"></a></dt>
+<dd><p>If the parameters are not specified, they will be taken from the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nextcloud_url</strong> – url of the nextcloud instance.</p></li>
+<li><p><strong>nc_auth_user</strong> – login username. Optional.</p></li>
+<li><p><strong>nc_auth_pass</strong> – password or app-password for the username. Optional.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.capabilities">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">capabilities</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.capabilities" title="Link to this definition"></a></dt>
+<dd><p>Returns the capabilities of the Nextcloud instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.check_capabilities">
+<span class="sig-name descname"><span class="pre">check_capabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capabilities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.check_capabilities" title="Link to this definition"></a></dt>
+<dd><p>Returns the list with missing capabilities if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.download_log">
+<span class="sig-name descname"><span class="pre">download_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.download_log" title="Link to this definition"></a></dt>
+<dd><p>Downloads Nextcloud log file. Requires Admin privileges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.ocs">
+<span class="sig-name descname"><span class="pre">ocs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.14)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.ocs" title="Link to this definition"></a></dt>
+<dd><p>Performs OCS call and returns OCS response payload data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.perform_login">
+<span class="sig-name descname"><span class="pre">perform_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.perform_login" title="Link to this definition"></a></dt>
+<dd><p>Performs login into Nextcloud if not already logged in; manual invocation of this method is unnecessary.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.response_headers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">CaseInsensitiveDict</span></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.response_headers" title="Link to this definition"></a></dt>
+<dd><p>Returns the <a class="reference external" href="https://www.python-httpx.org/api/#headers">Niquests headers</a> from the last response.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.srv_version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">srv_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Session.html#nc_py_api._session.ServerVersion" title="nc_py_api._session.ServerVersion"><span class="pre">ServerVersion</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.srv_version" title="Link to this definition"></a></dt>
+<dd><p>Returns dictionary with the server version.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.theme">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">theme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Session.html#nc_py_api._theming.ThemingInfo" title="nc_py_api._theming.ThemingInfo"><span class="pre">ThemingInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.theme" title="Link to this definition"></a></dt>
+<dd><p>Returns Theme information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.update_server_info">
+<span class="sig-name descname"><span class="pre">update_server_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.update_server_info" title="Link to this definition"></a></dt>
+<dd><p>Updates the capabilities and the Nextcloud version.</p>
+<p><em>In normal cases, it is called automatically and there is no need to call it manually.</em></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.apps">
+<span class="sig-name descname"><span class="pre">apps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Apps.html#nc_py_api.apps._AppsAPI" title="nc_py_api.apps._AppsAPI"><span class="pre">_AppsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.apps" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for App management</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.activity">
+<span class="sig-name descname"><span class="pre">activity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="ActivityApp.html#nc_py_api.activity._ActivityAPI" title="nc_py_api.activity._ActivityAPI"><span class="pre">_ActivityAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.activity" title="Link to this definition"></a></dt>
+<dd><p>Activity Application API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.cal">
+<span class="sig-name descname"><span class="pre">cal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Calendar.html#nc_py_api.calendar_api._CalendarAPI" title="nc_py_api.calendar_api._CalendarAPI"><span class="pre">_CalendarAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.cal" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Calendar API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.files">
+<span class="sig-name descname"><span class="pre">files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Files/Files.html#nc_py_api.files.files.FilesAPI" title="nc_py_api.files.files.FilesAPI"><span class="pre">FilesAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.files" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for File System and Files Sharing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.preferences">
+<span class="sig-name descname"><span class="pre">preferences</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Apps.html#nc_py_api._preferences.PreferencesAPI" title="nc_py_api._preferences.PreferencesAPI"><span class="pre">PreferencesAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.preferences" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud User Preferences API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.notes">
+<span class="sig-name descname"><span class="pre">notes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Notes.html#nc_py_api.notes._NotesAPI" title="nc_py_api.notes._NotesAPI"><span class="pre">_NotesAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.notes" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Notes API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.notifications">
+<span class="sig-name descname"><span class="pre">notifications</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/Notifications.html#nc_py_api.notifications._NotificationsAPI" title="nc_py_api.notifications._NotificationsAPI"><span class="pre">_NotificationsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.notifications" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing user notifications</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.talk">
+<span class="sig-name descname"><span class="pre">talk</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Talk.html#nc_py_api._talk_api._TalkAPI" title="nc_py_api._talk_api._TalkAPI"><span class="pre">_TalkAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.talk" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Talk API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.users">
+<span class="sig-name descname"><span class="pre">users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/Users.html#nc_py_api.users._UsersAPI" title="nc_py_api.users._UsersAPI"><span class="pre">_UsersAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.users" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing users.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.users_groups">
+<span class="sig-name descname"><span class="pre">users_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/UsersGroups.html#nc_py_api.users_groups._UsersGroupsAPI" title="nc_py_api.users_groups._UsersGroupsAPI"><span class="pre">_UsersGroupsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.users_groups" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing user groups.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.user_status">
+<span class="sig-name descname"><span class="pre">user_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/UsersStatus.html#nc_py_api.user_status._UserStatusAPI" title="nc_py_api.user_status._UserStatusAPI"><span class="pre">_UserStatusAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.user_status" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing users statuses</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.weather_status">
+<span class="sig-name descname"><span class="pre">weather_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/WeatherStatus.html#nc_py_api.weather_status._WeatherStatusAPI" title="nc_py_api.weather_status._WeatherStatusAPI"><span class="pre">_WeatherStatusAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.weather_status" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing user weather statuses</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.webhooks">
+<span class="sig-name descname"><span class="pre">webhooks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Webhooks.html#nc_py_api.webhooks._WebhooksAPI" title="nc_py_api.webhooks._WebhooksAPI"><span class="pre">_WebhooksAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.webhooks" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing webhooks</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.loginflow_v2">
+<span class="sig-name descname"><span class="pre">loginflow_v2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="LoginFlowV2.html#nc_py_api.loginflow_v2._LoginFlowV2API" title="nc_py_api.loginflow_v2._LoginFlowV2API"><span class="pre">_LoginFlowV2API</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.loginflow_v2" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Login flow v2.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.Nextcloud.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.Nextcloud.user" title="Link to this definition"></a></dt>
+<dd><p>Returns current user ID.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nc_py_api.nextcloud.</span></span><span class="sig-name descname"><span class="pre">NextcloudApp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp" title="Link to this definition"></a></dt>
+<dd><p>Class for communication with Nextcloud in Nextcloud applications.</p>
+<p>Provides additional API required for applications such as user impersonation,
+endpoint registration, new authentication method, etc.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Instance of this class should not be created directly in <code class="docutils literal notranslate"><span class="pre">normal</span></code> applications,
+it will be provided for each app endpoint call.</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.capabilities">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">capabilities</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.capabilities" title="Link to this definition"></a></dt>
+<dd><p>Returns the capabilities of the Nextcloud instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.check_capabilities">
+<span class="sig-name descname"><span class="pre">check_capabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capabilities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.check_capabilities" title="Link to this definition"></a></dt>
+<dd><p>Returns the list with missing capabilities if any.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.download_log">
+<span class="sig-name descname"><span class="pre">download_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.download_log" title="Link to this definition"></a></dt>
+<dd><p>Downloads Nextcloud log file. Requires Admin privileges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.ocs">
+<span class="sig-name descname"><span class="pre">ocs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.14)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.ocs" title="Link to this definition"></a></dt>
+<dd><p>Performs OCS call and returns OCS response payload data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.perform_login">
+<span class="sig-name descname"><span class="pre">perform_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.perform_login" title="Link to this definition"></a></dt>
+<dd><p>Performs login into Nextcloud if not already logged in; manual invocation of this method is unnecessary.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.response_headers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">CaseInsensitiveDict</span></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.response_headers" title="Link to this definition"></a></dt>
+<dd><p>Returns the <a class="reference external" href="https://www.python-httpx.org/api/#headers">Niquests headers</a> from the last response.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.srv_version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">srv_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Session.html#nc_py_api._session.ServerVersion" title="nc_py_api._session.ServerVersion"><span class="pre">ServerVersion</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.srv_version" title="Link to this definition"></a></dt>
+<dd><p>Returns dictionary with the server version.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.theme">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">theme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Session.html#nc_py_api._theming.ThemingInfo" title="nc_py_api._theming.ThemingInfo"><span class="pre">ThemingInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.theme" title="Link to this definition"></a></dt>
+<dd><p>Returns Theme information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.update_server_info">
+<span class="sig-name descname"><span class="pre">update_server_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.update_server_info" title="Link to this definition"></a></dt>
+<dd><p>Updates the capabilities and the Nextcloud version.</p>
+<p><em>In normal cases, it is called automatically and there is no need to call it manually.</em></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.apps">
+<span class="sig-name descname"><span class="pre">apps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Apps.html#nc_py_api.apps._AppsAPI" title="nc_py_api.apps._AppsAPI"><span class="pre">_AppsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.apps" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for App management</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.activity">
+<span class="sig-name descname"><span class="pre">activity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="ActivityApp.html#nc_py_api.activity._ActivityAPI" title="nc_py_api.activity._ActivityAPI"><span class="pre">_ActivityAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.activity" title="Link to this definition"></a></dt>
+<dd><p>Activity Application API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.cal">
+<span class="sig-name descname"><span class="pre">cal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Calendar.html#nc_py_api.calendar_api._CalendarAPI" title="nc_py_api.calendar_api._CalendarAPI"><span class="pre">_CalendarAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.cal" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Calendar API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.files">
+<span class="sig-name descname"><span class="pre">files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Files/Files.html#nc_py_api.files.files.FilesAPI" title="nc_py_api.files.files.FilesAPI"><span class="pre">FilesAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.files" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for File System and Files Sharing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.preferences">
+<span class="sig-name descname"><span class="pre">preferences</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Apps.html#nc_py_api._preferences.PreferencesAPI" title="nc_py_api._preferences.PreferencesAPI"><span class="pre">PreferencesAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.preferences" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud User Preferences API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.notes">
+<span class="sig-name descname"><span class="pre">notes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Notes.html#nc_py_api.notes._NotesAPI" title="nc_py_api.notes._NotesAPI"><span class="pre">_NotesAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.notes" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Notes API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.notifications">
+<span class="sig-name descname"><span class="pre">notifications</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/Notifications.html#nc_py_api.notifications._NotificationsAPI" title="nc_py_api.notifications._NotificationsAPI"><span class="pre">_NotificationsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.notifications" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing user notifications</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.talk">
+<span class="sig-name descname"><span class="pre">talk</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Talk.html#nc_py_api._talk_api._TalkAPI" title="nc_py_api._talk_api._TalkAPI"><span class="pre">_TalkAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.talk" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud Talk API</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.users">
+<span class="sig-name descname"><span class="pre">users</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/Users.html#nc_py_api.users._UsersAPI" title="nc_py_api.users._UsersAPI"><span class="pre">_UsersAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.users" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing users.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.users_groups">
+<span class="sig-name descname"><span class="pre">users_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/UsersGroups.html#nc_py_api.users_groups._UsersGroupsAPI" title="nc_py_api.users_groups._UsersGroupsAPI"><span class="pre">_UsersGroupsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.users_groups" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing user groups.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.user_status">
+<span class="sig-name descname"><span class="pre">user_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/UsersStatus.html#nc_py_api.user_status._UserStatusAPI" title="nc_py_api.user_status._UserStatusAPI"><span class="pre">_UserStatusAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.user_status" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing users statuses</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.weather_status">
+<span class="sig-name descname"><span class="pre">weather_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Users/WeatherStatus.html#nc_py_api.weather_status._WeatherStatusAPI" title="nc_py_api.weather_status._WeatherStatusAPI"><span class="pre">_WeatherStatusAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.weather_status" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing user weather statuses</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.webhooks">
+<span class="sig-name descname"><span class="pre">webhooks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Webhooks.html#nc_py_api.webhooks._WebhooksAPI" title="nc_py_api.webhooks._WebhooksAPI"><span class="pre">_WebhooksAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.webhooks" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud API for managing webhooks</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.appconfig_ex">
+<span class="sig-name descname"><span class="pre">appconfig_ex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Apps.html#nc_py_api._preferences_ex.AppConfigExAPI" title="nc_py_api._preferences_ex.AppConfigExAPI"><span class="pre">AppConfigExAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.appconfig_ex" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud App Preferences API for ExApps</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.preferences_ex">
+<span class="sig-name descname"><span class="pre">preferences_ex</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Apps.html#nc_py_api._preferences_ex.PreferencesExAPI" title="nc_py_api._preferences_ex.PreferencesExAPI"><span class="pre">PreferencesExAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.preferences_ex" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud User Preferences API for ExApps</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.ui">
+<span class="sig-name descname"><span class="pre">ui</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="ExApp.html#nc_py_api.ex_app.ui.ui.UiApi" title="nc_py_api.ex_app.ui.ui.UiApi"><span class="pre">UiApi</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.ui" title="Link to this definition"></a></dt>
+<dd><p>Nextcloud UI API for ExApps</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.providers">
+<span class="sig-name descname"><span class="pre">providers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="ExApp.html#nc_py_api.ex_app.providers.providers.ProvidersApi" title="nc_py_api.ex_app.providers.providers.ProvidersApi"><span class="pre">ProvidersApi</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.providers" title="Link to this definition"></a></dt>
+<dd><p>API for registering Events listeners for ExApps</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.occ_commands">
+<span class="sig-name descname"><span class="pre">occ_commands</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="ExApp.html#nc_py_api.ex_app.occ_commands.OccCommandsAPI" title="nc_py_api.ex_app.occ_commands.OccCommandsAPI"><span class="pre">OccCommandsAPI</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.occ_commands" title="Link to this definition"></a></dt>
+<dd><p>API for registering OCC command for ExApps</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.enabled_state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled_state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.enabled_state" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if ExApp is enabled, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_lvl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ExApp.html#nc_py_api.ex_app.LogLvl" title="nc_py_api.ex_app.defs.LogLvl"><span class="pre">LogLvl</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast_send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.log" title="Link to this definition"></a></dt>
+<dd><p>Writes log to the Nextcloud log file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.users_list">
+<span class="sig-name descname"><span class="pre">users_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp.users_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.users_list" title="Link to this definition"></a></dt>
+<dd><p>Returns list of users on the Nextcloud instance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.user" title="Link to this definition"></a></dt>
+<dd><p>Property containing the current user ID.</p>
+<p><strong>ExApps</strong> can change user ID they impersonate with <strong>set_user</strong> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.set_user">
+<span class="sig-name descname"><span class="pre">set_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp.set_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.set_user" title="Link to this definition"></a></dt>
+<dd><p>Changes current User ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.app_cfg">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app_cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="Session.html#nc_py_api._session.AppConfig" title="nc_py_api._session.AppConfig"><span class="pre">AppConfig</span></a></em><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.app_cfg" title="Link to this definition"></a></dt>
+<dd><p>Returns deploy config, with AppAPI version, Application version and name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.register_talk_bot">
+<span class="sig-name descname"><span class="pre">register_talk_bot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp.register_talk_bot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.register_talk_bot" title="Link to this definition"></a></dt>
+<dd><p>Registers Talk BOT.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>AppAPI will add a record in a case of successful registration to the <code class="docutils literal notranslate"><span class="pre">appconfig_ex</span></code> table.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback_url</strong> – URL suffix for fetching new messages. MUST be <code class="docutils literal notranslate"><span class="pre">UNIQ</span></code> for each bot the app provides.</p></li>
+<li><p><strong>display_name</strong> – The name under which the messages will be posted.</p></li>
+<li><p><strong>description</strong> – Optional description shown in the admin settings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple with ID and the secret used for signing requests.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.unregister_talk_bot">
+<span class="sig-name descname"><span class="pre">unregister_talk_bot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp.unregister_talk_bot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.unregister_talk_bot" title="Link to this definition"></a></dt>
+<dd><p>Unregisters Talk BOT.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nc_py_api.nextcloud.NextcloudApp.set_init_status">
+<span class="sig-name descname"><span class="pre">set_init_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/nc_py_api/nextcloud.html#NextcloudApp.set_init_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nc_py_api.nextcloud.NextcloudApp.set_init_status" title="Link to this definition"></a></dt>
+<dd><p>Sets state of the app initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>progress</strong> – a number from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">100</span></code> indicating the percentage of application readiness for work.
+After sending <code class="docutils literal notranslate"><span class="pre">100</span></code> AppAPI will enable the application.</p></li>
+<li><p><strong>error</strong> – if non-empty, signals to AppAPI that the application cannot be initialized successfully.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ExApp.html" class="btn btn-neutral float-right" title="External Application" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
