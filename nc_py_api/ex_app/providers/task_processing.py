@@ -142,6 +142,21 @@ class _TaskProcessingProviderAPI:
                 return r
         return {}
 
+    def next_task_batch(self, provider_ids: list[str], task_types: list[str], number_of_tasks: int) -> dict[str, typing.Any]:
+        """
+        Get the next n task processing tasks from Nextcloud.
+        Available starting with Nextcloud 33
+        Returns: {tasks: [{task: Task, provider: string}], has_more: bool}
+        """
+        with contextlib.suppress(NextcloudException):
+            if r := self._session.ocs(
+                "GET",
+                "/ocs/v2.php/taskprocessing/tasks_provider/next_batch",
+                json={"providerIds": provider_ids, "taskTypeIds": task_types, "numberOfTasks": number_of_tasks},
+            ):
+                return r
+        return {"tasks": [], "has_more": False}
+
     def set_progress(self, task_id: int, progress: float) -> dict[str, typing.Any]:
         """Report new progress value of the task to Nextcloud. Progress should be in range from 0.0 to 100.0."""
         with contextlib.suppress(NextcloudException):
@@ -219,6 +234,21 @@ class _AsyncTaskProcessingProviderAPI:
             ):
                 return r
         return {}
+
+    async def next_task_batch(self, provider_ids: list[str], task_types: list[str], number_of_tasks: int) -> dict[str, typing.Any]:
+        """
+        Get the next n task processing tasks from Nextcloud.
+        Available starting with Nextcloud 33
+        Returns: {tasks: [{task: Task, provider: string}], has_more: bool}
+        """
+        with contextlib.suppress(NextcloudException):
+            if r := await self._session.ocs(
+                "GET",
+                "/ocs/v2.php/taskprocessing/tasks_provider/next_batch",
+                json={"providerIds": provider_ids, "taskTypeIds": task_types, "numberOfTasks": number_of_tasks},
+            ):
+                return r
+        return {"tasks": [], "has_more": False}
 
     async def set_progress(self, task_id: int, progress: float) -> dict[str, typing.Any]:
         """Report new progress value of the task to Nextcloud. Progress should be in range from 0.0 to 100.0."""
