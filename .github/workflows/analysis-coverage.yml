@@ -28,7 +28,7 @@ jobs:
     name: Analysis
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
@@ -73,14 +73,14 @@ jobs:
           python-version: '3.11'
 
       - name: Checkout server
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ env.NEXTCLOUD_BRANCH }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/notifications
           ref: ${{ env.NEXTCLOUD_BRANCH }}
@@ -98,7 +98,7 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: nc_py_api
 
@@ -107,7 +107,7 @@ jobs:
         run: python3 -m pip -v install ".[app,dev-min]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: apps/app_api
           repository: nextcloud/app_api
@@ -186,28 +186,28 @@ jobs:
           python-version: "3.10"
 
       - name: Checkout server
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
       - name: Checkout Notes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/notes
           ref: "main"
           path: apps/notes
 
       - name: Checkout Files Locking
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
@@ -234,7 +234,7 @@ jobs:
         run: ./occ app:enable notes
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: nc_py_api
 
@@ -243,7 +243,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: apps/app_api
           repository: nextcloud/app_api
@@ -263,7 +263,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -359,21 +359,21 @@ jobs:
           python-version: '3.11'
 
       - name: Checkout server
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
       - name: Checkout Activity
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
@@ -395,7 +395,7 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: nc_py_api
 
@@ -404,7 +404,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: apps/app_api
           repository: nextcloud/app_api
@@ -424,7 +424,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -509,28 +509,28 @@ jobs:
           python-version: '3.12'
 
       - name: Checkout server
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Activity
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
       - name: Checkout Notes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/notes
           ref: "main"
           path: apps/notes
 
       - name: Checkout Files Locking
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
@@ -557,7 +557,7 @@ jobs:
         run: ./occ app:enable files_lock
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: nc_py_api
 
@@ -594,7 +594,7 @@ jobs:
     runs-on: ubuntu-22.04
     name: Upload Coverage
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download Coverage Artifacts
         uses: actions/download-artifact@v5
         with:
