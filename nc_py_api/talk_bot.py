@@ -76,11 +76,17 @@ class TalkBotMessage:
 
         It can be used to react or reply to the given message.
         """
+        # bot join
+        if self.message_type == "Join":
+            return self._raw_data["object"]["id"]
         return self._raw_data["target"]["id"]
 
     @property
     def conversation_name(self) -> str:
         """The name of the conversation in which the message was posted."""
+        # bot join
+        if self.message_type == "Join":
+            return self._raw_data["object"]["name"]
         return self._raw_data["target"]["name"]
 
     def __repr__(self):
