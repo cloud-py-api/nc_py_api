@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.23.0 - 2025-11-25]
+
+### Added
+
+- TaskProcessing: Add next_task_batch endpoint (#383)
+
+### Fixed
+
+- handle bot join messages properly to get conversation id and name (#385)
+
+## [0.22.0 - 2025-10-24]
+
+### Added
+
+- TaskProcessing: Add trigger_handler to set_handlers() (#382)
+
 ## [0.21.1 - 2025-08-27]
 
 ### Changed
