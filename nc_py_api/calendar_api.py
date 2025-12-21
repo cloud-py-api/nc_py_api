@@ -17,7 +17,9 @@ try:
             """Returns True if ``caldav`` package is avalaible, False otherwise."""
             return True
 
-        def request(self, url, method="GET", body="", headers={}):  # noqa pylint: disable=dangerous-default-value
+        def request(self, url, method="GET", body="", headers=None):
+            if headers is None:
+                headers = {}
             if isinstance(body, str):
                 body = body.encode("UTF-8")
             if body:
@@ -56,7 +58,9 @@ try:
             """Returns True if ``aiocaldav`` package is available, False otherwise."""
             return True
 
-        async def request(self, url, method="GET", body="", headers={}):  # noqa pylint: disable=dangerous-default-value
+        async def request(self, url, method="GET", body="", headers=None):
+            if headers is None:
+                headers = {}
             if isinstance(body, str):
                 body = body.encode("UTF-8")
             if body:

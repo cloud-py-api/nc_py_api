@@ -573,7 +573,7 @@ class Conversation(_TalkUserStatus):
         .. note:: Even when given, the message will not contain the ``parent`` or ``reactionsSelf``
             attribute due to performance reasons
         """
-        return TalkMessage(self._raw_data["lastMessage"]) if self._raw_data["lastMessage"] else None
+        return TalkMessage(self._raw_data["lastMessage"]) if self._raw_data.get("lastMessage") else None
 
     @property
     def breakout_room_mode(self) -> BreakoutRoomMode:

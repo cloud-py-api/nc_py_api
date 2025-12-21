@@ -1,6 +1,7 @@
 """Nextcloud Talk API implementation."""
 
 import hashlib
+import json
 
 from ._exceptions import check_error
 from ._misc import (
@@ -499,8 +500,7 @@ class _TalkAPI:
             raise ValueError("`amount` must be between 1 and 20")
         params = {"mode": mode, "amount": amount}
         if attendee_map is not None:
-            import json
-
+            # Note: attendeeMap must be JSON-encoded string per Nextcloud Talk API requirements
             params["attendeeMap"] = json.dumps(attendee_map)
         self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}", json=params)
 
@@ -548,8 +548,7 @@ class _TalkAPI:
         """
         require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        import json
-
+        # Note: attendeeMap must be JSON-encoded string per Nextcloud Talk API requirements
         self._session.ocs(
             "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees", json={"attendeeMap": json.dumps(attendee_map)}
         )
@@ -1075,8 +1074,7 @@ class _AsyncTalkAPI:
             raise ValueError("`amount` must be between 1 and 20")
         params = {"mode": mode, "amount": amount}
         if attendee_map is not None:
-            import json
-
+            # Note: attendeeMap must be JSON-encoded string per Nextcloud Talk API requirements
             params["attendeeMap"] = json.dumps(attendee_map)
         await self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}", json=params)
 
@@ -1124,8 +1122,7 @@ class _AsyncTalkAPI:
         """
         require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        import json
-
+        # Note: attendeeMap must be JSON-encoded string per Nextcloud Talk API requirements
         await self._session.ocs(
             "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees", json={"attendeeMap": json.dumps(attendee_map)}
         )
