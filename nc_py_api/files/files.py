@@ -29,6 +29,7 @@ from ._files import (
     get_propfind_properties,
     lf_parse_webdav_response,
 )
+from .file_comments import _FileCommentsAPI
 from .sharing import _FilesSharingAPI
 
 
@@ -37,10 +38,13 @@ class FilesAPI:
 
     sharing: _FilesSharingAPI
     """API for managing Files Shares"""
+    comments: _FileCommentsAPI
+    """API for managing File Comments"""
 
     def __init__(self, session: NcSessionBasic):
         self._session = session
         self.sharing = _FilesSharingAPI(session)
+        self.comments = _FileCommentsAPI(session)
 
     def listdir(self, path: str | FsNode = "", depth: int = 1, exclude_self=True) -> list[FsNode]:
         """Returns a list of all entries in the specified directory.

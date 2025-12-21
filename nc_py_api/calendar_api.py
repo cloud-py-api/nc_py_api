@@ -1,6 +1,6 @@
 """Nextcloud Calendar DAV API."""
 
-from ._session import NcSessionBasic
+from ._session import AsyncNcSessionBasic, NcSessionBasic
 
 try:
     from caldav.davclient import DAVClient, DAVResponse
@@ -38,4 +38,43 @@ except ImportError:
         @property
         def available(self) -> bool:
             """Returns True if ``caldav`` package is avalaible, False otherwise."""
+            return False
+
+
+try:
+    from aiocaldav.davclient import DAVClient, DAVResponse
+
+    class _AsyncCalendarAPI(DAVClient):
+        """Class that encapsulates ``aiocaldav.DAVClient`` to work with the Nextcloud calendar."""
+
+        def __init__(self, session: AsyncNcSessionBasic):
+            self._session = session
+            super().__init__(session.cfg.dav_endpoint)
+
+        @property
+        async def available(self) -> bool:
+            """Returns True if ``aiocaldav`` package is available, False otherwise."""
+            return True
+
+        async def request(self, url, method="GET", body="", headers={}):  # noqa pylint: disable=dangerous-default-value
+            if isinstance(body, str):
+                body = body.encode("UTF-8")
+            if body:
+                body = body.replace(b"\n", b"\r\n").replace(b"\r\r\n", b"\r\n")
+            r = await self._session.adapter_dav.request(
+                method, url if isinstance(url, str) else str(url), data=body, headers=headers
+            )
+            return DAVResponse(r)
+
+except ImportError:
+
+    class _AsyncCalendarAPI:  # type: ignore
+        """A stub class in case **aiocaldav** is missing."""
+
+        def __init__(self, session: AsyncNcSessionBasic):
+            self._session = session
+
+        @property
+        async def available(self) -> bool:
+            """Returns True if ``aiocaldav`` package is available, False otherwise."""
             return False

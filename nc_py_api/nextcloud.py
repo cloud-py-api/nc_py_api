@@ -29,16 +29,24 @@ from ._talk_api import _AsyncTalkAPI, _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI, _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
-from .calendar_api import _CalendarAPI
+from .calendar_api import _AsyncCalendarAPI, _CalendarAPI
+from .circles import _AsyncCirclesAPI, _CirclesAPI
+from .contacts import _AsyncContactsAPI, _ContactsAPI
+from .deck import _AsyncDeckAPI, _DeckAPI
 from .ex_app.defs import LogLvl
+from .group_folders import _AsyncGroupFoldersAPI, _GroupFoldersAPI
 from .ex_app.occ_commands import AsyncOccCommandsAPI, OccCommandsAPI
 from .ex_app.providers.providers import AsyncProvidersApi, ProvidersApi
 from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import FilesAPI
 from .files.files_async import AsyncFilesAPI
 from .loginflow_v2 import _AsyncLoginFlowV2API, _LoginFlowV2API
+from .forms import _AsyncFormsAPI, _FormsAPI
 from .notes import _AsyncNotesAPI, _NotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
+from .oauth2 import _AsyncOAuth2API, _OAuth2API
+from .recommendations import _AsyncRecommendationsAPI, _RecommendationsAPI
+from .system_tags import _AsyncSystemTagsAPI, _SystemTagsAPI
 from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
 from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
@@ -53,14 +61,26 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Activity Application API"""
     cal: _CalendarAPI
     """Nextcloud Calendar API"""
+    circles: _CirclesAPI
+    """Nextcloud API for managing circles"""
+    contacts: _ContactsAPI
+    """Nextcloud API for managing contacts"""
+    deck: _DeckAPI
+    """Nextcloud API for managing Deck boards, stacks, and cards"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
+    group_folders: _GroupFoldersAPI
+    """Nextcloud API for managing group folders"""
+    forms: _FormsAPI
+    """Nextcloud API for managing forms"""
     preferences: PreferencesAPI
     """Nextcloud User Preferences API"""
     notes: _NotesAPI
     """Nextcloud Notes API"""
     notifications: _NotificationsAPI
     """Nextcloud API for managing user notifications"""
+    oauth2: _OAuth2API
+    """Nextcloud API for managing OAuth2 clients"""
     talk: _TalkAPI
     """Nextcloud Talk API"""
     users: _UsersAPI
@@ -73,22 +93,34 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing user weather statuses"""
     webhooks: _WebhooksAPI
     """Nextcloud API for managing webhooks"""
+    recommendations: _RecommendationsAPI
+    """Nextcloud API for managing recommendations"""
+    system_tags: _SystemTagsAPI
+    """Nextcloud API for managing system tags"""
     _session: NcSessionBasic
 
     def __init__(self, session: NcSessionBasic):
         self.apps = _AppsAPI(session)
         self.activity = _ActivityAPI(session)
         self.cal = _CalendarAPI(session)
+        self.circles = _CirclesAPI(session)
+        self.contacts = _ContactsAPI(session)
+        self.deck = _DeckAPI(session)
         self.files = FilesAPI(session)
+        self.group_folders = _GroupFoldersAPI(session)
+        self.forms = _FormsAPI(session)
         self.preferences = PreferencesAPI(session)
         self.notes = _NotesAPI(session)
         self.notifications = _NotificationsAPI(session)
+        self.oauth2 = _OAuth2API(session)
         self.talk = _TalkAPI(session)
         self.users = _UsersAPI(session)
         self.users_groups = _UsersGroupsAPI(session)
         self.user_status = _UserStatusAPI(session)
         self.weather_status = _WeatherStatusAPI(session)
         self.webhooks = _WebhooksAPI(session)
+        self.recommendations = _RecommendationsAPI(session)
+        self.system_tags = _SystemTagsAPI(session)
 
     @property
     def capabilities(self) -> dict:
@@ -155,16 +187,28 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for App management"""
     activity: _AsyncActivityAPI
     """Activity Application API"""
-    # cal: _CalendarAPI
-    # """Nextcloud Calendar API"""
+    cal: _AsyncCalendarAPI
+    """Nextcloud Calendar API"""
+    circles: _AsyncCirclesAPI
+    """Nextcloud API for managing circles"""
+    contacts: _AsyncContactsAPI
+    """Nextcloud API for managing contacts"""
+    deck: _AsyncDeckAPI
+    """Nextcloud API for managing Deck boards, stacks, and cards"""
     files: AsyncFilesAPI
     """Nextcloud API for File System and Files Sharing"""
+    group_folders: _AsyncGroupFoldersAPI
+    """Nextcloud API for managing group folders"""
+    forms: _AsyncFormsAPI
+    """Nextcloud API for managing forms"""
     preferences: AsyncPreferencesAPI
     """Nextcloud User Preferences API"""
     notes: _AsyncNotesAPI
     """Nextcloud Notes API"""
     notifications: _AsyncNotificationsAPI
     """Nextcloud API for managing user notifications"""
+    oauth2: _AsyncOAuth2API
+    """Nextcloud API for managing OAuth2 clients"""
     talk: _AsyncTalkAPI
     """Nextcloud Talk API"""
     users: _AsyncUsersAPI
@@ -177,22 +221,34 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing user weather statuses"""
     webhooks: _AsyncWebhooksAPI
     """Nextcloud API for managing webhooks"""
+    recommendations: _AsyncRecommendationsAPI
+    """Nextcloud API for managing recommendations"""
+    system_tags: _AsyncSystemTagsAPI
+    """Nextcloud API for managing system tags"""
     _session: AsyncNcSessionBasic
 
     def __init__(self, session: AsyncNcSessionBasic):
         self.apps = _AsyncAppsAPI(session)
         self.activity = _AsyncActivityAPI(session)
-        # self.cal = _CalendarAPI(session)
+        self.cal = _AsyncCalendarAPI(session)
+        self.circles = _AsyncCirclesAPI(session)
+        self.contacts = _AsyncContactsAPI(session)
+        self.deck = _AsyncDeckAPI(session)
         self.files = AsyncFilesAPI(session)
+        self.group_folders = _AsyncGroupFoldersAPI(session)
+        self.forms = _AsyncFormsAPI(session)
         self.preferences = AsyncPreferencesAPI(session)
         self.notes = _AsyncNotesAPI(session)
         self.notifications = _AsyncNotificationsAPI(session)
+        self.oauth2 = _AsyncOAuth2API(session)
         self.talk = _AsyncTalkAPI(session)
         self.users = _AsyncUsersAPI(session)
         self.users_groups = _AsyncUsersGroupsAPI(session)
         self.user_status = _AsyncUserStatusAPI(session)
         self.weather_status = _AsyncWeatherStatusAPI(session)
         self.webhooks = _AsyncWebhooksAPI(session)
+        self.recommendations = _AsyncRecommendationsAPI(session)
+        self.system_tags = _AsyncSystemTagsAPI(session)
 
     @property
     async def capabilities(self) -> dict:

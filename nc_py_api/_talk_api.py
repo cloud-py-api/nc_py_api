@@ -477,6 +477,119 @@ class _TalkAPI:
         check_error(response)
         return response.content
 
+    def configure_breakout_rooms(
+        self,
+        conversation: Conversation | str,
+        mode: int,
+        amount: int,
+        attendee_map: dict[str, int] | None = None,
+    ) -> None:
+        """Configure breakout rooms for a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param mode: Participant assignment mode (use :py:class:`~nc_py_api.talk.BreakoutRoomMode`).
+        :param amount: Number of breakout rooms to create (1-20).
+        :param attendee_map: Map of attendee IDs to room numbers (0-based), required for manual mode.
+
+        .. note:: Only moderators can configure breakout rooms. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        if not 1 <= amount <= 20:
+            raise ValueError("`amount` must be between 1 and 20")
+        params = {"mode": mode, "amount": amount}
+        if attendee_map is not None:
+            import json
+
+            params["attendeeMap"] = json.dumps(attendee_map)
+        self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}", json=params)
+
+    def start_breakout_rooms(self, conversation: Conversation | str) -> None:
+        """Start breakout rooms for a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: Only moderators can start breakout rooms. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/rooms")
+
+    def stop_breakout_rooms(self, conversation: Conversation | str) -> None:
+        """Stop breakout rooms for a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: Only moderators can stop breakout rooms. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        self._session.ocs("DELETE", self._ep_base + f"/api/v4/breakout-rooms/{token}/rooms")
+
+    def broadcast_to_breakout_rooms(self, conversation: Conversation | str, message: str) -> None:
+        """Broadcast a message to all breakout rooms.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param message: Message content to broadcast.
+
+        .. note:: Only moderators can broadcast messages. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/broadcast", json={"message": message})
+
+    def reorganize_breakout_rooms(self, conversation: Conversation | str, attendee_map: dict[str, int]) -> None:
+        """Reorganize attendees between breakout rooms.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param attendee_map: Map of attendee IDs to room numbers (0-based).
+
+        .. note:: Only moderators can reorganize attendees. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        import json
+
+        self._session.ocs(
+            "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees", json={"attendeeMap": json.dumps(attendee_map)}
+        )
+
+    def start_recording(self, conversation: Conversation | str, status: int) -> None:
+        """Start recording a call.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param status: Recording status type (use :py:class:`~nc_py_api.talk.CallRecordingStatus`).
+
+        .. note:: Only moderators can start recordings. Requires ``recording-v1`` capability.
+        """
+        require_capabilities("spreed.features.recording-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        self._session.ocs("POST", self._ep_base + f"/api/v4/recording/{token}", json={"status": status})
+
+    def stop_recording(self, conversation: Conversation | str) -> None:
+        """Stop recording a call.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: Only moderators can stop recordings. Requires ``recording-v1`` capability.
+        """
+        require_capabilities("spreed.features.recording-v1", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        self._session.ocs("DELETE", self._ep_base + f"/api/v4/recording/{token}")
+
+    def verify_sip_dialin(self, conversation: Conversation | str, pin: str) -> dict:
+        """Verify a SIP dial-in PIN.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param pin: PIN used by the participant to dial in.
+        :returns: Dictionary with conversation and participant details.
+
+        .. note:: Requires ``sip-support-dialout`` capability.
+        """
+        require_capabilities("spreed.features.sip-support-dialout", self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        return self._session.ocs("POST", self._ep_base + f"/api/v4/room/{token}/verify-dialin", json={"pin": pin})
+
     def _update_config_sha(self):
         config_sha = self._session.response_headers["X-Nextcloud-Talk-Hash"]
         if self.config_sha != config_sha:
@@ -939,6 +1052,119 @@ class _AsyncTalkAPI:
         response = await self._session.adapter.get(self._ep_base + f"/api/v1/room/{token}/avatar" + ep_suffix)
         check_error(response)
         return response.content
+
+    async def configure_breakout_rooms(
+        self,
+        conversation: Conversation | str,
+        mode: int,
+        amount: int,
+        attendee_map: dict[str, int] | None = None,
+    ) -> None:
+        """Configure breakout rooms for a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param mode: Participant assignment mode (use :py:class:`~nc_py_api.talk.BreakoutRoomMode`).
+        :param amount: Number of breakout rooms to create (1-20).
+        :param attendee_map: Map of attendee IDs to room numbers (0-based), required for manual mode.
+
+        .. note:: Only moderators can configure breakout rooms. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        if not 1 <= amount <= 20:
+            raise ValueError("`amount` must be between 1 and 20")
+        params = {"mode": mode, "amount": amount}
+        if attendee_map is not None:
+            import json
+
+            params["attendeeMap"] = json.dumps(attendee_map)
+        await self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}", json=params)
+
+    async def start_breakout_rooms(self, conversation: Conversation | str) -> None:
+        """Start breakout rooms for a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: Only moderators can start breakout rooms. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        await self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/rooms")
+
+    async def stop_breakout_rooms(self, conversation: Conversation | str) -> None:
+        """Stop breakout rooms for a conversation.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: Only moderators can stop breakout rooms. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        await self._session.ocs("DELETE", self._ep_base + f"/api/v4/breakout-rooms/{token}/rooms")
+
+    async def broadcast_to_breakout_rooms(self, conversation: Conversation | str, message: str) -> None:
+        """Broadcast a message to all breakout rooms.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param message: Message content to broadcast.
+
+        .. note:: Only moderators can broadcast messages. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        await self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/broadcast", json={"message": message})
+
+    async def reorganize_breakout_rooms(self, conversation: Conversation | str, attendee_map: dict[str, int]) -> None:
+        """Reorganize attendees between breakout rooms.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param attendee_map: Map of attendee IDs to room numbers (0-based).
+
+        .. note:: Only moderators can reorganize attendees. Requires ``breakout-rooms-v1`` capability.
+        """
+        require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        import json
+
+        await self._session.ocs(
+            "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees", json={"attendeeMap": json.dumps(attendee_map)}
+        )
+
+    async def start_recording(self, conversation: Conversation | str, status: int) -> None:
+        """Start recording a call.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param status: Recording status type (use :py:class:`~nc_py_api.talk.CallRecordingStatus`).
+
+        .. note:: Only moderators can start recordings. Requires ``recording-v1`` capability.
+        """
+        require_capabilities("spreed.features.recording-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        await self._session.ocs("POST", self._ep_base + f"/api/v4/recording/{token}", json={"status": status})
+
+    async def stop_recording(self, conversation: Conversation | str) -> None:
+        """Stop recording a call.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+
+        .. note:: Only moderators can stop recordings. Requires ``recording-v1`` capability.
+        """
+        require_capabilities("spreed.features.recording-v1", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        await self._session.ocs("DELETE", self._ep_base + f"/api/v4/recording/{token}")
+
+    async def verify_sip_dialin(self, conversation: Conversation | str, pin: str) -> dict:
+        """Verify a SIP dial-in PIN.
+
+        :param conversation: conversation token or :py:class:`~nc_py_api.talk.Conversation`.
+        :param pin: PIN used by the participant to dial in.
+        :returns: Dictionary with conversation and participant details.
+
+        .. note:: Requires ``sip-support-dialout`` capability.
+        """
+        require_capabilities("spreed.features.sip-support-dialout", await self._session.capabilities)
+        token = conversation.token if isinstance(conversation, Conversation) else conversation
+        return await self._session.ocs("POST", self._ep_base + f"/api/v4/room/{token}/verify-dialin", json={"pin": pin})
 
     async def _update_config_sha(self):
         config_sha = self._session.response_headers["X-Nextcloud-Talk-Hash"]
