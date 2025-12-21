@@ -136,7 +136,7 @@ class _CirclesAPI:
             self._session.ocs("DELETE", f"{self._ep_base}/{circle_id}")
         except NextcloudException as e:
             if e.status_code == 120:
-                raise NextcloudException("Circle is managed elsewhere and cannot be deleted") from e
+                raise NextcloudException(status_code=120, reason="Circle is managed elsewhere and cannot be deleted") from e
             raise
 
     def get_members(self, circle_id: str) -> list[CircleMember]:
@@ -221,7 +221,7 @@ class _AsyncCirclesAPI:
             await self._session.ocs("DELETE", f"{self._ep_base}/{circle_id}")
         except NextcloudException as e:
             if e.status_code == 120:
-                raise NextcloudException("Circle is managed elsewhere and cannot be deleted") from e
+                raise NextcloudException(status_code=120, reason="Circle is managed elsewhere and cannot be deleted") from e
             raise
 
     async def get_members(self, circle_id: str) -> list[CircleMember]:
