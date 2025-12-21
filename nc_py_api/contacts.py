@@ -244,7 +244,9 @@ class _ContactsAPI:
             addressbook_uri = matching[0].uri
 
         contact_id = f"{full_name.replace(' ', '_')}_{datetime.datetime.now().timestamp()}".replace(".", "")
-        vcard = self._generate_vcard(contact_id, full_name, first_name, last_name, emails or [], phones or [], organization)
+        vcard = self._generate_vcard(
+            contact_id, full_name, first_name, last_name, emails or [], phones or [], organization
+        )
 
         dav_path = f"/remote.php/dav/addressbooks/users/{user}/{addressbook_uri}/{contact_id}.vcf"
         response = self._session.adapter_dav.request("PUT", dav_path, data=vcard.encode("utf-8"))
@@ -254,7 +256,14 @@ class _ContactsAPI:
         return Contact(vcard)
 
     def _generate_vcard(
-        self, contact_id: str, full_name: str, first_name: str, last_name: str, emails: list[str], phones: list[str], organization: str
+        self,
+        contact_id: str,
+        full_name: str,
+        first_name: str,
+        last_name: str,
+        emails: list[str],
+        phones: list[str],
+        organization: str,
     ) -> str:
         """Generate vCard format string."""
         vcard_lines = ["BEGIN:VCARD", "VERSION:3.0", f"UID:{contact_id}"]
@@ -368,7 +377,9 @@ class _AsyncContactsAPI:
             addressbook_uri = matching[0].uri
 
         contact_id = f"{full_name.replace(' ', '_')}_{datetime.datetime.now().timestamp()}".replace(".", "")
-        vcard = self._generate_vcard(contact_id, full_name, first_name, last_name, emails or [], phones or [], organization)
+        vcard = self._generate_vcard(
+            contact_id, full_name, first_name, last_name, emails or [], phones or [], organization
+        )
 
         dav_path = f"/remote.php/dav/addressbooks/users/{user}/{addressbook_uri}/{contact_id}.vcf"
         response = await self._session.adapter_dav.request("PUT", dav_path, data=vcard.encode("utf-8"))
@@ -378,7 +389,14 @@ class _AsyncContactsAPI:
         return Contact(vcard)
 
     def _generate_vcard(
-        self, contact_id: str, full_name: str, first_name: str, last_name: str, emails: list[str], phones: list[str], organization: str
+        self,
+        contact_id: str,
+        full_name: str,
+        first_name: str,
+        last_name: str,
+        emails: list[str],
+        phones: list[str],
+        organization: str,
     ) -> str:
         """Generate vCard format string."""
         vcard_lines = ["BEGIN:VCARD", "VERSION:3.0", f"UID:{contact_id}"]

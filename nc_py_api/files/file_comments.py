@@ -67,7 +67,9 @@ class FileComment:
         return int(self._raw_data.get("oc:objectId", 0))
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.comment_id}, actor={self.actor_id}, message={self.message[:30]}...>"
+        return (
+            f"<{self.__class__.__name__} id={self.comment_id}, actor={self.actor_id}, message={self.message[:30]}...>"
+        )
 
 
 def _build_comment_propfind_request() -> ElementTree.Element:
@@ -171,7 +173,10 @@ class _FileCommentsAPI:
         object_id = self._get_object_id(file_id)
         root = _build_comment_create_request(message)
         response = self._session.adapter_dav.request(
-            "POST", f"{self._ep_base}/{object_id}", data=_element_tree_as_str(root), headers={"Content-Type": "text/xml"}
+            "POST",
+            f"{self._ep_base}/{object_id}",
+            data=_element_tree_as_str(root),
+            headers={"Content-Type": "text/xml"},
         )
         check_error(response, info=f"create_comment({object_id})")
         # After creation, fetch the comment to return it
@@ -238,7 +243,9 @@ class _AsyncFileCommentsAPI:
         """Returns True if the Nextcloud instance supports file comments, False otherwise."""
         return not check_capabilities("files", await self._session.capabilities)
 
-    async def get_list(self, file_id: int | str | FsNode, limit: int | None = None, offset: int = 0) -> list[FileComment]:
+    async def get_list(
+        self, file_id: int | str | FsNode, limit: int | None = None, offset: int = 0
+    ) -> list[FileComment]:
         """Returns a list of comments for a file.
 
         :param file_id: File ID, file_id string, or FsNode object.
@@ -272,7 +279,10 @@ class _AsyncFileCommentsAPI:
         object_id = self._get_object_id(file_id)
         root = _build_comment_create_request(message)
         response = await self._session.adapter_dav.request(
-            "POST", f"{self._ep_base}/{object_id}", data=_element_tree_as_str(root), headers={"Content-Type": "text/xml"}
+            "POST",
+            f"{self._ep_base}/{object_id}",
+            data=_element_tree_as_str(root),
+            headers={"Content-Type": "text/xml"},
         )
         check_error(response, info=f"create_comment({object_id})")
         # After creation, fetch the comment to return it

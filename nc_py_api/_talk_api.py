@@ -536,7 +536,9 @@ class _TalkAPI:
         """
         require_capabilities("spreed.features.breakout-rooms-v1", self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/broadcast", json={"message": message})
+        self._session.ocs(
+            "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/broadcast", json={"message": message}
+        )
 
     def reorganize_breakout_rooms(self, conversation: Conversation | str, attendee_map: dict[str, int]) -> None:
         """Reorganize attendees between breakout rooms.
@@ -550,7 +552,9 @@ class _TalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         # Note: attendeeMap must be JSON-encoded string per Nextcloud Talk API requirements
         self._session.ocs(
-            "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees", json={"attendeeMap": json.dumps(attendee_map)}
+            "POST",
+            self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees",
+            json={"attendeeMap": json.dumps(attendee_map)},
         )
 
     def start_recording(self, conversation: Conversation | str, status: int) -> None:
@@ -1110,7 +1114,9 @@ class _AsyncTalkAPI:
         """
         require_capabilities("spreed.features.breakout-rooms-v1", await self._session.capabilities)
         token = conversation.token if isinstance(conversation, Conversation) else conversation
-        await self._session.ocs("POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/broadcast", json={"message": message})
+        await self._session.ocs(
+            "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/broadcast", json={"message": message}
+        )
 
     async def reorganize_breakout_rooms(self, conversation: Conversation | str, attendee_map: dict[str, int]) -> None:
         """Reorganize attendees between breakout rooms.
@@ -1124,7 +1130,9 @@ class _AsyncTalkAPI:
         token = conversation.token if isinstance(conversation, Conversation) else conversation
         # Note: attendeeMap must be JSON-encoded string per Nextcloud Talk API requirements
         await self._session.ocs(
-            "POST", self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees", json={"attendeeMap": json.dumps(attendee_map)}
+            "POST",
+            self._ep_base + f"/api/v4/breakout-rooms/{token}/attendees",
+            json={"attendeeMap": json.dumps(attendee_map)},
         )
 
     async def start_recording(self, conversation: Conversation | str, status: int) -> None:

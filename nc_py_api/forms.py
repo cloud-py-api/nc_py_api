@@ -3,7 +3,12 @@
 import dataclasses
 import datetime
 
-from ._misc import check_capabilities, clear_from_params_empty, nc_iso_time_to_datetime, require_capabilities
+from ._misc import (
+    check_capabilities,
+    clear_from_params_empty,
+    nc_iso_time_to_datetime,
+    require_capabilities,
+)
 from ._session import AsyncNcSessionBasic, NcSessionBasic
 
 
@@ -275,7 +280,9 @@ class _FormsAPI:
         :param answers: List of answer dictionaries, each containing 'questionId' and 'text' keys.
         """
         require_capabilities("forms", self._session.capabilities)
-        return Submission(self._session.ocs("POST", f"{self._ep_base}/forms/{form_id}/submissions", json={"answers": answers}))
+        return Submission(
+            self._session.ocs("POST", f"{self._ep_base}/forms/{form_id}/submissions", json={"answers": answers})
+        )
 
 
 class _AsyncFormsAPI:
@@ -392,4 +399,6 @@ class _AsyncFormsAPI:
         :param answers: List of answer dictionaries, each containing 'questionId' and 'text' keys.
         """
         require_capabilities("forms", await self._session.capabilities)
-        return Submission(await self._session.ocs("POST", f"{self._ep_base}/forms/{form_id}/submissions", json={"answers": answers}))
+        return Submission(
+            await self._session.ocs("POST", f"{self._ep_base}/forms/{form_id}/submissions", json={"answers": answers})
+        )

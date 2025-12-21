@@ -3,7 +3,12 @@
 import dataclasses
 import datetime
 
-from ._misc import check_capabilities, clear_from_params_empty, nc_iso_time_to_datetime, require_capabilities
+from ._misc import (
+    check_capabilities,
+    clear_from_params_empty,
+    nc_iso_time_to_datetime,
+    require_capabilities,
+)
 from ._session import AsyncNcSessionBasic, NcSessionBasic
 
 
@@ -223,7 +228,11 @@ class _DeckAPI:
         params = {"details": "true"} if details else {}
         clear_from_params_empty(list(params.keys()), params)
         result = self._session.ocs(
-            "GET", f"{self._ep_base}/boards", params=params, response_type="json", headers={"Accept": "application/json"}
+            "GET",
+            f"{self._ep_base}/boards",
+            params=params,
+            response_type="json",
+            headers={"Accept": "application/json"},
         )
         if isinstance(result, list):
             return [Board(i) for i in result]
@@ -233,7 +242,12 @@ class _DeckAPI:
         """Returns a specific board by ID."""
         require_capabilities("deck", self._session.capabilities)
         return Board(
-            self._session.ocs("GET", f"{self._ep_base}/boards/{board_id}", response_type="json", headers={"Accept": "application/json"})
+            self._session.ocs(
+                "GET",
+                f"{self._ep_base}/boards/{board_id}",
+                response_type="json",
+                headers={"Accept": "application/json"},
+            )
         )
 
     def create_board(self, title: str, color: str = "") -> Board:
@@ -251,7 +265,11 @@ class _DeckAPI:
         clear_from_params_empty(list(params.keys()), params)
         return Board(
             self._session.ocs(
-                "POST", f"{self._ep_base}/boards", json=params, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "POST",
+                f"{self._ep_base}/boards",
+                json=params,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
@@ -265,20 +283,29 @@ class _DeckAPI:
         clear_from_params_empty(list(kwargs.keys()), kwargs)
         return Board(
             self._session.ocs(
-                "PUT", f"{self._ep_base}/boards/{board_id}", json=kwargs, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "PUT",
+                f"{self._ep_base}/boards/{board_id}",
+                json=kwargs,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
     def delete_board(self, board_id: int) -> None:
         """Deletes a board."""
         require_capabilities("deck", self._session.capabilities)
-        self._session.ocs("DELETE", f"{self._ep_base}/boards/{board_id}", response_type="json", headers={"Accept": "application/json"})
+        self._session.ocs(
+            "DELETE", f"{self._ep_base}/boards/{board_id}", response_type="json", headers={"Accept": "application/json"}
+        )
 
     def get_stacks(self, board_id: int) -> list[Stack]:
         """Returns all stacks in a board."""
         require_capabilities("deck", self._session.capabilities)
         result = self._session.ocs(
-            "GET", f"{self._ep_base}/boards/{board_id}/stacks", response_type="json", headers={"Accept": "application/json"}
+            "GET",
+            f"{self._ep_base}/boards/{board_id}/stacks",
+            response_type="json",
+            headers={"Accept": "application/json"},
         )
         if isinstance(result, list):
             return [Stack(i) for i in result]
@@ -288,7 +315,12 @@ class _DeckAPI:
         """Returns a specific stack by ID."""
         require_capabilities("deck", self._session.capabilities)
         return Stack(
-            self._session.ocs("GET", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}", response_type="json", headers={"Accept": "application/json"})
+            self._session.ocs(
+                "GET",
+                f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}",
+                response_type="json",
+                headers={"Accept": "application/json"},
+            )
         )
 
     def create_stack(self, board_id: int, title: str, order: int = 0) -> Stack:
@@ -324,14 +356,23 @@ class _DeckAPI:
         clear_from_params_empty(list(kwargs.keys()), kwargs)
         return Stack(
             self._session.ocs(
-                "PUT", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}", json=kwargs, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "PUT",
+                f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}",
+                json=kwargs,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
     def delete_stack(self, board_id: int, stack_id: int) -> None:
         """Deletes a stack."""
         require_capabilities("deck", self._session.capabilities)
-        self._session.ocs("DELETE", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}", response_type="json", headers={"Accept": "application/json"})
+        self._session.ocs(
+            "DELETE",
+            f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}",
+            response_type="json",
+            headers={"Accept": "application/json"},
+        )
 
     def get_cards(self, board_id: int, stack_id: int) -> list[Card]:
         """Returns all cards in a stack."""
@@ -388,7 +429,11 @@ class _DeckAPI:
         clear_from_params_empty(list(params.keys()), params)
         return Card(
             self._session.ocs(
-                "POST", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards", json=params, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "POST",
+                f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards",
+                json=params,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
@@ -426,7 +471,12 @@ class _DeckAPI:
     def delete_card(self, board_id: int, stack_id: int, card_id: int) -> None:
         """Deletes a card."""
         require_capabilities("deck", self._session.capabilities)
-        self._session.ocs("DELETE", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards/{card_id}", response_type="json", headers={"Accept": "application/json"})
+        self._session.ocs(
+            "DELETE",
+            f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards/{card_id}",
+            response_type="json",
+            headers={"Accept": "application/json"},
+        )
 
     def reorder_card(self, card_id: int, stack_id: int, order: int) -> None:
         """Reorders a card within a stack.
@@ -437,7 +487,11 @@ class _DeckAPI:
         """
         require_capabilities("deck", self._session.capabilities)
         self._session.ocs(
-            "PUT", f"{self._ep_base}/cards/{card_id}/reorder", json={"stackId": stack_id, "order": order}, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+            "PUT",
+            f"{self._ep_base}/cards/{card_id}/reorder",
+            json={"stackId": stack_id, "order": order},
+            response_type="json",
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
         )
 
 
@@ -463,7 +517,11 @@ class _AsyncDeckAPI:
         params = {"details": "true"} if details else {}
         clear_from_params_empty(list(params.keys()), params)
         result = await self._session.ocs(
-            "GET", f"{self._ep_base}/boards", params=params, response_type="json", headers={"Accept": "application/json"}
+            "GET",
+            f"{self._ep_base}/boards",
+            params=params,
+            response_type="json",
+            headers={"Accept": "application/json"},
         )
         if isinstance(result, list):
             return [Board(i) for i in result]
@@ -473,7 +531,12 @@ class _AsyncDeckAPI:
         """Returns a specific board by ID."""
         require_capabilities("deck", await self._session.capabilities)
         return Board(
-            await self._session.ocs("GET", f"{self._ep_base}/boards/{board_id}", response_type="json", headers={"Accept": "application/json"})
+            await self._session.ocs(
+                "GET",
+                f"{self._ep_base}/boards/{board_id}",
+                response_type="json",
+                headers={"Accept": "application/json"},
+            )
         )
 
     async def create_board(self, title: str, color: str = "") -> Board:
@@ -491,7 +554,11 @@ class _AsyncDeckAPI:
         clear_from_params_empty(list(params.keys()), params)
         return Board(
             await self._session.ocs(
-                "POST", f"{self._ep_base}/boards", json=params, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "POST",
+                f"{self._ep_base}/boards",
+                json=params,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
@@ -505,20 +572,29 @@ class _AsyncDeckAPI:
         clear_from_params_empty(list(kwargs.keys()), kwargs)
         return Board(
             await self._session.ocs(
-                "PUT", f"{self._ep_base}/boards/{board_id}", json=kwargs, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "PUT",
+                f"{self._ep_base}/boards/{board_id}",
+                json=kwargs,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
     async def delete_board(self, board_id: int) -> None:
         """Deletes a board."""
         require_capabilities("deck", await self._session.capabilities)
-        await self._session.ocs("DELETE", f"{self._ep_base}/boards/{board_id}", response_type="json", headers={"Accept": "application/json"})
+        await self._session.ocs(
+            "DELETE", f"{self._ep_base}/boards/{board_id}", response_type="json", headers={"Accept": "application/json"}
+        )
 
     async def get_stacks(self, board_id: int) -> list[Stack]:
         """Returns all stacks in a board."""
         require_capabilities("deck", await self._session.capabilities)
         result = await self._session.ocs(
-            "GET", f"{self._ep_base}/boards/{board_id}/stacks", response_type="json", headers={"Accept": "application/json"}
+            "GET",
+            f"{self._ep_base}/boards/{board_id}/stacks",
+            response_type="json",
+            headers={"Accept": "application/json"},
         )
         if isinstance(result, list):
             return [Stack(i) for i in result]
@@ -528,7 +604,12 @@ class _AsyncDeckAPI:
         """Returns a specific stack by ID."""
         require_capabilities("deck", await self._session.capabilities)
         return Stack(
-            await self._session.ocs("GET", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}", response_type="json", headers={"Accept": "application/json"})
+            await self._session.ocs(
+                "GET",
+                f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}",
+                response_type="json",
+                headers={"Accept": "application/json"},
+            )
         )
 
     async def create_stack(self, board_id: int, title: str, order: int = 0) -> Stack:
@@ -543,7 +624,11 @@ class _AsyncDeckAPI:
         clear_from_params_empty(list(params.keys()), params)
         return Stack(
             await self._session.ocs(
-                "POST", f"{self._ep_base}/boards/{board_id}/stacks", json=params, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "POST",
+                f"{self._ep_base}/boards/{board_id}/stacks",
+                json=params,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
@@ -558,14 +643,23 @@ class _AsyncDeckAPI:
         clear_from_params_empty(list(kwargs.keys()), kwargs)
         return Stack(
             await self._session.ocs(
-                "PUT", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}", json=kwargs, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "PUT",
+                f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}",
+                json=kwargs,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
     async def delete_stack(self, board_id: int, stack_id: int) -> None:
         """Deletes a stack."""
         require_capabilities("deck", await self._session.capabilities)
-        await self._session.ocs("DELETE", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}", response_type="json", headers={"Accept": "application/json"})
+        await self._session.ocs(
+            "DELETE",
+            f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}",
+            response_type="json",
+            headers={"Accept": "application/json"},
+        )
 
     async def get_cards(self, board_id: int, stack_id: int) -> list[Card]:
         """Returns all cards in a stack."""
@@ -622,7 +716,11 @@ class _AsyncDeckAPI:
         clear_from_params_empty(list(params.keys()), params)
         return Card(
             await self._session.ocs(
-                "POST", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards", json=params, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+                "POST",
+                f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards",
+                json=params,
+                response_type="json",
+                headers={"Accept": "application/json", "Content-Type": "application/json"},
             )
         )
 
@@ -660,7 +758,12 @@ class _AsyncDeckAPI:
     async def delete_card(self, board_id: int, stack_id: int, card_id: int) -> None:
         """Deletes a card."""
         require_capabilities("deck", await self._session.capabilities)
-        await self._session.ocs("DELETE", f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards/{card_id}", response_type="json", headers={"Accept": "application/json"})
+        await self._session.ocs(
+            "DELETE",
+            f"{self._ep_base}/boards/{board_id}/stacks/{stack_id}/cards/{card_id}",
+            response_type="json",
+            headers={"Accept": "application/json"},
+        )
 
     async def reorder_card(self, card_id: int, stack_id: int, order: int) -> None:
         """Reorders a card within a stack.
@@ -671,5 +774,9 @@ class _AsyncDeckAPI:
         """
         require_capabilities("deck", await self._session.capabilities)
         await self._session.ocs(
-            "PUT", f"{self._ep_base}/cards/{card_id}/reorder", json={"stackId": stack_id, "order": order}, response_type="json", headers={"Accept": "application/json", "Content-Type": "application/json"}
+            "PUT",
+            f"{self._ep_base}/cards/{card_id}/reorder",
+            json={"stackId": stack_id, "order": order},
+            response_type="json",
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
         )

@@ -136,9 +136,7 @@ class _GroupFoldersAPI:
         params = {"acl": 1 if acl else 0}
         self._session.ocs("POST", f"{self._ep_base}/{folder_id}/acl", json=params)
 
-    def set_acl_permission(
-        self, folder_id: int, mapping_id: str, mapping_type: str, permissions: int
-    ) -> None:
+    def set_acl_permission(self, folder_id: int, mapping_id: str, mapping_type: str, permissions: int) -> None:
         """Sets ACL permission for a user or group on a folder.
 
         :param folder_id: ID of the folder.
@@ -246,9 +244,7 @@ class _AsyncGroupFoldersAPI:
         params = {"acl": 1 if acl else 0}
         await self._session.ocs("POST", f"{self._ep_base}/{folder_id}/acl", json=params)
 
-    async def set_acl_permission(
-        self, folder_id: int, mapping_id: str, mapping_type: str, permissions: int
-    ) -> None:
+    async def set_acl_permission(self, folder_id: int, mapping_id: str, mapping_type: str, permissions: int) -> None:
         """Sets ACL permission for a user or group on a folder.
 
         :param folder_id: ID of the folder.
@@ -270,4 +266,3 @@ class _AsyncGroupFoldersAPI:
         require_capabilities("groupfolders.enabled", await self._session.capabilities)
         params = {"mappingType": mapping_type, "mappingId": mapping_id}
         await self._session.ocs("DELETE", f"{self._ep_base}/{folder_id}/acl", json=params)
-

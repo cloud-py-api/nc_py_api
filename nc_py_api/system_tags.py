@@ -4,7 +4,12 @@ from ._exceptions import NextcloudExceptionNotFound, check_error
 from ._misc import check_capabilities, require_capabilities
 from ._session import AsyncNcSessionBasic, NcSessionBasic
 from .files import SystemTag
-from .files._files import build_list_tag_req, build_list_tags_response, build_update_tag_req, element_tree_as_str
+from .files._files import (
+    build_list_tag_req,
+    build_list_tags_response,
+    build_update_tag_req,
+    element_tree_as_str,
+)
 
 
 class _SystemTagsAPI:
