@@ -259,7 +259,8 @@ def __fetch_model_as_snapshot(
             super().__init__(*args, **kwargs)
 
         def display(self, msg=None, pos=None):
-            nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
+            if self.total:
+                nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
             return super().display(msg, pos)
 
     workers = download_options.pop("max_workers", 2)
