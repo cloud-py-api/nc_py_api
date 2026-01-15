@@ -252,8 +252,15 @@ def __fetch_model_as_snapshot(
     from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
 
     class TqdmProgress(tqdm):
+        def __init__(self, *args, **kwargs):
+            # huggingface may provide a name, but tqdm rejects a "name"
+            # argument, so it needs to be removed
+            kwargs.pop("name", None)
+            super().__init__(*args, **kwargs)
+
         def display(self, msg=None, pos=None):
-            nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
+            if self.total:
+                nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
             return super().display(msg, pos)
 
     workers = download_options.pop("max_workers", 2)
