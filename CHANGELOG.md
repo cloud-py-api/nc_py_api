@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.23.1 - 2026-01-16]
+
+### Fixed
+
+- Fix custom progress bar with huggingface_hub >= 1.1.0. #391 Thanks to @danxuliu
+
 ## [0.23.0 - 2025-11-25]
 
 ### Added
@@ -10,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- handle bot join messages properly to get conversation id and name (#385)
+- Handle bot join messages properly to get conversation id and name (#385)
 
 ## [0.22.0 - 2025-10-24]
 
