@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Packaging 3rd party software as a Nextcloud Application &mdash; NcPyApi 0.23.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/styles.css?v=0f758665" />
+      <link rel="stylesheet" type="text/css" href="_static/css/dark.css?v=41caee7b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/light.css?v=c3d70dd7" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=832b3b9f"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script src="_static/tabs.js?v=3ee01567"></script>
+        <script src="_static/js/script.js?v=783f4f19"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Nextcloud Talk Bot API in Applications" href="NextcloudTalkBot.html" />
+    <link rel="prev" title="Writing a Nextcloud Application" href="NextcloudApp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.23.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FirstSteps.html">First steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MoreAPIs.html">More APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudApp.html">Writing a Nextcloud Application</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Packaging 3rd party software as a Nextcloud Application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#steps">Steps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-the-exapp">Creating the ExApp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-the-frontend">Adding the frontend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxying-the-requests">Proxying the requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adjusting-the-dockerfile">Adjusting the Dockerfile</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBot.html">Nextcloud Talk Bot API in Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudTalkBotTransformers.html">Talk Bot App with Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NextcloudUiApp.html">Writing Nextcloud App with UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DevSetup.html">Setting up dev environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/AppAPI.html">AppAPI Benchmarks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NcPyApi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Packaging 3rd party software as a Nextcloud Application</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/NextcloudApp3rdParty.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="packaging-3rd-party-software-as-a-nextcloud-application">
+<h1>Packaging 3rd party software as a Nextcloud Application<a class="headerlink" href="#packaging-3rd-party-software-as-a-nextcloud-application" title="Link to this heading"></a></h1>
+<p>This chapter explains how you can package any 3rd party software to be compatible with Nextcloud.
+You should already be familiar with <a class="reference internal" href="NextcloudApp.html"><span class="doc">Writing a Nextcloud Application</span></a> before reading this part.</p>
+<p>You should also have a bit of knowledge about classic PHP Nextcloud apps and <a class="reference external" href="https://docs.nextcloud.com/server/stable/developer_manual/app_development/index.html">how to develop them</a>.</p>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading"></a></h2>
+<p>The packaged ExApp will contain two pieces of software:</p>
+<ol class="arabic simple">
+<li><p>The ExApp itself which is talking to Nextcloud directly and responsible for the whole lifecycle.</p></li>
+<li><p>The 3rd party software you want to package.</p></li>
+<li><p>Frontend code which will be loaded by Nextcloud to display your iframe.</p></li>
+</ol>
+<p>Due to current restrictions of ExApps they can only utilize a single port, which means all requests for the 3rd part software have to be proxied through the ExApp.
+This will be improved in future released, by allowing multiple ports, so that no proxying is necessary anymore.</p>
+<p>Everything will be packaged into a single Docker image which will be used for deployments.
+Therefore it is an advantage if the 3rd party software is already able to run inside a Docker container and has a public Docker image available.</p>
+</section>
+<section id="steps">
+<h2>Steps<a class="headerlink" href="#steps" title="Link to this heading"></a></h2>
+<section id="creating-the-exapp">
+<h3>Creating the ExApp<a class="headerlink" href="#creating-the-exapp" title="Link to this heading"></a></h3>
+<p>Please follow the instructions in <a class="reference internal" href="NextcloudApp.html"><span class="doc">Writing a Nextcloud Application</span></a> and then return here.</p>
+</section>
+<section id="adding-the-frontend">
+<h3>Adding the frontend<a class="headerlink" href="#adding-the-frontend" title="Link to this heading"></a></h3>
+<p>To be able to access the 3rd party software via the browser it is necessary to embed an iframe into Nextcloud.
+The frontend has to be added in the same way how you add it in a classic PHP app.
+The iframe <code class="docutils literal notranslate"><span class="pre">src</span></code> needs to point to <code class="docutils literal notranslate"><span class="pre">/apps/app_api/proxy/APP_ID</span></code>, but it is necessary to use the <code class="docutils literal notranslate"><span class="pre">generateUrl</span></code> method to ensure the path will also work with Nextcloud instances hosted at a sub-path.
+If you require some features like clipboard read/write you need to allow them for the iframe using the <code class="docutils literal notranslate"><span class="pre">allow</span></code> attribute.</p>
+<p>To now show the frontend inside Nextcloud add the following to your enabled handler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enabled_handler</span><span class="p">(</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">nc</span><span class="p">:</span> <span class="n">NextcloudApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">set_script</span><span class="p">(</span><span class="s2">&quot;top_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;APP_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;js/APP_ID-main&quot;</span><span class="p">)</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">top_menu</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;APP_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;App Name&quot;</span><span class="p">,</span> <span class="s2">&quot;img/app.svg&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">delete_script</span><span class="p">(</span><span class="s2">&quot;top_menu&quot;</span><span class="p">,</span> <span class="s2">&quot;APP_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;js/APP_ID-main&quot;</span><span class="p">)</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">top_menu</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="s2">&quot;APP_ID&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="proxying-the-requests">
+<h3>Proxying the requests<a class="headerlink" href="#proxying-the-requests" title="Link to this heading"></a></h3>
+<p>For proxying the requests to the 3rd party software you need to register a new route:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@APP</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span><span class="s2">&quot;/{path:path}&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">,</span> <span class="s2">&quot;TRACE&quot;</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">proxy_requests</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>This route should have the lowest priority of all your routes, as it catches all requests that didn’t match any previous route.</p>
+<p>In this request handler you need to send a new HTTP request to the 3rd party software and copy all incoming parameters like sub-path, query parameters, body and headers.
+When returning the response including body, headers and status code, make sure to add or override the CSP and CORS headers if necessary.</p>
+</section>
+<section id="adjusting-the-dockerfile">
+<h3>Adjusting the Dockerfile<a class="headerlink" href="#adjusting-the-dockerfile" title="Link to this heading"></a></h3>
+<p>The Dockerfile should be based on the 3rd party software you want to package.
+In case a Docker image is already available you should use that, otherwise you need to first create your own Docker image (it doesn’t have to be a separate image, it can just be a stage in the Dockerfile for your ExApp).</p>
+<p>The 3rd party software needs to be adapted to be able to handle the proxied requests and generated correct URLs in the frontend.
+Depending on how the software works this might only be a config option you need to set or you need to modify the source code within the Docker image (and potentially rebuild the software afterwards).
+The root path of the software will be hosted at <code class="docutils literal notranslate"><span class="pre">/index.php/apps/app_api/proxy/APP_ID</span></code> which is the same location that was configured in the iframe <code class="docutils literal notranslate"><span class="pre">src</span></code>.</p>
+<p>After these steps you can just continue with the normal ExApp Dockerfile steps of installing the dependencies and copying the source code.
+Be aware that you will need to install Python manually in your image in case the Docker image you used so far doesn’t include it.</p>
+<p>At the end you will have to add a custom entrypoint script that runs the ExApp and the 3rd party software side-by-side to allow them to live in the same container.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="NextcloudApp.html" class="btn btn-neutral float-left" title="Writing a Nextcloud Application" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="NextcloudTalkBot.html" class="btn btn-neutral float-right" title="Nextcloud Talk Bot API in Applications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026 NcPyApi Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
