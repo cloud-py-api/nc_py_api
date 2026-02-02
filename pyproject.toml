@@ -32,6 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Internet :: WWW/HTTP",
@@ -88,9 +89,6 @@ urls.Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.
 urls.Documentation = "https://cloud-py-api.github.io/nc_py_api/"
 urls.Source = "https://github.com/cloud-py-api/nc_py_api"
 
-[tool.hatch.version]
-path = "nc_py_api/_version.py"
-
 [tool.hatch.build.targets.sdist]
 include = [
   "/nc_py_api",
@@ -100,6 +98,9 @@ include = [
 exclude = [
   "Makefile",
 ]
+
+[tool.hatch.version]
+path = "nc_py_api/_version.py"
 
 [tool.black]
 line-length = 120
@@ -224,15 +225,6 @@ markers = [
 ]
 asyncio_mode = "auto"
 
-[tool.coverage.run]
-cover_pylib = true
-include = [
-  "*/nc_py_api/*",
-]
-omit = [
-  "*/tests/*",
-]
-
 [tool.coverage.paths]
 source = [
   "nc_py_api/",
@@ -245,4 +237,12 @@ exclude_lines = [
   "raise NotImplementedError",
   "DeprecationWarning",
   "DEPRECATED",
+]
+[tool.coverage.run]
+cover_pylib = true
+include = [
+  "*/nc_py_api/*",
+]
+omit = [
+  "*/tests/*",
 ]
