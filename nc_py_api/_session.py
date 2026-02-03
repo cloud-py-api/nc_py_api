@@ -236,10 +236,12 @@ class NcSessionBasic(NcSessionBase, ABC):
                 self.init_adapter(restart=True)
                 return self.ocs(method, path, **kwargs, content=content, json=json, params=params, nested_req=True)
             if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
-                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
+                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info, response=response)
             if ocs_meta["statuscode"] == 304:
-                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info)
-            raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
+                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info, response=response)
+            raise NextcloudException(
+                status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info, response=response
+            )
         return response_data["ocs"]["data"]
 
     def update_server_info(self) -> None:
@@ -363,10 +365,12 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
                     method, path, **kwargs, content=content, json=json, params=params, nested_req=True
                 )
             if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
-                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info)
+                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info, response=response)
             if ocs_meta["statuscode"] == 304:
-                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info)
-            raise NextcloudException(status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info)
+                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info, response=response)
+            raise NextcloudException(
+                status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info, response=response
+            )
         return response_data["ocs"]["data"]
 
     async def update_server_info(self) -> None:

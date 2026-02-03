@@ -360,10 +360,14 @@ def lf_parse_webdav_response(
 def _webdav_response_to_records(webdav_res: Response, info: str) -> list[dict]:
     check_error(webdav_res, info=info)
     if webdav_res.status_code != 207:  # multistatus
-        raise NextcloudException(webdav_res.status_code, "Response is not a multistatus.", info=info)
+        raise NextcloudException(
+            webdav_res.status_code, "Response is not a multistatus.", info=info, response=webdav_res
+        )
     response_data = loads(dumps(xmltodict.parse(webdav_res.text)))
     if "d:error" in response_data:
         err = response_data["d:error"]
-        raise NextcloudException(reason=f'{err["s:exception"]}: {err["s:message"]}'.replace("\n", ""), info=info)
+        raise NextcloudException(
+            reason=f'{err["s:exception"]}: {err["s:message"]}'.replace("\n", ""), info=info, response=webdav_res
+        )
     response = response_data["d:multistatus"].get("d:response", [])
     return [response] if isinstance(response, dict) else response
