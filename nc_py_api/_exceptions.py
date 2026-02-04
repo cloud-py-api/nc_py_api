@@ -8,12 +8,15 @@ class NextcloudException(Exception):
 
     status_code: int
     reason: str
+    info: str
+    response: Response | None
 
-    def __init__(self, status_code: int = 0, reason: str = "", info: str = ""):
+    def __init__(self, status_code: int = 0, reason: str = "", info: str = "", response: Response | None = None):
         super(BaseException, self).__init__()
         self.status_code = status_code
         self.reason = reason
         self.info = info
+        self.response = response
 
     def __str__(self):
         reason = f" {self.reason}" if self.reason else ""
@@ -24,22 +27,22 @@ class NextcloudException(Exception):
 class NextcloudExceptionNotModified(NextcloudException):
     """The exception indicates that there is no need to retransmit the requested resources."""
 
-    def __init__(self, reason="Not modified", info: str = ""):
-        super().__init__(304, reason=reason, info=info)
+    def __init__(self, reason="Not modified", info: str = "", response: Response | None = None):
+        super().__init__(304, reason=reason, info=info, response=response)
 
 
 class NextcloudExceptionNotFound(NextcloudException):
     """The exception that is thrown during operations when the object is not found."""
 
-    def __init__(self, reason="Not found", info: str = ""):
-        super().__init__(404, reason=reason, info=info)
+    def __init__(self, reason="Not found", info: str = "", response: Response | None = None):
+        super().__init__(404, reason=reason, info=info, response=response)
 
 
 class NextcloudMissingCapabilities(NextcloudException):
     """The exception that is thrown when required capability for API is missing."""
 
-    def __init__(self, reason="Missing capability", info: str = ""):
-        super().__init__(412, reason=reason, info=info)
+    def __init__(self, reason="Missing capability", info: str = "", response: Response | None = None):
+        super().__init__(412, reason=reason, info=info, response=response)
 
 
 def check_error(response: Response, info: str = ""):
@@ -59,12 +62,12 @@ def check_error(response: Response, info: str = ""):
             phrase = "Not found"
         else:
             phrase = "Unknown error"
-        raise NextcloudException(status_code, reason=phrase, info=info)
+        raise NextcloudException(status_code, reason=phrase, info=info, response=response)
 
     try:
         response.raise_for_status()
     except HTTPError as e:
-        raise NextcloudException(status_code, reason=response.reason, info=info) from e
+        raise NextcloudException(status_code, reason=response.reason, info=info, response=response) from e
 
 
 class ModelFetchError(Exception):
