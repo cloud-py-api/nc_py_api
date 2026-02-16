@@ -32,6 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Internet :: WWW/HTTP",
@@ -88,18 +89,16 @@ urls.Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.
 urls.Documentation = "https://cloud-py-api.github.io/nc_py_api/"
 urls.Source = "https://github.com/cloud-py-api/nc_py_api"
 
-[tool.hatch.version]
-path = "nc_py_api/_version.py"
-
-[tool.hatch.build.targets.sdist]
-include = [
+[tool.hatch]
+build.targets.sdist.include = [
   "/nc_py_api",
   "/CHANGELOG.md",
   "/README.md",
 ]
-exclude = [
+build.targets.sdist.exclude = [
   "Makefile",
 ]
+version.path = "nc_py_api/_version.py"
 
 [tool.black]
 line-length = 120
@@ -137,7 +136,6 @@ lint.extend-ignore = [
   "RUF100",
   "S108",
 ]
-
 lint.per-file-ignores."nc_py_api/__init__.py" = [
   "F401",
 ]
@@ -209,40 +207,36 @@ messages_control.disable = [
   "too-many-positional-arguments",
 ]
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-testpaths = [
+[tool.pytest]
+ini_options.minversion = "6.0"
+ini_options.testpaths = [
   "tests",
 ]
-filterwarnings = [
+ini_options.filterwarnings = [
   "ignore::DeprecationWarning",
 ]
-log_cli = true
-addopts = "-rs --color=yes"
-markers = [
+ini_options.log_cli = true
+ini_options.addopts = "-rs --color=yes"
+ini_options.markers = [
   "require_nc: marks a test that requires a minimum version of Nextcloud.",
 ]
-asyncio_mode = "auto"
+ini_options.asyncio_mode = "auto"
 
-[tool.coverage.run]
-cover_pylib = true
-include = [
+[tool.coverage]
+run.cover_pylib = true
+run.include = [
   "*/nc_py_api/*",
 ]
-omit = [
+run.omit = [
   "*/tests/*",
 ]
-
-[tool.coverage.paths]
-source = [
+paths.source = [
   "nc_py_api/",
   "*/site-packages/nc_py_api/",
 ]
-
-[tool.coverage.report]
-exclude_lines = [
+report.exclude_lines = [
+  "DEPRECATED",
+  "DeprecationWarning",
   "pragma: no cover",
   "raise NotImplementedError",
-  "DeprecationWarning",
-  "DEPRECATED",
 ]
