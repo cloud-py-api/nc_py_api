@@ -20,6 +20,7 @@ from fastapi import (
     status,
 )
 from fastapi.responses import JSONResponse, PlainTextResponse
+from filelock import FileLock
 from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
@@ -205,7 +206,8 @@ def __fetch_model_as_file(
     current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
-    with niquests.get(model_path, stream=True) as response:
+    tmp_path = result_path + ".tmp"
+    with FileLock(result_path + ".lock", timeout=7200), niquests.get(model_path, stream=True) as response:
         if not response.ok:
             raise ModelFetchError(
                 f"Downloading of '{model_path}' failed, returned ({response.status_code}) {response.text}"
@@ -232,15 +234,21 @@ def __fetch_model_as_file(
                     nc.set_init_status(min(current_progress + progress_for_task, 99))
                     return result_path
 
-        with builtins.open(result_path, "wb") as file:
-            last_progress = current_progress
-            for chunk in response.iter_raw(-1):
-                downloaded_size += file.write(chunk)
-                if total_size:
-                    new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
-                    if new_progress != last_progress:
-                        nc.set_init_status(new_progress)
-                        last_progress = new_progress
+        try:
+            with builtins.open(tmp_path, "wb") as file:
+                last_progress = current_progress
+                for chunk in response.iter_raw(-1):
+                    downloaded_size += file.write(chunk)
+                    if total_size:
+                        new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
+                        if new_progress != last_progress:
+                            nc.set_init_status(new_progress)
+                            last_progress = new_progress
+            os.replace(tmp_path, result_path)
+        except BaseException:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            raise
 
     return result_path
 
