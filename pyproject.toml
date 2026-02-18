@@ -164,6 +164,10 @@ lint.extend-per-file-ignores."tests/**/*.py" = [
   "S",
   "UP",
 ]
+lint.extend-per-file-ignores."tests_unit/**/*.py" = [
+  "D",
+  "S",
+]
 lint.mccabe.max-complexity = 16
 
 [tool.isort]
@@ -214,6 +218,7 @@ messages_control.disable = [
 minversion = "6.0"
 testpaths = [
   "tests",
+  "tests_unit",
 ]
 filterwarnings = [
   "ignore::DeprecationWarning",
