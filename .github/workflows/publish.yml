@@ -27,7 +27,7 @@ jobs:
         run: twine check dist/*
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wheels_nc_py_api
           path: dist/*.*
@@ -52,7 +52,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Download sdist and wheels
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: wheels_nc_py_api
           path: wheelhouse_nc_py_api
