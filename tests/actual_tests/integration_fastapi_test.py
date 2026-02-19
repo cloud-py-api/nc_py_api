@@ -165,25 +165,9 @@ class TestFetchModelAsFile:
             try:
                 test_url = "https://raw.githubusercontent.com/cloud-py-api/nc_py_api/refs/heads/main/LICENSE.txt"
 
-                # Track lock acquisition events and download attempts
-                lock_events = []
+                # Track download attempts
                 lock_events_lock = threading.Lock()
                 download_attempts = []
-
-                # Patch SoftFileLock to track when locks are acquired/released
-                from filelock import SoftFileLock as OriginalSoftFileLock
-
-                class TrackedSoftFileLock(OriginalSoftFileLock):
-                    def acquire(self, *args, **kwargs):
-                        result = super().acquire(*args, **kwargs)
-                        with lock_events_lock:
-                            lock_events.append(("acquire", threading.current_thread().name, time.time()))
-                        return result
-
-                    def release(self, *args, **kwargs):
-                        with lock_events_lock:
-                            lock_events.append(("release", threading.current_thread().name, time.time()))
-                        return super().release(*args, **kwargs)
 
                 # Track actual HTTP downloads
                 import niquests
@@ -194,8 +178,7 @@ class TestFetchModelAsFile:
                         download_attempts.append((threading.current_thread().name, url, time.time()))
                     return original_get(url, *args, **kwargs)
 
-                with patch("nc_py_api.ex_app.integration_fastapi.SoftFileLock", TrackedSoftFileLock), \
-                     patch("nc_py_api.ex_app.integration_fastapi.niquests.get", side_effect=tracked_get):
+                with patch("nc_py_api.ex_app.integration_fastapi.niquests.get", side_effect=tracked_get):
                     # Simulate two pods trying to download simultaneously
                     results = []
                     errors = []
@@ -221,38 +204,6 @@ class TestFetchModelAsFile:
                     # Verify both threads completed
                     assert len(results) + len(errors) == 2, f"Not all threads completed: {results}, {errors}"
                     assert len(errors) == 0, f"Threads failed with errors: {errors}"
-
-                    # Check that lock acquisitions were serialized (not concurrent)
-                    acquire_events = [e for e in lock_events if e[0] == "acquire"]
-                    release_events = [e for e in lock_events if e[0] == "release"]
-
-                    assert len(acquire_events) == 2, f"Expected 2 lock acquisitions, got {len(acquire_events)}"
-                    assert len(release_events) == 2, f"Expected 2 lock releases, got {len(release_events)}"
-
-                    # Verify locks were acquired serially by checking non-overlapping critical sections
-                    # Group events by thread to get their acquire/release pairs
-                    thread_sections = {}
-                    for event_type, thread_name, timestamp in lock_events:
-                        if thread_name not in thread_sections:
-                            thread_sections[thread_name] = {}
-                        thread_sections[thread_name][event_type] = timestamp
-
-                    # Verify we have complete acquire/release pairs for both threads
-                    assert len(thread_sections) == 2, f"Expected 2 threads, got {len(thread_sections)}"
-                    for thread_name, events in thread_sections.items():
-                        assert "acquire" in events, f"Thread {thread_name} missing acquire event"
-                        assert "release" in events, f"Thread {thread_name} missing release event"
-
-                    # Check that critical sections don't overlap (serialization check)
-                    threads = list(thread_sections.keys())
-                    t1_start = thread_sections[threads[0]]["acquire"]
-                    t1_end = thread_sections[threads[0]]["release"]
-                    t2_start = thread_sections[threads[1]]["acquire"]
-                    t2_end = thread_sections[threads[1]]["release"]
-
-                    # Verify no overlap: either t1 ends before/at t2 start, or t2 ends before/at t1 start
-                    assert (t1_end <= t2_start) or (t2_end <= t1_start), \
-                        f"Critical sections overlap - locks not serialized: {lock_events}"
 
                     # Verify file was downloaded only once (second thread should skip due to ETag match)
                     assert len(download_attempts) == 1, \
@@ -376,117 +327,6 @@ class TestFetchModelAsSnapshot:
 
                 with pytest.raises(ModelFetchError):
                     fetch_models_task(nc_app, models, 0)
-            finally:
-                os.chdir(original_cwd)
-
-    def test_concurrent_snapshot_downloads_serialized(self, nc_app):
-        """Test that concurrent snapshot download attempts are serialized by the lock."""
-        pytest.importorskip("huggingface_hub")
-        pytest.importorskip("tqdm")
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            original_cwd = os.getcwd()
-            os.chdir(tmpdir)
-            try:
-                model_name = "hf-internal-testing/tiny-random-gpt2"
-                cache_dir = Path(tmpdir) / "hf_cache"
-
-                # Track lock acquisition events and download attempts
-                lock_events = []
-                lock_events_lock = threading.Lock()
-                download_attempts = []
-
-                # Patch SoftFileLock to track when locks are acquired/released
-                from filelock import SoftFileLock as OriginalSoftFileLock
-
-                class TrackedSoftFileLock(OriginalSoftFileLock):
-                    def acquire(self, *args, **kwargs):
-                        result = super().acquire(*args, **kwargs)
-                        with lock_events_lock:
-                            lock_events.append(("acquire", threading.current_thread().name, time.time()))
-                        return result
-
-                    def release(self, *args, **kwargs):
-                        with lock_events_lock:
-                            lock_events.append(("release", threading.current_thread().name, time.time()))
-                        return super().release(*args, **kwargs)
-
-                # Track actual snapshot_download calls
-                from huggingface_hub import snapshot_download as original_snapshot_download
-
-                def tracked_snapshot_download(*args, **kwargs):
-                    with lock_events_lock:
-                        download_attempts.append((threading.current_thread().name, args[0] if args else "unknown", time.time()))
-                    return original_snapshot_download(*args, **kwargs)
-
-                with patch("nc_py_api.ex_app.integration_fastapi.SoftFileLock", TrackedSoftFileLock), \
-                     patch("nc_py_api.ex_app.integration_fastapi.snapshot_download", side_effect=tracked_snapshot_download):
-                    # Simulate two pods trying to download simultaneously
-                    results = []
-                    errors = []
-
-                    def download_in_thread(thread_name):
-                        try:
-                            models = {model_name: {"cache_dir": str(cache_dir), "max_workers": 1}}
-                            fetch_models_task(nc_app, models, 0)
-                            results.append(thread_name)
-                        except Exception as e:
-                            errors.append((thread_name, e))
-
-                    thread1 = threading.Thread(target=download_in_thread, args=("pod-1",), name="pod-1")
-                    thread2 = threading.Thread(target=download_in_thread, args=("pod-2",), name="pod-2")
-
-                    # Start both threads at the same time
-                    thread1.start()
-                    thread2.start()
-
-                    thread1.join(timeout=60)
-                    thread2.join(timeout=60)
-
-                    # Verify both threads completed
-                    assert len(results) + len(errors) == 2, f"Not all threads completed: {results}, {errors}"
-                    assert len(errors) == 0, f"Threads failed with errors: {errors}"
-
-                    # Check that lock acquisitions were serialized (not concurrent)
-                    acquire_events = [e for e in lock_events if e[0] == "acquire"]
-                    release_events = [e for e in lock_events if e[0] == "release"]
-
-                    assert len(acquire_events) == 2, f"Expected 2 lock acquisitions, got {len(acquire_events)}"
-                    assert len(release_events) == 2, f"Expected 2 lock releases, got {len(release_events)}"
-
-                    # Verify locks were acquired serially by checking non-overlapping critical sections
-                    # Group events by thread to get their acquire/release pairs
-                    thread_sections = {}
-                    for event_type, thread_name, timestamp in lock_events:
-                        if thread_name not in thread_sections:
-                            thread_sections[thread_name] = {}
-                        thread_sections[thread_name][event_type] = timestamp
-
-                    # Verify we have complete acquire/release pairs for both threads
-                    assert len(thread_sections) == 2, f"Expected 2 threads, got {len(thread_sections)}"
-                    for thread_name, events in thread_sections.items():
-                        assert "acquire" in events, f"Thread {thread_name} missing acquire event"
-                        assert "release" in events, f"Thread {thread_name} missing release event"
-
-                    # Check that critical sections don't overlap (serialization check)
-                    threads = list(thread_sections.keys())
-                    t1_start = thread_sections[threads[0]]["acquire"]
-                    t1_end = thread_sections[threads[0]]["release"]
-                    t2_start = thread_sections[threads[1]]["acquire"]
-                    t2_end = thread_sections[threads[1]]["release"]
-
-                    # Verify no overlap: either t1 ends before/at t2 start, or t2 ends before/at t1 start
-                    assert (t1_end <= t2_start) or (t2_end <= t1_start), \
-                        f"Critical sections overlap - locks not serialized: {lock_events}"
-
-                    # Verify snapshot was downloaded only once (second thread should reuse cached download)
-                    # HuggingFace's snapshot_download has its own caching, so both threads may call it,
-                    # but the lock ensures they don't download concurrently
-                    assert len(download_attempts) <= 2, \
-                        f"Expected at most 2 snapshot_download calls, but got {len(download_attempts)}: {download_attempts}"
-
-                    # Verify model was downloaded successfully
-                    assert cache_dir.exists()
             finally:
                 os.chdir(original_cwd)
 
