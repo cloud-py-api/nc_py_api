@@ -15,7 +15,7 @@ from ._session import BasicConfig
 from .nextcloud import AsyncNextcloudApp, NextcloudApp
 
 
-class ObjectContent(typing.TypedDict):
+class ObjectContent(typing.TypedDict, total=False):
     """Object content of :py:class:`~nc_py_api.talk_bot.TalkBotMessage`."""
 
     message: str
