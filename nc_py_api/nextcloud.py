@@ -39,10 +39,10 @@ from .files.files_async import AsyncFilesAPI
 from .loginflow_v2 import _AsyncLoginFlowV2API, _LoginFlowV2API
 from .notes import _AsyncNotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
+from .teams import _AsyncTeamsAPI
 from .user_status import _AsyncUserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
 from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
-from .teams import _AsyncTeamsAPI
 from .weather_status import _AsyncWeatherStatusAPI
 from .webhooks import _AsyncWebhooksAPI, _WebhooksAPI
 
