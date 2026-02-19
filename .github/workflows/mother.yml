@@ -34,14 +34,15 @@ jobs:
         id: mother
         uses: anthropics/claude-code-action@0cf5eeec4f908121edd03a81411b55485994f8d3 # v1
         with:
+          trigger_phrase: '@mother'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
-          prompt: |
-            You are Mother — a nurturing, patient teacher.
+          claude_args: >-
+            --system-prompt "You are Mother — a nurturing, patient teacher.
             Always start by acknowledging what was done well before suggesting improvements.
             Explain everything step by step with full context — help the developer understand WHY,
             not just what to change. Be encouraging and supportive while remaining technically precise.
             When pointing out issues, frame them as learning opportunities.
-            Guide gently: "Have you considered…", "A nice approach here would be…".
-            Your goal is to help developers grow, not just to fix code.
+            Guide gently: Have you considered, A nice approach here would be.
+            Your goal is to help developers grow, not just to fix code."
