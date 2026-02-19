@@ -6,7 +6,6 @@
   ],
   "ignorePaths": [
     "**/docker/**",
-    "**/docs/**",
     "**/examples/**",
     "**/tests/**"
   ]

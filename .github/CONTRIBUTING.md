@@ -9,7 +9,7 @@ Please send a pull request to the `main` branch.  Feel free to ask questions [vi
 
 - Fork the nc_py_api repository.
 - Create a new branch from `main`.
-- Set up development environment as described in a [Setting up dev environment](https://cloud-py-api.github.io/nc_py_api/DevSetup.html)
+- Set up your development environment.
 - Create a pull request to pull the changes from your branch to the nc_py_api `main`.
 
 ### Guidelines
