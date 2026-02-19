@@ -20,7 +20,7 @@ env:
   APP_PORT: 9009
   NC_AUTH_USER: "admin"
   NC_AUTH_PASS: "adminpassword"
-  NEXTCLOUD_BRANCH: stable30
+  NEXTCLOUD_BRANCH: stable31
 
 jobs:
   analysis:
@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
@@ -42,7 +42,7 @@ jobs:
   tests-oci:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: stable30 • 🐍3.11 • OCI
+    name: stable31 • 🐍3.11 • OCI
     timeout-minutes: 60
 
     services:
@@ -64,11 +64,11 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
             posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -136,7 +136,7 @@ jobs:
           SKIP_NC_CLIENT_TESTS: 1
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage_oci_${{ env.NEXTCLOUD_BRANCH }}.xml
           path: nc_py_api/coverage_oci_${{ env.NEXTCLOUD_BRANCH }}.xml
@@ -144,7 +144,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nc_log_oci_${{ env.NEXTCLOUD_BRANCH }}
           path: data/nextcloud.log
@@ -157,12 +157,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable30', 'stable31' ]
+        nextcloud: [ 'stable32', 'stable33' ]
     timeout-minutes: 60
 
     services:
       mariadb:
-        image: mariadb:11.7
+        image: mariadb:11.8
         env:
           MARIADB_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: nextcloud
@@ -178,10 +178,10 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
@@ -305,7 +305,7 @@ jobs:
           coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage_maria_${{ matrix.nextcloud }}.xml
           path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}.xml
@@ -313,7 +313,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nc_log_maria_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -326,7 +326,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable30', 'stable31' ]
+        nextcloud: [ 'stable31', 'stable32' ]
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -351,10 +351,10 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -471,7 +471,7 @@ jobs:
           coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}.xml
           path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}.xml
@@ -479,7 +479,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nc_log_pgsql_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -492,7 +492,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable30', 'stable31' ]
+        nextcloud: [ 'stable31', 'stable33' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
     timeout-minutes: 60
@@ -501,10 +501,10 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, sqlite, pdo_sqlite, zip, gd, curl
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -573,7 +573,7 @@ jobs:
           NPA_NC_CERT: ''
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
           path: nc_py_api/coverage_sqlite_${{ matrix.nextcloud }}_client.xml
@@ -581,7 +581,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nc_log_sqlite_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -596,7 +596,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Download Coverage Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           path: coverage
           pattern: coverage_*

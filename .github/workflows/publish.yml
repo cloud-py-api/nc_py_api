@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
@@ -27,7 +27,7 @@ jobs:
         run: twine check dist/*
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wheels_nc_py_api
           path: dist/*.*
@@ -52,13 +52,13 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Download sdist and wheels
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: wheels_nc_py_api
           path: wheelhouse_nc_py_api
 
       - name: Create release draft
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           name: ${{ env.RELEASE_TAG }}
           tag: ${{ env.RELEASE_TAG }}

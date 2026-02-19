@@ -76,17 +76,7 @@ optional-dependencies.dev-min = [
   "pytest",
   "pytest-asyncio",
 ]
-optional-dependencies.docs = [
-  "autodoc-pydantic>=2.0.1",
-  "nc-py-api[app,calendar]",
-  "sphinx<8",
-  "sphinx-copybutton",
-  "sphinx-inline-tabs",
-  "sphinx-issues>=3.0.1",
-  "sphinx-rtd-theme<3",
-]
 urls.Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.md"
-urls.Documentation = "https://cloud-py-api.github.io/nc_py_api/"
 urls.Source = "https://github.com/cloud-py-api/nc_py_api"
 
 [tool.hatch.version]
@@ -98,9 +88,7 @@ include = [
   "/CHANGELOG.md",
   "/README.md",
 ]
-exclude = [
-  "Makefile",
-]
+exclude = [  ]
 
 [tool.black]
 line-length = 120
@@ -149,9 +137,6 @@ lint.extend-per-file-ignores."benchmarks/**/*.py" = [
   "D",
   "S311",
   "SIM",
-]
-lint.extend-per-file-ignores."docs/**/*.py" = [
-  "D",
 ]
 lint.extend-per-file-ignores."examples/**/*.py" = [
   "D",
