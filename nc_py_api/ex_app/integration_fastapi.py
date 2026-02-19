@@ -206,7 +206,8 @@ def __fetch_model_as_file(
     current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
-    with SoftFileLock(result_path + ".lock"):
+    temp_path = result_path + ".tmp"
+    with SoftFileLock(result_path + ".lock", timeout=3600):
         with niquests.get(model_path, stream=True) as response:
             if not response.ok:
                 raise ModelFetchError(
@@ -234,7 +235,7 @@ def __fetch_model_as_file(
                         nc.set_init_status(min(current_progress + progress_for_task, 99))
                         return result_path
 
-            with builtins.open(result_path, "wb") as file:
+            with builtins.open(temp_path, "wb") as file:
                 last_progress = current_progress
                 for chunk in response.iter_raw(-1):
                     downloaded_size += file.write(chunk)
@@ -243,6 +244,7 @@ def __fetch_model_as_file(
                         if new_progress != last_progress:
                             nc.set_init_status(new_progress)
                             last_progress = new_progress
+            os.replace(temp_path, result_path)
 
     return result_path
 
@@ -272,7 +274,7 @@ def __fetch_model_as_snapshot(
         if sep:
             safe_model_name = safe_model_name.replace(sep, "_")
     lock_path = os.path.join(cache, f"{safe_model_name}.lock")
-    with SoftFileLock(lock_path):
+    with SoftFileLock(lock_path, timeout=3600):
         return snapshot_download(
             model_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache
         )
