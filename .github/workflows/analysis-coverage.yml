@@ -20,7 +20,7 @@ env:
   APP_PORT: 9009
   NC_AUTH_USER: "admin"
   NC_AUTH_PASS: "adminpassword"
-  NEXTCLOUD_BRANCH: stable30
+  NEXTCLOUD_BRANCH: stable31
 
 jobs:
   analysis:
@@ -42,7 +42,7 @@ jobs:
   tests-oci:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: stable30 • 🐍3.11 • OCI
+    name: stable31 • 🐍3.11 • OCI
     timeout-minutes: 60
 
     services:
@@ -64,7 +64,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
             posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
 
@@ -157,7 +157,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable30', 'stable31' ]
+        nextcloud: [ 'stable32', 'stable33' ]
     timeout-minutes: 60
 
     services:
@@ -178,7 +178,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
 
       - uses: actions/setup-python@v5
@@ -326,7 +326,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable30', 'stable31' ]
+        nextcloud: [ 'stable31', 'stable32' ]
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -351,7 +351,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
       - uses: actions/setup-python@v5
@@ -492,7 +492,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable30', 'stable31' ]
+        nextcloud: [ 'stable31', 'stable33' ]
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
     timeout-minutes: 60
@@ -501,7 +501,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           extensions: mbstring, fileinfo, intl, sqlite, pdo_sqlite, zip, gd, curl
 
       - uses: actions/setup-python@v5
