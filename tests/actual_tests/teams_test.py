@@ -188,9 +188,7 @@ async def test_teams_member_level(anc_any):
         members = await anc_any.teams.get_members(circle.circle_id)
         user_member = next(m for m in members if m.user_id == test_user_id)
 
-        result = await anc_any.teams.set_member_level(
-            circle.circle_id, user_member.member_id, MemberLevel.MODERATOR
-        )
+        result = await anc_any.teams.set_member_level(circle.circle_id, user_member.member_id, MemberLevel.MODERATOR)
         assert isinstance(result, Member)
         assert result.level == MemberLevel.MODERATOR
 
@@ -198,9 +196,7 @@ async def test_teams_member_level(anc_any):
         user_member = next(m for m in members if m.user_id == test_user_id)
         assert user_member.level == MemberLevel.MODERATOR
 
-        result = await anc_any.teams.set_member_level(
-            circle.circle_id, user_member.member_id, MemberLevel.MEMBER
-        )
+        result = await anc_any.teams.set_member_level(circle.circle_id, user_member.member_id, MemberLevel.MEMBER)
         assert result.level == MemberLevel.MEMBER
     finally:
         with contextlib.suppress(NextcloudException):

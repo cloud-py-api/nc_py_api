@@ -262,9 +262,7 @@ class _AsyncTeamsAPI:
         :param name: New name for the circle.
         """
         require_capabilities("circles", await self._session.capabilities)
-        result = await self._session.ocs(
-            "PUT", f"{self._ep_base}/circles/{circle_id}/name", params={"value": name}
-        )
+        result = await self._session.ocs("PUT", f"{self._ep_base}/circles/{circle_id}/name", params={"value": name})
         return Circle(result)
 
     async def edit_description(self, circle_id: str, description: str) -> Circle:
@@ -286,9 +284,7 @@ class _AsyncTeamsAPI:
         :param config: New configuration bitmask (combination of CircleConfig flags).
         """
         require_capabilities("circles", await self._session.capabilities)
-        result = await self._session.ocs(
-            "PUT", f"{self._ep_base}/circles/{circle_id}/config", params={"value": config}
-        )
+        result = await self._session.ocs("PUT", f"{self._ep_base}/circles/{circle_id}/config", params={"value": config})
         return Circle(result)
 
     async def get_members(self, circle_id: str) -> list[Member]:
@@ -300,9 +296,7 @@ class _AsyncTeamsAPI:
         result = await self._session.ocs("GET", f"{self._ep_base}/circles/{circle_id}/members")
         return [Member(m) for m in result] if result else []
 
-    async def add_member(
-        self, circle_id: str, user_id: str, member_type: MemberType = MemberType.USER
-    ) -> list[Member]:
+    async def add_member(self, circle_id: str, user_id: str, member_type: MemberType = MemberType.USER) -> list[Member]:
         """Adds a single member to a circle.
 
         :param circle_id: ID of the circle.
@@ -334,9 +328,7 @@ class _AsyncTeamsAPI:
         :param member_id: ID of the member to remove.
         """
         require_capabilities("circles", await self._session.capabilities)
-        result = await self._session.ocs(
-            "DELETE", f"{self._ep_base}/circles/{circle_id}/members/{member_id}"
-        )
+        result = await self._session.ocs("DELETE", f"{self._ep_base}/circles/{circle_id}/members/{member_id}")
         return [Member(m) for m in result] if result else []
 
     async def set_member_level(self, circle_id: str, member_id: str, level: MemberLevel) -> Member:
@@ -361,9 +353,7 @@ class _AsyncTeamsAPI:
         :param member_id: ID of the member to confirm.
         """
         require_capabilities("circles", await self._session.capabilities)
-        result = await self._session.ocs(
-            "PUT", f"{self._ep_base}/circles/{circle_id}/members/{member_id}"
-        )
+        result = await self._session.ocs("PUT", f"{self._ep_base}/circles/{circle_id}/members/{member_id}")
         return [Member(m) for m in result] if result else []
 
     async def join(self, circle_id: str) -> Circle:
