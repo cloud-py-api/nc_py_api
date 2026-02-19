@@ -164,31 +164,35 @@ class TestFetchModelAsFile:
             os.chdir(tmpdir)
             try:
                 test_url = "https://raw.githubusercontent.com/cloud-py-api/nc_py_api/refs/heads/main/LICENSE.txt"
-                models = {test_url: {"save_path": "concurrent_test.txt"}}
 
-                # Track download events
-                download_events = []
-                download_lock = threading.Lock()
+                # Track lock acquisition events
+                lock_events = []
+                lock_events_lock = threading.Lock()
 
-                # Patch niquests.get to track when downloads actually happen
-                original_get = __import__("niquests").get
+                # Patch SoftFileLock to track when locks are acquired/released
+                from filelock import SoftFileLock as OriginalSoftFileLock
 
-                def tracked_get(*args, **kwargs):
-                    with download_lock:
-                        download_events.append(("start", threading.current_thread().name, time.time()))
-                    result = original_get(*args, **kwargs)
-                    with download_lock:
-                        download_events.append(("end", threading.current_thread().name, time.time()))
-                    return result
+                class TrackedSoftFileLock(OriginalSoftFileLock):
+                    def acquire(self, *args, **kwargs):
+                        result = super().acquire(*args, **kwargs)
+                        with lock_events_lock:
+                            lock_events.append(("acquire", threading.current_thread().name, time.time()))
+                        return result
 
-                with patch("niquests.get", side_effect=tracked_get):
+                    def release(self, *args, **kwargs):
+                        with lock_events_lock:
+                            lock_events.append(("release", threading.current_thread().name, time.time()))
+                        return super().release(*args, **kwargs)
+
+                with patch("nc_py_api.ex_app.integration_fastapi.SoftFileLock", TrackedSoftFileLock):
                     # Simulate two pods trying to download simultaneously
                     results = []
                     errors = []
 
                     def download_in_thread(thread_name):
                         try:
-                            fetch_models_task(nc_app, models.copy(), 0)
+                            models = {test_url: {"save_path": "concurrent_test.txt"}}
+                            fetch_models_task(nc_app, models, 0)
                             results.append(thread_name)
                         except Exception as e:
                             errors.append((thread_name, e))
@@ -207,21 +211,18 @@ class TestFetchModelAsFile:
                     assert len(results) + len(errors) == 2, f"Not all threads completed: {results}, {errors}"
                     assert len(errors) == 0, f"Threads failed with errors: {errors}"
 
-                    # Check that downloads were serialized (not concurrent)
-                    start_events = [e for e in download_events if e[0] == "start"]
-                    end_events = [e for e in download_events if e[0] == "end"]
+                    # Check that lock acquisitions were serialized (not concurrent)
+                    acquire_events = [e for e in lock_events if e[0] == "acquire"]
+                    release_events = [e for e in lock_events if e[0] == "release"]
 
-                    if len(start_events) == 2:
-                        # If two downloads happened, they should be sequential
-                        first_end_time = end_events[0][2]
-                        second_start_time = start_events[1][2]
-                        # Second download should start after first ends (serialized)
-                        assert second_start_time >= first_end_time, "Downloads happened concurrently instead of serially"
-                    elif len(start_events) == 1:
-                        # Only one download happened - the other thread reused the file (also valid)
-                        pass
-                    else:
-                        pytest.fail(f"Unexpected number of download events: {download_events}")
+                    assert len(acquire_events) == 2, f"Expected 2 lock acquisitions, got {len(acquire_events)}"
+                    assert len(release_events) == 2, f"Expected 2 lock releases, got {len(release_events)}"
+
+                    # Verify locks were acquired serially: first must release before second acquires
+                    first_release_time = release_events[0][2]
+                    second_acquire_time = acquire_events[1][2]
+                    assert second_acquire_time >= first_release_time, \
+                        f"Second thread acquired lock before first released: {lock_events}"
 
                     # Verify file was downloaded successfully
                     assert Path("concurrent_test.txt").exists()
@@ -355,31 +356,35 @@ class TestFetchModelAsSnapshot:
             try:
                 model_name = "hf-internal-testing/tiny-random-gpt2"
                 cache_dir = Path(tmpdir) / "hf_cache"
-                models = {model_name: {"cache_dir": str(cache_dir), "max_workers": 1}}
 
-                # Track when snapshot_download is called
-                from huggingface_hub import snapshot_download
-                download_events = []
-                download_lock = threading.Lock()
+                # Track lock acquisition events
+                lock_events = []
+                lock_events_lock = threading.Lock()
 
-                original_snapshot_download = snapshot_download
+                # Patch SoftFileLock to track when locks are acquired/released
+                from filelock import SoftFileLock as OriginalSoftFileLock
 
-                def tracked_snapshot_download(*args, **kwargs):
-                    with download_lock:
-                        download_events.append(("start", threading.current_thread().name, time.time()))
-                    result = original_snapshot_download(*args, **kwargs)
-                    with download_lock:
-                        download_events.append(("end", threading.current_thread().name, time.time()))
-                    return result
+                class TrackedSoftFileLock(OriginalSoftFileLock):
+                    def acquire(self, *args, **kwargs):
+                        result = super().acquire(*args, **kwargs)
+                        with lock_events_lock:
+                            lock_events.append(("acquire", threading.current_thread().name, time.time()))
+                        return result
 
-                with patch("nc_py_api.ex_app.integration_fastapi.snapshot_download", side_effect=tracked_snapshot_download):
+                    def release(self, *args, **kwargs):
+                        with lock_events_lock:
+                            lock_events.append(("release", threading.current_thread().name, time.time()))
+                        return super().release(*args, **kwargs)
+
+                with patch("nc_py_api.ex_app.integration_fastapi.SoftFileLock", TrackedSoftFileLock):
                     # Simulate two pods trying to download simultaneously
                     results = []
                     errors = []
 
                     def download_in_thread(thread_name):
                         try:
-                            fetch_models_task(nc_app, {model_name: {"cache_dir": str(cache_dir), "max_workers": 1}}, 0)
+                            models = {model_name: {"cache_dir": str(cache_dir), "max_workers": 1}}
+                            fetch_models_task(nc_app, models, 0)
                             results.append(thread_name)
                         except Exception as e:
                             errors.append((thread_name, e))
@@ -398,21 +403,18 @@ class TestFetchModelAsSnapshot:
                     assert len(results) + len(errors) == 2, f"Not all threads completed: {results}, {errors}"
                     assert len(errors) == 0, f"Threads failed with errors: {errors}"
 
-                    # Check that downloads were serialized (not concurrent)
-                    start_events = [e for e in download_events if e[0] == "start"]
-                    end_events = [e for e in download_events if e[0] == "end"]
+                    # Check that lock acquisitions were serialized (not concurrent)
+                    acquire_events = [e for e in lock_events if e[0] == "acquire"]
+                    release_events = [e for e in lock_events if e[0] == "release"]
 
-                    if len(start_events) == 2:
-                        # If two downloads happened, they should be sequential
-                        first_end_time = end_events[0][2]
-                        second_start_time = start_events[1][2]
-                        # Second download should start after first ends (serialized)
-                        assert second_start_time >= first_end_time, "Downloads happened concurrently instead of serially"
-                    elif len(start_events) == 1:
-                        # Only one download happened - the other thread reused cached model (also valid)
-                        pass
-                    else:
-                        pytest.fail(f"Unexpected number of download events: {download_events}")
+                    assert len(acquire_events) == 2, f"Expected 2 lock acquisitions, got {len(acquire_events)}"
+                    assert len(release_events) == 2, f"Expected 2 lock releases, got {len(release_events)}"
+
+                    # Verify locks were acquired serially: first must release before second acquires
+                    first_release_time = release_events[0][2]
+                    second_acquire_time = acquire_events[1][2]
+                    assert second_acquire_time >= first_release_time, \
+                        f"Second thread acquired lock before first released: {lock_events}"
 
                     # Verify model was downloaded successfully
                     assert cache_dir.exists()
