@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.24.0 - 2026-02-04]
+
+### Added
+
+- Include the Response object in NextcloudException #394
+
 ## [0.23.1 - 2026-01-16]
 
 ### Fixed
