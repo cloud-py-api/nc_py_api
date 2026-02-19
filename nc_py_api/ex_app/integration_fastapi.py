@@ -244,7 +244,9 @@ def __fetch_model_as_file(
                     for chunk in response.iter_raw(-1):
                         downloaded_size += file.write(chunk)
                         if total_size:
-                            new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
+                            new_progress = min(
+                                current_progress + int(progress_for_task * downloaded_size / total_size), 99
+                            )
                             if new_progress != last_progress:
                                 nc.set_init_status(new_progress)
                                 last_progress = new_progress

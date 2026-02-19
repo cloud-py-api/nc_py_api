@@ -171,6 +171,7 @@ class TestFetchModelAsFile:
 
                 # Track actual HTTP downloads
                 import niquests
+
                 original_get = niquests.get
 
                 def tracked_get(url, *args, **kwargs):
@@ -206,8 +207,9 @@ class TestFetchModelAsFile:
                     assert len(errors) == 0, f"Threads failed with errors: {errors}"
 
                     # Verify file was downloaded only once (second thread should skip due to ETag match)
-                    assert len(download_attempts) == 1, \
-                        f"Expected exactly 1 download, but got {len(download_attempts)}: {download_attempts}"
+                    assert (
+                        len(download_attempts) == 1
+                    ), f"Expected exactly 1 download, but got {len(download_attempts)}: {download_attempts}"
 
                     # Verify file was downloaded successfully
                     assert Path("concurrent_test.txt").exists()
