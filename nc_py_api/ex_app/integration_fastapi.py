@@ -30,6 +30,9 @@ from ..nextcloud import AsyncNextcloudApp, NextcloudApp
 from ..talk_bot import TalkBotMessage
 from .misc import persistent_storage
 
+# Lock timeout in seconds for model downloads (can be overridden in tests)
+LOCK_TIMEOUT = 3600
+
 
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
@@ -207,7 +210,7 @@ def __fetch_model_as_file(
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
     temp_path = result_path + ".tmp"
-    with SoftFileLock(result_path + ".lock", timeout=3600):
+    with SoftFileLock(result_path + ".lock", timeout=LOCK_TIMEOUT):
         with niquests.get(model_path, stream=True) as response:
             if not response.ok:
                 raise ModelFetchError(
@@ -274,7 +277,7 @@ def __fetch_model_as_snapshot(
         if sep:
             safe_model_name = safe_model_name.replace(sep, "_")
     lock_path = os.path.join(cache, f"{safe_model_name}.lock")
-    with SoftFileLock(lock_path, timeout=3600):
+    with SoftFileLock(lock_path, timeout=LOCK_TIMEOUT):
         return snapshot_download(
             model_name, tqdm_class=TqdmProgress, **download_options, max_workers=workers, cache_dir=cache
         )
