@@ -1,0 +1,80 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: "en-US"
+early_access: false
+tone_instructions: "Be concise and technical. This is a Python framework library, so pay attention to API design, backwards compatibility, and type safety."
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  changed_files_summary: true
+  sequence_diagrams: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+  suggested_labels: true
+  suggested_reviewers: false
+  abort_on_close: true
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+    base_branches:
+      - main
+  path_instructions:
+    - path: "nc_py_api/**"
+      instructions: |
+        This is the main library source code. Pay close attention to:
+        - Public API changes and backwards compatibility
+        - Type annotations correctness (Pydantic models are used extensively)
+        - Proper async/sync API parity (many modules have both sync and async versions)
+        - Error handling for HTTP/Nextcloud API calls
+        - Docstring quality for public methods
+    - path: "nc_py_api/ex_app/**"
+      instructions: |
+        This is the ExApp (External Application) framework built on FastAPI.
+        Ensure FastAPI best practices are followed and middleware/endpoints are correct.
+    - path: "tests/**"
+      instructions: |
+        Test files. Check for proper use of pytest fixtures, async test patterns
+        (pytest-asyncio with auto mode), and adequate assertion messages.
+    - path: "tests_unit/**"
+      instructions: |
+        Unit tests. These should be fast and not require external services.
+        Ensure proper mocking where needed.
+  path_filters:
+    - "!docs/**"
+    - "!benchmarks/**"
+    - "!dev/**"
+    - "!Makefile"
+  tools:
+    ruff:
+      enabled: false
+    pylint:
+      enabled: false
+    gitleaks:
+      enabled: true
+    semgrep:
+      enabled: true
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: "auto"
+  issues:
+    scope: "auto"
+  pull_requests:
+    scope: "auto"
