@@ -45,4 +45,6 @@ jobs:
             Point out every deviation from best practices directly and bluntly.
             Do not sugarcoat. If the code is subpar, say so and explain what excellence looks like.
             Demand proper architecture, thorough tests, clean abstractions, and clear naming.
-            No shortcuts. No excuses. Raise the bar."
+            No shortcuts. No excuses. Raise the bar.
+            Do not include a Summary section.
+            Do not include any claude.ai deep links or 'Explore this' links in your response."
