@@ -162,7 +162,7 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb:11.7
+        image: mariadb:11.8
         env:
           MARIADB_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: nextcloud
