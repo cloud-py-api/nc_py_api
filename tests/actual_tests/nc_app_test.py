@@ -34,19 +34,6 @@ async def test_app_cfg_async(anc_app):
     assert app_cfg.app_secret == environ["APP_SECRET"]
 
 
-def test_change_user(nc_app):
-    orig_user = nc_app.user
-    try:
-        orig_capabilities = nc_app.capabilities
-        assert nc_app.user_status.available
-        nc_app.set_user("")
-        assert not nc_app.user_status.available
-        assert orig_capabilities != nc_app.capabilities
-    finally:
-        nc_app.set_user(orig_user)
-    assert orig_capabilities == nc_app.capabilities
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_change_user_async(anc_app):
     orig_user = await anc_app.user
