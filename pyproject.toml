@@ -87,7 +87,7 @@ include = [
   "/CHANGELOG.md",
   "/README.md",
 ]
-exclude = []
+exclude = [  ]
 
 [tool.black]
 line-length = 120
