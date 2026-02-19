@@ -3,8 +3,8 @@
 [![Analysis & Coverage](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml/badge.svg)](https://github.com/cloud-py-api/nc_py_api/actions/workflows/analysis-coverage.yml)
 [![codecov](https://codecov.io/github/cloud-py-api/nc_py_api/branch/main/graph/badge.svg?token=C91PL3FYDQ)](https://codecov.io/github/cloud-py-api/nc_py_api)
 
-![NextcloudVersion](https://img.shields.io/badge/Nextcloud-%2028%20%7C%2029%20%7C%2030%20%7C%2031-blue)
-![PythonVersion](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
+![NextcloudVersion](https://img.shields.io/badge/Nextcloud-31%20%7C%2032%20%7C%2033-blue)
+![PythonVersion](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![impl](https://img.shields.io/pypi/implementation/nc_py_api)
 ![pypi](https://img.shields.io/pypi/v/nc_py_api.svg)
 
