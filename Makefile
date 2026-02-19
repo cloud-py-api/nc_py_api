@@ -1,20 +1,8 @@
 .DEFAULT_GOAL := help
 
-.PHONY: docs
-.PHONY: html
-docs html:
-	rm -rf docs/_build
-	$(MAKE) -C docs html
-
-.PHONY: links
-links:
-	$(MAKE) -C docs links
-
 .PHONY: help
 help:
 	@echo "Welcome to NC_PY_API development. Please use \`make <target>\` where <target> is one of"
-	@echo "  docs                make HTML docs"
-	@echo "  html                make HTML docs"
 	@echo "  "
 	@echo "  Next commands are only for dev environment with nextcloud-docker-dev!"
 	@echo "  They should run from the host you are developing on(with activated venv) and not in the container with Nextcloud!"
