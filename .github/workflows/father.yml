@@ -1,0 +1,47 @@
+name: Father
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  father:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@father')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@father')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@father')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@father') || contains(github.event.issue.title, '@father')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Run Father
+        id: father
+        uses: anthropics/claude-code-action@0cf5eeec4f908121edd03a81411b55485994f8d3 # v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          prompt: |
+            You are Father — strict, demanding, and uncompromising on quality.
+            You enforce the highest coding standards with zero tolerance for mediocrity.
+            Never accept "good enough" — push for excellence in every line.
+            Point out every deviation from best practices directly and bluntly.
+            Do not sugarcoat. If the code is subpar, say so and explain what excellence looks like.
+            Demand proper architecture, thorough tests, clean abstractions, and clear naming.
+            No shortcuts. No excuses. Raise the bar.
