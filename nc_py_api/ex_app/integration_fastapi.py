@@ -20,6 +20,8 @@ from fastapi import (
     status,
 )
 from fastapi.responses import JSONResponse, PlainTextResponse
+from filelock import FileLock
+from filelock import Timeout as FileLockTimeout
 from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
@@ -158,7 +160,7 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
     """Use for cases when you want to define custom `/init` but still need to easy download models.
 
     :param nc: NextcloudApp instance.
-    :param models_to_fetch: Dictionary describing which models should be downloaded of the form:
+    :param models: Dictionary describing which models should be downloaded of the form:
         .. code-block:: python
             {
                 "model_url_1": {
@@ -205,42 +207,56 @@ def __fetch_model_as_file(
     current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
-    with niquests.get(model_path, stream=True) as response:
-        if not response.ok:
-            raise ModelFetchError(
-                f"Downloading of '{model_path}' failed, returned ({response.status_code}) {response.text}"
-            )
-        downloaded_size = 0
-        linked_etag = ""
-        for each_history in response.history:
-            linked_etag = each_history.headers.get("X-Linked-ETag", "")
-            if linked_etag:
-                break
-        if not linked_etag:
-            linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
-        total_size = int(response.headers.get("Content-Length"))
-        try:
-            existing_size = os.path.getsize(result_path)
-        except OSError:
-            existing_size = 0
-        if linked_etag and total_size == existing_size:
-            with builtins.open(result_path, "rb") as file:
-                sha256_hash = hashlib.sha256()
-                for byte_block in iter(lambda: file.read(4096), b""):
-                    sha256_hash.update(byte_block)
-                if f'"{sha256_hash.hexdigest()}"' == linked_etag:
-                    nc.set_init_status(min(current_progress + progress_for_task, 99))
-                    return result_path
+    tmp_path = result_path + ".tmp"
+    try:
+        with FileLock(result_path + ".lock", timeout=7200), niquests.get(model_path, stream=True) as response:
+            if not response.ok:
+                raise ModelFetchError(
+                    f"Downloading of '{model_path}' failed, returned ({response.status_code}) {response.text}"
+                )
+            downloaded_size = 0
+            linked_etag = ""
+            for redirect_resp in response.history:
+                linked_etag = redirect_resp.headers.get("X-Linked-ETag", "")
+                if linked_etag:
+                    break
+            if not linked_etag:
+                linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
+            total_size = int(response.headers.get("Content-Length", 0))
+            try:
+                existing_size = os.path.getsize(result_path)
+            except OSError:
+                existing_size = 0
+            if linked_etag and total_size and total_size == existing_size:
+                with builtins.open(result_path, "rb") as file:
+                    sha256_hash = hashlib.sha256()
+                    for byte_block in iter(lambda: file.read(4096), b""):
+                        sha256_hash.update(byte_block)
+                    if f'"{sha256_hash.hexdigest()}"' == linked_etag:
+                        nc.set_init_status(min(current_progress + progress_for_task, 99))
+                        return result_path
 
-        with builtins.open(result_path, "wb") as file:
-            last_progress = current_progress
-            for chunk in response.iter_raw(-1):
-                downloaded_size += file.write(chunk)
-                if total_size:
-                    new_progress = min(current_progress + int(progress_for_task * downloaded_size / total_size), 99)
-                    if new_progress != last_progress:
-                        nc.set_init_status(new_progress)
-                        last_progress = new_progress
+            try:
+                with builtins.open(tmp_path, "wb") as file:
+                    last_progress = current_progress
+                    for chunk in response.iter_raw(-1):
+                        downloaded_size += file.write(chunk)
+                        if total_size:
+                            new_progress = min(
+                                current_progress + int(progress_for_task * downloaded_size / total_size), 99
+                            )
+                            if new_progress != last_progress:
+                                nc.set_init_status(new_progress)
+                                last_progress = new_progress
+                os.replace(tmp_path, result_path)
+            except BaseException:
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+                raise
+    except FileLockTimeout as exc:
+        raise ModelFetchError(
+            f"Timed out waiting for lock on '{result_path}' after 7200s — another process may be stuck downloading"
+        ) from exc
 
     return result_path
 
