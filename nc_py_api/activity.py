@@ -6,7 +6,7 @@ import typing
 
 from ._exceptions import NextcloudExceptionNotModified
 from ._misc import check_capabilities, nc_iso_time_to_datetime
-from ._session import AsyncNcSessionBasic, NcSessionBasic
+from ._session import AsyncNcSessionBasic
 
 
 @dataclasses.dataclass
@@ -134,58 +134,6 @@ class Activity:
             f"<{self.__class__.__name__} id={self.activity_id}, app={self.app}, type={self.activity_type},"
             f" time={self.time}>"
         )
-
-
-class _ActivityAPI:
-    """The class provides the Activity Application API."""
-
-    _ep_base: str = "/ocs/v1.php/apps/activity"
-    last_given: int
-    """Used by ``get_activities``, when **since** param is ``True``."""
-
-    def __init__(self, session: NcSessionBasic):
-        self._session = session
-        self.last_given = 0
-
-    @property
-    def available(self) -> bool:
-        """Returns True if the Nextcloud instance supports this feature, False otherwise."""
-        return not check_capabilities("activity.apiv2", self._session.capabilities)
-
-    def get_activities(
-        self,
-        filter_id: ActivityFilter | str = "",
-        since: int | bool = 0,
-        limit: int = 50,
-        object_type: str = "",
-        object_id: int = 0,
-        sort: str = "desc",
-    ) -> list[Activity]:
-        """Returns activities for the current user.
-
-        :param filter_id: Filter to apply, if needed.
-        :param since: Last activity ID you have seen. When specified, only activities after provided are returned.
-            Can be set to ``True`` to automatically use last ``last_given`` from previous calls. Default = **0**.
-        :param limit: Max number of activities to be returned.
-        :param object_type: Filter the activities to a given object.
-        :param object_id: Filter the activities to a given object.
-        :param sort: Sort activities ascending or descending. Default is ``desc``.
-
-        .. note:: ``object_type`` and ``object_id`` should only appear together with ``filter_id`` unset.
-        """
-        if since is True:
-            since = self.last_given
-        url, params = _get_activities(filter_id, since, limit, object_type, object_id, sort)
-        try:
-            result = self._session.ocs("GET", self._ep_base + url, params=params)
-        except NextcloudExceptionNotModified:
-            return []
-        self.last_given = int(self._session.response_headers["X-Activity-Last-Given"])
-        return [Activity(i) for i in result]
-
-    def get_filters(self) -> list[ActivityFilter]:
-        """Returns avalaible activity filters."""
-        return [ActivityFilter(i) for i in self._session.ocs("GET", self._ep_base + "/api/v2/activity/filters")]
 
 
 class _AsyncActivityAPI:

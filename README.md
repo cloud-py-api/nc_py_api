@@ -17,7 +17,17 @@ Python library that provides a robust and well-documented API that allows develo
  * **Reliable**: Minimum number of incompatible changes.
  * **Robust**: All code is covered with tests as much as possible.
  * **Easy**: Designed to be easy to use.
- * **Sync + Async**: Provides both sync and async APIs.
+ * **Async-first**: Full async API with sync wrappers available for most modules.
+
+### Deprecation notice: sync API
+
+Starting with version **0.30.0**, we are gradually removing sync wrappers in favour of
+the async API. The following modules have already lost their sync counterparts:
+**Activity**, **Notes**, **User Status**, and **Weather Status**.
+
+All remaining sync methods will be phased out in future releases. If you are still
+using the sync `Nextcloud` / `NextcloudApp` classes, we recommend migrating to
+`AsyncNextcloud` / `AsyncNextcloudApp` as soon as possible.
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
