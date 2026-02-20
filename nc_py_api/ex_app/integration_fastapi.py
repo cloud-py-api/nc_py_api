@@ -160,7 +160,7 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
     """Use for cases when you want to define custom `/init` but still need to easy download models.
 
     :param nc: NextcloudApp instance.
-    :param models_to_fetch: Dictionary describing which models should be downloaded of the form:
+    :param models: Dictionary describing which models should be downloaded of the form:
         .. code-block:: python
             {
                 "model_url_1": {
@@ -222,12 +222,12 @@ def __fetch_model_as_file(
                     break
             if not linked_etag:
                 linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
-            total_size = int(response.headers.get("Content-Length"))
+            total_size = int(response.headers.get("Content-Length", 0))
             try:
                 existing_size = os.path.getsize(result_path)
             except OSError:
                 existing_size = 0
-            if linked_etag and total_size == existing_size:
+            if linked_etag and total_size and total_size == existing_size:
                 with builtins.open(result_path, "rb") as file:
                     sha256_hash = hashlib.sha256()
                     for byte_block in iter(lambda: file.read(4096), b""):
