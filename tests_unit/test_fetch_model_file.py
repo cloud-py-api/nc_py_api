@@ -7,6 +7,7 @@ from unittest import mock
 
 import pytest
 from filelock import FileLock
+from filelock import Timeout as FileLockTimeout
 
 from nc_py_api._exceptions import ModelFetchError
 from nc_py_api.ex_app.integration_fastapi import fetch_models_task
@@ -185,6 +186,20 @@ class TestFetchModelAsFile:
             data = f.read()
         # File must be entirely one content or the other — never mixed
         assert data in (b"A" * 10000, b"B" * 10000)
+
+    def test_filelock_timeout_raises_model_fetch_error(self, tmp_path):
+        save_path = str(tmp_path / "model.bin")
+        lock = FileLock(save_path + ".lock")
+        nc = _mock_nc()
+
+        with (
+            mock.patch("nc_py_api.ex_app.integration_fastapi.FileLock", side_effect=FileLockTimeout(lock)),
+            pytest.raises(ModelFetchError),
+        ):
+            fetch_models_task(nc, {"https://example.com/m.bin": {"save_path": save_path}}, 0)
+
+        status_msg = nc.set_init_status.call_args_list[-1][0][1]
+        assert "Timed out waiting for lock" in status_msg
 
     def test_progress_updates_sent(self, tmp_path):
         save_path = str(tmp_path / "model.bin")

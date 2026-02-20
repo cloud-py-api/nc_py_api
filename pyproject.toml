@@ -151,7 +151,9 @@ lint.extend-per-file-ignores."tests/**/*.py" = [
 ]
 lint.extend-per-file-ignores."tests_unit/**/*.py" = [
   "D",
+  "E402",
   "S",
+  "UP",
 ]
 lint.mccabe.max-complexity = 16
 
