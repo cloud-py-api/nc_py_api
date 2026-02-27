@@ -39,6 +39,7 @@ from .files.files_async import AsyncFilesAPI
 from .loginflow_v2 import _AsyncLoginFlowV2API, _LoginFlowV2API
 from .notes import _AsyncNotesAPI, _NotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
+from .teams import _AsyncTeamsAPI
 from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
 from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
@@ -167,6 +168,8 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing user notifications"""
     talk: _AsyncTalkAPI
     """Nextcloud Talk API"""
+    teams: _AsyncTeamsAPI
+    """Nextcloud API for managing Teams (Circles)"""
     users: _AsyncUsersAPI
     """Nextcloud API for managing users."""
     users_groups: _AsyncUsersGroupsAPI
@@ -188,6 +191,7 @@ class _AsyncNextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
         self.notes = _AsyncNotesAPI(session)
         self.notifications = _AsyncNotificationsAPI(session)
         self.talk = _AsyncTalkAPI(session)
+        self.teams = _AsyncTeamsAPI(session)
         self.users = _AsyncUsersAPI(session)
         self.users_groups = _AsyncUsersGroupsAPI(session)
         self.user_status = _AsyncUserStatusAPI(session)
