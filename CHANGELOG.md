@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.24.2 - 2026-03-02]
+
+### Changed
+
+- Use new `/ex-app/status` endpoint for `set_init_status` instead of deprecated `/apps/status/{appId}`
+
 ## [0.24.1 - 2026-02-25]
 
 ### Fixed

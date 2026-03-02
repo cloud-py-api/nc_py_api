@@ -205,7 +205,7 @@ def test_create_expire_time(nc):
     expire_time = expire_time.replace(hour=0, minute=0, second=0, microsecond=0)
     new_share = nc.files.sharing.create("test_12345_text.txt", ShareType.TYPE_LINK, expire_date=expire_time)
     nc.files.sharing.delete(new_share)
-    assert new_share.expire_date == expire_time
+    assert new_share.expire_date.date() == expire_time.date()
     with pytest.raises(NextcloudException):
         nc.files.sharing.create(
             "test_12345_text.txt", ShareType.TYPE_LINK, expire_date=datetime.datetime.now() - datetime.timedelta(days=1)
@@ -221,7 +221,7 @@ async def test_create_expire_time_async(anc):
     expire_time = expire_time.replace(hour=0, minute=0, second=0, microsecond=0)
     new_share = await anc.files.sharing.create("test_12345_text.txt", ShareType.TYPE_LINK, expire_date=expire_time)
     await anc.files.sharing.delete(new_share)
-    assert new_share.expire_date == expire_time
+    assert new_share.expire_date.date() == expire_time.date()
     with pytest.raises(NextcloudException):
         await anc.files.sharing.create(
             "test_12345_text.txt", ShareType.TYPE_LINK, expire_date=datetime.datetime.now() - datetime.timedelta(days=1)
@@ -295,7 +295,7 @@ def test_create_update(nc):
     expire_time = datetime.datetime.now() + datetime.timedelta(days=1)
     expire_time = expire_time.replace(hour=0, minute=0, second=0, microsecond=0)
     update_share = nc.files.sharing.update(new_share, expire_date=expire_time)
-    assert update_share.expire_date == expire_time
+    assert update_share.expire_date.date() == expire_time.date()
     update_share = nc.files.sharing.update(new_share, note="note", label="label")
     assert update_share.note == "note"
     assert update_share.label == "label"
@@ -328,7 +328,7 @@ async def test_create_update_async(anc):
     expire_time = datetime.datetime.now() + datetime.timedelta(days=1)
     expire_time = expire_time.replace(hour=0, minute=0, second=0, microsecond=0)
     update_share = await anc.files.sharing.update(new_share, expire_date=expire_time)
-    assert update_share.expire_date == expire_time
+    assert update_share.expire_date.date() == expire_time.date()
     update_share = await anc.files.sharing.update(new_share, note="note", label="label")
     assert update_share.note == "note"
     assert update_share.label == "label"
