@@ -432,7 +432,7 @@ class NextcloudApp(_NextcloudBasic):
         """
         self._session.ocs(
             "PUT",
-            f"/ocs/v1.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
+            "/ocs/v1.php/apps/app_api/ex-app/status",
             json={
                 "progress": progress,
                 "error": error,
@@ -566,7 +566,7 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
         """
         await self._session.ocs(
             "PUT",
-            f"/ocs/v1.php/apps/app_api/apps/status/{self._session.cfg.app_name}",
+            "/ocs/v1.php/apps/app_api/ex-app/status",
             json={
                 "progress": progress,
                 "error": error,
