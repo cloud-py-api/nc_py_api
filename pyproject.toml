@@ -46,6 +46,7 @@ dynamic = [
 ]
 dependencies = [
   "fastapi>=0.109.2",
+  "filelock>=3.20.3,<4",
   "niquests>=3,<4",
   "pydantic>=2.1.1",
   "python-dotenv>=1",
@@ -148,6 +149,12 @@ lint.extend-per-file-ignores."tests/**/*.py" = [
   "S",
   "UP",
 ]
+lint.extend-per-file-ignores."tests_unit/**/*.py" = [
+  "D",
+  "E402",
+  "S",
+  "UP",
+]
 lint.mccabe.max-complexity = 16
 
 [tool.isort]
@@ -198,6 +205,7 @@ messages_control.disable = [
 minversion = "6.0"
 testpaths = [
   "tests",
+  "tests_unit",
 ]
 filterwarnings = [
   "ignore::DeprecationWarning",

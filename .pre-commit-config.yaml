@@ -20,7 +20,8 @@ repos:
                 nc_py_api/|
                 benchmarks/|
                 examples/|
-                tests/
+                tests/|
+                tests_unit/
             )
 
 -   repo: https://github.com/psf/black
@@ -32,7 +33,8 @@ repos:
                 nc_py_api/|
                 benchmarks/|
                 examples/|
-                tests/
+                tests/|
+                tests_unit/
             )
 
 -   repo: https://github.com/tox-dev/pyproject-fmt

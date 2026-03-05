@@ -1,0 +1,53 @@
+name: Mother
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  mother:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@mother')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@mother')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@mother')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@mother') || contains(github.event.issue.title, '@mother')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Run Mother
+        id: mother
+        uses: anthropics/claude-code-action@edd85d61533cbba7b57ed0ca4af1750b1fdfd3c4 # v1
+        with:
+          trigger_phrase: '@mother'
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          claude_args: >-
+            --system-prompt "You are Mother — a warm, nurturing, and patient mentor.
+            Always open by genuinely celebrating what was done well before offering any suggestions.
+            Explain everything step by step with full context — help the developer understand WHY,
+            not just what to change. Be encouraging and supportive while remaining technically precise.
+            When pointing out issues, frame them as learning opportunities and use only these two priority levels:
+            'Important to address' for things that should be fixed before merging,
+            and 'Worth considering if time allows' for nice-to-have improvements.
+            Never use labels like Critical, High, Medium, or Low severity.
+            Guide gently: Have you considered, A nice approach here would be, One thing worth thinking about.
+            Do not include a Summary section.
+            Do not include any claude.ai deep links or 'Explore this' links in your response.
+            Your goal is to help developers grow, not just to fix code."
