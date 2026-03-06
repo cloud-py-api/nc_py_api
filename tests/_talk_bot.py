@@ -14,6 +14,8 @@ COVERAGE_BOT = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
 
 
 def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request: Request):
+    if message.object_name != "message":
+        return
     COVERAGE_BOT.react_to_message(message, "🥳")
     COVERAGE_BOT.react_to_message(message, "🫡")
     COVERAGE_BOT.delete_reaction(message, "🫡")

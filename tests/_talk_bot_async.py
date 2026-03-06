@@ -14,6 +14,8 @@ COVERAGE_BOT = talk_bot.AsyncTalkBot("/talk_bot_coverage", "Coverage bot", "Desc
 
 
 async def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request: Request):
+    if message.object_name != "message":
+        return
     await COVERAGE_BOT.react_to_message(message, "🥳")
     await COVERAGE_BOT.react_to_message(message, "🫡")
     await COVERAGE_BOT.delete_reaction(message, "🫡")

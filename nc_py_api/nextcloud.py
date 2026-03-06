@@ -27,7 +27,7 @@ from ._session import (
 )
 from ._talk_api import _AsyncTalkAPI, _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
-from .activity import _ActivityAPI, _AsyncActivityAPI
+from .activity import _AsyncActivityAPI
 from .apps import _AppsAPI, _AsyncAppsAPI
 from .calendar_api import _CalendarAPI
 from .ex_app.defs import LogLvl
@@ -37,28 +37,24 @@ from .ex_app.ui.ui import AsyncUiApi, UiApi
 from .files.files import FilesAPI
 from .files.files_async import AsyncFilesAPI
 from .loginflow_v2 import _AsyncLoginFlowV2API, _LoginFlowV2API
-from .notes import _AsyncNotesAPI, _NotesAPI
+from .notes import _AsyncNotesAPI
 from .notifications import _AsyncNotificationsAPI, _NotificationsAPI
-from .user_status import _AsyncUserStatusAPI, _UserStatusAPI
+from .user_status import _AsyncUserStatusAPI
 from .users import _AsyncUsersAPI, _UsersAPI
 from .users_groups import _AsyncUsersGroupsAPI, _UsersGroupsAPI
-from .weather_status import _AsyncWeatherStatusAPI, _WeatherStatusAPI
+from .weather_status import _AsyncWeatherStatusAPI
 from .webhooks import _AsyncWebhooksAPI, _WebhooksAPI
 
 
 class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     apps: _AppsAPI
     """Nextcloud API for App management"""
-    activity: _ActivityAPI
-    """Activity Application API"""
     cal: _CalendarAPI
     """Nextcloud Calendar API"""
     files: FilesAPI
     """Nextcloud API for File System and Files Sharing"""
     preferences: PreferencesAPI
     """Nextcloud User Preferences API"""
-    notes: _NotesAPI
-    """Nextcloud Notes API"""
     notifications: _NotificationsAPI
     """Nextcloud API for managing user notifications"""
     talk: _TalkAPI
@@ -67,27 +63,19 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     """Nextcloud API for managing users."""
     users_groups: _UsersGroupsAPI
     """Nextcloud API for managing user groups."""
-    user_status: _UserStatusAPI
-    """Nextcloud API for managing users statuses"""
-    weather_status: _WeatherStatusAPI
-    """Nextcloud API for managing user weather statuses"""
     webhooks: _WebhooksAPI
     """Nextcloud API for managing webhooks"""
     _session: NcSessionBasic
 
     def __init__(self, session: NcSessionBasic):
         self.apps = _AppsAPI(session)
-        self.activity = _ActivityAPI(session)
         self.cal = _CalendarAPI(session)
         self.files = FilesAPI(session)
         self.preferences = PreferencesAPI(session)
-        self.notes = _NotesAPI(session)
         self.notifications = _NotificationsAPI(session)
         self.talk = _TalkAPI(session)
         self.users = _UsersAPI(session)
         self.users_groups = _UsersGroupsAPI(session)
-        self.user_status = _UserStatusAPI(session)
-        self.weather_status = _WeatherStatusAPI(session)
         self.webhooks = _WebhooksAPI(session)
 
     @property
@@ -381,8 +369,6 @@ class NextcloudApp(_NextcloudBasic):
             self._session.set_user(user_id)
             self.talk.config_sha = ""
             self.talk.modified_since = 0
-            self.activity.last_given = 0
-            self.notes.last_etag = ""
             self._session.update_server_info()
 
     @property

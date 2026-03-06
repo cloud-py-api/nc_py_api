@@ -132,45 +132,13 @@ def _test_get_conversations_include_status(participants: list[talk.Participant])
     assert str(second_participant).find("last_ping=") != -1
 
 
-def test_get_conversations_include_status(nc, nc_client):
-    if nc.talk.available is False:
-        pytest.skip("Nextcloud Talk is not installed")
-    nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
-    nc_second_user.user_status.set_status_type("away")
-    nc_second_user.user_status.set_status("my status message", status_icon="😇")
-    conversation = nc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, environ["TEST_USER_ID"])
-    try:
-        conversations = nc.talk.get_user_conversations(include_status=False)
-        assert conversations
-        first_conv = next(i for i in conversations if i.conversation_id == conversation.conversation_id)
-        assert not first_conv.status_type
-        conversations = nc.talk.get_user_conversations(include_status=True)
-        assert conversations
-        first_conv = next(i for i in conversations if i.conversation_id == conversation.conversation_id)
-        assert first_conv.status_type == "away"
-        assert first_conv.status_message == "my status message"
-        assert first_conv.status_icon == "😇"
-        participants = nc.talk.list_participants(first_conv)
-        # 10 april 2025: something changed in Nextcloud 31+, and now here is "1" as result instead of 2
-        if len(participants) == 1:
-            return
-        _test_get_conversations_include_status(participants)
-        participants = nc.talk.list_participants(first_conv, include_status=True)
-        assert len(participants) == 2
-        second_participant = next(i for i in participants if i.actor_id == environ["TEST_USER_ID"])
-        assert second_participant.status_message == "my status message"
-        assert str(conversation).find("type=") != -1
-    finally:
-        nc.talk.leave_conversation(conversation.token)
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_get_conversations_include_status_async(anc, anc_client):
     if await anc.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
-    nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
-    nc_second_user.user_status.set_status_type("away")
-    nc_second_user.user_status.set_status("my status message-async", status_icon="😇")
+    nc_second_user = AsyncNextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
+    await nc_second_user.user_status.set_status_type("away")
+    await nc_second_user.user_status.set_status("my status message-async", status_icon="😇")
     conversation = await anc.talk.create_conversation(talk.ConversationType.ONE_TO_ONE, environ["TEST_USER_ID"])
     try:
         conversations = await anc.talk.get_user_conversations(include_status=False)
