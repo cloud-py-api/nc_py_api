@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Mother
         id: mother
-        uses: anthropics/claude-code-action@edd85d61533cbba7b57ed0ca4af1750b1fdfd3c4 # v1
+        uses: anthropics/claude-code-action@cd77b50d2b0808657f8e6774085c8bf54484351c # v1
         with:
           trigger_phrase: '@mother'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
