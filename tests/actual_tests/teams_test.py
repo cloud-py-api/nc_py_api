@@ -264,6 +264,44 @@ async def test_teams_join_leave(anc_any):
 
 
 @pytest.mark.asyncio(scope="session")
+async def test_teams_confirm_member(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
+    test_user_id = environ.get("TEST_USER_ID", "")
+    test_user_pass = environ.get("TEST_USER_PASS", "")
+    if not test_user_id or not test_user_pass:
+        pytest.skip("No test user available")
+    circle = await anc_any.teams.create("test_nc_py_api_team_cm")
+    try:
+        await anc_any.teams.edit_config(circle.circle_id, CircleConfig.VISIBLE | CircleConfig.REQUEST)
+
+        from nc_py_api import AsyncNextcloud
+
+        anc_user = AsyncNextcloud(
+            nextcloud_url=environ["NEXTCLOUD_URL"],
+            nc_auth_user=test_user_id,
+            nc_auth_pass=test_user_pass,
+        )
+        await anc_user.teams.join(circle.circle_id)
+
+        members = await anc_any.teams.get_members(circle.circle_id)
+        requesting = next(m for m in members if m.user_id == test_user_id)
+        assert requesting.status == "Requesting"
+
+        confirmed = await anc_any.teams.confirm_member(circle.circle_id, requesting.member_id)
+        assert isinstance(confirmed, Member)
+        assert confirmed.user_id == test_user_id
+
+        members = await anc_any.teams.get_members(circle.circle_id)
+        member = next(m for m in members if m.user_id == test_user_id)
+        assert member.status == "Member"
+        assert member.level == MemberLevel.MEMBER
+    finally:
+        with contextlib.suppress(NextcloudException):
+            await anc_any.teams.destroy(circle.circle_id)
+
+
+@pytest.mark.asyncio(scope="session")
 async def test_teams_destroy_nonexistent(anc_any):
     if await anc_any.teams.available is False:
         pytest.skip("Teams (Circles) is not installed")
