@@ -213,6 +213,13 @@ jobs:
           ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
 
+      - name: Checkout Circles
+        uses: actions/checkout@v6
+        with:
+          repository: nextcloud/circles
+          ref: ${{ matrix.nextcloud }}
+          path: apps/circles
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -232,6 +239,9 @@ jobs:
 
       - name: Enable Notes
         run: ./occ app:enable notes
+
+      - name: Enable Circles
+        run: ./occ app:enable circles
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v6
@@ -379,6 +389,13 @@ jobs:
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
+      - name: Checkout Circles
+        uses: actions/checkout@v6
+        with:
+          repository: nextcloud/circles
+          ref: ${{ matrix.nextcloud }}
+          path: apps/circles
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -392,6 +409,7 @@ jobs:
           ./occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
           ./occ app:enable notifications
           ./occ app:enable activity
+          ./occ app:enable circles
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi

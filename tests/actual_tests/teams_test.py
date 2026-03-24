@@ -9,11 +9,15 @@ from nc_py_api.teams import Circle, CircleConfig, Member, MemberLevel, MemberTyp
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_available(anc):
+    if await anc.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     assert await anc.teams.available
 
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_create_destroy(anc):
+    if await anc.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc.teams.create("test_nc_py_api_team_cd")
     try:
         assert isinstance(circle, Circle)
@@ -32,6 +36,8 @@ async def test_teams_create_destroy(anc):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_get_list(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_list")
     try:
         circles = await anc_any.teams.get_list()
@@ -45,6 +51,8 @@ async def test_teams_get_list(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_get_details(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_det")
     try:
         details = await anc_any.teams.get_details(circle.circle_id)
@@ -58,6 +66,8 @@ async def test_teams_get_details(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_edit_name(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_en")
     try:
         updated = await anc_any.teams.edit_name(circle.circle_id, "test_nc_py_api_team_en_new")
@@ -71,6 +81,8 @@ async def test_teams_edit_name(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_edit_description(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_ed")
     try:
         updated = await anc_any.teams.edit_description(circle.circle_id, "Test description")
@@ -84,6 +96,8 @@ async def test_teams_edit_description(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_edit_config(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_ec")
     try:
         new_config = CircleConfig.VISIBLE | CircleConfig.OPEN
@@ -97,6 +111,8 @@ async def test_teams_edit_config(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_owner(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_ow")
     try:
         details = await anc_any.teams.get_details(circle.circle_id)
@@ -112,6 +128,8 @@ async def test_teams_owner(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_members_add_remove(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     test_user_id = environ.get("TEST_USER_ID", "")
     if not test_user_id:
         pytest.skip("No test user available")
@@ -149,6 +167,8 @@ async def test_teams_members_add_remove(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_add_members_multi(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     test_user_id = environ.get("TEST_USER_ID", "")
     test_admin_id = environ.get("TEST_ADMIN_ID", "")
     if not test_user_id or not test_admin_id:
@@ -178,6 +198,8 @@ async def test_teams_add_members_multi(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_member_level(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     test_user_id = environ.get("TEST_USER_ID", "")
     if not test_user_id:
         pytest.skip("No test user available")
@@ -204,6 +226,8 @@ async def test_teams_member_level(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_join_leave(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_jl")
     try:
         new_config = CircleConfig.VISIBLE | CircleConfig.OPEN
@@ -241,12 +265,16 @@ async def test_teams_join_leave(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_destroy_nonexistent(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     with pytest.raises(NextcloudException):
         await anc_any.teams.destroy("nonexistent_circle_id_12345")
 
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_personal_circle(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_pc", personal=True)
     try:
         assert isinstance(circle, Circle)
@@ -257,6 +285,8 @@ async def test_teams_personal_circle(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_teams_local_circle(anc_any):
+    if await anc_any.teams.available is False:
+        pytest.skip("Teams (Circles) is not installed")
     circle = await anc_any.teams.create("test_nc_py_api_team_lc", local=True)
     try:
         assert isinstance(circle, Circle)
