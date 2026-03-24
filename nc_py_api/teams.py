@@ -277,14 +277,16 @@ class _AsyncTeamsAPI:
         )
         return Circle(result)
 
-    async def edit_config(self, circle_id: str, config: int) -> Circle:
+    async def edit_config(self, circle_id: str, config: CircleConfig | int) -> Circle:
         """Changes the configuration flags of a circle.
 
         :param circle_id: ID of the circle.
         :param config: New configuration bitmask (combination of CircleConfig flags).
         """
         require_capabilities("circles", await self._session.capabilities)
-        result = await self._session.ocs("PUT", f"{self._ep_base}/circles/{circle_id}/config", params={"value": config})
+        result = await self._session.ocs(
+            "PUT", f"{self._ep_base}/circles/{circle_id}/config", params={"value": int(config)}
+        )
         return Circle(result)
 
     async def get_members(self, circle_id: str) -> list[Member]:
@@ -296,7 +298,7 @@ class _AsyncTeamsAPI:
         result = await self._session.ocs("GET", f"{self._ep_base}/circles/{circle_id}/members")
         return [Member(m) for m in result] if result else []
 
-    async def add_member(self, circle_id: str, user_id: str, member_type: MemberType = MemberType.USER) -> list[Member]:
+    async def add_member(self, circle_id: str, user_id: str, member_type: MemberType = MemberType.USER) -> Member:
         """Adds a single member to a circle.
 
         :param circle_id: ID of the circle.
@@ -306,7 +308,7 @@ class _AsyncTeamsAPI:
         require_capabilities("circles", await self._session.capabilities)
         params: dict[str, str | int] = {"userId": user_id, "type": int(member_type)}
         result = await self._session.ocs("POST", f"{self._ep_base}/circles/{circle_id}/members", params=params)
-        return [Member(m) for m in result] if result else []
+        return Member(result)
 
     async def add_members(self, circle_id: str, members: list[dict[str, str | int]]) -> list[Member]:
         """Adds multiple members to a circle at once.
@@ -321,15 +323,14 @@ class _AsyncTeamsAPI:
         )
         return [Member(m) for m in result] if result else []
 
-    async def remove_member(self, circle_id: str, member_id: str) -> list[Member]:
+    async def remove_member(self, circle_id: str, member_id: str) -> None:
         """Removes a member from a circle.
 
         :param circle_id: ID of the circle.
         :param member_id: ID of the member to remove.
         """
         require_capabilities("circles", await self._session.capabilities)
-        result = await self._session.ocs("DELETE", f"{self._ep_base}/circles/{circle_id}/members/{member_id}")
-        return [Member(m) for m in result] if result else []
+        await self._session.ocs("DELETE", f"{self._ep_base}/circles/{circle_id}/members/{member_id}")
 
     async def set_member_level(self, circle_id: str, member_id: str, level: MemberLevel) -> Member:
         """Changes the permission level of a member.
@@ -346,7 +347,7 @@ class _AsyncTeamsAPI:
         )
         return Member(result)
 
-    async def confirm_member(self, circle_id: str, member_id: str) -> list[Member]:
+    async def confirm_member(self, circle_id: str, member_id: str) -> Member:
         """Confirms a pending member request.
 
         :param circle_id: ID of the circle.
@@ -354,7 +355,7 @@ class _AsyncTeamsAPI:
         """
         require_capabilities("circles", await self._session.capabilities)
         result = await self._session.ocs("PUT", f"{self._ep_base}/circles/{circle_id}/members/{member_id}")
-        return [Member(m) for m in result] if result else []
+        return Member(result)
 
     async def join(self, circle_id: str) -> Circle:
         """Joins an open circle.

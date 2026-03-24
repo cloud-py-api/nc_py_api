@@ -87,7 +87,7 @@ async def test_teams_edit_config(anc_any):
     circle = await anc_any.teams.create("test_nc_py_api_team_ec")
     try:
         new_config = CircleConfig.VISIBLE | CircleConfig.OPEN
-        updated = await anc_any.teams.edit_config(circle.circle_id, int(new_config))
+        updated = await anc_any.teams.edit_config(circle.circle_id, new_config)
         assert isinstance(updated, Circle)
         assert updated.config & CircleConfig.VISIBLE
         assert updated.config & CircleConfig.OPEN
@@ -121,9 +121,8 @@ async def test_teams_members_add_remove(anc_any):
         assert isinstance(members, list)
 
         added = await anc_any.teams.add_member(circle.circle_id, test_user_id, MemberType.USER)
-        assert isinstance(added, list)
-        for m in added:
-            assert isinstance(m, Member)
+        assert isinstance(added, Member)
+        assert added.user_id == test_user_id
 
         members = await anc_any.teams.get_members(circle.circle_id)
         user_ids = [m.user_id for m in members]
@@ -140,9 +139,9 @@ async def test_teams_members_add_remove(anc_any):
         assert isinstance(member.circle_id, str)
         assert repr(member).startswith("<Member")
 
-        remaining = await anc_any.teams.remove_member(circle.circle_id, member.member_id)
-        assert isinstance(remaining, list)
-        user_ids = [m.user_id for m in remaining]
+        await anc_any.teams.remove_member(circle.circle_id, member.member_id)
+        members = await anc_any.teams.get_members(circle.circle_id)
+        user_ids = [m.user_id for m in members]
         assert test_user_id not in user_ids
     finally:
         await anc_any.teams.destroy(circle.circle_id)
@@ -208,7 +207,7 @@ async def test_teams_join_leave(anc_any):
     circle = await anc_any.teams.create("test_nc_py_api_team_jl")
     try:
         new_config = CircleConfig.VISIBLE | CircleConfig.OPEN
-        await anc_any.teams.edit_config(circle.circle_id, int(new_config))
+        await anc_any.teams.edit_config(circle.circle_id, new_config)
 
         test_user_id = environ.get("TEST_USER_ID", "")
         test_user_pass = environ.get("TEST_USER_PASS", "")
@@ -218,7 +217,7 @@ async def test_teams_join_leave(anc_any):
         from nc_py_api import AsyncNextcloud
 
         anc_user = AsyncNextcloud(
-            nextcloud_url=environ.get("NEXTCLOUD_URL", "http://nextcloud.ncpyapi:13080"),
+            nextcloud_url=environ["NEXTCLOUD_URL"],
             nc_auth_user=test_user_id,
             nc_auth_pass=test_user_pass,
         )
