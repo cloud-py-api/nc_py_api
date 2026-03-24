@@ -1,5 +1,6 @@
 """Helper functions for **FilesAPI** and **AsyncFilesAPI** classes."""
 
+import contextlib
 import enum
 from datetime import datetime, timezone
 from io import BytesIO
@@ -310,7 +311,8 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pyl
         if "oc:downloadURL" in prop_keys and prop["oc:downloadURL"]:
             fs_node_args["download_url"] = prop["oc:downloadURL"]
         if "nc:download-url-expiration" in prop_keys and prop["nc:download-url-expiration"]:
-            fs_node_args["download_url_expiration"] = int(prop["nc:download-url-expiration"])
+            with contextlib.suppress(TypeError, ValueError):
+                fs_node_args["download_url_expiration"] = int(prop["nc:download-url-expiration"])
         if "oc:favorite" in prop_keys:
             fs_node_args["favorite"] = bool(int(prop["oc:favorite"]))
         if "nc:trashbin-filename" in prop_keys:
