@@ -107,6 +107,8 @@ class FsNodeInfo:
             self.creation_date = kwargs.get("creation_date", datetime.datetime(1970, 1, 1))
         except (ValueError, TypeError):
             self.creation_date = datetime.datetime(1970, 1, 1)
+        self._download_url: str = kwargs.get("download_url", "")
+        self._download_url_expiration: int = kwargs.get("download_url_expiration", 0)
         self._trashbin: dict[str, str | int] = {}
         for i in ("trashbin_filename", "trashbin_original_location", "trashbin_deletion_time"):
             if i in kwargs:
@@ -131,6 +133,20 @@ class FsNodeInfo:
     def permissions(self) -> str:
         """Permissions for the object."""
         return self._raw_data["permissions"]
+
+    @property
+    def download_url(self) -> str:
+        """S3 presigned URL for direct download, bypassing Nextcloud.
+
+        Only available when the storage backend is S3 with ``use_presigned_url`` enabled.
+        Empty string when not available.
+        """
+        return self._download_url
+
+    @property
+    def download_url_expiration(self) -> int:
+        """Expiration timestamp for :py:attr:`download_url`. Zero when not available."""
+        return self._download_url_expiration
 
     @property
     def last_modified(self) -> datetime.datetime:

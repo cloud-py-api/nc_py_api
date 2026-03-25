@@ -1,5 +1,6 @@
 """Helper functions for **FilesAPI** and **AsyncFilesAPI** classes."""
 
+import contextlib
 import enum
 from datetime import datetime, timezone
 from io import BytesIO
@@ -26,6 +27,7 @@ PROPFIND_PROPERTIES = [
     "oc:id",
     "oc:fileid",
     "oc:downloadURL",
+    "nc:download-url-expiration",
     "oc:dDC",
     "oc:permissions",
     "oc:checksums",
@@ -306,6 +308,13 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pyl
             fs_node_args["mimetype"] = prop["d:getcontenttype"]
         if "oc:permissions" in prop_keys:
             fs_node_args["permissions"] = prop["oc:permissions"]
+        if "oc:downloadURL" in prop_keys:
+            _download_url = prop["oc:downloadURL"]
+            if isinstance(_download_url, str) and _download_url.lower() != "false" and _download_url:
+                fs_node_args["download_url"] = _download_url
+        if "nc:download-url-expiration" in prop_keys and prop["nc:download-url-expiration"]:
+            with contextlib.suppress(TypeError, ValueError):
+                fs_node_args["download_url_expiration"] = int(prop["nc:download-url-expiration"])
         if "oc:favorite" in prop_keys:
             fs_node_args["favorite"] = bool(int(prop["oc:favorite"]))
         if "nc:trashbin-filename" in prop_keys:
@@ -367,7 +376,7 @@ def _webdav_response_to_records(webdav_res: Response, info: str) -> list[dict]:
     if "d:error" in response_data:
         err = response_data["d:error"]
         raise NextcloudException(
-            reason=f'{err["s:exception"]}: {err["s:message"]}'.replace("\n", ""), info=info, response=webdav_res
+            reason=f"{err['s:exception']}: {err['s:message']}".replace("\n", ""), info=info, response=webdav_res
         )
     response = response_data["d:multistatus"].get("d:response", [])
     return [response] if isinstance(response, dict) else response
