@@ -308,8 +308,10 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pyl
             fs_node_args["mimetype"] = prop["d:getcontenttype"]
         if "oc:permissions" in prop_keys:
             fs_node_args["permissions"] = prop["oc:permissions"]
-        if "oc:downloadURL" in prop_keys and prop["oc:downloadURL"]:
-            fs_node_args["download_url"] = prop["oc:downloadURL"]
+        if "oc:downloadURL" in prop_keys:
+            _download_url = prop["oc:downloadURL"]
+            if isinstance(_download_url, str) and _download_url.lower() != "false" and _download_url:
+                fs_node_args["download_url"] = _download_url
         if "nc:download-url-expiration" in prop_keys and prop["nc:download-url-expiration"]:
             with contextlib.suppress(TypeError, ValueError):
                 fs_node_args["download_url_expiration"] = int(prop["nc:download-url-expiration"])

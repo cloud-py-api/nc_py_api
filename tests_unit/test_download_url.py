@@ -65,8 +65,8 @@ def test_parse_record_with_false_download_url():
             "oc:fileid": "123",
             "oc:permissions": "RGDNVW",
             "d:getetag": '"abc123"',
-            "oc:downloadURL": False,
-            "nc:download-url-expiration": False,
+            "oc:downloadURL": "false",
+            "nc:download-url-expiration": "false",
         },
     }
     node = _parse_record("files/admin/test.txt", [prop_stat])
