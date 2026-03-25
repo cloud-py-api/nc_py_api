@@ -41,7 +41,7 @@ def convert_video_to_gif(input_file: FsNode, nc: NextcloudApp):
                 skip = 0
                 while True:
                     skip += 1
-                    ret, frame = cap.read()
+                    _ret, frame = cap.read()
                     if frame is None:
                         break
                     if skip == 2:
