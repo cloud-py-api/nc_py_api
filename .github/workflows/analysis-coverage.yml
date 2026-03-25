@@ -136,7 +136,7 @@ jobs:
           SKIP_NC_CLIENT_TESTS: 1
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage_oci_${{ env.NEXTCLOUD_BRANCH }}.xml
           path: nc_py_api/coverage_oci_${{ env.NEXTCLOUD_BRANCH }}.xml
@@ -144,7 +144,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nc_log_oci_${{ env.NEXTCLOUD_BRANCH }}
           path: data/nextcloud.log
@@ -316,7 +316,7 @@ jobs:
           coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage_maria_${{ matrix.nextcloud }}.xml
           path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}.xml
@@ -324,7 +324,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nc_log_maria_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -493,7 +493,7 @@ jobs:
           coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}.xml
           path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}.xml
@@ -501,7 +501,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nc_log_pgsql_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -595,7 +595,7 @@ jobs:
           NPA_NC_CERT: ''
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
           path: nc_py_api/coverage_sqlite_${{ matrix.nextcloud }}_client.xml
@@ -603,7 +603,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nc_log_sqlite_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -618,7 +618,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Download Coverage Artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: coverage
           pattern: coverage_*
