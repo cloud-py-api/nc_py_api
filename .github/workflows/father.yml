@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Father
         id: father
-        uses: anthropics/claude-code-action@edd85d61533cbba7b57ed0ca4af1750b1fdfd3c4 # v1
+        uses: anthropics/claude-code-action@0ee1beea589a67d33340072691a5d42abec7ae6b # v1
         with:
           trigger_phrase: '@father'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
