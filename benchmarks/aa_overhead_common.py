@@ -20,20 +20,20 @@ def measure_overhead(measure, title: str):
     for k, v in NC_CFGS.items():
         nc = init_nc(k, v)
         if nc:
-            result_nc, time_nc = measure(nc)
+            _result_nc, time_nc = measure(nc)
             penguin_means["Password"].append(time_nc)
         else:
             penguin_means["Password"].append(0)
 
         nc_ap = init_nc_by_app_pass(k, v)
         if nc_ap:
-            result_nc_ap, time_nc_ap = measure(nc_ap)
+            _result_nc_ap, time_nc_ap = measure(nc_ap)
             penguin_means["AppPassword"].append(time_nc_ap)
         else:
             penguin_means["AppPassword"].append(0)
 
         nc_ae = init_nc_app(k, v)
-        result_nc_ae, time_nc_ae = measure(nc_ae)
+        _result_nc_ae, time_nc_ae = measure(nc_ae)
         penguin_means["AppAPI"].append(time_nc_ae)
 
         # Uncomment only for functions that return predictable values.
@@ -48,7 +48,7 @@ def measure_overhead(measure, title: str):
     width = 0.25  # the width of the bars
     multiplier = 0
 
-    fig, ax = plt.subplots(layout="constrained")
+    _fig, ax = plt.subplots(layout="constrained")
 
     for attribute, measurement in penguin_means.items():
         offset = width * multiplier
