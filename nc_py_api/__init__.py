@@ -11,3 +11,4 @@ from ._version import __version__
 from .files import FilePermissions, FsNode, LockType, SystemTag
 from .files.sharing import ShareType
 from .nextcloud import AsyncNextcloud, AsyncNextcloudApp, Nextcloud, NextcloudApp
+from .teams import Circle, CircleConfig, Member, MemberLevel, MemberType

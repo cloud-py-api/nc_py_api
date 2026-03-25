@@ -213,6 +213,13 @@ jobs:
           ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
 
+      - name: Checkout Circles
+        uses: actions/checkout@v6
+        with:
+          repository: nextcloud/circles
+          ref: ${{ matrix.nextcloud }}
+          path: apps/circles
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -224,6 +231,7 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
+          ./occ config:system:set overwrite.cli.url --value="http://localhost:8080"
           ./occ app:enable notifications
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
@@ -232,6 +240,9 @@ jobs:
 
       - name: Enable Notes
         run: ./occ app:enable notes
+
+      - name: Enable Circles
+        run: php occ app:enable circles
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v6
@@ -379,6 +390,13 @@ jobs:
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
+      - name: Checkout Circles
+        uses: actions/checkout@v6
+        with:
+          repository: nextcloud/circles
+          ref: ${{ matrix.nextcloud }}
+          path: apps/circles
+
       - name: Set up & run Nextcloud
         env:
           DB_PORT: 4444
@@ -390,9 +408,13 @@ jobs:
           ./occ config:system:set loglevel --value=0 --type=integer
           ./occ config:system:set debug --value=true --type=boolean
           ./occ config:system:set ratelimit.protection.enabled --value=false --type=boolean
+          ./occ config:system:set overwrite.cli.url --value="http://localhost:8080"
           ./occ app:enable notifications
           ./occ app:enable activity
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
+
+      - name: Enable Circles
+        run: php occ app:enable circles
 
       - name: Checkout NcPyApi
         uses: actions/checkout@v6
