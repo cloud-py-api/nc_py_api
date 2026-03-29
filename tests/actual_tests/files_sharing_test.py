@@ -211,7 +211,7 @@ async def test_get_inherited_async(anc_any):
 @pytest.mark.asyncio(scope="session")
 async def test_share_with_async(anc, anc_client):
     nc_second_user = Nextcloud(nc_auth_user=environ["TEST_USER_ID"], nc_auth_pass=environ["TEST_USER_PASS"])
-    assert not nc_second_user.files.sharing.get_list()
+    assert not await nc_second_user.files.sharing.get_list()
     shared_file = await anc.files.by_path("test_empty_text.txt")
     folder_share = await anc.files.sharing.create(
         "test_empty_dir_in_dir", ShareType.TYPE_USER, share_with=environ["TEST_USER_ID"]
@@ -219,15 +219,15 @@ async def test_share_with_async(anc, anc_client):
     file_share = await anc.files.sharing.create(shared_file, ShareType.TYPE_USER, share_with=environ["TEST_USER_ID"])
     shares_list1 = await anc.files.sharing.get_list(path="test_empty_dir_in_dir/")
     shares_list2 = await anc.files.sharing.get_list(path="test_empty_text.txt")
-    second_user_shares_list = nc_second_user.files.sharing.get_list()
-    second_user_shares_list_with_me = nc_second_user.files.sharing.get_list(shared_with_me=True)
+    second_user_shares_list = await nc_second_user.files.sharing.get_list()
+    second_user_shares_list_with_me = await nc_second_user.files.sharing.get_list(shared_with_me=True)
     await anc.files.sharing.delete(folder_share)
     await anc.files.sharing.delete(file_share)
     assert not second_user_shares_list
     assert len(second_user_shares_list_with_me) == 2
     assert len(shares_list1) == 1
     assert len(shares_list2) == 1
-    assert not nc_second_user.files.sharing.get_list()
+    assert not await nc_second_user.files.sharing.get_list()
 
 
 @pytest.mark.asyncio(scope="session")
