@@ -14,7 +14,7 @@ async def lifespan(_app: FastAPI):
 APP = FastAPI(lifespan=lifespan)
 
 
-def enabled_handler(_enabled: bool, _nc: NextcloudApp) -> str:
+async def enabled_handler(_enabled: bool, _nc: NextcloudApp) -> str:
     return ""
 
 
