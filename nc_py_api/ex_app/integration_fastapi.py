@@ -33,6 +33,15 @@ from ..talk_bot import TalkBotMessage
 from .misc import persistent_storage
 
 
+def _nc_app_internal(request: HTTPConnection) -> NextcloudApp:
+    """Internal sync NextcloudApp factory (no deprecation warning)."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        nextcloud_app = NextcloudApp(**__nc_app(request))
+    __request_sign_check_if_needed(request, nextcloud_app)
+    return nextcloud_app
+
+
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
     warnings.warn(
@@ -140,7 +149,9 @@ def set_handlers(
     if default_init:
 
         @fast_api_app.post("/init")
-        async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+        async def init_callback(
+            b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(_nc_app_internal)]
+        ):
             b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0)
             return JSONResponse(content={})
 
