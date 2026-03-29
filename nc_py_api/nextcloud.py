@@ -24,7 +24,7 @@ from ._talk_api import _TalkAPI
 from ._theming import ThemingInfo, get_parsed_theme
 from .activity import _ActivityAPI
 from .apps import _AppsAPI
-from .calendar_api import _CalendarAPI  # noqa: F401
+from .calendar_api import _CalendarAPI  # noqa: F401  pylint: disable=unused-import
 from .ex_app.defs import LogLvl
 from .ex_app.occ_commands import OccCommandsAPI
 from .ex_app.providers.providers import ProvidersApi
