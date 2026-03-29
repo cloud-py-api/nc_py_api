@@ -203,8 +203,8 @@ class Circle:
         return f"<{self.__class__.__name__} id={self.circle_id}, name={self.name}, population={self.population}>"
 
 
-class _AsyncTeamsAPI:
-    """Class providing the async API for managing Teams (Circles) on the Nextcloud server."""
+class _TeamsAPI:
+    """Class providing the API for managing Teams (Circles) on the Nextcloud server."""
 
     _ep_base: str = "/ocs/v2.php/apps/circles"
 

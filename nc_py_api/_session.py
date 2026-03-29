@@ -12,7 +12,7 @@ from json import loads
 from os import environ
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from niquests import AsyncSession, ReadTimeout, Request, Response, Session
+from niquests import AsyncSession, ReadTimeout, Request, Response
 from niquests import __version__ as niquests_version
 from niquests.structures import CaseInsensitiveDict
 from starlette.requests import HTTPConnection
@@ -143,8 +143,8 @@ class AppConfig(BasicConfig):
 
 
 class NcSessionBase(ABC):
-    adapter: AsyncSession | Session
-    adapter_dav: AsyncSession | Session
+    adapter: AsyncSession
+    adapter_dav: AsyncSession
     cfg: BasicConfig
     custom_headers: dict
     response_headers: CaseInsensitiveDict
@@ -181,7 +181,7 @@ class NcSessionBase(ABC):
                 self.adapter_dav.cookies.set("XDEBUG_SESSION", options.XDEBUG_SESSION)
 
     @abstractmethod
-    def _create_adapter(self, dav: bool = False) -> AsyncSession | Session:
+    def _create_adapter(self, dav: bool = False) -> AsyncSession:
         pass  # pragma: no cover
 
     @property
@@ -196,131 +196,6 @@ class NcSessionBase(ABC):
 
 
 class NcSessionBasic(NcSessionBase, ABC):
-    adapter: Session
-    adapter_dav: Session
-
-    def ocs(
-        self,
-        method: str,
-        path: str,
-        *,
-        content: bytes | str | typing.Iterable[bytes] | typing.AsyncIterable[bytes] | None = None,
-        json: dict | list | None = None,
-        response_type: str | None = None,
-        params: dict | None = None,
-        files: dict | None = None,
-        **kwargs,
-    ):
-        self.init_adapter()
-        info = f"request: {method} {path}"
-        nested_req = kwargs.pop("nested_req", False)
-        try:
-            response = self.adapter.request(method, path, data=content, json=json, params=params, files=files, **kwargs)
-        except ReadTimeout:
-            raise NextcloudException(408, info=info) from None
-
-        check_error(response, info)
-        if response.status_code == 204:  # NO_CONTENT
-            return []
-        response_data = loads(response.text)
-        if response_type == "json":
-            return response_data
-        ocs_meta = response_data["ocs"]["meta"]
-        if ocs_meta["status"] != "ok":
-            if (
-                not nested_req
-                and ocs_meta["statuscode"] == 403
-                and str(ocs_meta["message"]).lower().find("password confirmation is required") != -1
-            ):
-                self.adapter.close()
-                self.init_adapter(restart=True)
-                return self.ocs(method, path, **kwargs, content=content, json=json, params=params, nested_req=True)
-            if ocs_meta["statuscode"] in (404, OCSRespond.RESPOND_NOT_FOUND):
-                raise NextcloudExceptionNotFound(reason=ocs_meta["message"], info=info, response=response)
-            if ocs_meta["statuscode"] == 304:
-                raise NextcloudExceptionNotModified(reason=ocs_meta["message"], info=info, response=response)
-            raise NextcloudException(
-                status_code=ocs_meta["statuscode"], reason=ocs_meta["message"], info=info, response=response
-            )
-        return response_data["ocs"]["data"]
-
-    def update_server_info(self) -> None:
-        self._capabilities = self.ocs("GET", "/ocs/v1.php/cloud/capabilities")
-
-    @property
-    def capabilities(self) -> dict:
-        if not self._capabilities:
-            self.update_server_info()
-        return self._capabilities["capabilities"]
-
-    @property
-    def nc_version(self) -> ServerVersion:
-        if not self._capabilities:
-            self.update_server_info()
-        v = self._capabilities["version"]
-        return ServerVersion(
-            major=v["major"],
-            minor=v["minor"],
-            micro=v["micro"],
-            string=v["string"],
-            extended_support=v["extendedSupport"],
-        )
-
-    @property
-    def user(self) -> str:
-        """Current user ID. Can be different from the login name."""
-        if isinstance(self, NcSession) and not self._user:  # do not trigger for NextcloudApp
-            self._user = self.ocs("GET", "/ocs/v1.php/cloud/user")["id"]
-        return self._user
-
-    def set_user(self, user_id: str) -> None:
-        self._user = user_id
-
-    def download2stream(self, url_path: str, fp, dav: bool = False, **kwargs):
-        if isinstance(fp, str | pathlib.Path):
-            with builtins.open(fp, "wb") as f:
-                self.download2fp(url_path, f, dav, **kwargs)
-        elif hasattr(fp, "write"):
-            self.download2fp(url_path, fp, dav, **kwargs)
-        else:
-            raise TypeError("`fp` must be a path to file or an object with `write` method.")
-
-    def _get_adapter_kwargs(self, dav: bool) -> dict[str, typing.Any]:
-        if dav:
-            return {
-                "base_url": self.cfg.dav_endpoint,
-                "timeout": self.cfg.options.timeout_dav,
-                "event_hooks": {"pre_request": [], "response": [self._response_event]},
-            }
-        return {
-            "base_url": self.cfg.endpoint,
-            "timeout": self.cfg.options.timeout,
-            "event_hooks": {"pre_request": [self._request_event_ocs], "response": [self._response_event]},
-        }
-
-    def _request_event_ocs(self, request: Request) -> None:
-        str_url = str(request.url)
-        if re.search(self._ocs_regexp, str_url) is not None:  # this is OCS call
-            request.url = patch_param(request.url, "format", "json")
-            request.headers["Accept"] = "application/json"
-
-    def _response_event(self, response: Response) -> None:
-        str_url = str(response.request.url)
-        # we do not want ResponseHeaders for those two endpoints, as call to them can occur during DAV calls.
-        for i in ("/ocs/v1.php/cloud/capabilities?format=json", "/ocs/v1.php/cloud/user?format=json"):
-            if str_url.endswith(i):
-                return
-        self.response_headers = response.headers
-
-    def download2fp(self, url_path: str, fp, dav: bool, params=None, **kwargs):
-        adapter = self.adapter_dav if dav else self.adapter
-        with adapter.get(url_path, params=params, headers=kwargs.get("headers"), stream=True) as response:
-            check_error(response)
-            for data_chunk in response.iter_raw(chunk_size=kwargs.get("chunk_size", -1)):
-                fp.write(data_chunk)
-
-
-class AsyncNcSessionBasic(NcSessionBase, ABC):
     adapter: AsyncSession
     adapter_dav: AsyncSession
 
@@ -398,7 +273,7 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
     @property
     async def user(self) -> str:
         """Current user ID. Can be different from the login name."""
-        if isinstance(self, AsyncNcSession) and not self._user:  # do not trigger for NextcloudApp
+        if isinstance(self, NcSession) and not self._user:  # do not trigger for NextcloudApp
             self._user = (await self.ocs("GET", "/ocs/v1.php/cloud/user"))["id"]
         return self._user
 
@@ -458,29 +333,7 @@ class NcSession(NcSessionBasic):
         self.cfg = Config(**kwargs)
         super().__init__()
 
-    def _create_adapter(self, dav: bool = False) -> AsyncSession | Session:
-        session_kwargs = self._get_adapter_kwargs(dav)
-        hooks = session_kwargs.pop("event_hooks")
-
-        session = Session(
-            keepalive_delay=self.limits.keepalive_expiry, pool_maxsize=self.limits.max_connections, **session_kwargs
-        )
-
-        session.auth = self.cfg.auth
-        session.verify = self.cfg.options.nc_cert
-        session.hooks.update(hooks)
-
-        return session
-
-
-class AsyncNcSession(AsyncNcSessionBasic):
-    cfg: Config
-
-    def __init__(self, **kwargs):
-        self.cfg = Config(**kwargs)
-        super().__init__()
-
-    def _create_adapter(self, dav: bool = False) -> AsyncSession | Session:
+    def _create_adapter(self, dav: bool = False) -> AsyncSession:
         session_kwargs = self._get_adapter_kwargs(dav)
         hooks = session_kwargs.pop("event_hooks")
 
@@ -500,8 +353,8 @@ class AsyncNcSession(AsyncNcSessionBasic):
 class NcSessionAppBasic(ABC):
     cfg: AppConfig
     _user: str
-    adapter: AsyncSession | Session
-    adapter_dav: AsyncSession | Session
+    adapter: AsyncSession
+    adapter_dav: AsyncSession
 
     def __init__(self, **kwargs):
         self.cfg = AppConfig(**kwargs)
@@ -530,39 +383,7 @@ class NcSessionAppBasic(ABC):
 class NcSessionApp(NcSessionAppBasic, NcSessionBasic):
     cfg: AppConfig
 
-    def _create_adapter(self, dav: bool = False) -> AsyncSession | Session:
-        session_kwargs = self._get_adapter_kwargs(dav)
-        session_kwargs["event_hooks"]["pre_request"].append(self._add_auth)
-
-        hooks = session_kwargs.pop("event_hooks")
-
-        session = Session(
-            keepalive_delay=self.limits.keepalive_expiry,
-            pool_maxsize=self.limits.max_connections,
-            **session_kwargs,
-        )
-
-        session.verify = self.cfg.options.nc_cert
-        session.headers = {
-            "AA-VERSION": self.cfg.aa_version,
-            "EX-APP-ID": self.cfg.app_name,
-            "EX-APP-VERSION": self.cfg.app_version,
-            "user-agent": f"ExApp/{self.cfg.app_name}/{self.cfg.app_version} (niquests/{niquests_version})",
-        }
-        session.hooks.update(hooks)
-
-        return session
-
-    def _add_auth(self, request: Request):
-        request.headers.update(
-            {"AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))}
-        )
-
-
-class AsyncNcSessionApp(NcSessionAppBasic, AsyncNcSessionBasic):
-    cfg: AppConfig
-
-    def _create_adapter(self, dav: bool = False) -> AsyncSession | Session:
+    def _create_adapter(self, dav: bool = False) -> AsyncSession:
         session_kwargs = self._get_adapter_kwargs(dav)
         session_kwargs["event_hooks"]["pre_request"].append(self._add_auth)
 
@@ -588,6 +409,12 @@ class AsyncNcSessionApp(NcSessionAppBasic, AsyncNcSessionBasic):
         request.headers.update(
             {"AUTHORIZATION-APP-API": b64encode(f"{self._user}:{self.cfg.app_secret}".encode("UTF=8"))}
         )
+
+
+# Backward compatibility aliases (will be removed in v1.0.0)
+AsyncNcSessionBasic = NcSessionBasic
+AsyncNcSession = NcSession
+AsyncNcSessionApp = NcSessionApp
 
 
 def patch_param(url: str, key: str, value: str) -> str:

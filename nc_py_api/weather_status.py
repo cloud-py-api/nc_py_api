@@ -40,8 +40,8 @@ class WeatherLocation:
         self.mode = WeatherLocationMode(int(raw_location.get("mode", 0)))
 
 
-class _AsyncWeatherStatusAPI:
-    """Class provides async weather status management API on the Nextcloud server."""
+class _WeatherStatusAPI:
+    """Class provides weather status management API on the Nextcloud server."""
 
     _ep_base: str = "/ocs/v1.php/apps/weather_status/api/v1"
 

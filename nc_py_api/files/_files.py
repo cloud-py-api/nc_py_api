@@ -1,4 +1,4 @@
-"""Helper functions for **FilesAPI** and **AsyncFilesAPI** classes."""
+"""Helper functions for **FilesAPI** class."""
 
 import contextlib
 import enum
