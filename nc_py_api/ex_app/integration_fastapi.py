@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import typing
+import warnings
 from traceback import format_exc
 from urllib.parse import urlparse
 
@@ -34,6 +35,11 @@ from .misc import persistent_storage
 
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
+    warnings.warn(
+        "nc_app (sync) is deprecated and will be removed in v0.31.0. Use anc_app instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     nextcloud_app = NextcloudApp(**__nc_app(request))
     __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
@@ -48,6 +54,11 @@ def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
 
 def talk_bot_msg(request: Request) -> TalkBotMessage:
     """Authentication handler for bot requests from Nextcloud Talk to the application."""
+    warnings.warn(
+        "talk_bot_msg (sync) is deprecated and will be removed in v0.31.0. Use atalk_bot_msg instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return TalkBotMessage(json.loads(asyncio.run(request.body())))
 
 
@@ -109,6 +120,12 @@ def set_handlers(
             return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
 
     else:
+        warnings.warn(
+            "Passing a sync enabled_handler to set_handlers is deprecated and will be removed in v0.31.0. "
+            "Use an async enabled_handler instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
         @fast_api_app.put("/enabled")
         def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
@@ -139,6 +156,12 @@ def set_handlers(
                 return JSONResponse(content={})
 
         else:
+            warnings.warn(
+                "Passing a sync trigger_handler to set_handlers is deprecated and will be removed in v0.31.0. "
+                "Use an async trigger_handler instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
             @fast_api_app.post("/trigger")
             def trigger_callback(providerId: str):  # pylint: disable=invalid-name

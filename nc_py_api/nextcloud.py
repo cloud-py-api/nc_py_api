@@ -2,6 +2,7 @@
 
 import contextlib
 import typing
+import warnings
 from abc import ABC
 
 from niquests.structures import CaseInsensitiveDict
@@ -69,6 +70,12 @@ class _NextcloudBasic(ABC):  # pylint: disable=too-many-instance-attributes
     _session: NcSessionBasic
 
     def __init__(self, session: NcSessionBasic):
+        warnings.warn(
+            "Sync Nextcloud/NextcloudApp classes are deprecated and will be removed in v0.31.0. "
+            "Migrate to AsyncNextcloud/AsyncNextcloudApp.",
+            DeprecationWarning,
+            stacklevel=3,
+        )
         self.apps = _AppsAPI(session)
         self.cal = _CalendarAPI(session)
         self.files = FilesAPI(session)
