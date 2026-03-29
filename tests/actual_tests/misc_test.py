@@ -8,8 +8,6 @@ from niquests import PreparedRequest, Response
 from nc_py_api import (
     AsyncNextcloud,
     AsyncNextcloudApp,
-    Nextcloud,
-    NextcloudApp,
     NextcloudException,
     ex_app,
 )
@@ -44,17 +42,18 @@ def test_nc_exception_to_str():
         assert str(e) == f"[666] {reason} <{info}>"
 
 
-def test_require_capabilities(nc_app):
-    require_capabilities("app_api", nc_app.capabilities)
-    require_capabilities(["app_api", "theming"], nc_app.capabilities)
+@pytest.mark.asyncio(scope="session")
+async def test_require_capabilities_async(anc_app):
+    require_capabilities("app_api", await anc_app.capabilities)
+    require_capabilities(["app_api", "theming"], await anc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities("non_exist_capability", nc_app.capabilities)
+        require_capabilities("non_exist_capability", await anc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities(["non_exist_capability", "app_api"], nc_app.capabilities)
+        require_capabilities(["non_exist_capability", "app_api"], await anc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities(["non_exist_capability", "non_exist_capability2", "app_api"], nc_app.capabilities)
+        require_capabilities(["non_exist_capability", "non_exist_capability2", "app_api"], await anc_app.capabilities)
     with pytest.raises(NextcloudException):
-        require_capabilities("app_api.non_exist_capability", nc_app.capabilities)
+        require_capabilities("app_api.non_exist_capability", await anc_app.capabilities)
 
 
 def test_config_get_value():
@@ -74,12 +73,6 @@ def test_deffered_error():
         unknown_non_exist_module.some_class_or_func()
 
 
-def test_response_headers(nc):
-    old_headers = nc.response_headers
-    nc.users.get_user(nc.user)  # do not remove "nc.user" arguments, it helps to trigger response header updates.
-    assert old_headers != nc.response_headers
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_response_headers_async(anc):
     old_headers = anc.response_headers
@@ -92,7 +85,8 @@ def test_nc_iso_time_to_datetime():
     assert parsed_time == datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
 
 
-def test_persist_transformers_cache(nc_app):
+@pytest.mark.asyncio(scope="session")
+async def test_persist_transformers_cache_async(anc_app):
     assert "TRANSFORMERS_CACHE" not in os.environ
     from nc_py_api.ex_app import persist_transformers_cache  # noqa
 
@@ -100,7 +94,8 @@ def test_persist_transformers_cache(nc_app):
     os.environ.pop("TRANSFORMERS_CACHE")
 
 
-def test_verify_version(nc_app):
+@pytest.mark.asyncio(scope="session")
+async def test_verify_version_async(anc_app):
     version_file_path = os.path.join(ex_app.persistent_storage(), "_version.info")
     if os.path.exists(version_file_path):
         os.remove(version_file_path)
@@ -116,17 +111,6 @@ def test_verify_version(nc_app):
     assert ex_app.verify_version() is None
 
 
-def test_init_adapter_dav(nc_any):
-    new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
-    new_nc._session.init_adapter_dav()
-    old_adapter = getattr(new_nc._session, "adapter_dav", None)
-    assert old_adapter is not None
-    new_nc._session.init_adapter_dav()
-    assert old_adapter == getattr(new_nc._session, "adapter_dav", None)
-    new_nc._session.init_adapter_dav(restart=True)
-    assert old_adapter != getattr(new_nc._session, "adapter_dav", None)
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_init_adapter_dav_async(anc_any):
     new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
@@ -137,13 +121,6 @@ async def test_init_adapter_dav_async(anc_any):
     assert old_adapter == getattr(new_nc._session, "adapter_dav", None)
     new_nc._session.init_adapter_dav(restart=True)
     assert old_adapter != getattr(new_nc._session, "adapter_dav", None)
-
-
-def test_no_initial_connection(nc_any):
-    new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
-    assert not new_nc._session._capabilities
-    _ = new_nc.srv_version
-    assert new_nc._session._capabilities
 
 
 @pytest.mark.asyncio(scope="session")
@@ -167,12 +144,6 @@ async def test_ocs_timeout_async(anc_any):
     assert e.value.status_code == 408
 
 
-def test_public_ocs(nc_any):
-    r = nc_any.ocs("GET", "/ocs/v1.php/cloud/capabilities")
-    assert r == nc_any.ocs("GET", "ocs/v1.php/cloud/capabilities")
-    assert r == nc_any._session.ocs("GET", "ocs/v1.php/cloud/capabilities")  # noqa
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_public_ocs_async(anc_any):
     r = await anc_any.ocs("GET", "/ocs/v1.php/cloud/capabilities")
@@ -180,25 +151,12 @@ async def test_public_ocs_async(anc_any):
     assert r == await anc_any._session.ocs("GET", "ocs/v1.php/cloud/capabilities")  # noqa
 
 
-def test_perform_login(nc_any):
-    new_nc = Nextcloud() if isinstance(nc_any, Nextcloud) else NextcloudApp()
-    assert not new_nc._session._capabilities
-    new_nc.perform_login()
-    assert new_nc._session._capabilities
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_perform_login_async(anc_any):
-    new_nc = AsyncNextcloud() if isinstance(anc_any, Nextcloud) else AsyncNextcloudApp()
+    new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
     assert not new_nc._session._capabilities
     await new_nc.perform_login()
     assert new_nc._session._capabilities
-
-
-def test_download_log(nc_any):
-    buf = io.BytesIO()
-    nc_any.download_log(buf)
-    assert buf.tell() > 0
 
 
 @pytest.mark.asyncio(scope="session")
