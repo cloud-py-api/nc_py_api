@@ -52,7 +52,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from nc_py_api import NextcloudApp
+from nc_py_api import AsyncNextcloudApp
 from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, run_app, set_handlers
 
 
@@ -66,11 +66,11 @@ APP = FastAPI(lifespan=lifespan)
 APP.add_middleware(AppAPIAuthMiddleware)
 
 
-def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+async def enabled_handler(enabled: bool, nc: AsyncNextcloudApp) -> str:
     if enabled:
-        nc.log(LogLvl.WARNING, "Hello from nc_py_api.")
+        await nc.log(LogLvl.WARNING, "Hello from nc_py_api.")
     else:
-        nc.log(LogLvl.WARNING, "Bye bye from nc_py_api.")
+        await nc.log(LogLvl.WARNING, "Bye bye from nc_py_api.")
     return ""
 
 

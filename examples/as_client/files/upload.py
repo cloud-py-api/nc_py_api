@@ -1,11 +1,13 @@
+import asyncio
 from io import BytesIO
 
 from PIL import Image  # this example requires `pillow` to be installed
 
 import nc_py_api
 
-if __name__ == "__main__":
-    nc = nc_py_api.Nextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
+
+async def main():
+    nc = nc_py_api.AsyncNextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
     buf = BytesIO()
     Image.merge(
         "RGB",
@@ -18,5 +20,8 @@ if __name__ == "__main__":
         buf, format="PNG"
     )  # saving image to the buffer
     buf.seek(0)  # setting the pointer to the start of buffer
-    nc.files.upload_stream("RGB.png", buf)  # uploading file from the memory to the user's root folder
-    exit(0)
+    await nc.files.upload_stream("RGB.png", buf)  # uploading file from the memory to the user's root folder
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

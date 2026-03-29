@@ -6,6 +6,7 @@ import hmac
 import json
 import os
 import typing
+import warnings
 
 import niquests
 
@@ -114,6 +115,11 @@ class TalkBot:
         :param display_name: The display name of the bot that is shown as author when it posts a message or reaction.
         :param description: Description of the bot helping moderators to decide if they want to enable this bot.
         """
+        warnings.warn(
+            "TalkBot is deprecated and will be removed in v0.31.0. Use AsyncTalkBot instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.callback_url = callback_url.lstrip("/")
         self.display_name = display_name
         self.description = description
