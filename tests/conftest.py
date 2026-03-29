@@ -11,12 +11,15 @@ from . import gfixture_set_env  # noqa
 _TEST_FAILED_INCREMENTAL: dict[str, dict[tuple[int, ...], str]] = {}
 
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
+NC_CLIENT_ASYNC = NC_CLIENT
 if environ.get("SKIP_AA_TESTS", False):
     NC_APP = None
+    NC_APP_ASYNC = None
 else:
     NC_APP = NextcloudApp(user="admin")
     if "app_api" not in asyncio.get_event_loop().run_until_complete(NC_APP._session.capabilities):
         NC_APP = None
+    NC_APP_ASYNC = NC_APP
 if NC_CLIENT is None and NC_APP is None:
     raise EnvironmentError("Tests require at least Nextcloud or NextcloudApp.")
 
