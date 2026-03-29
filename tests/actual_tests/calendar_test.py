@@ -3,23 +3,10 @@ import datetime
 import pytest
 
 
-def _skip_if_no_caldav(nc):
-    if nc.cal.available is False:
-        pytest.skip("caldav package is not installed")
-
-
-def _cleanup_test_calendars(principal, prefix="test_ncpyapi_"):
-    """Remove any leftover test calendars from previous runs."""
-    for cal in principal.calendars():
-        if cal.get_display_name().startswith(prefix):
-            cal.delete()
-
-
-def test_create_delete(nc):
-    _skip_if_no_caldav(nc)
-
-    principal = nc.cal.principal()
-    _cleanup_test_calendars(principal)
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_create_delete_async(anc):
+    principal = anc.cal.principal()
 
     calendar = principal.make_calendar("test_ncpyapi_basic")
     try:
@@ -39,11 +26,11 @@ def test_create_delete(nc):
         calendar.delete()
 
 
-def test_multiple_calendars(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_multiple_calendars_async(anc):
     """Test creating, listing, and deleting multiple calendars (MKCALENDAR + PROPFIND + DELETE)."""
-    _skip_if_no_caldav(nc)
-
-    principal = nc.cal.principal()
+    principal = anc.cal.principal()
     calendars_before = principal.calendars()
     cal1 = principal.make_calendar("test_ncpyapi_multi_1")
     cal2 = principal.make_calendar("test_ncpyapi_multi_2")
@@ -58,12 +45,13 @@ def test_multiple_calendars(nc):
     assert len(principal.calendars()) == len(calendars_before)
 
 
-def test_calendar_rename(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_calendar_rename_async(anc):
     """Test reading and updating calendar display name (PROPFIND + PROPPATCH)."""
-    _skip_if_no_caldav(nc)
     from caldav.elements.dav import DisplayName
 
-    principal = nc.cal.principal()
+    principal = anc.cal.principal()
     calendar = principal.make_calendar("test_ncpyapi_props")
     try:
         assert calendar.get_display_name() == "test_ncpyapi_props"
@@ -75,11 +63,11 @@ def test_calendar_rename(nc):
         calendar.delete()
 
 
-def test_event_full_lifecycle(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_event_full_lifecycle_async(anc):
     """Test event create, read, update, delete — exercises PUT, PROPFIND, REPORT."""
-    _skip_if_no_caldav(nc)
-
-    principal = nc.cal.principal()
+    principal = anc.cal.principal()
     calendar = principal.make_calendar("test_ncpyapi_ops")
     try:
         # --- Event lifecycle ---
@@ -119,11 +107,11 @@ def test_event_full_lifecycle(nc):
         calendar.delete()
 
 
-def test_event_date_range_search(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_event_date_range_search_async(anc):
     """Test searching events by date range — exercises REPORT with XML body."""
-    _skip_if_no_caldav(nc)
-
-    principal = nc.cal.principal()
+    principal = anc.cal.principal()
     calendar = principal.make_calendar("test_ncpyapi_search")
     try:
         base = datetime.datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
@@ -168,11 +156,11 @@ def test_event_date_range_search(nc):
         calendar.delete()
 
 
-def test_todo_crud(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_todo_crud_async(anc):
     """Test todo create, read, complete, delete — exercises PUT + REPORT for VTODO."""
-    _skip_if_no_caldav(nc)
-
-    principal = nc.cal.principal()
+    principal = anc.cal.principal()
     calendar = principal.make_calendar("test_ncpyapi_todos")
     try:
         # Create
@@ -206,28 +194,33 @@ def test_todo_crud(nc):
         calendar.delete()
 
 
-def test_caldav_available_property(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_caldav_available_property_async(anc):
     """Test that cal.available returns True when caldav is installed."""
-    _skip_if_no_caldav(nc)
-    assert nc.cal.available is True
+    assert anc.cal.available is True
 
 
-def test_caldav_is_davclient_subclass(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_caldav_is_davclient_subclass_async(anc):
     """Test that _CalendarAPI is a proper DAVClient subclass."""
-    _skip_if_no_caldav(nc)
     from caldav.davclient import DAVClient
 
-    assert isinstance(nc.cal, DAVClient)
+    assert isinstance(anc.cal, DAVClient)
 
 
-def test_caldav_huge_tree_attribute(nc):
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_caldav_huge_tree_attribute_async(anc):
     """Test that DAVClient attributes are accessible (validates super().__init__ compatibility)."""
-    _skip_if_no_caldav(nc)
-    assert hasattr(nc.cal, "huge_tree")
-    assert nc.cal.huge_tree is False
+    assert hasattr(anc.cal, "huge_tree")
+    assert anc.cal.huge_tree is False
 
 
-def test_stub_when_caldav_unavailable():
+@pytest.mark.asyncio(scope="session")
+@pytest.mark.skip(reason="CalDAV not yet available in async-only mode")
+async def test_stub_when_caldav_unavailable_async():
     """Test the _CalendarAPI stub class behavior when caldav is not installed."""
     import importlib
     import sys

@@ -6,24 +6,11 @@ import pytest
 from nc_py_api.ex_app import set_handlers
 
 
-def test_get_users_list(nc_app):
-    users = nc_app.users_list()
-    assert users
-    assert nc_app.user in users
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_get_users_list_async(anc_app):
     users = await anc_app.users_list()
     assert users
     assert await anc_app.user in users
-
-
-def test_app_cfg(nc_app):
-    app_cfg = nc_app.app_cfg
-    assert app_cfg.app_name == environ["APP_ID"]
-    assert app_cfg.app_version == environ["APP_VERSION"]
-    assert app_cfg.app_secret == environ["APP_SECRET"]
 
 
 @pytest.mark.asyncio(scope="session")
@@ -48,12 +35,6 @@ async def test_change_user_async(anc_app):
     assert orig_capabilities == await anc_app.capabilities
 
 
-def test_set_user_same_value(nc_app):
-    with (mock.patch("tests.conftest.NC_APP._session.update_server_info") as update_server_info,):
-        nc_app.set_user(nc_app.user)
-        update_server_info.assert_not_called()
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_set_user_same_value_async(anc_app):
     with (mock.patch("tests.conftest.NC_APP_ASYNC._session.update_server_info") as update_server_info,):
@@ -61,6 +42,6 @@ async def test_set_user_same_value_async(anc_app):
         update_server_info.assert_not_called()
 
 
-def test_set_handlers_invalid_param(nc_any):
+async def test_set_handlers_invalid_param(anc_any):
     with pytest.raises(ValueError):
         set_handlers(None, None, default_init=False, models_to_fetch={"some": {}})  # noqa
