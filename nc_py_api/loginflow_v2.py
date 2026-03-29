@@ -2,13 +2,12 @@
 
 import asyncio
 import json
-import time
 from dataclasses import dataclass
 
 import niquests
 
 from ._exceptions import check_error
-from ._session import AsyncNcSession, NcSession
+from ._session import AsyncNcSession
 
 MAX_TIMEOUT = 60 * 20
 
@@ -72,48 +71,6 @@ class Credentials:
 
 
 class _LoginFlowV2API:
-    """Class implementing Nextcloud Login flow v2."""
-
-    _ep_init: str = "/index.php/login/v2"
-    _ep_poll: str = "/index.php/login/v2/poll"
-
-    def __init__(self, session: NcSession) -> None:
-        self._session = session
-
-    def init(self, user_agent: str = "nc_py_api") -> LoginFlow:
-        """Init a Login flow v2.
-
-        :param user_agent: Application name. Application password will be associated with this name.
-        """
-        r = self._session.adapter.post(self._ep_init, headers={"user-agent": user_agent})
-        return LoginFlow(_res_to_json(r))
-
-    def poll(self, token: str, timeout: int = MAX_TIMEOUT, step: int = 1, overwrite_auth: bool = True) -> Credentials:
-        """Poll the Login flow v2 credentials.
-
-        :param token: Token for a polling for confirmation of user authorization.
-        :param timeout: Maximum time to wait for polling in seconds, defaults to MAX_TIMEOUT.
-        :param step: Interval for polling in seconds, defaults to 1.
-        :param overwrite_auth: If True current session will be overwritten with new credentials, defaults to True.
-        :raises ValueError: If timeout more than 20 minutes.
-        """
-        if timeout > MAX_TIMEOUT:
-            msg = "Timeout can't be more than 20 minutes."
-            raise ValueError(msg)
-        for _ in range(timeout // step):
-            r = self._session.adapter.post(self._ep_poll, data={"token": token})
-            if r.status_code == 200:
-                break
-            time.sleep(step)
-        r_model = Credentials(_res_to_json(r))
-        if overwrite_auth:
-            self._session.cfg.auth = (r_model.login_name, r_model.app_password)
-            self._session.init_adapter(restart=True)
-            self._session.init_adapter_dav(restart=True)
-        return r_model
-
-
-class _AsyncLoginFlowV2API:
     """Class implementing Async Nextcloud Login flow v2."""
 
     _ep_init: str = "/index.php/login/v2"

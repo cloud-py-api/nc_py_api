@@ -1,13 +1,11 @@
 """FastAPI directly related stuff."""
 
-import asyncio
 import builtins
 import fnmatch
 import hashlib
 import json
 import os
 import typing
-import warnings
 from traceback import format_exc
 from urllib.parse import urlparse
 
@@ -28,67 +26,41 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .._exceptions import ModelFetchError
 from .._misc import get_username_secret_from_headers
-from ..nextcloud import AsyncNextcloudApp, NextcloudApp
+from ..nextcloud import NextcloudApp
 from ..talk_bot import TalkBotMessage
 from .misc import persistent_storage
 
 
-def _nc_app_internal(request: HTTPConnection) -> NextcloudApp:
-    """Internal sync NextcloudApp factory (no deprecation warning)."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        nextcloud_app = NextcloudApp(**__nc_app(request))
-    __request_sign_check_if_needed(request, nextcloud_app)
-    return nextcloud_app
-
-
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    warnings.warn(
-        "nc_app (sync) is deprecated and will be removed in v0.31.0. Use anc_app instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
     nextcloud_app = NextcloudApp(**__nc_app(request))
     __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
 
 
-def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
-    """Async Authentication handler for requests from Nextcloud to the application."""
-    nextcloud_app = AsyncNextcloudApp(**__nc_app(request))
-    __request_sign_check_if_needed(request, nextcloud_app)
-    return nextcloud_app
-
-
-def talk_bot_msg(request: Request) -> TalkBotMessage:
+async def talk_bot_msg(request: Request) -> TalkBotMessage:
     """Authentication handler for bot requests from Nextcloud Talk to the application."""
-    warnings.warn(
-        "talk_bot_msg (sync) is deprecated and will be removed in v0.31.0. Use atalk_bot_msg instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return TalkBotMessage(json.loads(asyncio.run(request.body())))
-
-
-async def atalk_bot_msg(request: Request) -> TalkBotMessage:
-    """Async Authentication handler for bot requests from Nextcloud Talk to the application."""
     return TalkBotMessage(json.loads(await request.body()))
+
+
+# Backward compatibility aliases (will be removed in v1.0.0)
+anc_app = nc_app
+atalk_bot_msg = talk_bot_msg
 
 
 def set_handlers(
     fast_api_app: FastAPI,
-    enabled_handler: typing.Callable[[bool, AsyncNextcloudApp | NextcloudApp], typing.Awaitable[str] | str],
+    enabled_handler: typing.Callable[[bool, NextcloudApp], typing.Awaitable[str]],
     default_heartbeat: bool = True,
     default_init: bool = True,
     models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
-    trigger_handler: typing.Callable[[str], typing.Awaitable[None] | None] | None = None,
+    trigger_handler: typing.Callable[[str], typing.Awaitable[None]] | None = None,
 ):
     """Defines handlers for the application.
 
     :param fast_api_app: FastAPI() call return value.
-    :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
+    :param enabled_handler: ``Required``, async callback which will be called for `enabling`/`disabling` app event.
     :param default_heartbeat: Set to ``False`` to disable the default `heartbeat` route handler.
     :param default_init: Set to ``False`` to disable the default `init` route handler.
 
@@ -117,28 +89,14 @@ def set_handlers(
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
 
-    :param trigger_handler: callback that is called for task processing `trigger` events with the id of the provider.
+    :param trigger_handler: async callback that is called for task processing `trigger` events with the provider id.
     """
     if models_to_fetch is not None and default_init is False:
         raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
 
-    if asyncio.iscoroutinefunction(enabled_handler):
-
-        @fast_api_app.put("/enabled")
-        async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
-            return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
-
-    else:
-        warnings.warn(
-            "Passing a sync enabled_handler to set_handlers is deprecated and will be removed in v0.31.0. "
-            "Use an async enabled_handler instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        @fast_api_app.put("/enabled")
-        def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            return JSONResponse(content={"error": enabled_handler(enabled, nc)})
+    @fast_api_app.put("/enabled")
+    async def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+        return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
 
     if default_heartbeat:
 
@@ -149,9 +107,7 @@ def set_handlers(
     if default_init:
 
         @fast_api_app.post("/init")
-        async def init_callback(
-            b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(_nc_app_internal)]
-        ):
+        async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
             b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0)
             return JSONResponse(content={})
 
@@ -159,25 +115,11 @@ def set_handlers(
         __map_app_static_folders(fast_api_app)
 
     if trigger_handler:
-        if asyncio.iscoroutinefunction(trigger_handler):
 
-            @fast_api_app.post("/trigger")
-            async def trigger_callback(providerId: str):  # pylint: disable=invalid-name
-                await trigger_handler(providerId)
-                return JSONResponse(content={})
-
-        else:
-            warnings.warn(
-                "Passing a sync trigger_handler to set_handlers is deprecated and will be removed in v0.31.0. "
-                "Use an async trigger_handler instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-            @fast_api_app.post("/trigger")
-            def trigger_callback(providerId: str):  # pylint: disable=invalid-name
-                trigger_handler(providerId)
-                return JSONResponse(content={})
+        @fast_api_app.post("/trigger")
+        async def trigger_callback(providerId: str):  # pylint: disable=invalid-name
+            await trigger_handler(providerId)
+            return JSONResponse(content={})
 
 
 def __map_app_static_folders(fast_api_app: FastAPI):
@@ -328,12 +270,12 @@ def __nc_app(request: HTTPConnection) -> dict:
     return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
 
 
-def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: NextcloudApp) -> None:
     if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
         _request_sign_check(request, nextcloud_app)
 
 
-def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> str:
+def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp) -> str:
     try:
         return nextcloud_app._session.sign_check(request)  # noqa pylint: disable=protected-access
     except ValueError as e:
@@ -365,7 +307,7 @@ class AppAPIAuthMiddleware:
         url_path = conn.url.path.lstrip("/")
         if not any(fnmatch.fnmatch(url_path, i) for i in self._disable_for):
             try:
-                scope["username"] = _request_sign_check(conn, AsyncNextcloudApp())
+                scope["username"] = _request_sign_check(conn, NextcloudApp())
             except HTTPException as exc:
                 response = self._on_error(exc.status_code, exc.detail)
                 await response(scope, receive, send)

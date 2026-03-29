@@ -136,8 +136,8 @@ class Activity:
         )
 
 
-class _AsyncActivityAPI:
-    """The class provides the async Activity Application API."""
+class _ActivityAPI:
+    """The class provides the Activity Application API."""
 
     _ep_base: str = "/ocs/v1.php/apps/activity"
     last_given: int

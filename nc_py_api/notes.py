@@ -91,8 +91,8 @@ class NotesSettings(typing.TypedDict):
     """Newly created note's files will have this file suffix. Default is **.txt**."""
 
 
-class _AsyncNotesAPI:
-    """Class implements Async Nextcloud Notes API."""
+class _NotesAPI:
+    """Class implements Nextcloud Notes API."""
 
     _ep_base: str = "/index.php/apps/notes/api/v1"  # without `index.php` we will get 405 error.
     last_etag: str
