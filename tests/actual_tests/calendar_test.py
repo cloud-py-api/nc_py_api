@@ -26,9 +26,13 @@ def test_create_delete(nc):
         calendars = principal.calendars()
         assert calendars
         all_events_before = calendar.events()
+        # Use a past date so the event isn't picked up by Nextcloud's
+        # calendar-status automation (which scans events in [now, now+5m]
+        # and caches the result for 5 minutes, breaking user_status tests).
+        past = datetime.datetime.now() - datetime.timedelta(days=400)
         event = calendar.save_event(
-            dtstart=datetime.datetime.now(),
-            dtend=datetime.datetime.now() + datetime.timedelta(hours=1),
+            dtstart=past,
+            dtend=past + datetime.timedelta(hours=1),
             summary="NcPyApi + CalDAV test",
         )
         all_events_after = calendar.events()
@@ -83,7 +87,9 @@ def test_event_full_lifecycle(nc):
     calendar = principal.make_calendar("test_ncpyapi_ops")
     try:
         # --- Event lifecycle ---
-        now = datetime.datetime.now()
+        # Use a past anchor so these events don't trigger Nextcloud's
+        # calendar-status automation (see test_create_delete for details).
+        now = datetime.datetime.now() - datetime.timedelta(days=400)
         calendar.save_event(
             dtstart=now,
             dtend=now + datetime.timedelta(hours=2),
@@ -126,21 +132,26 @@ def test_event_date_range_search(nc):
     principal = nc.cal.principal()
     calendar = principal.make_calendar("test_ncpyapi_search")
     try:
-        base = datetime.datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
+        # Anchor the search range in the past so none of these events fall
+        # into Nextcloud's calendar-status window ([now, now+5m]); the
+        # date-range search logic under test doesn't depend on "today".
+        base = (datetime.datetime.now() - datetime.timedelta(days=400)).replace(
+            hour=12, minute=0, second=0, microsecond=0
+        )
         calendar.save_event(
             dtstart=base,
             dtend=base + datetime.timedelta(hours=1),
-            summary="Today Event",
+            summary="Day 0 Event",
         )
         calendar.save_event(
             dtstart=base + datetime.timedelta(days=1),
             dtend=base + datetime.timedelta(days=1, hours=1),
-            summary="Tomorrow Event",
+            summary="Day +1 Event",
         )
         calendar.save_event(
             dtstart=base + datetime.timedelta(days=7),
             dtend=base + datetime.timedelta(days=7, hours=1),
-            summary="Next Week Event",
+            summary="Day +7 Event",
         )
         assert len(calendar.events()) == 3
 
@@ -151,19 +162,19 @@ def test_event_date_range_search(nc):
             event=True,
         )
         summaries = {str(e.icalendar_component.get("SUMMARY")) for e in results}
-        assert "Today Event" in summaries
-        assert "Tomorrow Event" not in summaries
+        assert "Day 0 Event" in summaries
+        assert "Day +1 Event" not in summaries
 
-        # Search for today + tomorrow
+        # Search for day 0 + day +1
         results = calendar.search(
             start=base - datetime.timedelta(hours=1),
             end=base + datetime.timedelta(days=1, hours=2),
             event=True,
         )
         summaries = {str(e.icalendar_component.get("SUMMARY")) for e in results}
-        assert "Today Event" in summaries
-        assert "Tomorrow Event" in summaries
-        assert "Next Week Event" not in summaries
+        assert "Day 0 Event" in summaries
+        assert "Day +1 Event" in summaries
+        assert "Day +7 Event" not in summaries
     finally:
         calendar.delete()
 
