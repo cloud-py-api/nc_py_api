@@ -46,6 +46,8 @@ def _test_share_fields(new_share: Share, get_by_id: Share, shared_file: FsNode):
     assert new_share.permissions & FilePermissions.PERMISSION_READ
     assert new_share.url
     assert new_share.path == shared_file.user_path
+    assert new_share.token
+    assert get_by_id.token == new_share.token
     assert get_by_id.share_id == new_share.share_id
     assert get_by_id.path == new_share.path
     assert get_by_id.mimetype == new_share.mimetype

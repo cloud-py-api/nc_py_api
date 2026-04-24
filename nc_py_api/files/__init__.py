@@ -443,6 +443,12 @@ class Share:
         return self._raw_data.get("path", "").lstrip("/")
 
     @property
+    def token(self) -> str:
+        """Token for the Shared object."""
+        # Nextcloud pre-initializes token to null and overwrites it for types that have it.
+        return self._raw_data.get("token") or ""
+
+    @property
     def label(self) -> str:
         """Label for the Shared object."""
         return self._raw_data.get("label", "")
