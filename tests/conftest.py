@@ -10,6 +10,19 @@ from . import gfixture_set_env  # noqa
 
 _TEST_FAILED_INCREMENTAL: dict[str, dict[tuple[int, ...], str]] = {}
 
+
+def _reset_session_adapters(client) -> None:
+    """Recreate AsyncSession adapters after import-time HTTP calls so pytest-asyncio's
+    event loop can populate fresh connection pools bound to its own loop. Without this,
+    connections opened here stay attached to whatever loop ran ``run_until_complete``
+    and break with "Future attached to a different loop" once tests start."""
+    if client is None:
+        return
+    client._session.init_adapter(restart=True)
+    client._session.init_adapter_dav(restart=True)
+    client._session._capabilities = {}
+
+
 NC_CLIENT = None if environ.get("SKIP_NC_CLIENT_TESTS", False) else Nextcloud()
 NC_CLIENT_ASYNC = NC_CLIENT
 if environ.get("SKIP_AA_TESTS", False):
@@ -22,6 +35,9 @@ else:
     NC_APP_ASYNC = NC_APP
 if NC_CLIENT is None and NC_APP is None:
     raise EnvironmentError("Tests require at least Nextcloud or NextcloudApp.")
+
+_reset_session_adapters(NC_CLIENT)
+_reset_session_adapters(NC_APP)
 
 
 @pytest.fixture(scope="session")
@@ -105,14 +121,17 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_collection_modifyitems(items):
+    require_any = any("require_nc" in [m.name for m in item.own_markers] for item in items)
+    if not require_any:
+        return
+    src = NC_APP if NC_APP else NC_CLIENT
+    srv_ver = asyncio.get_event_loop().run_until_complete(src._session.nc_version)
+    _reset_session_adapters(src)
     for item in items:
         require_nc = [i for i in item.own_markers if i.name == "require_nc"]
         if require_nc:
             min_major = require_nc[0].kwargs["major"]
             min_minor = require_nc[0].kwargs.get("minor", 0)
-            srv_ver = asyncio.get_event_loop().run_until_complete(
-                NC_APP._session.nc_version if NC_APP else NC_CLIENT._session.nc_version
-            )
             if srv_ver["major"] < min_major:
                 item.add_marker(pytest.mark.skip(reason=f"Need NC>={min_major}"))
             elif srv_ver["major"] == min_major and srv_ver["minor"] < min_minor:
