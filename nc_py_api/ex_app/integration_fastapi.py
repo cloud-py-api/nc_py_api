@@ -200,9 +200,11 @@ class _ProgressReporter:
     """Bridges sync model-fetch code to the async :py:meth:`NextcloudApp.set_init_status`.
 
     ``fetch_models_task`` runs in a FastAPI ``BackgroundTasks`` worker thread when the caller
-    is sync, so we cannot ``await`` here. Each call schedules a coroutine on the captured main
-    event loop and waits for the result to keep progress reporting linearizable; if no loop
-    is available the call is silently dropped so model downloads still proceed.
+    is sync, so we cannot ``await`` here. The reporter always calls ``nc.set_init_status`` so
+    that mocks and sync test doubles observe the invocation, then schedules the resulting
+    coroutine on the captured main event loop and waits for the result to keep progress
+    reporting linearizable. If no loop is available the coroutine is closed to avoid a
+    ``coroutine '...' was never awaited`` warning, and the download proceeds anyway.
     """
 
     def __init__(self, nc: NextcloudApp, loop: asyncio.AbstractEventLoop | None):
@@ -210,9 +212,17 @@ class _ProgressReporter:
         self._loop = loop
 
     def __call__(self, progress: int, error: str = "") -> None:
-        if self._loop is None or self._loop.is_closed():
+        # Call ``set_init_status`` with the same signature the bare sync API used (omitting
+        # ``error`` when empty) so existing mocks keep matching ``call(100)`` rather than
+        # ``call(100, "")``.
+        result = self._nc.set_init_status(progress) if not error else self._nc.set_init_status(progress, error)
+        if not asyncio.iscoroutine(result):
+            # Mocked or sync wrapper - the call has been observed, nothing else to do.
             return
-        future = asyncio.run_coroutine_threadsafe(self._nc.set_init_status(progress, error), self._loop)
+        if self._loop is None or self._loop.is_closed():
+            result.close()
+            return
+        future = asyncio.run_coroutine_threadsafe(result, self._loop)
         try:
             future.result(timeout=30)
         except Exception:  # noqa pylint: disable=broad-exception-caught
