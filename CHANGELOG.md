@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.30.1 - 2026-04-26]
+
+### Added
+
+- `Share.token` property to expose the share token (e.g. for passing to external applications that access Nextcloud shares via WebDAV). #427 Thanks to @meck-gd
+
+## [0.30.0 - 2026-03-29]
+
+### Added
+
+- Teams (Circles) async API on `AsyncNextcloud`/`AsyncNextcloudApp`: full CRUD, member management, and join/leave flows. #403
+- `FsNodeInfo.download_url` and `FsNodeInfo.download_url_expiration` properties exposing S3 presigned download URLs (when the storage backend is S3 with `use_presigned_url` enabled). #419
+
+### Changed
+
+- Sync API for `Activity`, `Notes`, `UserStatus`, and `WeatherStatus` removed; use the async counterparts on `AsyncNextcloud`/`AsyncNextcloudApp`. #405
+- All remaining sync entry points (`Nextcloud`, `NextcloudApp`, `TalkBot`, `nc_app`, `talk_bot_msg`, sync `enabled_handler`/`trigger_handler` in `set_handlers`) now emit `DeprecationWarning`; they will be removed in v0.31.0. #422
+- README and `examples/as_client/` scripts converted to `AsyncNextcloud`/`AsyncNextcloudApp`. #422
+- `caldav` dependency upgraded to `>=3.1,<4`. #416
+
 ## [0.24.2 - 2026-03-02]
 
 ### Changed
