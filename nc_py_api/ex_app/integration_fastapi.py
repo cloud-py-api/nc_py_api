@@ -1,5 +1,6 @@
 """FastAPI directly related stuff."""
 
+import asyncio
 import builtins
 import fnmatch
 import hashlib
@@ -108,7 +109,8 @@ def set_handlers(
 
         @fast_api_app.post("/init")
         async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0)
+            loop = asyncio.get_running_loop()
+            b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0, loop)
             return JSONResponse(content={})
 
     if map_app_static:
@@ -132,7 +134,12 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_start_value: int) -> None:
+def fetch_models_task(
+    nc: NextcloudApp,
+    models: dict[str, dict],
+    progress_init_start_value: int,
+    loop: asyncio.AbstractEventLoop | None = None,
+) -> None:
     """Use for cases when you want to define custom `/init` but still need to easy download models.
 
     :param nc: NextcloudApp instance.
@@ -155,10 +162,20 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
                   All model options are optional and can be left empty.
 
     :param progress_init_start_value: Integer value defining from which percent the progress should start.
+    :param loop: Optional asyncio event loop used to dispatch progress updates. When this function
+        runs as a FastAPI ``BackgroundTasks`` task it is invoked from a worker thread that has no
+        loop of its own, so the caller must pass the main loop in. Defaults to
+        :func:`asyncio.get_running_loop` if one is active in the current thread.
 
     :raises ModelFetchError: in case of a model download error.
     :raises NextcloudException: in case of a network error reaching the Nextcloud server.
     """
+    if loop is None:
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+    progress = _ProgressReporter(nc, loop)
     if models:
         current_progress = progress_init_start_value
         percent_for_each = min(int((100 - progress_init_start_value) / len(models)), 99)
@@ -166,21 +183,48 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
             try:
                 if model.startswith(("http://", "https://")):
                     models[model]["path"] = __fetch_model_as_file(
-                        current_progress, percent_for_each, nc, model, models[model]
+                        current_progress, percent_for_each, progress, model, models[model]
                     )
                 else:
                     models[model]["path"] = __fetch_model_as_snapshot(
-                        current_progress, percent_for_each, nc, model, models[model]
+                        current_progress, percent_for_each, progress, model, models[model]
                     )
                 current_progress += percent_for_each
             except BaseException as e:  # noqa pylint: disable=broad-exception-caught
-                nc.set_init_status(current_progress, f"Downloading of '{model}' failed: {e}: {format_exc()}")
+                progress(current_progress, f"Downloading of '{model}' failed: {e}: {format_exc()}")
                 raise ModelFetchError(f"Downloading of '{model}' failed.") from e
-    nc.set_init_status(100)
+    progress(100)
+
+
+class _ProgressReporter:
+    """Bridges sync model-fetch code to the async :py:meth:`NextcloudApp.set_init_status`.
+
+    ``fetch_models_task`` runs in a FastAPI ``BackgroundTasks`` worker thread when the caller
+    is sync, so we cannot ``await`` here. Each call schedules a coroutine on the captured main
+    event loop and waits for the result to keep progress reporting linearizable; if no loop
+    is available the call is silently dropped so model downloads still proceed.
+    """
+
+    def __init__(self, nc: NextcloudApp, loop: asyncio.AbstractEventLoop | None):
+        self._nc = nc
+        self._loop = loop
+
+    def __call__(self, progress: int, error: str = "") -> None:
+        if self._loop is None or self._loop.is_closed():
+            return
+        future = asyncio.run_coroutine_threadsafe(self._nc.set_init_status(progress, error), self._loop)
+        try:
+            future.result(timeout=30)
+        except Exception:  # noqa pylint: disable=broad-exception-caught
+            future.cancel()
 
 
 def __fetch_model_as_file(
-    current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
+    current_progress: int,
+    progress_for_task: int,
+    progress: _ProgressReporter,
+    model_path: str,
+    download_options: dict,
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
     tmp_path = result_path + ".tmp"
@@ -209,7 +253,7 @@ def __fetch_model_as_file(
                     for byte_block in iter(lambda: file.read(4096), b""):
                         sha256_hash.update(byte_block)
                     if f'"{sha256_hash.hexdigest()}"' == linked_etag:
-                        nc.set_init_status(min(current_progress + progress_for_task, 99))
+                        progress(min(current_progress + progress_for_task, 99))
                         return result_path
 
             try:
@@ -222,7 +266,7 @@ def __fetch_model_as_file(
                                 current_progress + int(progress_for_task * downloaded_size / total_size), 99
                             )
                             if new_progress != last_progress:
-                                nc.set_init_status(new_progress)
+                                progress(new_progress)
                                 last_progress = new_progress
                 os.replace(tmp_path, result_path)
             except BaseException:
@@ -238,7 +282,11 @@ def __fetch_model_as_file(
 
 
 def __fetch_model_as_snapshot(
-    current_progress: int, progress_for_task, nc: NextcloudApp, model_name: str, download_options: dict
+    current_progress: int,
+    progress_for_task,
+    progress: _ProgressReporter,
+    model_name: str,
+    download_options: dict,
 ) -> str:
     from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
     from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
@@ -252,7 +300,7 @@ def __fetch_model_as_snapshot(
 
         def display(self, msg=None, pos=None):
             if self.total:
-                nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
+                progress(min(current_progress + int(progress_for_task * self.n / self.total), 99))
             return super().display(msg, pos)
 
     workers = download_options.pop("max_workers", 2)
