@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.31.0 - Unreleased]
+## [1.0.0 - Unreleased]
 
 ### Removed (BREAKING)
 
-- All synchronous API classes: `Nextcloud`, `NextcloudApp`, `TalkBot`, `nc_app`, `talk_bot_msg`, sync `enabled_handler`/`trigger_handler` in `set_handlers`, and the `FilesAPI`/`_TalkAPI`/etc. sync counterparts. The async classes (`AsyncNextcloud`, `AsyncNextcloudApp`, `AsyncTalkBot`, `anc_app`, `atalk_bot_msg`, …) are now the only implementation and have been renamed to drop the `Async` prefix; their sync namesakes were deprecated in v0.30.0 and have now been deleted. Backward-compat aliases (`AsyncNextcloud = Nextcloud`, etc.) are still exported and will be removed in v1.0.0.
+- All synchronous API classes: `Nextcloud`, `NextcloudApp`, `TalkBot`, `nc_app`, `talk_bot_msg`, sync `enabled_handler`/`trigger_handler` in `set_handlers`, and the `FilesAPI`/`_TalkAPI`/etc. sync counterparts. The async classes (`AsyncNextcloud`, `AsyncNextcloudApp`, `AsyncTalkBot`, `anc_app`, `atalk_bot_msg`, …) are now the only implementation and have been renamed to drop the `Async` prefix; their sync namesakes were deprecated in v0.30.0 and have now been deleted. Backward-compat aliases (`AsyncNextcloud = Nextcloud`, etc.) remain exported for migration convenience and will be removed in a future major release.
 - The `caldav` integration is no longer reachable through `Nextcloud.cal` / `NextcloudApp.cal`; the underlying library is sync-only.
 
 ### Fixed
