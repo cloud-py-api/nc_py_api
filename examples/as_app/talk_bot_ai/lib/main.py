@@ -11,10 +11,10 @@ from transformers import pipeline
 from nc_py_api import NextcloudApp, talk_bot
 from nc_py_api.ex_app import (
     AppAPIAuthMiddleware,
-    atalk_bot_msg,
     get_model_path,
     run_app,
     set_handlers,
+    talk_bot_msg,
 )
 
 
@@ -41,7 +41,7 @@ def ai_talk_bot_process_request(message: talk_bot.TalkBotMessage):
 
 @APP.post("/ai_talk_bot")
 async def ai_talk_bot(
-    message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
+    message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):
     if message.object_name == "message":

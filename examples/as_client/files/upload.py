@@ -7,7 +7,7 @@ import nc_py_api
 
 
 async def main():
-    nc = nc_py_api.AsyncNextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
+    nc = nc_py_api.Nextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
     buf = BytesIO()
     Image.merge(
         "RGB",

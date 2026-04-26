@@ -5,7 +5,7 @@ import nc_py_api
 
 async def main():
     # create Nextcloud client instance class
-    nc = nc_py_api.AsyncNextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
+    nc = nc_py_api.Nextcloud(nextcloud_url="http://nextcloud.local", nc_auth_user="admin", nc_auth_pass="admin")
 
     async def list_dir(directory):
         # usual recursive traversing over directories

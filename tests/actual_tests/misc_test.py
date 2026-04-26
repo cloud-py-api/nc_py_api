@@ -6,8 +6,8 @@ import pytest
 from niquests import PreparedRequest, Response
 
 from nc_py_api import (
-    AsyncNextcloud,
-    AsyncNextcloudApp,
+    Nextcloud,
+    NextcloudApp,
     NextcloudException,
     ex_app,
 )
@@ -113,7 +113,7 @@ async def test_verify_version_async(anc_app):
 
 @pytest.mark.asyncio(scope="session")
 async def test_init_adapter_dav_async(anc_any):
-    new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
+    new_nc = Nextcloud() if isinstance(anc_any, Nextcloud) else NextcloudApp()
     new_nc._session.init_adapter_dav()
     old_adapter = getattr(new_nc._session, "adapter_dav", None)
     assert old_adapter is not None
@@ -125,7 +125,7 @@ async def test_init_adapter_dav_async(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_no_initial_connection_async(anc_any):
-    new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
+    new_nc = Nextcloud() if isinstance(anc_any, Nextcloud) else NextcloudApp()
     assert not new_nc._session._capabilities
     _ = await new_nc.srv_version
     assert new_nc._session._capabilities
@@ -133,9 +133,7 @@ async def test_no_initial_connection_async(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_ocs_timeout_async(anc_any):
-    new_nc = (
-        AsyncNextcloud(npa_timeout=0.01) if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp(npa_timeout=0.01)
-    )
+    new_nc = Nextcloud(npa_timeout=0.01) if isinstance(anc_any, Nextcloud) else NextcloudApp(npa_timeout=0.01)
     with pytest.raises(NextcloudException) as e:
         if await new_nc.weather_status.set_location(latitude=41.896655, longitude=12.488776):
             await new_nc.weather_status.get_forecast()
@@ -153,7 +151,7 @@ async def test_public_ocs_async(anc_any):
 
 @pytest.mark.asyncio(scope="session")
 async def test_perform_login_async(anc_any):
-    new_nc = AsyncNextcloud() if isinstance(anc_any, AsyncNextcloud) else AsyncNextcloudApp()
+    new_nc = Nextcloud() if isinstance(anc_any, Nextcloud) else NextcloudApp()
     assert not new_nc._session._capabilities
     await new_nc.perform_login()
     assert new_nc._session._capabilities

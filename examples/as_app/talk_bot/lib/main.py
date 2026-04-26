@@ -8,7 +8,7 @@ import niquests
 from fastapi import BackgroundTasks, Depends, FastAPI, Response
 
 from nc_py_api import NextcloudApp, talk_bot
-from nc_py_api.ex_app import AppAPIAuthMiddleware, atalk_bot_msg, run_app, set_handlers
+from nc_py_api.ex_app import AppAPIAuthMiddleware, run_app, set_handlers, talk_bot_msg
 
 
 # The same stuff as for usual External Applications
@@ -69,7 +69,7 @@ def currency_talk_bot_process_request(message: talk_bot.TalkBotMessage):
 
 @APP.post("/currency_talk_bot")
 async def currency_talk_bot(
-    message: Annotated[talk_bot.TalkBotMessage, Depends(atalk_bot_msg)],
+    message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_msg)],
     background_tasks: BackgroundTasks,
 ):
     # As during converting, we do not process converting locally, we perform this in background, in the background task.
