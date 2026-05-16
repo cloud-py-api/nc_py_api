@@ -876,29 +876,36 @@ def test_fs_node_str(nc_any):
 
 
 def _test_download_as_zip(result: Path, n: int):
+    # Server-side child ordering inside the archive is not guaranteed (depends on
+    # the database backend after nextcloud/server#60225), so assert on membership
+    # and sizes rather than positions.
+    with zipfile.ZipFile(result, "r") as zip_ref:
+        actual = {info.filename: info.file_size for info in zip_ref.filelist}
     if n == 1:
-        with zipfile.ZipFile(result, "r") as zip_ref:
-            assert zip_ref.filelist[0].filename == "test_dir/"
-            assert not zip_ref.filelist[0].file_size
-            assert zip_ref.filelist[1].filename == "test_dir/subdir/"
-            assert not zip_ref.filelist[1].file_size
-            assert zip_ref.filelist[2].filename == "test_dir/subdir/test_12345_text.txt"
-            assert zip_ref.filelist[2].file_size == 5
-            assert zip_ref.filelist[3].filename == "test_dir/subdir/test_64_bytes.bin"
-            assert zip_ref.filelist[3].file_size == 64
-            assert len(zip_ref.filelist) == 11
+        fixed = {
+            "test_dir/": 0,
+            "test_dir/subdir/": 0,
+            "test_dir/subdir/test_empty_text.txt": 0,
+            "test_dir/subdir/test_64_bytes.bin": 64,
+            "test_dir/subdir/test_12345_text.txt": 5,
+            "test_dir/test_empty_child_dir/": 0,
+            "test_dir/test_empty_text.txt": 0,
+            "test_dir/test_64_bytes.bin": 64,
+            "test_dir/test_12345_text.txt": 5,
+        }
+        variable = {"test_dir/subdir/test_generated_image.png", "test_dir/test_generated_image.png"}
+        for name, size in fixed.items():
+            assert actual.get(name) == size, f"{name}: expected size {size}, got {actual.get(name)!r}"
+        for name in variable:
+            assert actual.get(name, 0) > 0, f"{name}: expected non-empty file"
+        assert actual.keys() == fixed.keys() | variable
     elif n == 2:
-        with zipfile.ZipFile(result, "r") as zip_ref:
-            assert zip_ref.filelist[0].filename == "test_empty_dir_in_dir/"
-            assert not zip_ref.filelist[0].file_size
-            assert zip_ref.filelist[1].filename == "test_empty_dir_in_dir/test_empty_child_dir/"
-            assert not zip_ref.filelist[1].file_size
-            assert len(zip_ref.filelist) == 2
+        assert actual == {
+            "test_empty_dir_in_dir/": 0,
+            "test_empty_dir_in_dir/test_empty_child_dir/": 0,
+        }
     else:
-        with zipfile.ZipFile(result, "r") as zip_ref:
-            assert zip_ref.filelist[0].filename == "test_empty_dir/"
-            assert not zip_ref.filelist[0].file_size
-            assert len(zip_ref.filelist) == 1
+        assert actual == {"test_empty_dir/": 0}
 
 
 def test_download_as_zip(nc):
