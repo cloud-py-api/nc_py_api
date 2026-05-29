@@ -357,24 +357,16 @@ def __get_bot_secret(callback_url: str) -> str:
 
 
 def get_bot_secret(callback_url: str) -> bytes | None:
-    """Returns the bot's secret from an environment variable or from the application's configuration on the server."""
+    """Returns the bot's secret from the environment variable populated when the bot was registered."""
     secret_key = __get_bot_secret(callback_url)
     if secret_key in os.environ:
         return os.environ[secret_key].encode("UTF-8")
-    secret_value = NextcloudApp().appconfig_ex.get_value(secret_key)
-    if secret_value is not None:
-        os.environ[secret_key] = secret_value
-        return secret_value.encode("UTF-8")
     return None
 
 
 async def aget_bot_secret(callback_url: str) -> bytes | None:
-    """Returns the bot's secret from an environment variable or from the application's configuration on the server."""
+    """Returns the bot's secret from the environment variable populated when the bot was registered."""
     secret_key = __get_bot_secret(callback_url)
     if secret_key in os.environ:
         return os.environ[secret_key].encode("UTF-8")
-    secret_value = await AsyncNextcloudApp().appconfig_ex.get_value(secret_key)
-    if secret_value is not None:
-        os.environ[secret_key] = secret_value
-        return secret_value.encode("UTF-8")
     return None
