@@ -203,7 +203,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: nextcloud/notes
-          ref: "main"
+          # Notes main (v5.0.0) requires NC >= 33; pin older servers to the last 4.x (supports NC 28-34).
+          ref: "${{ (matrix.nextcloud == 'stable31' || matrix.nextcloud == 'stable32') && 'v4.13.1' || 'main' }}"
           path: apps/notes
 
       - name: Checkout Files Locking
@@ -548,7 +549,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: nextcloud/notes
-          ref: "main"
+          # Notes main (v5.0.0) requires NC >= 33; pin older servers to the last 4.x (supports NC 28-34).
+          ref: "${{ (matrix.nextcloud == 'stable31' || matrix.nextcloud == 'stable32') && 'v4.13.1' || 'main' }}"
           path: apps/notes
 
       - name: Checkout Files Locking
