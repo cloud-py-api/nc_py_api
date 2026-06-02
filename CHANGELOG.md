@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.30.2 - 2026-06-02]
+
+### Changed
+
+- `download_directory_as_zip`: the order of entries inside the returned archive is no longer guaranteed; it now depends on the Nextcloud server's database backend, after Nextcloud server [#60225](https://github.com/nextcloud/server/pull/60225) removed the implicit `ORDER BY name ASC`. #429
+
+### Security
+
+- Pinned `starlette>=1.0.1` to address **BadHost** ([CVE-2026-48710](https://github.com/advisories/GHSA-86qp-5c8j-p5mr)): a crafted `Host` header could desync `request.url.path` from the routed path in Starlette ≤ 1.0.0, bypassing path-based authorization. FastAPI does not constrain Starlette's upper bound, so an explicit floor is required to guarantee the fix. The `fastapi` floor was also raised to `>=0.133` (the first release compatible with Starlette 1.0+).
+
 ## [0.30.1 - 2026-04-26]
 
 ### Added
