@@ -107,8 +107,8 @@ class CurrentUserStatus(UserStatus):
         )
 
 
-class _AsyncUserStatusAPI:
-    """Class provides async user status management API on the Nextcloud server."""
+class _UserStatusAPI:
+    """Class provides user status management API on the Nextcloud server."""
 
     _ep_base: str = "/ocs/v1.php/apps/user_status/api/v1"
 

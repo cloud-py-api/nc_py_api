@@ -22,24 +22,23 @@ def _test_ex_app_enable_disable(file_to_test):
 
 
 @pytest.mark.parametrize("file_to_test", ("_install_only_enabled_handler.py", "_install_only_enabled_handler_async.py"))
-def test_ex_app_enable_disable(nc_client, nc_app, file_to_test):
+async def test_ex_app_enable_disable(nc_client, nc_app, file_to_test):
     r, url = _test_ex_app_enable_disable(file_to_test)
     try:
         if check_heartbeat(url, '"status":"ok"', 15, 0.3):
             raise RuntimeError(f"`{file_to_test}` can not start.")
-        if nc_client.apps.ex_app_is_enabled("nc_py_api"):
-            nc_client.apps.ex_app_disable("nc_py_api")
-        assert nc_client.apps.ex_app_is_disabled("nc_py_api") is True
-        assert nc_client.apps.ex_app_is_enabled("nc_py_api") is False
-        nc_client.apps.ex_app_enable("nc_py_api")
-        assert nc_client.apps.ex_app_is_disabled("nc_py_api") is False
-        assert nc_client.apps.ex_app_is_enabled("nc_py_api") is True
+        if await nc_client.apps.ex_app_is_enabled("nc_py_api"):
+            await nc_client.apps.ex_app_disable("nc_py_api")
+        assert await nc_client.apps.ex_app_is_disabled("nc_py_api") is True
+        assert await nc_client.apps.ex_app_is_enabled("nc_py_api") is False
+        await nc_client.apps.ex_app_enable("nc_py_api")
+        assert await nc_client.apps.ex_app_is_disabled("nc_py_api") is False
+        assert await nc_client.apps.ex_app_is_enabled("nc_py_api") is True
     finally:
         r.terminate()
         r.wait(timeout=10)
 
 
-@pytest.mark.asyncio(scope="session")
 @pytest.mark.parametrize("file_to_test", ("_install_only_enabled_handler.py", "_install_only_enabled_handler_async.py"))
 async def test_ex_app_enable_disable_async(anc_client, anc_app, file_to_test):
     r, url = _test_ex_app_enable_disable(file_to_test)

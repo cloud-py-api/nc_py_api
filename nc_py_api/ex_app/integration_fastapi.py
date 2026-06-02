@@ -7,7 +7,6 @@ import hashlib
 import json
 import os
 import typing
-import warnings
 from traceback import format_exc
 from urllib.parse import urlparse
 
@@ -28,67 +27,41 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .._exceptions import ModelFetchError
 from .._misc import get_username_secret_from_headers
-from ..nextcloud import AsyncNextcloudApp, NextcloudApp
+from ..nextcloud import NextcloudApp
 from ..talk_bot import TalkBotMessage
 from .misc import persistent_storage
 
 
-def _nc_app_internal(request: HTTPConnection) -> NextcloudApp:
-    """Internal sync NextcloudApp factory (no deprecation warning)."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        nextcloud_app = NextcloudApp(**__nc_app(request))
-    __request_sign_check_if_needed(request, nextcloud_app)
-    return nextcloud_app
-
-
 def nc_app(request: HTTPConnection) -> NextcloudApp:
     """Authentication handler for requests from Nextcloud to the application."""
-    warnings.warn(
-        "nc_app (sync) is deprecated and will be removed in v0.31.0. Use anc_app instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
     nextcloud_app = NextcloudApp(**__nc_app(request))
     __request_sign_check_if_needed(request, nextcloud_app)
     return nextcloud_app
 
 
-def anc_app(request: HTTPConnection) -> AsyncNextcloudApp:
-    """Async Authentication handler for requests from Nextcloud to the application."""
-    nextcloud_app = AsyncNextcloudApp(**__nc_app(request))
-    __request_sign_check_if_needed(request, nextcloud_app)
-    return nextcloud_app
-
-
-def talk_bot_msg(request: Request) -> TalkBotMessage:
+async def talk_bot_msg(request: Request) -> TalkBotMessage:
     """Authentication handler for bot requests from Nextcloud Talk to the application."""
-    warnings.warn(
-        "talk_bot_msg (sync) is deprecated and will be removed in v0.31.0. Use atalk_bot_msg instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return TalkBotMessage(json.loads(asyncio.run(request.body())))
-
-
-async def atalk_bot_msg(request: Request) -> TalkBotMessage:
-    """Async Authentication handler for bot requests from Nextcloud Talk to the application."""
     return TalkBotMessage(json.loads(await request.body()))
+
+
+# Backward compatibility aliases (will be removed in v1.0.0)
+anc_app = nc_app
+atalk_bot_msg = talk_bot_msg
 
 
 def set_handlers(
     fast_api_app: FastAPI,
-    enabled_handler: typing.Callable[[bool, AsyncNextcloudApp | NextcloudApp], typing.Awaitable[str] | str],
+    enabled_handler: typing.Callable[[bool, NextcloudApp], typing.Awaitable[str]],
     default_heartbeat: bool = True,
     default_init: bool = True,
     models_to_fetch: dict[str, dict] | None = None,
     map_app_static: bool = True,
-    trigger_handler: typing.Callable[[str], typing.Awaitable[None] | None] | None = None,
+    trigger_handler: typing.Callable[[str], typing.Awaitable[None]] | None = None,
 ):
     """Defines handlers for the application.
 
     :param fast_api_app: FastAPI() call return value.
-    :param enabled_handler: ``Required``, callback which will be called for `enabling`/`disabling` app event.
+    :param enabled_handler: ``Required``, async callback which will be called for `enabling`/`disabling` app event.
     :param default_heartbeat: Set to ``False`` to disable the default `heartbeat` route handler.
     :param default_init: Set to ``False`` to disable the default `init` route handler.
 
@@ -117,28 +90,14 @@ def set_handlers(
 
         .. note:: First, presence of these directories in the current working dir is checked, then one directory higher.
 
-    :param trigger_handler: callback that is called for task processing `trigger` events with the id of the provider.
+    :param trigger_handler: async callback that is called for task processing `trigger` events with the provider id.
     """
     if models_to_fetch is not None and default_init is False:
         raise ValueError("`models_to_fetch` can be defined only with `default_init`=True.")
 
-    if asyncio.iscoroutinefunction(enabled_handler):
-
-        @fast_api_app.put("/enabled")
-        async def enabled_callback(enabled: bool, nc: typing.Annotated[AsyncNextcloudApp, Depends(anc_app)]):
-            return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
-
-    else:
-        warnings.warn(
-            "Passing a sync enabled_handler to set_handlers is deprecated and will be removed in v0.31.0. "
-            "Use an async enabled_handler instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-        @fast_api_app.put("/enabled")
-        def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
-            return JSONResponse(content={"error": enabled_handler(enabled, nc)})
+    @fast_api_app.put("/enabled")
+    async def enabled_callback(enabled: bool, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+        return JSONResponse(content={"error": await enabled_handler(enabled, nc)})
 
     if default_heartbeat:
 
@@ -149,35 +108,20 @@ def set_handlers(
     if default_init:
 
         @fast_api_app.post("/init")
-        async def init_callback(
-            b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(_nc_app_internal)]
-        ):
-            b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0)
+        async def init_callback(b_tasks: BackgroundTasks, nc: typing.Annotated[NextcloudApp, Depends(nc_app)]):
+            loop = asyncio.get_running_loop()
+            b_tasks.add_task(fetch_models_task, nc, models_to_fetch if models_to_fetch else {}, 0, loop)
             return JSONResponse(content={})
 
     if map_app_static:
         __map_app_static_folders(fast_api_app)
 
     if trigger_handler:
-        if asyncio.iscoroutinefunction(trigger_handler):
 
-            @fast_api_app.post("/trigger")
-            async def trigger_callback(providerId: str):  # pylint: disable=invalid-name
-                await trigger_handler(providerId)
-                return JSONResponse(content={})
-
-        else:
-            warnings.warn(
-                "Passing a sync trigger_handler to set_handlers is deprecated and will be removed in v0.31.0. "
-                "Use an async trigger_handler instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-            @fast_api_app.post("/trigger")
-            def trigger_callback(providerId: str):  # pylint: disable=invalid-name
-                trigger_handler(providerId)
-                return JSONResponse(content={})
+        @fast_api_app.post("/trigger")
+        async def trigger_callback(providerId: str):  # pylint: disable=invalid-name
+            await trigger_handler(providerId)
+            return JSONResponse(content={})
 
 
 def __map_app_static_folders(fast_api_app: FastAPI):
@@ -190,7 +134,12 @@ def __map_app_static_folders(fast_api_app: FastAPI):
             fast_api_app.mount(f"/{mnt_dir}", staticfiles.StaticFiles(directory=mnt_dir_path), name=mnt_dir)
 
 
-def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_start_value: int) -> None:
+def fetch_models_task(
+    nc: NextcloudApp,
+    models: dict[str, dict],
+    progress_init_start_value: int,
+    loop: asyncio.AbstractEventLoop | None = None,
+) -> None:
     """Use for cases when you want to define custom `/init` but still need to easy download models.
 
     :param nc: NextcloudApp instance.
@@ -213,10 +162,20 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
                   All model options are optional and can be left empty.
 
     :param progress_init_start_value: Integer value defining from which percent the progress should start.
+    :param loop: Optional asyncio event loop used to dispatch progress updates. When this function
+        runs as a FastAPI ``BackgroundTasks`` task it is invoked from a worker thread that has no
+        loop of its own, so the caller must pass the main loop in. Defaults to
+        :func:`asyncio.get_running_loop` if one is active in the current thread.
 
     :raises ModelFetchError: in case of a model download error.
     :raises NextcloudException: in case of a network error reaching the Nextcloud server.
     """
+    if loop is None:
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+    progress = _ProgressReporter(nc, loop)
     if models:
         current_progress = progress_init_start_value
         percent_for_each = min(int((100 - progress_init_start_value) / len(models)), 99)
@@ -224,21 +183,58 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
             try:
                 if model.startswith(("http://", "https://")):
                     models[model]["path"] = __fetch_model_as_file(
-                        current_progress, percent_for_each, nc, model, models[model]
+                        current_progress, percent_for_each, progress, model, models[model]
                     )
                 else:
                     models[model]["path"] = __fetch_model_as_snapshot(
-                        current_progress, percent_for_each, nc, model, models[model]
+                        current_progress, percent_for_each, progress, model, models[model]
                     )
                 current_progress += percent_for_each
             except BaseException as e:  # noqa pylint: disable=broad-exception-caught
-                nc.set_init_status(current_progress, f"Downloading of '{model}' failed: {e}: {format_exc()}")
+                progress(current_progress, f"Downloading of '{model}' failed: {e}: {format_exc()}")
                 raise ModelFetchError(f"Downloading of '{model}' failed.") from e
-    nc.set_init_status(100)
+    progress(100)
+
+
+class _ProgressReporter:
+    """Bridges sync model-fetch code to the async :py:meth:`NextcloudApp.set_init_status`.
+
+    ``fetch_models_task`` runs in a FastAPI ``BackgroundTasks`` worker thread when the caller
+    is sync, so we cannot ``await`` here. The reporter always calls ``nc.set_init_status`` so
+    that mocks and sync test doubles observe the invocation, then schedules the resulting
+    coroutine on the captured main event loop and waits for the result to keep progress
+    reporting linearizable. If no loop is available the coroutine is closed to avoid a
+    ``coroutine '...' was never awaited`` warning, and the download proceeds anyway.
+    """
+
+    def __init__(self, nc: NextcloudApp, loop: asyncio.AbstractEventLoop | None):
+        self._nc = nc
+        self._loop = loop
+
+    def __call__(self, progress: int, error: str = "") -> None:
+        # Call ``set_init_status`` with the same signature the bare sync API used (omitting
+        # ``error`` when empty) so existing mocks keep matching ``call(100)`` rather than
+        # ``call(100, "")``.
+        result = self._nc.set_init_status(progress) if not error else self._nc.set_init_status(progress, error)
+        if not asyncio.iscoroutine(result):
+            # Mocked or sync wrapper - the call has been observed, nothing else to do.
+            return
+        if self._loop is None or self._loop.is_closed():
+            result.close()
+            return
+        future = asyncio.run_coroutine_threadsafe(result, self._loop)
+        try:
+            future.result(timeout=30)
+        except Exception:  # noqa pylint: disable=broad-exception-caught
+            future.cancel()
 
 
 def __fetch_model_as_file(
-    current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
+    current_progress: int,
+    progress_for_task: int,
+    progress: _ProgressReporter,
+    model_path: str,
+    download_options: dict,
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
     tmp_path = result_path + ".tmp"
@@ -267,7 +263,7 @@ def __fetch_model_as_file(
                     for byte_block in iter(lambda: file.read(4096), b""):
                         sha256_hash.update(byte_block)
                     if f'"{sha256_hash.hexdigest()}"' == linked_etag:
-                        nc.set_init_status(min(current_progress + progress_for_task, 99))
+                        progress(min(current_progress + progress_for_task, 99))
                         return result_path
 
             try:
@@ -280,7 +276,7 @@ def __fetch_model_as_file(
                                 current_progress + int(progress_for_task * downloaded_size / total_size), 99
                             )
                             if new_progress != last_progress:
-                                nc.set_init_status(new_progress)
+                                progress(new_progress)
                                 last_progress = new_progress
                 os.replace(tmp_path, result_path)
             except BaseException:
@@ -296,7 +292,11 @@ def __fetch_model_as_file(
 
 
 def __fetch_model_as_snapshot(
-    current_progress: int, progress_for_task, nc: NextcloudApp, model_name: str, download_options: dict
+    current_progress: int,
+    progress_for_task,
+    progress: _ProgressReporter,
+    model_name: str,
+    download_options: dict,
 ) -> str:
     from huggingface_hub import snapshot_download  # noqa isort:skip pylint: disable=C0415 disable=E0401
     from tqdm import tqdm  # noqa isort:skip pylint: disable=C0415 disable=E0401
@@ -310,7 +310,7 @@ def __fetch_model_as_snapshot(
 
         def display(self, msg=None, pos=None):
             if self.total:
-                nc.set_init_status(min(current_progress + int(progress_for_task * self.n / self.total), 99))
+                progress(min(current_progress + int(progress_for_task * self.n / self.total), 99))
             return super().display(msg, pos)
 
     workers = download_options.pop("max_workers", 2)
@@ -328,12 +328,12 @@ def __nc_app(request: HTTPConnection) -> dict:
     return {"user": user, "headers": {"AA-REQUEST-ID": request_id} if request_id else {}}
 
 
-def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> None:
+def __request_sign_check_if_needed(request: HTTPConnection, nextcloud_app: NextcloudApp) -> None:
     if not [i for i in getattr(request.app, "user_middleware", []) if i.cls == AppAPIAuthMiddleware]:
         _request_sign_check(request, nextcloud_app)
 
 
-def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp | AsyncNextcloudApp) -> str:
+def _request_sign_check(request: HTTPConnection, nextcloud_app: NextcloudApp) -> str:
     try:
         return nextcloud_app._session.sign_check(request)  # noqa pylint: disable=protected-access
     except ValueError as e:
@@ -365,7 +365,7 @@ class AppAPIAuthMiddleware:
         url_path = conn.url.path.lstrip("/")
         if not any(fnmatch.fnmatch(url_path, i) for i in self._disable_for):
             try:
-                scope["username"] = _request_sign_check(conn, AsyncNextcloudApp())
+                scope["username"] = _request_sign_check(conn, NextcloudApp())
             except HTTPException as exc:
                 response = self._on_error(exc.status_code, exc.detail)
                 await response(scope, receive, send)

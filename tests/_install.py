@@ -17,7 +17,7 @@ APP = FastAPI(lifespan=lifespan)
 
 
 @APP.put("/sec_check")
-def sec_check(
+async def sec_check(
     value: int,
     _nc: typing.Annotated[NextcloudApp, Depends(ex_app.nc_app)],
 ):
@@ -25,12 +25,12 @@ def sec_check(
     return JSONResponse(content={"error": ""}, status_code=200)
 
 
-def init_handler_background(nc: NextcloudApp):
-    nc.set_init_status(100)
+async def init_handler_background(nc: NextcloudApp):
+    await nc.set_init_status(100)
 
 
 @APP.post("/init")
-def init_handler(
+async def init_handler(
     background_tasks: BackgroundTasks,
     nc: typing.Annotated[NextcloudApp, Depends(ex_app.nc_app)],
 ):
@@ -38,12 +38,12 @@ def init_handler(
     return JSONResponse(content={}, status_code=200)
 
 
-def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
+async def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     print(f"enabled_handler: enabled={enabled}", flush=True)
     if enabled:
-        nc.log(ex_app.LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
+        await nc.log(ex_app.LogLvl.WARNING, f"Hello from {nc.app_cfg.app_name} :)")
     else:
-        nc.log(ex_app.LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
+        await nc.log(ex_app.LogLvl.WARNING, f"Bye bye from {nc.app_cfg.app_name} :(")
     return ""
 
 

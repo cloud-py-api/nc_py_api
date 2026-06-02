@@ -28,7 +28,7 @@ async def lifespan(_app: FastAPI):
 APP = FastAPI(lifespan=lifespan)
 
 
-def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
+async def enabled_handler(enabled: bool, _nc: NextcloudApp) -> str:
     if enabled:
         assert ex_app.get_model_path(MODEL_NAME2)
         assert Path("pytorch_model.bin").is_file()

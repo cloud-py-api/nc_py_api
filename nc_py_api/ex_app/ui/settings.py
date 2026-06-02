@@ -6,7 +6,7 @@ import typing
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
-from ..._session import AsyncNcSessionApp, NcSessionApp
+from ..._session import AsyncNcSessionApp
 
 
 class SettingsFieldType(enum.Enum):  # StrEnum
@@ -117,38 +117,6 @@ _EP_SUFFIX: str = "ui/settings"
 
 
 class _DeclarativeSettingsAPI:
-    """Class providing API for creating UI for the ExApp settings, avalaible as **nc.ui.settings.<method>**."""
-
-    def __init__(self, session: NcSessionApp):
-        self._session = session
-
-    def register_form(self, form_schema: SettingsForm | dict[str, typing.Any]) -> None:
-        """Registers or edit the Settings UI Form."""
-        require_capabilities("app_api", self._session.capabilities)
-        param = {"formScheme": form_schema.to_dict() if isinstance(form_schema, SettingsForm) else form_schema}
-        self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=param)
-
-    def unregister_form(self, form_id: str, not_fail=True) -> None:
-        """Removes Settings UI Form."""
-        require_capabilities("app_api", self._session.capabilities)
-        try:
-            self._session.ocs("DELETE", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"formId": form_id})
-        except NextcloudExceptionNotFound as e:
-            if not not_fail:
-                raise e from None
-
-    def get_entry(self, form_id: str) -> SettingsForm | None:
-        """Get information of the Settings UI Form."""
-        require_capabilities("app_api", self._session.capabilities)
-        try:
-            return SettingsForm.from_dict(
-                self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"formId": form_id})
-            )
-        except NextcloudExceptionNotFound:
-            return None
-
-
-class _AsyncDeclarativeSettingsAPI:
     """Class providing async API for creating UI for the ExApp settings."""
 
     def __init__(self, session: AsyncNcSessionApp):

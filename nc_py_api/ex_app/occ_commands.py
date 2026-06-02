@@ -4,7 +4,7 @@ import dataclasses
 
 from .._exceptions import NextcloudExceptionNotFound
 from .._misc import clear_from_params_empty, require_capabilities
-from .._session import AsyncNcSessionApp, NcSessionApp
+from .._session import AsyncNcSessionApp
 
 _EP_SUFFIX: str = "occ_command"
 
@@ -56,54 +56,6 @@ class OccCommand:
 
 
 class OccCommandsAPI:
-    """API for registering OCC commands, avalaible as **nc.occ_command.<method>**."""
-
-    def __init__(self, session: NcSessionApp):
-        self._session = session
-
-    def register(
-        self,
-        name: str,
-        callback_url: str,
-        arguments: list | None = None,
-        options: list | None = None,
-        usages: list | None = None,
-        description: str = "",
-        hidden: bool = False,
-    ) -> None:
-        """Registers or edit the OCC command."""
-        require_capabilities("app_api", self._session.capabilities)
-        params = {
-            "name": name,
-            "description": description,
-            "arguments": arguments,
-            "hidden": int(hidden),
-            "options": options,
-            "usages": usages,
-            "execute_handler": callback_url,
-        }
-        clear_from_params_empty(["arguments", "options", "usages"], params)
-        self._session.ocs("POST", f"{self._session.ae_url}/{_EP_SUFFIX}", json=params)
-
-    def unregister(self, name: str, not_fail=True) -> None:
-        """Removes the OCC command."""
-        require_capabilities("app_api", self._session.capabilities)
-        try:
-            self._session.ocs("DELETE", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"name": name})
-        except NextcloudExceptionNotFound as e:
-            if not not_fail:
-                raise e from None
-
-    def get_entry(self, name: str) -> OccCommand | None:
-        """Get information of the OCC command."""
-        require_capabilities("app_api", self._session.capabilities)
-        try:
-            return OccCommand(self._session.ocs("GET", f"{self._session.ae_url}/{_EP_SUFFIX}", params={"name": name}))
-        except NextcloudExceptionNotFound:
-            return None
-
-
-class AsyncOccCommandsAPI:
     """Async API for registering OCC commands, avalaible as **nc.occ_command.<method>**."""
 
     def __init__(self, session: AsyncNcSessionApp):

@@ -3,43 +3,6 @@ import pytest
 from nc_py_api import FilePermissions, FsNode, NextcloudExceptionNotFound, ex_app
 
 
-def test_register_ui_file_actions(nc_app):
-    nc_app.ui.files_dropdown_menu.register_ex("test_ui_action_im", "UI TEST Image", "/ui_action_test", mime="image")
-    result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_im")
-    assert result.name == "test_ui_action_im"
-    assert result.display_name == "UI TEST Image"
-    assert result.action_handler == "ui_action_test"
-    assert result.mime == "image"
-    assert result.permissions == 31
-    assert result.order == 0
-    assert result.icon == ""
-    assert result.appid == "nc_py_api"
-    assert result.version == "2.0"
-    nc_app.ui.files_dropdown_menu.unregister(result.name)
-    nc_app.ui.files_dropdown_menu.register("test_ui_action_any", "UI TEST", "ui_action", permissions=1, order=1)
-    result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
-    assert result.name == "test_ui_action_any"
-    assert result.display_name == "UI TEST"
-    assert result.action_handler == "ui_action"
-    assert result.mime == "file"
-    assert result.permissions == 1
-    assert result.order == 1
-    assert result.icon == ""
-    assert result.version == "1.0"
-    nc_app.ui.files_dropdown_menu.register_ex("test_ui_action_any", "UI", "/ui_action2", icon="/img/icon.svg")
-    result = nc_app.ui.files_dropdown_menu.get_entry("test_ui_action_any")
-    assert result.name == "test_ui_action_any"
-    assert result.display_name == "UI"
-    assert result.action_handler == "ui_action2"
-    assert result.mime == "file"
-    assert result.permissions == 31
-    assert result.order == 0
-    assert result.icon == "img/icon.svg"
-    assert result.version == "2.0"
-    nc_app.ui.files_dropdown_menu.unregister(result.name)
-    assert str(result).find("name=test_ui_action")
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_register_ui_file_actions_async(anc_app):
     await anc_app.ui.files_dropdown_menu.register_ex(
@@ -80,15 +43,6 @@ async def test_register_ui_file_actions_async(anc_app):
     assert str(result).find("name=test_ui_action")
 
 
-def test_unregister_ui_file_actions(nc_app):
-    nc_app.ui.files_dropdown_menu.register_ex("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
-    nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
-    assert nc_app.ui.files_dropdown_menu.get_entry("test_ui_action") is None
-    nc_app.ui.files_dropdown_menu.unregister("test_ui_action")
-    with pytest.raises(NextcloudExceptionNotFound):
-        nc_app.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)
-
-
 @pytest.mark.asyncio(scope="session")
 async def test_unregister_ui_file_actions_async(anc_app):
     await anc_app.ui.files_dropdown_menu.register_ex("test_ui_action", "NcPyApi UI TEST", "/any_rel_url")
@@ -99,7 +53,8 @@ async def test_unregister_ui_file_actions_async(anc_app):
         await anc_app.ui.files_dropdown_menu.unregister("test_ui_action", not_fail=False)
 
 
-def test_ui_file_to_fs_node(nc_app):
+@pytest.mark.asyncio(scope="session")
+async def test_ui_file_to_fs_node_async(anc_app):
     def ui_action_check(directory: str, fs_object: FsNode):
         permissions = 0
         if fs_object.is_readable:
@@ -146,7 +101,7 @@ def test_ui_file_to_fs_node(nc_app):
         assert fs_node.info.size == fs_object.info.size
         assert fs_node.info.fileid == fs_object.info.fileid
 
-    for each_file in nc_app.files.listdir():
+    for each_file in await anc_app.files.listdir():
         ui_action_check(directory="/", fs_object=each_file)
-    for each_file in nc_app.files.listdir("test_dir"):
+    for each_file in await anc_app.files.listdir("test_dir"):
         ui_action_check(directory="/test_dir", fs_object=each_file)

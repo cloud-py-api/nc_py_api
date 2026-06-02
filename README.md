@@ -17,21 +17,11 @@ Python library that provides a robust and well-documented API that allows develo
  * **Reliable**: Minimum number of incompatible changes.
  * **Robust**: All code is covered with tests as much as possible.
  * **Easy**: Designed to be easy to use.
- * **Async-first**: Full async API with sync wrappers available for most modules.
-
-### Deprecation notice: sync API
-
-Starting with version **0.30.0**, we are gradually removing sync wrappers in favour of
-the async API. The following modules have already lost their sync counterparts:
-**Activity**, **Notes**, **User Status**, and **Weather Status**.
-
-All remaining sync methods will be phased out in future releases. If you are still
-using the sync `Nextcloud` / `NextcloudApp` classes, we recommend migrating to
-`AsyncNextcloud` / `AsyncNextcloudApp` as soon as possible.
+ * **Async**: Fully async API built on top of `niquests`.
 
 ### Differences between the Nextcloud and NextcloudApp classes
 
-The **Nextcloud** class functions as a standard Nextcloud client,
+The **Nextcloud** class functions as a standard async Nextcloud client,
 enabling you to make API requests using a username and password.
 
 On the other hand, the **NextcloudApp** class is designed for creating applications for Nextcloud.<br>
@@ -52,7 +42,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from nc_py_api import AsyncNextcloudApp
+from nc_py_api import NextcloudApp
 from nc_py_api.ex_app import AppAPIAuthMiddleware, LogLvl, run_app, set_handlers
 
 
@@ -66,7 +56,7 @@ APP = FastAPI(lifespan=lifespan)
 APP.add_middleware(AppAPIAuthMiddleware)
 
 
-async def enabled_handler(enabled: bool, nc: AsyncNextcloudApp) -> str:
+async def enabled_handler(enabled: bool, nc: NextcloudApp) -> str:
     if enabled:
         await nc.log(LogLvl.WARNING, "Hello from nc_py_api.")
     else:

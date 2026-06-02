@@ -6,7 +6,7 @@ import typing
 
 from ._exceptions import check_error
 from ._misc import kwargs_to_params
-from ._session import AsyncNcSessionBasic, NcSessionBasic
+from ._session import AsyncNcSessionBasic
 
 
 @dataclasses.dataclass
@@ -157,115 +157,6 @@ class UserInfo:
 
 
 class _UsersAPI:
-    """The class provides the user API on the Nextcloud server.
-
-    .. note:: In NextcloudApp mode, only ``get_list``, ``editable_fields`` and ``get_user`` methods are available.
-    """
-
-    _ep_base: str = "/ocs/v1.php/cloud/users"
-
-    def __init__(self, session: NcSessionBasic):
-        self._session = session
-
-    def get_list(self, mask: str | None = "", limit: int | None = None, offset: int | None = None) -> list[str]:
-        """Returns list of user IDs."""
-        data = kwargs_to_params(["search", "limit", "offset"], search=mask, limit=limit, offset=offset)
-        response_data = self._session.ocs("GET", self._ep_base, params=data)
-        return response_data["users"] if response_data else {}
-
-    def get_user(self, user_id: str = "") -> UserInfo:
-        """Returns detailed user information."""
-        return UserInfo(self._session.ocs("GET", f"{self._ep_base}/{user_id}" if user_id else "/ocs/v1.php/cloud/user"))
-
-    def create(self, user_id: str, display_name: str | None = None, **kwargs) -> None:
-        """Create a new user on the Nextcloud server.
-
-        :param user_id: id of the user to create.
-        :param display_name: display name for a created user.
-        :param kwargs: See below.
-
-        Additionally supported arguments:
-
-            * ``password`` - password that should be set for user.
-            * ``email`` - email of the new user. If ``password`` is not provided, then this field should be filled.
-            * ``groups`` - list of groups IDs to which user belongs.
-            * ``subadmin`` - boolean indicating is user should be the subadmin.
-            * ``quota`` - quota for the user, if needed.
-            * ``language`` - default language for the user.
-        """
-        self._session.ocs("POST", self._ep_base, json=_create(user_id, display_name, **kwargs))
-
-    def delete(self, user_id: str) -> None:
-        """Deletes user from the Nextcloud server."""
-        self._session.ocs("DELETE", f"{self._ep_base}/{user_id}")
-
-    def enable(self, user_id: str) -> None:
-        """Enables user on the Nextcloud server."""
-        self._session.ocs("PUT", f"{self._ep_base}/{user_id}/enable")
-
-    def disable(self, user_id: str) -> None:
-        """Disables user on the Nextcloud server."""
-        self._session.ocs("PUT", f"{self._ep_base}/{user_id}/disable")
-
-    def wipe(self, user_id: str) -> None:
-        """Disconnects user from the Nextcloud server and deletes all local data stored on the user's devices."""
-        self._session.ocs("POST", f"/ocs/v2.php/cloud/users/{user_id}/wipe")
-
-    def resend_welcome_email(self, user_id: str) -> None:
-        """Send welcome email for specified user again."""
-        self._session.ocs("POST", f"{self._ep_base}/{user_id}/welcome")
-
-    def editable_fields(self) -> list[str]:
-        """Returns user fields that avalaible for edit."""
-        return self._session.ocs("GET", "/ocs/v1.php/cloud/user/fields")
-
-    def edit(self, user_id: str, **kwargs) -> None:
-        """Edits user metadata.
-
-        :param user_id: id of the user.
-        :param kwargs: dictionary where keys are values from ``editable_fields`` method, and values to set.
-        """
-        for k, v in kwargs.items():
-            self._session.ocs("PUT", f"{self._ep_base}/{user_id}", params={"key": k, "value": v})
-
-    def add_to_group(self, user_id: str, group_id: str) -> None:
-        """Adds user to the group."""
-        self._session.ocs("POST", f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
-
-    def remove_from_group(self, user_id: str, group_id: str) -> None:
-        """Removes user from the group."""
-        self._session.ocs("DELETE", f"{self._ep_base}/{user_id}/groups", params={"groupid": group_id})
-
-    def promote_to_subadmin(self, user_id: str, group_id: str) -> None:
-        """Makes user admin of the group."""
-        self._session.ocs("POST", f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
-
-    def demote_from_subadmin(self, user_id: str, group_id: str) -> None:
-        """Removes user from the admin role of the group."""
-        self._session.ocs("DELETE", f"{self._ep_base}/{user_id}/subadmins", params={"groupid": group_id})
-
-    def get_avatar(
-        self, user_id: str = "", size: typing.Literal[64, 512] = 512, dark: bool = False, guest: bool = False
-    ) -> bytes:
-        """Returns user avatar binary data.
-
-        :param user_id: The ID of the user whose avatar should be returned.
-            .. note:: To return the current user's avatar, leave the field blank.
-        :param size: Size of the avatar. Currently supported values: ``64`` and ``512``.
-        :param dark: Flag indicating whether a dark theme avatar should be returned or not.
-        :param guest: Flag indicating whether user ID is a guest name or not.
-        """
-        if not user_id and not guest:
-            user_id = self._session.user
-        url_path = f"/index.php/avatar/{user_id}/{size}" if not guest else f"/index.php/avatar/guest/{user_id}/{size}"
-        if dark:
-            url_path += "/dark"
-        response = self._session.adapter.get(url_path)
-        check_error(response)
-        return response.content
-
-
-class _AsyncUsersAPI:
     """The class provides the async user API on the Nextcloud server.
 
     .. note:: In NextcloudApp mode, only ``get_list``, ``editable_fields`` and ``get_user`` methods are available.

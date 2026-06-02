@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0 - Unreleased]
+
+### Removed (BREAKING)
+
+- All synchronous API classes: `Nextcloud`, `NextcloudApp`, `TalkBot`, `nc_app`, `talk_bot_msg`, sync `enabled_handler`/`trigger_handler` in `set_handlers`, and the `FilesAPI`/`_TalkAPI`/etc. sync counterparts. The async classes (`AsyncNextcloud`, `AsyncNextcloudApp`, `AsyncTalkBot`, `anc_app`, `atalk_bot_msg`, …) are now the only implementation and have been renamed to drop the `Async` prefix; their sync namesakes were deprecated in v0.30.0 and have now been deleted. Backward-compat aliases (`AsyncNextcloud = Nextcloud`, etc.) remain exported for migration convenience and will be removed in a future major release.
+- The `caldav` integration is no longer reachable through `Nextcloud.cal` / `NextcloudApp.cal`; the underlying library is sync-only.
+
+### Fixed
+
+- ExApp logger handler (`setup_nextcloud_logging`) now actually delivers records to Nextcloud: the sync `logging.Handler.emit` schedules the now-async `NextcloudApp.log` on the captured event loop via `asyncio.run_coroutine_threadsafe`. Without this fix the coroutine was never awaited and log records were silently dropped.
+- `fetch_models_task` (used by the default `/init` handler) no longer leaves `NextcloudApp.set_init_status` coroutines unawaited; progress updates are dispatched onto the main event loop from the `BackgroundTasks` worker thread.
+- Test conftest resets `niquests` session adapters after the import-time capability/version probe so pytest-asyncio's loop populates fresh connection pools, preventing `RuntimeError: got Future <Future pending> attached to a different loop` on the first request.
+
 ## [0.30.1 - 2026-04-26]
 
 ### Added

@@ -5,7 +5,7 @@ import warnings
 
 from ..._exceptions import NextcloudExceptionNotFound
 from ..._misc import require_capabilities
-from ..._session import AsyncNcSessionApp, NcSessionApp
+from ..._session import AsyncNcSessionApp
 
 
 @dataclasses.dataclass
@@ -65,67 +65,6 @@ class UiFileActionEntry:
 
 
 class _UiFilesActionsAPI:
-    """API for the drop-down menu in Nextcloud **Files app**, avalaible as **nc.ui.files_dropdown_menu.<method>**."""
-
-    _ep_suffix: str = "ui/files-actions-menu"
-
-    def __init__(self, session: NcSessionApp):
-        self._session = session
-
-    def register(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
-        """Registers the files dropdown menu element."""
-        warnings.warn(
-            "register() is deprecated and will be removed in a future version. Use register_ex() instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        require_capabilities("app_api", self._session.capabilities)
-        params = {
-            "name": name,
-            "displayName": display_name,
-            "actionHandler": callback_url,
-            "icon": kwargs.get("icon", ""),
-            "mime": kwargs.get("mime", "file"),
-            "permissions": kwargs.get("permissions", 31),
-            "order": kwargs.get("order", 0),
-        }
-        self._session.ocs("POST", f"{self._session.ae_url}/{self._ep_suffix}", json=params)
-
-    def register_ex(self, name: str, display_name: str, callback_url: str, **kwargs) -> None:
-        """Registers the files dropdown menu element(extended version that receives ``ActionFileInfoEx``)."""
-        require_capabilities("app_api", self._session.capabilities)
-        params = {
-            "name": name,
-            "displayName": display_name,
-            "actionHandler": callback_url,
-            "icon": kwargs.get("icon", ""),
-            "mime": kwargs.get("mime", "file"),
-            "permissions": kwargs.get("permissions", 31),
-            "order": kwargs.get("order", 0),
-        }
-        self._session.ocs("POST", f"{self._session.ae_url_v2}/{self._ep_suffix}", json=params)
-
-    def unregister(self, name: str, not_fail=True) -> None:
-        """Removes files dropdown menu element."""
-        require_capabilities("app_api", self._session.capabilities)
-        try:
-            self._session.ocs("DELETE", f"{self._session.ae_url}/{self._ep_suffix}", json={"name": name})
-        except NextcloudExceptionNotFound as e:
-            if not not_fail:
-                raise e from None
-
-    def get_entry(self, name: str) -> UiFileActionEntry | None:
-        """Get information of the file action meny entry."""
-        require_capabilities("app_api", self._session.capabilities)
-        try:
-            return UiFileActionEntry(
-                self._session.ocs("GET", f"{self._session.ae_url}/{self._ep_suffix}", params={"name": name})
-            )
-        except NextcloudExceptionNotFound:
-            return None
-
-
-class _AsyncUiFilesActionsAPI:
     """Async API for the drop-down menu in Nextcloud **Files app**."""
 
     _ep_suffix: str = "ui/files-actions-menu"

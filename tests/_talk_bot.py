@@ -13,13 +13,13 @@ APP.add_middleware(AppAPIAuthMiddleware, disable_for=["reset_bot_secret"])
 COVERAGE_BOT = talk_bot.TalkBot("/talk_bot_coverage", "Coverage bot", "Desc")
 
 
-def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request: Request):
+async def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request: Request):
     if message.object_name != "message":
         return
-    COVERAGE_BOT.react_to_message(message, "🥳")
-    COVERAGE_BOT.react_to_message(message, "🫡")
-    COVERAGE_BOT.delete_reaction(message, "🫡")
-    COVERAGE_BOT.send_message("Hello from bot!", message)
+    await COVERAGE_BOT.react_to_message(message, "🥳")
+    await COVERAGE_BOT.react_to_message(message, "🫡")
+    await COVERAGE_BOT.delete_reaction(message, "🫡")
+    await COVERAGE_BOT.send_message("Hello from bot!", message)
     assert isinstance(message.actor_id, str)
     assert isinstance(message.actor_display_name, str)
     assert isinstance(message.object_name, str)
@@ -28,15 +28,15 @@ def coverage_talk_bot_process_request(message: talk_bot.TalkBotMessage, request:
     assert isinstance(message.conversation_name, str)
     assert str(message).find("conversation=") != -1
     with pytest.raises(ValueError):
-        COVERAGE_BOT.react_to_message(message.object_id, "🥳")
+        await COVERAGE_BOT.react_to_message(message.object_id, "🥳")
     with pytest.raises(ValueError):
-        COVERAGE_BOT.delete_reaction(message.object_id, "🥳")
+        await COVERAGE_BOT.delete_reaction(message.object_id, "🥳")
     with pytest.raises(ValueError):
-        COVERAGE_BOT.send_message("🥳", message.object_id)
+        await COVERAGE_BOT.send_message("🥳", message.object_id)
 
 
 @APP.post("/talk_bot_coverage")
-def talk_bot_coverage(
+async def talk_bot_coverage(
     request: Request,
     _nc: Annotated[NextcloudApp, Depends(nc_app)],
     message: Annotated[talk_bot.TalkBotMessage, Depends(talk_bot_msg)],
@@ -48,7 +48,7 @@ def talk_bot_coverage(
 
 # in real program this is not needed, as bot enabling handler is called in the bots process itself and will reset it.
 @APP.delete("/reset_bot_secret")
-def reset_bot_secret():
+async def reset_bot_secret():
     os.environ.pop(talk_bot.__get_bot_secret("/talk_bot_coverage"), None)
     return Response()
 
