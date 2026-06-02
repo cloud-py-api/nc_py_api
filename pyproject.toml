@@ -81,13 +81,13 @@ urls.Changelog = "https://github.com/cloud-py-api/nc_py_api/blob/main/CHANGELOG.
 urls.Source = "https://github.com/cloud-py-api/nc_py_api"
 
 [tool.hatch]
+version.path = "nc_py_api/_version.py"
 build.targets.sdist.include = [
-  "/nc_py_api",
   "/CHANGELOG.md",
+  "/nc_py_api",
   "/README.md",
 ]
 build.targets.sdist.exclude = []
-version.path = "nc_py_api/_version.py"
 
 [tool.black]
 line-length = 120
@@ -159,45 +159,45 @@ lint.mccabe.max-complexity = 16
 profile = "black"
 
 [tool.pylint]
-master.py-version = "3.10"
 master.extension-pkg-allow-list = [
   "pydantic",
 ]
-design.max-locals = 20
-design.max-branches = 16
-design.max-returns = 8
-design.max-args = 10
+master.py-version = "3.10"
+messages_control.disable = [
+  "line-too-long",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "too-few-public-methods",
+  "too-many-instance-attributes",
+  "too-many-positional-arguments",
+  "too-many-public-methods",
+]
+reports.output-format = "colorized"
 basic.good-names = [
+  "_",
   "a",
   "b",
   "c",
   "d",
   "e",
+  "ex",
   "f",
+  "fp",
   "i",
+  "im",
   "j",
   "k",
-  "r",
-  "v",
-  "ex",
-  "_",
-  "fp",
-  "im",
   "nc",
+  "r",
   "ui",
+  "v",
 ]
-reports.output-format = "colorized"
+design.max-args = 10
+design.max-branches = 16
+design.max-locals = 20
+design.max-returns = 8
 similarities.ignore-imports = "yes"
 similarities.min-similarity-lines = 10
-messages_control.disable = [
-  "missing-class-docstring",
-  "missing-function-docstring",
-  "line-too-long",
-  "too-few-public-methods",
-  "too-many-public-methods",
-  "too-many-instance-attributes",
-  "too-many-positional-arguments",
-]
 
 [tool.pytest]
 ini_options.minversion = "6.0"
@@ -205,14 +205,14 @@ ini_options.testpaths = [
   "tests",
   "tests_unit",
 ]
-ini_options.filterwarnings = [
-  "ignore::DeprecationWarning",
-]
-ini_options.log_cli = true
 ini_options.addopts = "-rs --color=yes"
 ini_options.markers = [
   "require_nc: marks a test that requires a minimum version of Nextcloud.",
 ]
+ini_options.filterwarnings = [
+  "ignore::DeprecationWarning",
+]
+ini_options.log_cli = true
 ini_options.asyncio_mode = "auto"
 
 [tool.coverage]
