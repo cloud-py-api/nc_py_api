@@ -23,6 +23,8 @@ class ConversationType(enum.IntEnum):
     """Former "One to one"
     (When a user is deleted from the server or removed from all their conversations,
     "One to one" rooms are converted to this type)"""
+    NOTE_TO_SELF = 6
+    """Conversation for notes to self"""
 
 
 class ParticipantType(enum.IntEnum):
