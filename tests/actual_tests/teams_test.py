@@ -322,6 +322,12 @@ async def test_teams_personal_circle(anc_any):
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.xfail(
+    reason="Upstream Circles regression: creating a local circle through an ExApp (app mode) returns HTTP 400 "
+    "since the nextcloud/circles local-controller permission changes (mid-2026). Client mode is unaffected. "
+    "Remove this marker once Circles is fixed on the stable branches.",
+    strict=False,
+)
 async def test_teams_local_circle(anc_any):
     if await anc_any.teams.available is False:
         pytest.skip("Teams (Circles) is not installed")
