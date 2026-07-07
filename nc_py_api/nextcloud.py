@@ -390,7 +390,8 @@ class NextcloudApp(_NextcloudBasic):
     def register_talk_bot(self, callback_url: str, display_name: str, description: str = "") -> tuple[str, str]:
         """Registers Talk BOT.
 
-        .. note:: AppAPI will add a record in a case of successful registration to the ``appconfig_ex`` table.
+        .. note:: On Nextcloud <= 33 AppAPI mirrors the secret into ``appconfig_ex``; since 34 it does not, so
+            ``TalkBot.enabled_handler`` persists its own copy there under a separate key for other workers.
 
         :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
         :param display_name: The name under which the messages will be posted.
@@ -524,7 +525,8 @@ class AsyncNextcloudApp(_AsyncNextcloudBasic):
     async def register_talk_bot(self, callback_url: str, display_name: str, description: str = "") -> tuple[str, str]:
         """Registers Talk BOT.
 
-        .. note:: AppAPI will add a record in a case of successful registration to the ``appconfig_ex`` table.
+        .. note:: On Nextcloud <= 33 AppAPI mirrors the secret into ``appconfig_ex``; since 34 it does not, so
+            ``TalkBot.enabled_handler`` persists its own copy there under a separate key for other workers.
 
         :param callback_url: URL suffix for fetching new messages. MUST be ``UNIQ`` for each bot the app provides.
         :param display_name: The name under which the messages will be posted.
