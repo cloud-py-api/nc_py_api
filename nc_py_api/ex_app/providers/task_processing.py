@@ -193,7 +193,12 @@ class _TaskProcessingProviderAPI:
             if r := self._session.ocs(
                 "POST",
                 f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/result",
-                json={"taskId": task_id, "output": output, "errorMessage": error_message, "userFacingErrorMessage": user_facing_error_message},
+                json={
+                    "taskId": task_id,
+                    "output": output,
+                    "errorMessage": error_message,
+                    "userFacingErrorMessage": user_facing_error_message,
+                },
             ):
                 return r
         return {}
@@ -291,7 +296,12 @@ class _AsyncTaskProcessingProviderAPI:
             if r := await self._session.ocs(
                 "POST",
                 f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/result",
-                json={"taskId": task_id, "output": output, "errorMessage": error_message, "userFacingErrorMessage": user_facing_error_message},
+                json={
+                    "taskId": task_id,
+                    "output": output,
+                    "errorMessage": error_message,
+                    "userFacingErrorMessage": user_facing_error_message,
+                },
             ):
                 return r
         return {}
