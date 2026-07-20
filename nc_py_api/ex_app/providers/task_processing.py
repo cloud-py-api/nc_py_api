@@ -188,7 +188,12 @@ class _TaskProcessingProviderAPI:
         error_message: str | None = None,
         user_facing_error_message: str | None = None,
     ) -> dict[str, typing.Any]:
-        """Report result of the task processing to Nextcloud."""
+        """Report result of the task processing to Nextcloud.
+
+        :param error_message: Technical/debug message for administrators.
+        :param user_facing_error_message: Message shown to the end user when the task failed.
+            Available starting with Nextcloud 33.
+        """
         with contextlib.suppress(NextcloudException):
             if r := self._session.ocs(
                 "POST",
@@ -291,7 +296,12 @@ class _AsyncTaskProcessingProviderAPI:
         error_message: str | None = None,
         user_facing_error_message: str | None = None,
     ) -> dict[str, typing.Any]:
-        """Report result of the task processing to Nextcloud."""
+        """Report result of the task processing to Nextcloud.
+
+        :param error_message: Technical/debug message for administrators.
+        :param user_facing_error_message: Message shown to the end user when the task failed.
+            Available starting with Nextcloud 33.
+        """
         with contextlib.suppress(NextcloudException):
             if r := await self._session.ocs(
                 "POST",
