@@ -186,13 +186,23 @@ class _TaskProcessingProviderAPI:
         task_id: int,
         output: dict[str, typing.Any] | None = None,
         error_message: str | None = None,
+        user_facing_error_message: str | None = None,
     ) -> dict[str, typing.Any]:
-        """Report result of the task processing to Nextcloud."""
+        """Report result of the task processing to Nextcloud.
+
+        :param user_facing_error_message: An error message that will be shown to the user.
+            Available starting with Nextcloud 33. Added in nc_py_api 0.31.0.
+        """
         with contextlib.suppress(NextcloudException):
             if r := self._session.ocs(
                 "POST",
                 f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/result",
-                json={"taskId": task_id, "output": output, "errorMessage": error_message},
+                json={
+                    "taskId": task_id,
+                    "output": output,
+                    "errorMessage": error_message,
+                    "userFacingErrorMessage": user_facing_error_message,
+                },
             ):
                 return r
         return {}
@@ -283,13 +293,23 @@ class _AsyncTaskProcessingProviderAPI:
         task_id: int,
         output: dict[str, typing.Any] | None = None,
         error_message: str | None = None,
+        user_facing_error_message: str | None = None,
     ) -> dict[str, typing.Any]:
-        """Report result of the task processing to Nextcloud."""
+        """Report result of the task processing to Nextcloud.
+
+        :param user_facing_error_message: An error message that will be shown to the user.
+            Available starting with Nextcloud 33. Added in nc_py_api 0.31.0.
+        """
         with contextlib.suppress(NextcloudException):
             if r := await self._session.ocs(
                 "POST",
                 f"/ocs/v2.php/taskprocessing/tasks_provider/{task_id}/result",
-                json={"taskId": task_id, "output": output, "errorMessage": error_message},
+                json={
+                    "taskId": task_id,
+                    "output": output,
+                    "errorMessage": error_message,
+                    "userFacingErrorMessage": user_facing_error_message,
+                },
             ):
                 return r
         return {}
