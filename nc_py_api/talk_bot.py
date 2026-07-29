@@ -133,6 +133,9 @@ class TalkBot:
         if enabled:
             bot_id, bot_secret = nc.register_talk_bot(self.callback_url, self.display_name, self.description)
             os.environ[bot_id] = bot_secret
+            # Persist it so any worker (not only the one that registered) can sign requests. Since
+            # AppAPI 34 the secret is no longer mirrored into ``appconfig_ex`` for us to read back.
+            nc.appconfig_ex.set_value(_bot_secret_config_key(bot_id), bot_secret, sensitive=True)
         else:
             nc.unregister_talk_bot(self.callback_url)
 
@@ -251,6 +254,9 @@ class AsyncTalkBot:
         if enabled:
             bot_id, bot_secret = await nc.register_talk_bot(self.callback_url, self.display_name, self.description)
             os.environ[bot_id] = bot_secret
+            # Persist it so any worker (not only the one that registered) can sign requests. Since
+            # AppAPI 34 the secret is no longer mirrored into ``appconfig_ex`` for us to read back.
+            await nc.appconfig_ex.set_value(_bot_secret_config_key(bot_id), bot_secret, sensitive=True)
         else:
             await nc.unregister_talk_bot(self.callback_url)
 
@@ -356,12 +362,25 @@ def __get_bot_secret(callback_url: str) -> str:
     return sha_1.hexdigest()
 
 
+def _bot_secret_config_key(bot_id: str) -> str:
+    # nc_py_api-owned ``appconfig_ex`` key used to persist the secret for other workers/processes.
+    # Kept distinct from ``bot_id``: AppAPI <= 33 stores and re-reads the secret under ``bot_id``, so
+    # writing there ourselves would corrupt its bookkeeping (AppAPI 34+ does not store it at all).
+    sha_1 = hashlib.sha1(usedforsecurity=False)
+    sha_1.update((bot_id + "_ncpyapi_secret").encode("UTF-8"))
+    return sha_1.hexdigest()
+
+
 def get_bot_secret(callback_url: str) -> bytes | None:
     """Returns the bot's secret from an environment variable or from the application's configuration on the server."""
     secret_key = __get_bot_secret(callback_url)
     if secret_key in os.environ:
         return os.environ[secret_key].encode("UTF-8")
-    secret_value = NextcloudApp().appconfig_ex.get_value(secret_key)
+    appcfg = NextcloudApp().appconfig_ex
+    # AppAPI <= 33 mirrors the secret under ``secret_key``; AppAPI 34+ does not, so also read our own copy.
+    secret_value = appcfg.get_value(secret_key)
+    if secret_value is None:
+        secret_value = appcfg.get_value(_bot_secret_config_key(secret_key))
     if secret_value is not None:
         os.environ[secret_key] = secret_value
         return secret_value.encode("UTF-8")
@@ -373,7 +392,11 @@ async def aget_bot_secret(callback_url: str) -> bytes | None:
     secret_key = __get_bot_secret(callback_url)
     if secret_key in os.environ:
         return os.environ[secret_key].encode("UTF-8")
-    secret_value = await AsyncNextcloudApp().appconfig_ex.get_value(secret_key)
+    appcfg = AsyncNextcloudApp().appconfig_ex
+    # AppAPI <= 33 mirrors the secret under ``secret_key``; AppAPI 34+ does not, so also read our own copy.
+    secret_value = await appcfg.get_value(secret_key)
+    if secret_value is None:
+        secret_value = await appcfg.get_value(_bot_secret_config_key(secret_key))
     if secret_value is not None:
         os.environ[secret_key] = secret_value
         return secret_value.encode("UTF-8")
