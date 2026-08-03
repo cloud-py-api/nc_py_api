@@ -31,7 +31,7 @@ jobs:
     name: Analysis
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: '3.10'
@@ -76,14 +76,14 @@ jobs:
           python-version: '3.11'
 
       - name: Checkout server
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ env.NEXTCLOUD_BRANCH }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/notifications
           ref: ${{ env.NEXTCLOUD_BRANCH }}
@@ -101,7 +101,7 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: nc_py_api
 
@@ -110,7 +110,7 @@ jobs:
         run: python3 -m pip -v install ".[app,dev-min]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: apps/app_api
           repository: nextcloud/app_api
@@ -189,21 +189,21 @@ jobs:
           python-version: "3.10"
 
       - name: Checkout server
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
       - name: Checkout Notes
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/notes
           # Notes main (v5.0.0) requires NC >= 33; pin older servers to the last 4.x (supports NC 28-34).
@@ -211,14 +211,14 @@ jobs:
           path: apps/notes
 
       - name: Checkout Files Locking
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
 
       - name: Checkout Circles
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/circles
           ref: ${{ matrix.nextcloud }}
@@ -249,7 +249,7 @@ jobs:
         run: php occ app:enable circles
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: nc_py_api
 
@@ -258,7 +258,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: apps/app_api
           repository: nextcloud/app_api
@@ -278,7 +278,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -374,14 +374,14 @@ jobs:
           python-version: '3.11'
 
       - name: Checkout server
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
@@ -398,14 +398,14 @@ jobs:
           fi
 
       - name: Checkout Activity
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
       - name: Checkout Circles
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/circles
           ref: ${{ matrix.nextcloud }}
@@ -431,7 +431,7 @@ jobs:
         run: php occ app:enable circles
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: nc_py_api
 
@@ -440,7 +440,7 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: apps/app_api
           repository: nextcloud/app_api
@@ -460,7 +460,7 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: apps/spreed
           repository: nextcloud/spreed
@@ -545,21 +545,21 @@ jobs:
           python-version: '3.12'
 
       - name: Checkout server
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Activity
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
       - name: Checkout Notes
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/notes
           # This job only runs NC >= 33, so Notes main (v5.0.0) is always compatible.
@@ -567,7 +567,7 @@ jobs:
           path: apps/notes
 
       - name: Checkout Files Locking
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
@@ -594,7 +594,7 @@ jobs:
         run: ./occ app:enable files_lock
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: nc_py_api
 
@@ -631,7 +631,7 @@ jobs:
     runs-on: ubuntu-22.04
     name: Upload Coverage
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Download Coverage Artifacts
         uses: actions/download-artifact@v8
         with:
