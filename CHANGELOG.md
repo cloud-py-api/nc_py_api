@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.30.3 - 2026-08-03]
+
+### Fixed
+
+- PROPFIND property lists are no longer mutated in place. `get_propfind_properties()` and both `trashbin_list()` implementations extended the shared `PROPFIND_PROPERTIES` constant with `+=`, so it grew on every call (7 entries per call against servers advertising `files.locking`, 3 per `trashbin_list()`). Long-running clients ended up sending multi-megabyte PROPFIND bodies that could exhaust the server's workers. Both property constants are now immutable tuples, so this class of bug cannot come back. #453 Thanks to @ciberkids
+
 ## [0.30.2 - 2026-06-02]
 
 ### Changed

@@ -2,6 +2,7 @@
 
 import builtins
 import os
+from collections.abc import Sequence
 from pathlib import Path
 from urllib.parse import quote
 
@@ -282,8 +283,12 @@ class AsyncFilesAPI:
 
     async def trashbin_list(self) -> list[FsNode]:
         """Returns a list of all entries in the TrashBin."""
-        properties = PROPFIND_PROPERTIES
-        properties += ["nc:trashbin-filename", "nc:trashbin-original-location", "nc:trashbin-deletion-time"]
+        properties = [
+            *PROPFIND_PROPERTIES,
+            "nc:trashbin-filename",
+            "nc:trashbin-original-location",
+            "nc:trashbin-deletion-time",
+        ]
         return await self._listdir(
             await self._session.user,
             "",
@@ -466,7 +471,7 @@ class AsyncFilesAPI:
         self,
         user: str,
         path: str,
-        properties: list[str],
+        properties: Sequence[str],
         depth: int,
         exclude_self: bool,
         prop_type: PropFindType = PropFindType.DEFAULT,
