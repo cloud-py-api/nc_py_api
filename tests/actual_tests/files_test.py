@@ -1300,3 +1300,20 @@ async def test_file_locking_async(anc_any):
     with pytest.raises(NextcloudException) as e:
         await anc_any.files.unlock(test_file)
     assert e.value.status_code == 412
+
+
+def test_etag_is_accepted_by_server_as_is(nc_any):
+    """`FsNode.etag` must be usable in a request header without the caller touching it."""
+    nc_any.files.delete("test_etag_as_is.txt", not_fail=True)
+    node = nc_any.files.upload("test_etag_as_is.txt", b"content")
+    listed = nc_any.files.by_path("test_etag_as_is.txt")
+    assert node.etag == listed.etag
+    assert listed.etag_unquoted == listed.etag.strip('"')
+    dav_path = f"/files/{nc_any.user}/test_etag_as_is.txt"
+    unchanged = nc_any._session.adapter_dav.request("GET", dav_path, headers={"If-None-Match": listed.etag})
+    assert unchanged.status_code == 304
+    overwritten = nc_any._session.adapter_dav.request(
+        "PUT", dav_path, data=b"new content", headers={"If-Match": listed.etag}
+    )
+    assert overwritten.status_code in (200, 204)
+    nc_any.files.delete("test_etag_as_is.txt", not_fail=True)

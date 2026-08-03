@@ -210,7 +210,12 @@ class FsNode:
     """File ID + NC instance ID"""
 
     etag: str
-    """An entity tag (ETag) of the object"""
+    """An entity tag (ETag) of the object, exactly as the server sent it, including the double quotes around it.
+
+    Send it back as-is, e.g. ``{"If-Match": fs_node.etag}``: the quotes are part of the entity tag
+    (:rfc:`9110#section-8.8.3`), and a server rejects the precondition without them.
+    Use :py:attr:`~nc_py_api.files.FsNode.etag_unquoted` to compare or store the bare value.
+    """
 
     info: FsNodeInfo
     """Additional extra information for the object"""
@@ -221,7 +226,8 @@ class FsNode:
     def __init__(self, full_path: str, **kwargs):
         self.full_path = full_path
         self.file_id = kwargs.get("file_id", "")
-        self.etag = kwargs.get("etag", "")
+        # the trashbin sends an empty `<d:getetag/>`, which arrives here as None
+        self.etag = kwargs.get("etag") or ""
         self.info = FsNodeInfo(**kwargs)
         self.lock_info = FsNodeLockInfo(**kwargs)
 
@@ -229,6 +235,14 @@ class FsNode:
     def is_dir(self) -> bool:
         """Returns ``True`` for the directories, ``False`` otherwise."""
         return self.full_path.endswith("/")
+
+    @property
+    def etag_unquoted(self) -> str:
+        """:py:attr:`~nc_py_api.files.FsNode.etag` without the surrounding double quotes.
+
+        For comparing or storing the bare tag; use :py:attr:`~nc_py_api.files.FsNode.etag` in request headers.
+        """
+        return self.etag.strip('"')
 
     def __str__(self):
         if self.info.is_version:
