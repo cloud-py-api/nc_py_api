@@ -16,6 +16,10 @@ from nc_py_api.files.files_async import AsyncFilesAPI
 CAPS_WITH_LOCKING = {"files": {"locking": "1.0"}}
 CAPS_WITHOUT_LOCKING = {"files": {}}
 TRASHBIN_PROPERTIES = ["nc:trashbin-filename", "nc:trashbin-original-location", "nc:trashbin-deletion-time"]
+# real copies taken at import: comparing against the live constants would be vacuous
+# if they are ever turned back into lists, since the name would alias the same object
+EXPECTED_PROPERTIES = tuple(PROPFIND_PROPERTIES)
+EXPECTED_LOCKING_PROPERTIES = tuple(PROPFIND_LOCKING_PROPERTIES)
 
 
 def test_propfind_constants_are_immutable():
@@ -26,31 +30,30 @@ def test_propfind_constants_are_immutable():
 
 
 def test_get_propfind_properties_does_not_mutate_constants():
-    before, before_locking = PROPFIND_PROPERTIES, PROPFIND_LOCKING_PROPERTIES
     for _ in range(10):
         get_propfind_properties(CAPS_WITH_LOCKING)
         get_propfind_properties(CAPS_WITHOUT_LOCKING)
-    assert before == PROPFIND_PROPERTIES
-    assert before_locking == PROPFIND_LOCKING_PROPERTIES
+    assert tuple(PROPFIND_PROPERTIES) == EXPECTED_PROPERTIES
+    assert tuple(PROPFIND_LOCKING_PROPERTIES) == EXPECTED_LOCKING_PROPERTIES
 
 
 def test_get_propfind_properties_returns_fresh_list():
     first = get_propfind_properties(CAPS_WITH_LOCKING)
     second = get_propfind_properties(CAPS_WITH_LOCKING)
+    assert isinstance(first, list)
     assert first == second
     assert first is not second
     first.append("nc:added-by-caller")
     assert "nc:added-by-caller" not in second
     assert "nc:added-by-caller" not in PROPFIND_PROPERTIES
+    assert tuple(PROPFIND_PROPERTIES) == EXPECTED_PROPERTIES
 
 
 def test_get_propfind_properties_locking_capability():
     with_locking = get_propfind_properties(CAPS_WITH_LOCKING)
     without_locking = get_propfind_properties(CAPS_WITHOUT_LOCKING)
-    assert len(with_locking) == len(PROPFIND_PROPERTIES) + len(PROPFIND_LOCKING_PROPERTIES)
-    assert len(without_locking) == len(PROPFIND_PROPERTIES)
-    assert set(PROPFIND_LOCKING_PROPERTIES).issubset(with_locking)
-    assert not set(PROPFIND_LOCKING_PROPERTIES).intersection(without_locking)
+    assert with_locking == [*EXPECTED_PROPERTIES, *EXPECTED_LOCKING_PROPERTIES]
+    assert without_locking == list(EXPECTED_PROPERTIES)
 
 
 def test_trashbin_list_does_not_mutate_constants(monkeypatch):
@@ -62,12 +65,11 @@ def test_trashbin_list_does_not_mutate_constants(monkeypatch):
 
     monkeypatch.setattr(FilesAPI, "_listdir", _fake_listdir)
     files_api = FilesAPI(types.SimpleNamespace(user="admin"))
-    before = PROPFIND_PROPERTIES
     for _ in range(3):
         files_api.trashbin_list()
-    assert before == PROPFIND_PROPERTIES
+    assert tuple(PROPFIND_PROPERTIES) == EXPECTED_PROPERTIES
     for properties in requested:
-        assert properties == [*PROPFIND_PROPERTIES, *TRASHBIN_PROPERTIES]
+        assert properties == [*EXPECTED_PROPERTIES, *TRASHBIN_PROPERTIES]
 
 
 async def test_trashbin_list_async_does_not_mutate_constants(monkeypatch):
@@ -84,12 +86,11 @@ async def test_trashbin_list_async_does_not_mutate_constants(monkeypatch):
 
     monkeypatch.setattr(AsyncFilesAPI, "_listdir", _fake_listdir)
     files_api = AsyncFilesAPI(_StubSession())
-    before = PROPFIND_PROPERTIES
     for _ in range(3):
         await files_api.trashbin_list()
-    assert before == PROPFIND_PROPERTIES
+    assert tuple(PROPFIND_PROPERTIES) == EXPECTED_PROPERTIES
     for properties in requested:
-        assert properties == [*PROPFIND_PROPERTIES, *TRASHBIN_PROPERTIES]
+        assert properties == [*EXPECTED_PROPERTIES, *TRASHBIN_PROPERTIES]
 
 
 def test_trashbin_list_requests_trashbin_prop_type(monkeypatch):
