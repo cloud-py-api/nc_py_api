@@ -2,6 +2,8 @@
 
 import contextlib
 import enum
+import typing
+from collections.abc import Sequence
 from datetime import datetime, timezone
 from io import BytesIO
 from json import dumps, loads
@@ -16,7 +18,7 @@ from .._exceptions import NextcloudException, check_error
 from .._misc import check_capabilities, clear_from_params_empty
 from . import FsNode, SystemTag
 
-PROPFIND_PROPERTIES = [
+PROPFIND_PROPERTIES: typing.Final[tuple[str, ...]] = (
     "d:resourcetype",
     "d:getlastmodified",
     "d:creationdate",
@@ -34,9 +36,9 @@ PROPFIND_PROPERTIES = [
     "oc:share-types",
     "oc:favorite",
     "nc:is-encrypted",
-]
+)
 
-PROPFIND_LOCKING_PROPERTIES = [
+PROPFIND_LOCKING_PROPERTIES: typing.Final[tuple[str, ...]] = (
     "nc:lock",
     "nc:lock-owner-displayname",
     "nc:lock-owner",
@@ -44,7 +46,7 @@ PROPFIND_LOCKING_PROPERTIES = [
     "nc:lock-owner-editor",  # App id of an app owned lock
     "nc:lock-time",  # Timestamp of the log creation time
     "nc:lock-timeout",  # TTL of the lock in seconds staring from the creation time
-]
+)
 
 SEARCH_PROPERTIES_MAP = {
     "name": "d:displayname",  # like, eq
@@ -66,8 +68,8 @@ class PropFindType(enum.IntEnum):
     VERSIONS_FILE_ID = 3
 
 
-def get_propfind_properties(capabilities: dict) -> list:
-    r = PROPFIND_PROPERTIES
+def get_propfind_properties(capabilities: dict) -> list[str]:
+    r = list(PROPFIND_PROPERTIES)
     if not check_capabilities("files.locking", capabilities):
         r += PROPFIND_LOCKING_PROPERTIES
     return r
@@ -222,7 +224,7 @@ def build_update_tag_req(
 
 
 def build_listdir_req(
-    user: str, path: str, properties: list[str], prop_type: PropFindType
+    user: str, path: str, properties: Sequence[str], prop_type: PropFindType
 ) -> tuple[ElementTree.Element, str]:
     root = ElementTree.Element(
         "d:propfind",
@@ -245,7 +247,7 @@ def build_listdir_response(
     webdav_response: Response,
     user: str,
     path: str,
-    properties: list[str],
+    properties: Sequence[str],
     exclude_self: bool,
     prop_type: PropFindType,
 ) -> list[FsNode]:
