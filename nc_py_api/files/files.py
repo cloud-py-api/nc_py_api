@@ -80,7 +80,12 @@ class FilesAPI:
         return result[0] if result else None
 
     def by_path(self, path: str | FsNode, extra_properties: Sequence[str] | None = None) -> FsNode | None:
-        """Returns :py:class:`~nc_py_api.files.FsNode` by exact path if any."""
+        """Returns :py:class:`~nc_py_api.files.FsNode` by exact path if any.
+
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
+        """
         path = path.user_path if isinstance(path, FsNode) else path
         result = self.listdir(path, depth=0, exclude_self=False, extra_properties=extra_properties)
         return result[0] if result else None
@@ -311,8 +316,8 @@ class FilesAPI:
             "nc:trashbin-filename",
             "nc:trashbin-original-location",
             "nc:trashbin-deletion-time",
-            *_validate_extra_properties(extra_properties, PROPFIND_PROPERTIES),
         ]
+        properties += _validate_extra_properties(extra_properties, properties)
         return self._listdir(
             self._session.user, "", properties=properties, depth=1, exclude_self=False, prop_type=PropFindType.TRASHBIN
         )

@@ -1319,11 +1319,14 @@ def test_etag_is_accepted_by_server_as_is(nc_any):
     nc_any.files.delete("test_etag_as_is.txt", not_fail=True)
 
 
-def _test_extra_properties(node: FsNode):
+# the trashbin and versions endpoints answer 404 for some properties, so less is expected from them
+FULL_EXTRA_PROPERTIES = ("nc:has-preview", "oc:owner-id", "oc:share-types")
+
+
+def _test_extra_properties(node: FsNode, expected: tuple[str, ...] = FULL_EXTRA_PROPERTIES):
+    for key in expected:
+        assert key in node.extra_properties, f"`{key}` missing from {sorted(node.extra_properties)}"
     assert node.extra_properties["nc:has-preview"] in ("true", "false")
-    assert node.extra_properties["oc:owner-id"]
-    # `oc:share-types` is requested by default, so it shows up without being asked for
-    assert "oc:share-types" in node.extra_properties
 
 
 def test_extra_properties(nc_any):
@@ -1331,10 +1334,38 @@ def test_extra_properties(nc_any):
     nc_any.files.mkdir("test_extra_props")
     try:
         nc_any.files.upload("test_extra_props/a.txt", b"content")
+        nc_any.files.upload("test_extra_props/a.txt", b"content2")  # a second version
+        nc_any.files.setfav("test_extra_props/a.txt", True)
         extra = ["nc:has-preview", "oc:owner-id"]
-        _test_extra_properties(nc_any.files.by_path("test_extra_props/a.txt", extra_properties=extra))
+        node = nc_any.files.by_path("test_extra_props/a.txt", extra_properties=extra)
+        _test_extra_properties(node)
         _test_extra_properties(nc_any.files.listdir("test_extra_props", extra_properties=extra)[0])
         _test_extra_properties(nc_any.files.find(["like", "name", "a%"], "test_extra_props", extra_properties=extra)[0])
+        _test_extra_properties(nc_any.files.by_id(node, extra_properties=extra))
+        favorites = nc_any.files.list_by_criteria(properties=["favorite"], extra_properties=extra)
+        _test_extra_properties(next(i for i in favorites if i.name == "a.txt"))
+        versions = nc_any.files.get_versions(node, extra_properties=extra)
+        if versions:  # versioning may be disabled on the server
+            _test_extra_properties(versions[0], ("nc:has-preview",))
+        nc_any.files.upload("test_extra_props/gone.txt", b"x")
+        nc_any.files.delete("test_extra_props/gone.txt")
+        trashed = [i for i in nc_any.files.trashbin_list(extra_properties=extra) if "gone.txt" in i.name]
+        _test_extra_properties(trashed[0], ("nc:has-preview",))
+        # a property the TrashBin listing requests anyway must not be sent twice
+        requested: list[str] = []
+        original_listdir = nc_any.files._listdir
+        nc_any.files._listdir = lambda user, path, **kw: (
+            requested.extend(kw["properties"]),
+            original_listdir(user, path, **kw),
+        )[1]
+        try:
+            nc_any.files.trashbin_list(extra_properties=["nc:trashbin-filename", "nc:has-preview"])
+        finally:
+            nc_any.files._listdir = original_listdir
+        assert len(requested) == len(
+            set(requested)
+        ), f"duplicates: {sorted({i for i in requested if requested.count(i) > 1})}"
+        assert "nc:has-preview" in requested
         # without asking for them, only the properties that are requested anyway are reported
         plain = nc_any.files.by_path("test_extra_props/a.txt")
         assert "nc:has-preview" not in plain.extra_properties
@@ -1343,6 +1374,7 @@ def test_extra_properties(nc_any):
             nc_any.files.listdir("test_extra_props", extra_properties=["invalid:property"])
     finally:
         nc_any.files.delete("test_extra_props", not_fail=True)
+        nc_any.files.trashbin_cleanup()
 
 
 @pytest.mark.asyncio(scope="session")
@@ -1351,14 +1383,28 @@ async def test_extra_properties_async(anc_any):
     await anc_any.files.mkdir("test_extra_props")
     try:
         await anc_any.files.upload("test_extra_props/a.txt", b"content")
+        await anc_any.files.upload("test_extra_props/a.txt", b"content2")
+        await anc_any.files.setfav("test_extra_props/a.txt", True)
         extra = ["nc:has-preview", "oc:owner-id"]
-        _test_extra_properties(await anc_any.files.by_path("test_extra_props/a.txt", extra_properties=extra))
+        node = await anc_any.files.by_path("test_extra_props/a.txt", extra_properties=extra)
+        _test_extra_properties(node)
         _test_extra_properties((await anc_any.files.listdir("test_extra_props", extra_properties=extra))[0])
         found = await anc_any.files.find(["like", "name", "a%"], "test_extra_props", extra_properties=extra)
         _test_extra_properties(found[0])
+        _test_extra_properties(await anc_any.files.by_id(node, extra_properties=extra))
+        favorites = await anc_any.files.list_by_criteria(properties=["favorite"], extra_properties=extra)
+        _test_extra_properties(next(i for i in favorites if i.name == "a.txt"))
+        versions = await anc_any.files.get_versions(node, extra_properties=extra)
+        if versions:
+            _test_extra_properties(versions[0], ("nc:has-preview",))
+        await anc_any.files.upload("test_extra_props/gone.txt", b"x")
+        await anc_any.files.delete("test_extra_props/gone.txt")
+        trashed = [i for i in await anc_any.files.trashbin_list(extra_properties=extra) if "gone.txt" in i.name]
+        _test_extra_properties(trashed[0], ("nc:has-preview",))
         plain = await anc_any.files.by_path("test_extra_props/a.txt")
         assert "nc:has-preview" not in plain.extra_properties
         with pytest.raises(ValueError):
             await anc_any.files.listdir("test_extra_props", extra_properties=["invalid:property"])
     finally:
         await anc_any.files.delete("test_extra_props", not_fail=True)
+        await anc_any.files.trashbin_cleanup()

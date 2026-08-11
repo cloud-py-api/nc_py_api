@@ -90,3 +90,19 @@ def test_fs_node_without_extra_properties():
 def test_xml_attributes_are_not_reported_as_properties():
     node = _parse_record("files/admin/a.txt", [_prop_stat({"@xmlns:d": "DAV:", "nc:has-preview": "true"})])
     assert node.extra_properties == {"nc:has-preview": "true"}
+
+
+WITH_LOCKING = {"files": {"locking": "1.0"}}  # `files.locking` advertised -> the lock properties are requested too
+
+
+def test_extra_properties_are_deduplicated_against_the_locking_ones():
+    from nc_py_api.files._files import PROPFIND_LOCKING_PROPERTIES
+
+    requested = get_propfind_properties(WITH_LOCKING, ["nc:lock-owner", "nc:has-preview"])
+    assert requested == [*PROPFIND_PROPERTIES, *PROPFIND_LOCKING_PROPERTIES, "nc:has-preview"]
+
+
+def test_extra_properties_come_after_the_default_ones():
+    requested = get_propfind_properties(WITH_LOCKING, ["nc:has-preview"])
+    assert requested[-1] == "nc:has-preview"
+    assert len(requested) == len(set(requested))
