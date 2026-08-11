@@ -32,9 +32,13 @@ class FakeResponse:
             "Content-Length": str(len(content)),
             "ETag": etag or f'"{sha}"',
         }
+        self.closed = 0
 
     def iter_raw(self, _chunk_size):
         yield self.content
+
+    def close(self):
+        self.closed += 1
 
     def __enter__(self):
         return self
@@ -238,15 +242,18 @@ class TestFetchModelRetries:
     def test_retries_until_the_download_succeeds(self, tmp_path):
         save_path = str(tmp_path / "model.bin")
         content = b"model-data"
+        throttled = (_throttled(429), _throttled(503))
 
         with (
-            _serving(_throttled(429), _throttled(503), FakeResponse(content)) as mocked,
+            _serving(*throttled, FakeResponse(content)) as mocked,
             mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep") as sleep,
         ):
             fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": save_path}}, 0)
 
         assert mocked.call_count == 3
         assert sleep.call_count == 2
+        # the body of a throttled answer is never read, so its connection has to be released explicitly
+        assert [response.closed for response in throttled] == [1, 1]
         with open(save_path, "rb") as f:
             assert f.read() == content
 

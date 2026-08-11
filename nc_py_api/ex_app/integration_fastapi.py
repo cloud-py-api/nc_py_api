@@ -280,7 +280,9 @@ def __request_model_file(model_path: str, nc: NextcloudApp, max_retries: int):
         if response.ok or response.status_code not in MODEL_FETCH_RETRY_STATUSES:
             return response
         delay = __retry_delay(response, attempt)
-        with contextlib.suppress(Exception):
+        # the body of a throttled answer is never read, so the connection has to be released by hand;
+        # only transport errors are ignored here, a wrong call should still surface
+        with contextlib.suppress(OSError):
             response.close()
         nc.log(
             LogLvl.WARNING,
