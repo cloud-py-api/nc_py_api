@@ -85,6 +85,11 @@ def test_conversation_create_delete(nc):
 def test_get_conversations_modified_since(nc):
     if nc.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
+    # Talk creates the "Note to self", sample and changelog conversations while serving a user's first
+    # rooms request, after it has captured the timestamp it reports in `X-Nextcloud-Talk-Modified-Before`.
+    # Those rooms are therefore newer than that timestamp; fetch once up front so that their creation
+    # cannot land inside the window checked below.
+    nc.talk.get_user_conversations()
     conversation = nc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
         conversations = nc.talk.get_user_conversations()
@@ -102,6 +107,8 @@ def test_get_conversations_modified_since(nc):
 async def test_get_conversations_modified_since_async(anc):
     if await anc.talk.available is False:
         pytest.skip("Nextcloud Talk is not installed")
+    # see the comment in the sync test above
+    await anc.talk.get_user_conversations()
     conversation = await anc.talk.create_conversation(talk.ConversationType.GROUP, "admin")
     try:
         conversations = await anc.talk.get_user_conversations()
