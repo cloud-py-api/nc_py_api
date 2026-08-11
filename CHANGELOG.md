@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.30.4 - 2026-08-11]
+
+### Fixed
+
+- ExApps: downloading a model from a direct link is retried when the host is throttling or temporarily failing (`408`, `425`, `429`, `500`, `502`, `503`, `504`) instead of failing the whole `init`. `Retry-After` is honoured up to a minute, otherwise the wait backs off exponentially. The number of extra attempts defaults to 5 and can be set per model with the new `max_retries` download option.
+
 ## [0.30.3 - 2026-08-11]
 
 ### Added

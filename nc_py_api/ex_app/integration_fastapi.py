@@ -2,12 +2,16 @@
 
 import asyncio
 import builtins
+import contextlib
 import fnmatch
 import hashlib
 import json
 import os
+import time
 import typing
 import warnings
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from traceback import format_exc
 from urllib.parse import urlparse
 
@@ -30,7 +34,17 @@ from .._exceptions import ModelFetchError
 from .._misc import get_username_secret_from_headers
 from ..nextcloud import AsyncNextcloudApp, NextcloudApp
 from ..talk_bot import TalkBotMessage
+from .defs import LogLvl
 from .misc import persistent_storage
+
+MODEL_FETCH_RETRY_STATUSES = frozenset({408, 425, 429, 500, 502, 503, 504})
+"""Statuses for which downloading a model file is retried; model hosters answer ``429`` when rate-limiting."""
+
+MODEL_FETCH_RETRIES = 5
+"""How many additional attempts a model file download gets, see ``max_retries`` in ``fetch_models_task``."""
+
+MODEL_FETCH_MAX_DELAY = 60.0
+"""Upper bound in seconds for a single wait between attempts, also when the server asks for longer."""
 
 
 def _nc_app_internal(request: HTTPConnection) -> NextcloudApp:
@@ -99,6 +113,7 @@ def set_handlers(
             {
                 "model_url_1": {
                     "save_path": "path_or_filename_to_save_the_model_to",
+                    "max_retries": 5,
                 },
                 "huggingface_model_name_1": {
                     "max_workers": 4,
@@ -112,6 +127,8 @@ def set_handlers(
 
         .. note:: ``huggingface_hub`` package should be present for automatic models fetching.
                   All model options are optional and can be left empty.
+                  ``max_retries`` applies to direct links only and covers the statuses hosters use
+                  for throttling, e.g. ``429``; set it to ``0`` to fail on the first one.
 
     :param map_app_static: Should be folders ``js``, ``css``, ``l10n``, ``img`` automatically mounted in FastAPI or not.
 
@@ -199,6 +216,7 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
             {
                 "model_url_1": {
                     "save_path": "path_or_filename_to_save_the_model_to",
+                    "max_retries": 5,
                 },
                 "huggingface_model_name_1": {
                     "max_workers": 4,
@@ -211,6 +229,8 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
 
         .. note:: ``huggingface_hub`` package should be present for automatic models fetching.
                   All model options are optional and can be left empty.
+                  ``max_retries`` applies to direct links only and covers the statuses hosters use
+                  for throttling, e.g. ``429``; set it to ``0`` to fail on the first one.
 
     :param progress_init_start_value: Integer value defining from which percent the progress should start.
 
@@ -237,13 +257,69 @@ def fetch_models_task(nc: NextcloudApp, models: dict[str, dict], progress_init_s
     nc.set_init_status(100)
 
 
+def __retry_delay(response, attempt: int) -> float:
+    """Seconds to wait before the next attempt, following ``Retry-After`` when the server sends a usable one."""
+    retry_after = str(response.headers.get("Retry-After", "")).strip()
+    if retry_after:
+        try:
+            delay = float(retry_after)
+        except ValueError:
+            try:
+                delay = (parsedate_to_datetime(retry_after) - datetime.now(timezone.utc)).total_seconds()
+            except (TypeError, ValueError):
+                delay = -1.0
+        if delay >= 0:
+            return min(delay, MODEL_FETCH_MAX_DELAY)
+    return min(2.0**attempt, MODEL_FETCH_MAX_DELAY)
+
+
+def __request_model_file(model_path: str, nc: NextcloudApp, max_retries: int):
+    """Requests the model, retrying the statuses hosters use to throttle. Returns the last response either way."""
+    response = niquests.get(model_path, stream=True)
+    for attempt in range(max_retries):
+        if response.ok or response.status_code not in MODEL_FETCH_RETRY_STATUSES:
+            return response
+        delay = __retry_delay(response, attempt)
+        # the body of a throttled answer is never read, so the connection has to be released by hand;
+        # only transport errors are ignored here, a wrong call should still surface
+        with contextlib.suppress(OSError):
+            response.close()
+        nc.log(
+            LogLvl.WARNING,
+            f"Downloading of '{model_path}' returned {response.status_code},"
+            f" retrying in {delay:.0f}s ({attempt + 1}/{max_retries}).",
+        )
+        time.sleep(delay)
+        response = niquests.get(model_path, stream=True)
+    return response
+
+
+def __already_downloaded(result_path: str, linked_etag: str, total_size: int) -> bool:
+    """Whether the file on disk is the one the server offers, so downloading it again can be skipped."""
+    try:
+        existing_size = os.path.getsize(result_path)
+    except OSError:
+        return False
+    if not linked_etag or not total_size or total_size != existing_size:
+        return False
+    sha256_hash = hashlib.sha256()
+    with builtins.open(result_path, "rb") as file:
+        for byte_block in iter(lambda: file.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return f'"{sha256_hash.hexdigest()}"' == linked_etag
+
+
 def __fetch_model_as_file(
     current_progress: int, progress_for_task: int, nc: NextcloudApp, model_path: str, download_options: dict
 ) -> str:
     result_path = download_options.pop("save_path", urlparse(model_path).path.split("/")[-1])
+    max_retries = int(download_options.pop("max_retries", MODEL_FETCH_RETRIES))
     tmp_path = result_path + ".tmp"
     try:
-        with FileLock(result_path + ".lock", timeout=7200), niquests.get(model_path, stream=True) as response:
+        with (
+            FileLock(result_path + ".lock", timeout=7200),
+            __request_model_file(model_path, nc, max_retries) as response,
+        ):
             if not response.ok:
                 raise ModelFetchError(
                     f"Downloading of '{model_path}' failed, returned ({response.status_code}) {response.text}"
@@ -257,18 +333,9 @@ def __fetch_model_as_file(
             if not linked_etag:
                 linked_etag = response.headers.get("X-Linked-ETag", response.headers.get("ETag", ""))
             total_size = int(response.headers.get("Content-Length", 0))
-            try:
-                existing_size = os.path.getsize(result_path)
-            except OSError:
-                existing_size = 0
-            if linked_etag and total_size and total_size == existing_size:
-                with builtins.open(result_path, "rb") as file:
-                    sha256_hash = hashlib.sha256()
-                    for byte_block in iter(lambda: file.read(4096), b""):
-                        sha256_hash.update(byte_block)
-                    if f'"{sha256_hash.hexdigest()}"' == linked_etag:
-                        nc.set_init_status(min(current_progress + progress_for_task, 99))
-                        return result_path
+            if __already_downloaded(result_path, linked_etag, total_size):
+                nc.set_init_status(min(current_progress + progress_for_task, 99))
+                return result_path
 
             try:
                 with builtins.open(tmp_path, "wb") as file:
