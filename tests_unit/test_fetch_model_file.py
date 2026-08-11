@@ -2,6 +2,8 @@
 
 import hashlib
 import os
+from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime
 from threading import Thread
 from unittest import mock
 
@@ -10,7 +12,10 @@ from filelock import FileLock
 from filelock import Timeout as FileLockTimeout
 
 from nc_py_api._exceptions import ModelFetchError
-from nc_py_api.ex_app.integration_fastapi import fetch_models_task
+from nc_py_api.ex_app.integration_fastapi import (
+    MODEL_FETCH_MAX_DELAY,
+    fetch_models_task,
+)
 
 
 class FakeResponse:
@@ -212,3 +217,106 @@ class TestFetchModelAsFile:
         assert nc.set_init_status.called
         # Last call should be 100 (completion)
         assert nc.set_init_status.call_args_list[-1] == mock.call(100)
+
+
+def _throttled(status_code: int = 429, retry_after: str = "") -> FakeResponse:
+    response = FakeResponse(b"", status_code=status_code, ok=False)
+    if retry_after:
+        response.headers["Retry-After"] = retry_after
+    return response
+
+
+def _serving(*responses):
+    """Serves the given responses to `niquests.get`, one per call."""
+    it = iter(responses)
+    return mock.patch("nc_py_api.ex_app.integration_fastapi.niquests.get", side_effect=lambda *_a, **_kw: next(it))
+
+
+class TestFetchModelRetries:
+    """Model hosters answer 429 when they throttle; the download has to survive that."""
+
+    def test_retries_until_the_download_succeeds(self, tmp_path):
+        save_path = str(tmp_path / "model.bin")
+        content = b"model-data"
+
+        with (
+            _serving(_throttled(429), _throttled(503), FakeResponse(content)) as mocked,
+            mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep") as sleep,
+        ):
+            fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": save_path}}, 0)
+
+        assert mocked.call_count == 3
+        assert sleep.call_count == 2
+        with open(save_path, "rb") as f:
+            assert f.read() == content
+
+    def test_gives_up_after_max_retries(self, tmp_path):
+        save_path = str(tmp_path / "model.bin")
+
+        with (
+            _serving(*[_throttled() for _ in range(10)]) as mocked,
+            mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep"),
+            pytest.raises(ModelFetchError),
+        ):
+            fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": save_path, "max_retries": 3}}, 0)
+
+        assert mocked.call_count == 4  # the first attempt plus `max_retries`
+
+    def test_max_retries_zero_fails_on_the_first_answer(self, tmp_path):
+        save_path = str(tmp_path / "model.bin")
+
+        with (
+            _serving(_throttled()) as mocked,
+            mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep") as sleep,
+            pytest.raises(ModelFetchError),
+        ):
+            fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": save_path, "max_retries": 0}}, 0)
+
+        assert mocked.call_count == 1
+        assert not sleep.called
+
+    def test_does_not_retry_statuses_that_will_not_change(self, tmp_path):
+        save_path = str(tmp_path / "model.bin")
+
+        with (
+            _serving(_throttled(404)) as mocked,
+            mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep") as sleep,
+            pytest.raises(ModelFetchError),
+        ):
+            fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": save_path}}, 0)
+
+        assert mocked.call_count == 1
+        assert not sleep.called
+
+
+class TestRetryDelays:
+    """`Retry-After` is followed when usable, but never long enough to hang an ExApp init."""
+
+    @staticmethod
+    def _waited(tmp_path, *responses) -> list[float]:
+        with (
+            _serving(*responses, FakeResponse(b"data")),
+            mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep") as sleep,
+        ):
+            fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": str(tmp_path / "m.bin")}}, 0)
+        return [call[0][0] for call in sleep.call_args_list]
+
+    def test_follows_retry_after_seconds(self, tmp_path):
+        assert self._waited(tmp_path, _throttled(retry_after="7")) == [7]
+
+    def test_caps_an_unreasonable_retry_after(self, tmp_path):
+        assert self._waited(tmp_path, _throttled(retry_after="3600")) == [MODEL_FETCH_MAX_DELAY]
+
+    def test_follows_retry_after_as_http_date(self, tmp_path):
+        soon = format_datetime(datetime.now(timezone.utc) + timedelta(seconds=5), usegmt=True)
+        assert 0 < self._waited(tmp_path, _throttled(retry_after=soon))[0] <= 10
+
+    def test_ignores_a_retry_after_in_the_past(self, tmp_path):
+        past = format_datetime(datetime.now(timezone.utc) - timedelta(seconds=30), usegmt=True)
+        assert self._waited(tmp_path, _throttled(retry_after=past)) == [1]
+
+    def test_ignores_a_malformed_retry_after(self, tmp_path):
+        assert self._waited(tmp_path, _throttled(retry_after="soon")) == [1]
+
+    def test_falls_back_to_exponential_backoff(self, tmp_path):
+        assert self._waited(tmp_path, _throttled(), _throttled(), _throttled()) == [1, 2, 4]
