@@ -269,6 +269,24 @@ class TestFetchModelRetries:
 
         assert mocked.call_count == 4  # the first attempt plus `max_retries`
 
+    def test_the_default_is_five_extra_attempts(self, tmp_path):
+        """`fetch_models_task` documents five extra attempts, so a change of the default has to fail here.
+
+        The default is exhausted rather than satisfied: serving a success instead would also pass with a
+        larger default, because the loop returns as soon as it gets one.
+        """
+        save_path = str(tmp_path / "model.bin")
+
+        with (
+            _serving(*[_throttled() for _ in range(6)]) as mocked,
+            mock.patch("nc_py_api.ex_app.integration_fastapi.time.sleep") as sleep,
+            pytest.raises(ModelFetchError),
+        ):
+            fetch_models_task(_mock_nc(), {"https://example.com/m.bin": {"save_path": save_path}}, 0)
+
+        assert mocked.call_count == 6  # the first attempt plus five retries
+        assert sleep.call_count == 5
+
     def test_max_retries_zero_fails_on_the_first_answer(self, tmp_path):
         save_path = str(tmp_path / "model.bin")
 
