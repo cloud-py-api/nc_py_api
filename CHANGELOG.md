@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.30.4 - 2026-08-11]
 
+### Added
+
+- `extra_properties` argument for `listdir`, `by_path`, `by_id`, `find`, `list_by_criteria`, `trashbin_list` and `get_versions`, to request WebDAV properties the library does not model itself, e.g. `nc:has-preview`. The values are available in the new `FsNode.extra_properties`, which also exposes the properties that were requested by default but silently dropped until now, such as `oc:share-types` and `oc:checksums`. #453
+
 ### Fixed
 
 - ExApps: downloading a model from a direct link is retried when the host is throttling or temporarily failing (`408`, `425`, `429`, `500`, `502`, `503`, `504`) instead of failing the whole `init`. `Retry-After` is honoured up to a minute, otherwise the wait backs off exponentially. The number of extra attempts defaults to 5 and can be set per model with the new `max_retries` download option.

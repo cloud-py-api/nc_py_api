@@ -15,6 +15,7 @@ from . import FsNode, LockType, SystemTag
 from ._files import (
     PROPFIND_PROPERTIES,
     PropFindType,
+    _validate_extra_properties,
     build_find_request,
     build_list_by_criteria_req,
     build_list_tag_req,
@@ -43,45 +44,64 @@ class AsyncFilesAPI:
         self._session = session
         self.sharing = _AsyncFilesSharingAPI(session)
 
-    async def listdir(self, path: str | FsNode = "", depth: int = 1, exclude_self=True) -> list[FsNode]:
+    async def listdir(
+        self,
+        path: str | FsNode = "",
+        depth: int = 1,
+        exclude_self=True,
+        extra_properties: Sequence[str] | None = None,
+    ) -> list[FsNode]:
         """Returns a list of all entries in the specified directory.
 
         :param path: path to the directory to get the list.
         :param depth: how many directory levels should be included in output. Default = **1** (only specified directory)
         :param exclude_self: boolean value indicating whether the `path` itself should be excluded from the list or not.
             Default = **True**.
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
         """
         if exclude_self and not depth:
             raise ValueError("Wrong input parameters, query will return nothing.")
-        properties = get_propfind_properties(await self._session.capabilities)
+        properties = get_propfind_properties(await self._session.capabilities, extra_properties)
         path = path.user_path if isinstance(path, FsNode) else path
         return await self._listdir(
             await self._session.user, path, properties=properties, depth=depth, exclude_self=exclude_self
         )
 
-    async def by_id(self, file_id: int | str | FsNode) -> FsNode | None:
+    async def by_id(self, file_id: int | str | FsNode, extra_properties: Sequence[str] | None = None) -> FsNode | None:
         """Returns :py:class:`~nc_py_api.files.FsNode` by file_id if any.
 
         :param file_id: can be full file ID with Nextcloud instance ID or only clear file ID.
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
         """
         file_id = file_id.file_id if isinstance(file_id, FsNode) else file_id
-        result = await self.find(req=["eq", "fileid", file_id])
+        result = await self.find(req=["eq", "fileid", file_id], extra_properties=extra_properties)
         return result[0] if result else None
 
-    async def by_path(self, path: str | FsNode) -> FsNode | None:
+    async def by_path(self, path: str | FsNode, extra_properties: Sequence[str] | None = None) -> FsNode | None:
         """Returns :py:class:`~nc_py_api.files.FsNode` by exact path if any."""
         path = path.user_path if isinstance(path, FsNode) else path
-        result = await self.listdir(path, depth=0, exclude_self=False)
+        result = await self.listdir(path, depth=0, exclude_self=False, extra_properties=extra_properties)
         return result[0] if result else None
 
-    async def find(self, req: list, path: str | FsNode = "") -> list[FsNode]:
+    async def find(
+        self, req: list, path: str | FsNode = "", extra_properties: Sequence[str] | None = None
+    ) -> list[FsNode]:
         """Searches a directory for a file or subdirectory with a name.
 
         :param req: list of conditions to search for. Detailed description here...
         :param path: path where to search from. Default = **""**.
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
         """
         # `req` possible keys: "name", "mime", "last_modified", "size", "favorite", "fileid"
-        root = build_find_request(req, path, await self._session.user, await self._session.capabilities)
+        root = build_find_request(
+            req, path, await self._session.user, await self._session.capabilities, extra_properties
+        )
         webdav_response = await self._session.adapter_dav.request(
             "SEARCH", "", data=element_tree_as_str(root), headers={"Content-Type": "text/xml"}
         )
@@ -252,15 +272,21 @@ class AsyncFilesAPI:
         return (await self.find(req=["eq", "fileid", response.headers["OC-FileId"]]))[0]
 
     async def list_by_criteria(
-        self, properties: list[str] | None = None, tags: list[int | SystemTag] | None = None
+        self,
+        properties: list[str] | None = None,
+        tags: list[int | SystemTag] | None = None,
+        extra_properties: Sequence[str] | None = None,
     ) -> list[FsNode]:
         """Returns a list of all files/directories for the current user filtered by the specified values.
 
         :param properties: List of ``properties`` that should have been set for the file.
             Supported values: **favorite**
         :param tags: List of ``tags ids`` or ``SystemTag`` that should have been set for the file.
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
         """
-        root = build_list_by_criteria_req(properties, tags, await self._session.capabilities)
+        root = build_list_by_criteria_req(properties, tags, await self._session.capabilities, extra_properties)
         webdav_response = await self._session.adapter_dav.request(
             "REPORT", dav_get_obj_path(await self._session.user), data=element_tree_as_str(root)
         )
@@ -281,13 +307,19 @@ class AsyncFilesAPI:
         )
         check_error(webdav_response, f"setfav: path={path}, value={value}")
 
-    async def trashbin_list(self) -> list[FsNode]:
-        """Returns a list of all entries in the TrashBin."""
+    async def trashbin_list(self, extra_properties: Sequence[str] | None = None) -> list[FsNode]:
+        """Returns a list of all entries in the TrashBin.
+
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
+        """
         properties = [
             *PROPFIND_PROPERTIES,
             "nc:trashbin-filename",
             "nc:trashbin-original-location",
             "nc:trashbin-deletion-time",
+            *_validate_extra_properties(extra_properties, PROPFIND_PROPERTIES),
         ]
         return await self._listdir(
             await self._session.user,
@@ -331,13 +363,18 @@ class AsyncFilesAPI:
         """Empties the TrashBin."""
         check_error(await self._session.adapter_dav.delete(f"/trashbin/{await self._session.user}/trash"))
 
-    async def get_versions(self, file_object: FsNode) -> list[FsNode]:
-        """Returns a list of all file versions if any."""
+    async def get_versions(self, file_object: FsNode, extra_properties: Sequence[str] | None = None) -> list[FsNode]:
+        """Returns a list of all file versions if any.
+
+        :param extra_properties: additional WebDAV properties to request, e.g. ``["nc:has-preview"]``. They are
+            returned in :py:attr:`~nc_py_api.files.FsNode.extra_properties`, and must use the ``d``, ``oc``
+            or ``nc`` namespace.
+        """
         require_capabilities("files.versioning", await self._session.capabilities)
         return await self._listdir(
             await self._session.user,
             str(file_object.info.fileid) if file_object.info.fileid else file_object.file_id,
-            properties=PROPFIND_PROPERTIES,
+            properties=[*PROPFIND_PROPERTIES, *_validate_extra_properties(extra_properties, PROPFIND_PROPERTIES)],
             depth=1,
             exclude_self=False,
             prop_type=PropFindType.VERSIONS_FILEID if file_object.info.fileid else PropFindType.VERSIONS_FILE_ID,

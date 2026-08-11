@@ -6,6 +6,7 @@ import email.utils
 import enum
 import os
 import re
+import typing
 import warnings
 
 from pydantic import BaseModel
@@ -223,6 +224,15 @@ class FsNode:
     lock_info: FsNodeLockInfo
     """Class describing `lock` information if any."""
 
+    extra_properties: dict[str, typing.Any]
+    """WebDAV properties the server returned that :py:class:`FsNode` does not model itself, keyed by their
+    prefixed name, e.g. ``nc:has-preview``.
+
+    Values arrive as the server sent them: usually a ``str``, ``None`` when the property is empty, and a
+    ``dict``/``list`` for the nested ones such as ``oc:share-types``. Request additional properties with the
+    ``extra_properties`` argument of :py:meth:`~nc_py_api.files.files.FilesAPI.listdir` and friends.
+    """
+
     def __init__(self, full_path: str, **kwargs):
         self.full_path = full_path
         self.file_id = kwargs.get("file_id", "")
@@ -230,6 +240,7 @@ class FsNode:
         self.etag = kwargs.get("etag") or ""
         self.info = FsNodeInfo(**kwargs)
         self.lock_info = FsNodeLockInfo(**kwargs)
+        self.extra_properties = kwargs.get("extra_properties") or {}
 
     @property
     def is_dir(self) -> bool:

@@ -1317,3 +1317,48 @@ def test_etag_is_accepted_by_server_as_is(nc_any):
     )
     assert overwritten.status_code in (200, 204)
     nc_any.files.delete("test_etag_as_is.txt", not_fail=True)
+
+
+def _test_extra_properties(node: FsNode):
+    assert node.extra_properties["nc:has-preview"] in ("true", "false")
+    assert node.extra_properties["oc:owner-id"]
+    # `oc:share-types` is requested by default, so it shows up without being asked for
+    assert "oc:share-types" in node.extra_properties
+
+
+def test_extra_properties(nc_any):
+    nc_any.files.delete("test_extra_props", not_fail=True)
+    nc_any.files.mkdir("test_extra_props")
+    try:
+        nc_any.files.upload("test_extra_props/a.txt", b"content")
+        extra = ["nc:has-preview", "oc:owner-id"]
+        _test_extra_properties(nc_any.files.by_path("test_extra_props/a.txt", extra_properties=extra))
+        _test_extra_properties(nc_any.files.listdir("test_extra_props", extra_properties=extra)[0])
+        _test_extra_properties(nc_any.files.find(["like", "name", "a%"], "test_extra_props", extra_properties=extra)[0])
+        # without asking for them, only the properties that are requested anyway are reported
+        plain = nc_any.files.by_path("test_extra_props/a.txt")
+        assert "nc:has-preview" not in plain.extra_properties
+        assert "oc:share-types" in plain.extra_properties
+        with pytest.raises(ValueError):
+            nc_any.files.listdir("test_extra_props", extra_properties=["invalid:property"])
+    finally:
+        nc_any.files.delete("test_extra_props", not_fail=True)
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_extra_properties_async(anc_any):
+    await anc_any.files.delete("test_extra_props", not_fail=True)
+    await anc_any.files.mkdir("test_extra_props")
+    try:
+        await anc_any.files.upload("test_extra_props/a.txt", b"content")
+        extra = ["nc:has-preview", "oc:owner-id"]
+        _test_extra_properties(await anc_any.files.by_path("test_extra_props/a.txt", extra_properties=extra))
+        _test_extra_properties((await anc_any.files.listdir("test_extra_props", extra_properties=extra))[0])
+        found = await anc_any.files.find(["like", "name", "a%"], "test_extra_props", extra_properties=extra)
+        _test_extra_properties(found[0])
+        plain = await anc_any.files.by_path("test_extra_props/a.txt")
+        assert "nc:has-preview" not in plain.extra_properties
+        with pytest.raises(ValueError):
+            await anc_any.files.listdir("test_extra_props", extra_properties=["invalid:property"])
+    finally:
+        await anc_any.files.delete("test_extra_props", not_fail=True)
