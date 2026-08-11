@@ -1401,8 +1401,26 @@ async def test_extra_properties_async(anc_any):
         await anc_any.files.delete("test_extra_props/gone.txt")
         trashed = [i for i in await anc_any.files.trashbin_list(extra_properties=extra) if "gone.txt" in i.name]
         _test_extra_properties(trashed[0], ("nc:has-preview",))
+        # a property the TrashBin listing requests anyway must not be sent twice
+        requested: list[str] = []
+        original_listdir = anc_any.files._listdir
+
+        async def _spy(user, path, **kw):
+            requested.extend(kw["properties"])
+            return await original_listdir(user, path, **kw)
+
+        anc_any.files._listdir = _spy
+        try:
+            await anc_any.files.trashbin_list(extra_properties=["nc:trashbin-filename", "nc:has-preview"])
+        finally:
+            anc_any.files._listdir = original_listdir
+        assert len(requested) == len(
+            set(requested)
+        ), f"duplicates: {sorted({i for i in requested if requested.count(i) > 1})}"
+        assert "nc:has-preview" in requested
         plain = await anc_any.files.by_path("test_extra_props/a.txt")
         assert "nc:has-preview" not in plain.extra_properties
+        assert "oc:share-types" in plain.extra_properties
         with pytest.raises(ValueError):
             await anc_any.files.listdir("test_extra_props", extra_properties=["invalid:property"])
     finally:
