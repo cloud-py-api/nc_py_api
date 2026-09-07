@@ -217,13 +217,13 @@ ini_options.log_cli = true
 ini_options.asyncio_mode = "auto"
 
 [tool.coverage]
-run.cover_pylib = true
 run.include = [
   "*/nc_py_api/*",
 ]
 run.omit = [
   "*/tests/*",
 ]
+run.cover_pylib = true
 paths.source = [
   "nc_py_api/",
   "*/site-packages/nc_py_api/",
