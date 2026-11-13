@@ -68,10 +68,60 @@ class PropFindType(enum.IntEnum):
     VERSIONS_FILE_ID = 3
 
 
-def get_propfind_properties(capabilities: dict) -> list[str]:
+PROPFIND_NAMESPACES: typing.Final[tuple[str, ...]] = ("d", "oc", "nc")
+"""XML namespace prefixes declared in the requests, the only ones ``extra_properties`` can use."""
+
+MAPPED_PROPERTIES: typing.Final[frozenset[str]] = frozenset(
+    {
+        "d:creationdate",
+        "d:getcontentlength",
+        "d:getcontenttype",
+        "d:getetag",
+        "d:getlastmodified",
+        "nc:download-url-expiration",
+        "nc:lock",
+        "nc:lock-owner",
+        "nc:lock-owner-displayname",
+        "nc:lock-owner-editor",
+        "nc:lock-owner-type",
+        "nc:lock-time",
+        "nc:lock-timeout",
+        "nc:trashbin-deletion-time",
+        "nc:trashbin-filename",
+        "nc:trashbin-original-location",
+        "oc:downloadURL",
+        "oc:favorite",
+        "oc:fileid",
+        "oc:id",
+        "oc:permissions",
+        "oc:size",
+        "d:resourcetype",
+    }
+)
+"""Properties :py:class:`~nc_py_api.files.FsNode` models itself, the rest end up in ``extra_properties``."""
+
+
+def get_propfind_properties(capabilities: dict, extra_properties: Sequence[str] | None = None) -> list[str]:
     r = list(PROPFIND_PROPERTIES)
     if not check_capabilities("files.locking", capabilities):
         r += PROPFIND_LOCKING_PROPERTIES
+    return r + _validate_extra_properties(extra_properties, r)
+
+
+def _validate_extra_properties(extra_properties: Sequence[str] | None, already_requested: Sequence[str]) -> list[str]:
+    """Returns the additional properties to request, without the ones that are asked for anyway."""
+    if not extra_properties:
+        return []
+    r = []
+    for i in extra_properties:
+        prefix = i.split(":", maxsplit=1)[0] if ":" in i else ""
+        if prefix not in PROPFIND_NAMESPACES:
+            raise ValueError(
+                f"Invalid property `{i}`: expected one of the {', '.join(PROPFIND_NAMESPACES)} namespaces,"
+                f" e.g. `nc:has-preview`."
+            )
+        if i not in already_requested and i not in r:
+            r.append(i)
     return r
 
 
@@ -85,7 +135,9 @@ def _dav_literal(val: Any) -> str:
     return str(val)
 
 
-def build_find_request(req: list, path: str | FsNode, user: str, capabilities: dict) -> ElementTree.Element:
+def build_find_request(
+    req: list, path: str | FsNode, user: str, capabilities: dict, extra_properties: Sequence[str] | None = None
+) -> ElementTree.Element:
     path = path.user_path if isinstance(path, FsNode) else path
     root = ElementTree.Element(
         "d:searchrequest",
@@ -93,7 +145,7 @@ def build_find_request(req: list, path: str | FsNode, user: str, capabilities: d
     )
     xml_search = ElementTree.SubElement(root, "d:basicsearch")
     xml_select_prop = ElementTree.SubElement(ElementTree.SubElement(xml_search, "d:select"), "d:prop")
-    for i in get_propfind_properties(capabilities):
+    for i in get_propfind_properties(capabilities, extra_properties):
         ElementTree.SubElement(xml_select_prop, i)
     xml_from_scope = ElementTree.SubElement(ElementTree.SubElement(xml_search, "d:from"), "d:scope")
     href = f"/files/{user}/{path.removeprefix('/')}"
@@ -105,7 +157,10 @@ def build_find_request(req: list, path: str | FsNode, user: str, capabilities: d
 
 
 def build_list_by_criteria_req(
-    properties: list[str] | None, tags: list[int | SystemTag] | None, capabilities: dict
+    properties: list[str] | None,
+    tags: list[int | SystemTag] | None,
+    capabilities: dict,
+    extra_properties: Sequence[str] | None = None,
 ) -> ElementTree.Element:
     if not properties and not tags:
         raise ValueError("Either specify 'properties' or 'tags' to filter results.")
@@ -114,7 +169,7 @@ def build_list_by_criteria_req(
         attrib={"xmlns:d": "DAV:", "xmlns:oc": "http://owncloud.org/ns", "xmlns:nc": "http://nextcloud.org/ns"},
     )
     prop = ElementTree.SubElement(root, "d:prop")
-    for i in get_propfind_properties(capabilities):
+    for i in get_propfind_properties(capabilities, extra_properties):
         ElementTree.SubElement(prop, i)
     xml_filter_rules = ElementTree.SubElement(root, "oc:filter-rules")
     if properties and "favorite" in properties:
@@ -287,6 +342,7 @@ def etag_fileid_from_response(response: Response) -> dict:
 
 def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pylint: disable = too-many-branches
     fs_node_args = {}
+    extra_properties: dict[str, typing.Any] = {}
     for prop_stat in prop_stats:
         if str(prop_stat.get("d:status", "")).find("200 OK") == -1:
             continue
@@ -336,7 +392,9 @@ def _parse_record(full_path: str, prop_stats: list[dict]) -> FsNode:  # noqa pyl
         }.items():
             if k in prop_keys and prop[k] is not None:
                 fs_node_args[v] = prop[k]
-    return FsNode(full_path, **fs_node_args)
+        # everything the server returned that FsNode does not model itself, values as the server sent them
+        extra_properties.update({k: v for k, v in prop.items() if k not in MAPPED_PROPERTIES and not k.startswith("@")})
+    return FsNode(full_path, extra_properties=extra_properties, **fs_node_args)
 
 
 def _parse_records(dav_url_suffix: str, fs_records: list[dict], response_type: PropFindType) -> list[FsNode]:
