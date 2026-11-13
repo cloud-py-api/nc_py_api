@@ -10,7 +10,7 @@ import os
 import time
 import typing
 import warnings
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from traceback import format_exc
 from urllib.parse import urlparse
@@ -265,7 +265,7 @@ def __retry_delay(response, attempt: int) -> float:
             delay = float(retry_after)
         except ValueError:
             try:
-                delay = (parsedate_to_datetime(retry_after) - datetime.now(timezone.utc)).total_seconds()
+                delay = (parsedate_to_datetime(retry_after) - datetime.now(UTC)).total_seconds()
             except (TypeError, ValueError):
                 delay = -1.0
         if delay >= 0:

@@ -6,7 +6,7 @@ For internal use, prototypes can change between versions.
 import secrets
 from base64 import b64decode
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from string import ascii_letters, digits
 
 from ._exceptions import NextcloudMissingCapabilities
@@ -75,7 +75,7 @@ def nc_iso_time_to_datetime(iso8601_time: str) -> datetime:
     try:
         return datetime.fromisoformat(iso8601_time)
     except (ValueError, TypeError):
-        return datetime(1970, 1, 1, tzinfo=timezone.utc)
+        return datetime(1970, 1, 1, tzinfo=UTC)
 
 
 def get_username_secret_from_headers(headers: dict) -> tuple[str, str]:
