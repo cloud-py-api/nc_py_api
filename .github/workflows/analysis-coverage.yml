@@ -46,7 +46,7 @@ jobs:
 
   tests-oci:
     needs: [analysis]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     name: stable33 • 🐍3.11 • OCI
     timeout-minutes: 60
 
@@ -161,7 +161,7 @@ jobs:
 
   tests-maria:
     needs: [analysis]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     name: ${{ matrix.nextcloud }} • 🐍${{ matrix.python }} • Maria
     strategy:
       fail-fast: false
@@ -365,7 +365,7 @@ jobs:
 
   tests-pgsql:
     needs: [analysis]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     name: ${{ matrix.nextcloud }} • 🐍${{ matrix.python }} • PgSQL
     strategy:
       fail-fast: false
@@ -565,7 +565,7 @@ jobs:
 
   tests-client-sqlite:
     needs: [analysis]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     name: ${{ matrix.nextcloud }} • 🐍${{ matrix.python }} • Client
     strategy:
       fail-fast: false
@@ -679,7 +679,7 @@ jobs:
     needs: [tests-maria, tests-pgsql, tests-oci, tests-client-sqlite]
     permissions:
       contents: none
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     name: Upload Coverage
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -703,7 +703,7 @@ jobs:
   tests-success:
     permissions:
       contents: none
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     needs: [tests-upload-coverage]
     name: Tests-OK
     steps:
