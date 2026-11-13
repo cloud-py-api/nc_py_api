@@ -8,6 +8,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     permissions:
+      actions: write # list/delete the action's processing-state cache
       issues: write
       pull-requests: write
     steps:

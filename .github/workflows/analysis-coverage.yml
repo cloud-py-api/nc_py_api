@@ -169,8 +169,10 @@ jobs:
         include:
           - nextcloud: 'stable33'
             python: '3.10'
+            php: '8.2'
           - nextcloud: 'stable35'
             python: '3.13'
+            php: '8.3'
     timeout-minutes: 60
 
     services:
@@ -191,7 +193,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -213,6 +215,16 @@ jobs:
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
+
+      - name: Build Notifications if it ships an unbuilt Composer autoloader
+        working-directory: apps/notifications
+        # Since stable34 the app depends on web-push and its composer/autoload.php
+        # requires vendor/autoload.php, which a plain git checkout does not include.
+        # Older branches load without it, so only build when the checkout needs it.
+        run: |
+          if grep -q "vendor/autoload.php" composer/autoload.php 2>/dev/null && [ ! -f vendor/autoload.php ]; then
+            composer install --no-dev --ignore-platform-reqs
+          fi
 
       - name: Checkout Notes
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -361,8 +373,10 @@ jobs:
         include:
           - nextcloud: 'stable34'
             python: '3.11'
+            php: '8.2'
           - nextcloud: 'stable35'
             python: '3.14'
+            php: '8.3'
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -387,7 +401,7 @@ jobs:
       - name: Set up php
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
