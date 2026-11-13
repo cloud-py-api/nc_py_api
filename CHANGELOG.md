@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.30.4 - 2026-08-11]
+## [0.31.0 - 2026-11-13]
+
+### Added
+
+- Python 3.15 support. #468
+
+### Changed
+
+- drop Python 3.10 support, the minimum is now Python 3.11. #465
+- `filelock` dependency upgraded to `>=4.2.10,<5` #465
+- Tested against Nextcloud 33, 34 and 35; Nextcloud 32 is no longer tested. #468
 
 ### Fixed
 
