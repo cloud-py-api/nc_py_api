@@ -27,12 +27,14 @@ env:
 
 jobs:
   analysis:
-    runs-on: macos-14
+    runs-on: macos-15
     name: Analysis
 
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.10'
 
@@ -65,26 +67,28 @@ jobs:
 
     steps:
       - name: Set up php
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.2'
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, \
             posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, oci8
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.11'
 
       - name: Checkout server
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           submodules: true
           repository: nextcloud/server
           ref: ${{ env.NEXTCLOUD_BRANCH }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/notifications
           ref: ${{ env.NEXTCLOUD_BRANCH }}
           path: apps/notifications
@@ -101,8 +105,9 @@ jobs:
           PHP_CLI_SERVER_WORKERS=2 php -S localhost:8080 &
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: nc_py_api
 
       - name: Install NcPyApi
@@ -110,8 +115,9 @@ jobs:
         run: python3 -m pip -v install ".[app,dev-min]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: apps/app_api
           repository: nextcloud/app_api
           ref: ${{ env.NEXTCLOUD_BRANCH }}
@@ -139,7 +145,7 @@ jobs:
           SKIP_NC_CLIENT_TESTS: 1
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage_oci_${{ env.NEXTCLOUD_BRANCH }}.xml
           path: nc_py_api/coverage_oci_${{ env.NEXTCLOUD_BRANCH }}.xml
@@ -147,7 +153,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nc_log_oci_${{ env.NEXTCLOUD_BRANCH }}
           path: data/nextcloud.log
@@ -156,11 +162,17 @@ jobs:
   tests-maria:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐍3.10 • Maria
+    name: ${{ matrix.nextcloud }} • 🐍${{ matrix.python }} • Maria
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable32', 'stable33' ]
+        include:
+          - nextcloud: 'stable33'
+            python: '3.10'
+            php: '8.2'
+          - nextcloud: 'stable35'
+            python: '3.13'
+            php: '8.3'
     timeout-minutes: 60
 
     services:
@@ -179,47 +191,61 @@ jobs:
 
     steps:
       - name: Set up php
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd, curl
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python }}
 
       - name: Checkout server
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
 
+      - name: Build Notifications if it ships an unbuilt Composer autoloader
+        working-directory: apps/notifications
+        # Since stable34 the app depends on web-push and its composer/autoload.php
+        # requires vendor/autoload.php, which a plain git checkout does not include.
+        # Older branches load without it, so only build when the checkout needs it.
+        run: |
+          if grep -q "vendor/autoload.php" composer/autoload.php 2>/dev/null && [ ! -f vendor/autoload.php ]; then
+            composer install --no-dev --ignore-platform-reqs
+          fi
+
       - name: Checkout Notes
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/notes
-          # Notes main (v5.0.0) requires NC >= 33; pin older servers to the last 4.x (supports NC 28-34).
-          ref: "${{ matrix.nextcloud == 'stable32' && 'v4.13.1' || 'main' }}"
+          ref: main
           path: apps/notes
 
       - name: Checkout Files Locking
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
 
       - name: Checkout Circles
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/circles
           ref: ${{ matrix.nextcloud }}
           path: apps/circles
@@ -249,8 +275,9 @@ jobs:
         run: php occ app:enable circles
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: nc_py_api
 
       - name: Install NcPyApi
@@ -258,8 +285,9 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: apps/app_api
           repository: nextcloud/app_api
           ref: ${{ matrix.nextcloud }}
@@ -278,8 +306,9 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: apps/spreed
           repository: nextcloud/spreed
           ref: ${{ matrix.nextcloud }}
@@ -320,7 +349,7 @@ jobs:
           coverage combine && coverage xml -o coverage_maria_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage_maria_${{ matrix.nextcloud }}.xml
           path: nc_py_api/coverage_maria_${{ matrix.nextcloud }}.xml
@@ -328,7 +357,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nc_log_maria_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -337,11 +366,17 @@ jobs:
   tests-pgsql:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐍3.11 • PgSQL
+    name: ${{ matrix.nextcloud }} • 🐍${{ matrix.python }} • PgSQL
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable32', 'stable34' ]
+        include:
+          - nextcloud: 'stable34'
+            python: '3.11'
+            php: '8.2'
+          - nextcloud: 'stable35'
+            python: '3.14'
+            php: '8.3'
     env:
       NC_dbname: nextcloud_abz
       DATABASE_PGSQL: 1
@@ -364,25 +399,27 @@ jobs:
 
     steps:
       - name: Set up php
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, fileinfo, intl, pdo_mysql, zip, gd
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python }}
 
       - name: Checkout server
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Notifications
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/notifications
           ref: ${{ matrix.nextcloud }}
           path: apps/notifications
@@ -398,15 +435,17 @@ jobs:
           fi
 
       - name: Checkout Activity
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
       - name: Checkout Circles
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/circles
           ref: ${{ matrix.nextcloud }}
           path: apps/circles
@@ -431,8 +470,9 @@ jobs:
         run: php occ app:enable circles
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: nc_py_api
 
       - name: Install NcPyApi
@@ -440,8 +480,9 @@ jobs:
         run: python3 -m pip -v install ".[dev]"
 
       - name: Checkout AppAPI
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: apps/app_api
           repository: nextcloud/app_api
           ref: ${{ matrix.nextcloud }}
@@ -460,8 +501,9 @@ jobs:
           timeout 3m tail --pid=$(cat /tmp/_install.pid) -f /dev/null
 
       - name: Checkout Talk
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: apps/spreed
           repository: nextcloud/spreed
           ref: ${{ matrix.nextcloud }}
@@ -507,7 +549,7 @@ jobs:
           coverage combine && coverage xml -o coverage_pgsql_${{ matrix.nextcloud }}.xml
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage_pgsql_${{ matrix.nextcloud }}.xml
           path: nc_py_api/coverage_pgsql_${{ matrix.nextcloud }}.xml
@@ -515,7 +557,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nc_log_pgsql_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -524,51 +566,59 @@ jobs:
   tests-client-sqlite:
     needs: [analysis]
     runs-on: ubuntu-22.04
-    name: ${{ matrix.nextcloud }} • 🐍3.12 • Client
+    name: ${{ matrix.nextcloud }} • 🐍${{ matrix.python }} • Client
     strategy:
       fail-fast: false
       matrix:
-        nextcloud: [ 'stable33', 'stable34' ]
+        include:
+          - nextcloud: 'stable33'
+            python: '3.12'
+          - nextcloud: 'stable34'
+            python: '3.15'
     env:
       NEXTCLOUD_URL: "http://localhost:8080/index.php"
     timeout-minutes: 60
 
     steps:
       - name: Set up php
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.2'
           extensions: mbstring, fileinfo, intl, sqlite, pdo_sqlite, zip, gd, curl
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python }}
 
       - name: Checkout server
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           submodules: true
           repository: nextcloud/server
           ref: ${{ matrix.nextcloud }}
 
       - name: Checkout Activity
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/activity
           ref: ${{ matrix.nextcloud }}
           path: apps/activity
 
       - name: Checkout Notes
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/notes
           # This job only runs NC >= 33, so Notes main (v5.0.0) is always compatible.
           ref: main
           path: apps/notes
 
       - name: Checkout Files Locking
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: nextcloud/files_lock
           ref: ${{ matrix.nextcloud }}
           path: apps/files_lock
@@ -594,8 +644,9 @@ jobs:
         run: ./occ app:enable files_lock
 
       - name: Checkout NcPyApi
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: nc_py_api
 
       - name: Install NcPyApi
@@ -610,7 +661,7 @@ jobs:
           NPA_NC_CERT: ''
 
       - name: Upload Codecov to artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage_sqlite_${{ matrix.nextcloud }}_client.xml
           path: nc_py_api/coverage_sqlite_${{ matrix.nextcloud }}_client.xml
@@ -618,7 +669,7 @@ jobs:
 
       - name: Upload NC logs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: nc_log_sqlite_${{ matrix.nextcloud }}
           path: data/nextcloud.log
@@ -631,16 +682,18 @@ jobs:
     runs-on: ubuntu-22.04
     name: Upload Coverage
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Download Coverage Artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: coverage
           pattern: coverage_*
           merge-multiple: true
 
       - name: Upload report to Codecov
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: coverage
