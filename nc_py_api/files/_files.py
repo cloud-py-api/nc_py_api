@@ -4,7 +4,7 @@ import contextlib
 import enum
 import typing
 from collections.abc import Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from io import BytesIO
 from json import dumps, loads
 from typing import Any
@@ -79,8 +79,8 @@ def _dav_literal(val: Any) -> str:
     """Return a string suitable for <d:literal>."""
     if isinstance(val, datetime):
         # make timezone-aware, force UTC, second precision
-        dt = val if val.tzinfo else val.replace(tzinfo=timezone.utc)
-        dt = dt.astimezone(timezone.utc).replace(microsecond=0)
+        dt = val if val.tzinfo else val.replace(tzinfo=UTC)
+        dt = dt.astimezone(UTC).replace(microsecond=0)
         return dt.isoformat().replace("+00:00", "Z")  # 2025-03-10T12:34:56Z
     return str(val)
 

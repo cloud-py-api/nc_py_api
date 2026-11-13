@@ -34,9 +34,7 @@ class UserInfo:
     @property
     def last_login(self) -> datetime.datetime:
         """Last user login time."""
-        return datetime.datetime.utcfromtimestamp(int(self._raw_data["lastLogin"] / 1000)).replace(
-            tzinfo=datetime.timezone.utc
-        )
+        return datetime.datetime.utcfromtimestamp(int(self._raw_data["lastLogin"] / 1000)).replace(tzinfo=datetime.UTC)
 
     @property
     def backend(self) -> str:

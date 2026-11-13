@@ -67,7 +67,7 @@ class FsNodeLockInfo:
     @property
     def lock_creation_time(self) -> datetime.datetime:
         """Lock creation time."""
-        return datetime.datetime.utcfromtimestamp(self._lock_time).replace(tzinfo=datetime.timezone.utc)
+        return datetime.datetime.utcfromtimestamp(self._lock_time).replace(tzinfo=datetime.UTC)
 
     @property
     def lock_ttl(self) -> int:
@@ -574,7 +574,7 @@ class ActionFileInfo(BaseModel):
             favorite=bool(self.favorite.lower() == "true"),
             file_id=file_id + self.instanceId if self.instanceId else file_id,
             fileid=self.fileId,
-            last_modified=datetime.datetime.utcfromtimestamp(self.mtime).replace(tzinfo=datetime.timezone.utc),
+            last_modified=datetime.datetime.utcfromtimestamp(self.mtime).replace(tzinfo=datetime.UTC),
             mimetype=self.mime,
         )
 

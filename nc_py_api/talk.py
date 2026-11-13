@@ -285,7 +285,7 @@ class TalkMessage:
     def __repr__(self):
         return (
             f"<{self.__class__.__name__} id={self.message_id}, author={self.actor_display_name},"
-            f" time={datetime.datetime.utcfromtimestamp(self.timestamp).replace(tzinfo=datetime.timezone.utc)}>"
+            f" time={datetime.datetime.utcfromtimestamp(self.timestamp).replace(tzinfo=datetime.UTC)}>"
         )
 
 
