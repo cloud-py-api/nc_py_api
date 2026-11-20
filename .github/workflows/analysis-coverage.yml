@@ -384,7 +384,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:17
+        image: postgres:19
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: rootpassword
