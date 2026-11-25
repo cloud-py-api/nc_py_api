@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- `npa_retries` option (and `NPA_RETRIES` environment variable) to retry failed requests to Nextcloud. It takes a number or a `niquests.RetryConfiguration`, e.g. to retry `429` with backoff. The default `0` keeps the current behaviour.
+
 ## [0.31.0 - 2026-11-13]
 
 ### Added

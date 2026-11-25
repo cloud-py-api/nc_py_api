@@ -12,7 +12,14 @@ from json import loads
 from os import environ
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from niquests import AsyncSession, ReadTimeout, Request, Response, Session
+from niquests import (
+    AsyncSession,
+    ReadTimeout,
+    Request,
+    Response,
+    RetryConfiguration,
+    Session,
+)
 from niquests import __version__ as niquests_version
 from niquests.structures import CaseInsensitiveDict
 from starlette.requests import HTTPConnection
@@ -63,6 +70,7 @@ class RuntimeOptions:
     xdebug_session: str
     timeout: int | None
     timeout_dav: int | None
+    retries: int | RetryConfiguration
     _nc_cert: str | bool
     upload_chunk_v2: bool
 
@@ -70,6 +78,7 @@ class RuntimeOptions:
         self.xdebug_session = kwargs.get("xdebug_session", options.XDEBUG_SESSION)
         self.timeout = kwargs.get("npa_timeout", options.NPA_TIMEOUT)
         self.timeout_dav = kwargs.get("npa_timeout_dav", options.NPA_TIMEOUT_DAV)
+        self.retries = kwargs.get("npa_retries", options.NPA_RETRIES)
         self._nc_cert = kwargs.get("npa_nc_cert", options.NPA_NC_CERT)
         self.upload_chunk_v2 = kwargs.get("chunked_upload_v2", options.CHUNKED_UPLOAD_V2)
 
@@ -290,11 +299,13 @@ class NcSessionBasic(NcSessionBase, ABC):
             return {
                 "base_url": self.cfg.dav_endpoint,
                 "timeout": self.cfg.options.timeout_dav,
+                "retries": self.cfg.options.retries,
                 "event_hooks": {"pre_request": [], "response": [self._response_event]},
             }
         return {
             "base_url": self.cfg.endpoint,
             "timeout": self.cfg.options.timeout,
+            "retries": self.cfg.options.retries,
             "event_hooks": {"pre_request": [self._request_event_ocs], "response": [self._response_event]},
         }
 
@@ -419,11 +430,13 @@ class AsyncNcSessionBasic(NcSessionBase, ABC):
             return {
                 "base_url": self.cfg.dav_endpoint,
                 "timeout": self.cfg.options.timeout_dav,
+                "retries": self.cfg.options.retries,
                 "event_hooks": {"pre_request": [], "response": [self._response_event]},
             }
         return {
             "base_url": self.cfg.endpoint,
             "timeout": self.cfg.options.timeout,
+            "retries": self.cfg.options.retries,
             "event_hooks": {"pre_request": [self._request_event_ocs], "response": [self._response_event]},
         }
 
