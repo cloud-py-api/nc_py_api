@@ -29,6 +29,17 @@ try:
 except (TypeError, ValueError):
     NPA_TIMEOUT_DAV = None
 
+NPA_RETRIES: int
+"""How often a failed request to Nextcloud is retried, ``0`` (never) by default.
+
+A number retries connection and read errors. To also retry responses such as ``429``, with backoff,
+pass a ``niquests.RetryConfiguration`` as ``npa_retries`` instead; with ``raise_on_status=False`` the
+last answer still raises ``NextcloudException`` once the retries are used up."""
+try:
+    NPA_RETRIES = int(environ.get("NPA_RETRIES", 0))
+except (TypeError, ValueError):
+    NPA_RETRIES = 0
+
 NPA_NC_CERT: bool | str
 """Option to enable/disable Nextcloud certificate verification.
 
